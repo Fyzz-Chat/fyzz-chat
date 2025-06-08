@@ -47,8 +47,8 @@ export default async function SettingsPage() {
             <TabsTrigger value="display">Display</TabsTrigger>
           </TabsList>
           <TabsContent value="memory">
-            <Card>
-              <ScrollArea className="h-[calc(100svh-14rem)] md:h-[calc(100svh-21rem)]">
+            <Card className="mb-5">
+              <ScrollArea>
                 <CardHeader>
                   <CardTitle>Memory Settings</CardTitle>
                   <CardDescription>

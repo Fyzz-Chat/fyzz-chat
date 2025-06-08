@@ -66,10 +66,10 @@ export default function MemoryForm({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={!enabled}
-          rows={8}
+          rows={6}
           className="resize-none"
         />
-        <Button type="submit" className="px-5" disabled={!enabled || isPending}>
+        <Button type="submit" className="px-5 self-end" disabled={!enabled || isPending}>
           Save
         </Button>
       </form>
