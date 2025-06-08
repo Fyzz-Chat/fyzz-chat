@@ -1,5 +1,5 @@
-import { DisplaySettingsTab } from "@/components/settings/chat-settings-tab";
 import DeleteAccountForm from "@/components/settings/delete-account-form";
+import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
 import MemoryForm from "@/components/settings/memory-form";
 import PasswordForm from "@/components/settings/password-form";
 import {
