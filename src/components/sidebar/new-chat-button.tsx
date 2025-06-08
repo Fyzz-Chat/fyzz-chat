@@ -13,7 +13,7 @@ export function NewChatButton() {
   }
 
   return (
-    <Button asChild variant="ghost" className="h-7 w-7" size={"icon"}>
+    <Button asChild variant="ghost" className="size-8 p-5 touch-manipulation" size="icon">
       <FastLink href="/chat" prefetch onClick={handleClick}>
         <SquarePenIcon className="size-5" />
       </FastLink>
