@@ -37,3 +37,7 @@ next-env.d.ts
 
 .env
 src/lib/prisma/client
+
+
+# copilot instructions
+/.github/copilot-instructions.md
