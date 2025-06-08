@@ -45,11 +45,7 @@ export function ModelMenu() {
       <>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild className="hidden md:block">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:flex items-center gap-2 -ml-2 -mb-4"
-            >
+            <Button variant="secondary" size="sm" className="md:flex items-center gap-2">
               <span>{model.name}</span>
               <ChevronDown size={16} />
             </Button>
