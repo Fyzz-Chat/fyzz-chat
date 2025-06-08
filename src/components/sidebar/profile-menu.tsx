@@ -26,21 +26,6 @@ export default function ProfileMenu({
         {userEmail}
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      {authorized && (
-        <>
-          <DropdownMenuItem className="p-0 h-10 cursor-pointer" asChild>
-            <Link
-              href="/settings"
-              className="flex items-center gap-2 size-full px-2 py-1.5"
-              onClick={() => isMobile && setOpenMobile(false)}
-            >
-              <Settings className="shrink-0" />
-              <span>Settings</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-        </>
-      )}
       <DropdownMenuItem className="p-0 h-10">
         <a
           href="/privacy-policy"
@@ -56,6 +41,21 @@ export default function ProfileMenu({
         </a>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
+      {authorized && (
+        <>
+          <DropdownMenuItem className="p-0 h-10 cursor-pointer" asChild>
+            <Link
+              href="/settings"
+              className="flex items-center gap-2 size-full px-2 py-1.5"
+              onClick={() => isMobile && setOpenMobile(false)}
+            >
+              <Settings className="shrink-0" />
+              <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+        </>
+      )}
       <DropdownMenuItem asChild>{authorized ? <SignOut /> : <SignIn />}</DropdownMenuItem>
     </>
   );
