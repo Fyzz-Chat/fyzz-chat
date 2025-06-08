@@ -1,0 +1,6 @@
+.env*
+docker-compose*
+node_modules/
+.next/
+*.serviceaccount.json
+*.pem

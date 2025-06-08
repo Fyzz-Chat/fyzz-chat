@@ -1,0 +1,46 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { readNotification } from "@/lib/actions/notifications";
+import type { Notification } from "@/lib/prisma/client";
+import { formatTimeAgo } from "@/lib/utils";
+import { Ellipsis } from "lucide-react";
+import Link from "next/link";
+import type React from "react";
+
+export function NotificationItem({
+  notification,
+}: Readonly<{ notification: Notification }>) {
+  function handleNotificationClick(event: React.MouseEvent) {
+    event.preventDefault();
+  }
+
+  return (
+    <li>
+      <Link
+        href={notification.link || "#"}
+        className="flex gap-2 p-2 items-start rounded hover:bg-accent transition-colors duration-200"
+        onClick={() => readNotification(notification.id)}
+      >
+        <span className="relative inline-flex shrink-0 rounded-full size-2 bg-green-500 mt-2"></span>
+        <div className="flex flex-col gap-1">
+          <p>{notification.title}</p>
+          <p className="text-sm text-muted-foreground text-pretty">
+            {notification.content}
+          </p>
+          <span className="text-xs text-muted-foreground">
+            {formatTimeAgo(notification.createdAt)}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="ml-auto hover:bg-muted/50 shrink-0 rounded-full"
+          onClick={handleNotificationClick}
+        >
+          <Ellipsis size={20} />
+        </Button>
+      </Link>
+    </li>
+  );
+}

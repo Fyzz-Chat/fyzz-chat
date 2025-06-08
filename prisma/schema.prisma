@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../src/lib/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String?
+  picture       String
+  subscription  String         @default("free")
+  customerId    String?        @map("customer_id")
+  freeMessages  Int            @default(10) @map("free_messages")
+  memory        String?
+  memoryEnabled Boolean        @default(false) @map("memory_enabled")
+  notifications Notification[]
+  conversations Conversation[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Notification {
+
+  id        Int      @id @default(autoincrement())
+  type      String
+  title     String
+  content   String
+  link      String?
+  read      Boolean  @default(false)
+  archived  Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("notifications")
+}
+
+model Conversation {
+
+  id            String    @id @default(uuid())
+  title         String
+  messages      Message[]
+  model         String
+  locked        Boolean   @default(false)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int       @map("user_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  lastMessageAt DateTime  @default(now()) @map("last_message_at")
+
+  @@map("conversations")
+}
+
+model Message {
+
+  id              String       @id @default(uuid())
+  content         String
+  role            String
+  reasoning       String?
+  signature       String?
+  parts           Json?
+  toolInvocations Json?
+  files           Json?
+  conversationId  String       @map("conversation_id")
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  @@map("messages")
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "chat.fyzz",
+      "sha256_cert_fingerprints": [
+        "11:27:A2:CB:83:7D:53:90:C2:16:56:41:32:24:B3:99:05:ED:8A:31:58:82:2B:0B:26:A9:B5:5C:FD:8A:BF:50",
+        "86:DC:36:5D:BB:F7:3F:AD:6B:A5:33:E8:E1:DD:5B:66:33:D2:9B:A9:2E:3B:CA:71:E3:E5:91:4E:1E:0E:72:EC"
+      ]
+    }
+  }
+]
