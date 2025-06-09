@@ -41,7 +41,7 @@ export default async function Layout({
         <CatalystBadge />
         <div className="flex size-6 text-foreground">
           <a
-            href="https://github.com/kovrichard/chat"
+            href="https://github.com/Fyzz-chat/fyzz-chat"
             target="_blank"
             rel="noopener noreferrer"
           >
