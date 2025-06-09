@@ -5,6 +5,9 @@ on:
     branches:
       - stage
 
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   test:
     permissions: write-all
