@@ -1,11 +1,11 @@
+import { useChatContext } from "@/lib/contexts/chat-context";
+import { useRegenerateMessage } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import type { Message } from "ai";
 import { Copy, RefreshCw } from "lucide-react";
 import { MessageContent } from "./message-content";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { useRegenerateMessage } from "@/lib/queries/conversations";
-import { useChatContext } from "@/lib/contexts/chat-context";
 
 export function MessageItem({
   message,
@@ -59,11 +59,15 @@ export function MessageItem({
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8 p-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 p-0"
+                onClick={handleRegenerateMessage}
+              >
                 <RefreshCw
                   size={18}
                   className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
-                  onClick={handleRegenerateMessage}
                 />
               </Button>
             </TooltipTrigger>
