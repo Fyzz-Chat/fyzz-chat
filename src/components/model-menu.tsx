@@ -53,7 +53,7 @@ export function ModelMenu() {
           <PopoverContent className="w-[300px] p-0" align="start">
             <StatusList setOpen={setOpen} providers={providers} />
             <Separator />
-            {/* <TemporaryChatSwitch /> */}
+            <TemporaryChatSwitch />
           </PopoverContent>
         </Popover>
         <TemporaryChatIcon className="-mb-4" />
@@ -83,7 +83,7 @@ export function ModelMenu() {
           <div className="mt-4 border-t">
             <StatusList setOpen={setOpen} providers={providers} />
             <Separator />
-            {/* <TemporaryChatSwitch /> */}
+            <TemporaryChatSwitch />
           </div>
         </DrawerContent>
       </Drawer>
