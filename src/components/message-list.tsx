@@ -28,6 +28,8 @@ export function MessagesList({
   const { files } = useFileStore();
   const { data: conversation } = useConversation(id, initialConversation);
   const { data: messages } = useMessages(id, initialMessages);
+  const showLoading =
+    status === "submitted" || (messages.length === 1 && status !== "streaming");
 
   useEffect(() => {
     if (!conversation) {
@@ -40,7 +42,7 @@ export function MessagesList({
 
   const memoizedConversationMessages = useMemo(() => {
     return messages?.map((message: any) => (
-      <MemoizedMessageItem key={message.id} message={message} />
+      <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
   }, [messages]);
   return (
@@ -60,10 +62,8 @@ export function MessagesList({
           <span className="h-8" />
         </div>
       )}
-      <LastMessage />
-      {(status === "submitted" || (messages.length === 1 && status !== "streaming")) && (
-        <LoadingDots className="text-muted-foreground" />
-      )}
+      <LastMessage conversationId={id} />
+      {showLoading && <LoadingDots className="text-muted-foreground" />}
       <div id="messages-end" className="h-4" />
       {files && files.length > 0 && <div className="h-[54px] w-1" />}
     </div>

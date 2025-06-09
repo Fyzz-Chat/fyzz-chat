@@ -1,11 +1,27 @@
 import { cn } from "@/lib/utils";
 import type { Message } from "ai";
-import { Copy } from "lucide-react";
+import { Copy, RefreshCw } from "lucide-react";
 import { MessageContent } from "./message-content";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { useRegenerateMessage } from "@/lib/queries/conversations";
+import { useChatContext } from "@/lib/contexts/chat-context";
 
-export function MessageItem({ message }: { message: Message }) {
+export function MessageItem({
+  message,
+  conversationId,
+}: { message: Message; conversationId: string }) {
+  const regenerateMessage = useRegenerateMessage();
+  const { emptySubmit } = useChatContext();
+
+  async function handleRegenerateMessage() {
+    await regenerateMessage.mutateAsync({
+      messageId: message.id,
+      conversationId,
+    });
+    emptySubmit();
+  }
+
   return (
     <div
       className={cn(
@@ -40,7 +56,7 @@ export function MessageItem({ message }: { message: Message }) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        {/* <TooltipProvider>
+        <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="size-8 p-0">
@@ -55,7 +71,7 @@ export function MessageItem({ message }: { message: Message }) {
               <p>Regenerate response</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider> */}
+        </TooltipProvider>
       </div>
     </div>
   );

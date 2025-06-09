@@ -33,4 +33,16 @@ export async function deleteMessageChainAfter(messageId: string, conversationId:
       },
     },
   });
+
+  if (message.role === "assistant") {
+    await prisma.message.delete({
+      where: {
+        id: messageId,
+        conversationId,
+        conversation: {
+          userId,
+        },
+      },
+    });
+  }
 }

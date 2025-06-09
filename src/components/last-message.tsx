@@ -6,7 +6,7 @@ import { MessageItem } from "./message-item";
 
 const MemoizedMessageItem = memo(MessageItem);
 
-export default function LastMessage() {
+export default function LastMessage({ conversationId }: { conversationId: string }) {
   const { messages, status } = useChatContext();
   const lastMessageIndex = messages.length - 1;
 
@@ -16,7 +16,7 @@ export default function LastMessage() {
       messages[lastMessageIndex].role === "assistant" &&
       status !== "ready"
     ) {
-      return <MemoizedMessageItem message={messages[lastMessageIndex]} />;
+      return <MemoizedMessageItem message={messages[lastMessageIndex]} conversationId={conversationId} />;
     }
     return null;
   }, [messages, lastMessageIndex, status]);

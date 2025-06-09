@@ -243,11 +243,21 @@ export function useRegenerateMessage() {
       conversationId,
     }: { messageId: string; conversationId: string }) =>
       deleteMessageChainAfter(messageId, conversationId),
-    onSuccess: (_, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: conversationKeys.list() });
+    onSuccess: (_, { conversationId, messageId }) => {
+      queryClient.setQueryData(conversationKeys.messages(conversationId), (old: any) => {
+        if (!old) return old;
 
-      queryClient.invalidateQueries({
-        queryKey: conversationKeys.details(conversationId),
+        const anchorMessage = old.find((message: Message) => message.id === messageId);
+        const anchorMessageDate = new Date(anchorMessage.createdAt as Date);
+        const isUserMessage = anchorMessage.role === "user";
+
+        // Keep messages older than the anchor message and the anchor itself if it's a user message
+        return old.filter((message: Message) => {
+          const messageDate = new Date(message.createdAt as Date);
+          const isBefore = messageDate < anchorMessageDate;
+          const isAnchorAndUserMessage = isUserMessage && message.id === messageId;
+          return isBefore || isAnchorAndUserMessage;
+        });
       });
     },
   });
