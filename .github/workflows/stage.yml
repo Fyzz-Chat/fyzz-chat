@@ -10,9 +10,7 @@ env:
 
 jobs:
   test:
-    permissions: write-all
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,6 +26,9 @@ jobs:
 
   build:
     needs: test
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
