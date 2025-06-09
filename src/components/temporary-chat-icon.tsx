@@ -14,12 +14,11 @@ export default function TemporaryChatIcon({
 }) {
   const { temporaryChat, setTemporaryChat } = useModelStore();
   const pathname = usePathname();
-
   useEffect(() => {
-    if (pathname !== "/chat" && !pathname.includes("/temp")) {
+    if (pathname === "/chat" || (pathname !== "/chat" && !pathname.includes("/temp"))) {
       setTemporaryChat(false);
     }
-  }, [pathname]);
+  }, [pathname, setTemporaryChat]);
 
   return (
     temporaryChat && (
