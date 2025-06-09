@@ -23,7 +23,7 @@ interface ChatContextType {
   stableId: string;
   setStableId: (stableId: string) => void;
   messages: Message[];
-  setInput: (input: string) => void;
+  setChatInput: (input: string) => string;
   status: ChatStatus;
   error?: Error;
   stop: () => void;
@@ -43,6 +43,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const sentRef = useRef(false);
   const { files, setFiles } = useFileStore();
   const [browse, setBrowse] = useState(false);
+  const nextMessageId = useRef<string>(uuidv4());
 
   useEffect(() => {
     if (params.id) {
@@ -66,7 +67,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       };
     },
     sendExtraMessageFields: true,
-    generateId: () => uuidv4(),
+    generateId: () => nextMessageId.current,
     onFinish: async (message: Message) => {
       await addMessage.mutateAsync({
         message,
@@ -76,7 +77,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         id: string;
         model: string;
         title: string;
-        messages: Message[];
       }>(conversationKeys.details(stableId));
 
       if (conversation?.title === "New Chat") {
@@ -101,6 +101,12 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [status, input, handleSubmit, stableId]);
 
+  function setChatInput(input: string) {
+    nextMessageId.current = uuidv4();
+    setInput(input);
+    return nextMessageId.current;
+  }
+
   function emptySubmit() {
     handleSubmit(new Event("submit"), {
       allowEmptySubmit: true,
@@ -114,7 +120,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         stableId,
         setStableId,
         messages,
-        setInput,
+        setChatInput,
         status,
         error,
         stop,

@@ -62,7 +62,7 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
     const addMessage = useAddMessage();
     const { input, setInput } = useInputStore();
     const { model, temporaryChat } = useModelStore();
-    const { stableId, status, stop, error, setInput: setChatInput } = useChatContext();
+    const { stableId, status, stop, error, setChatInput } = useChatContext();
     const { files, setFiles } = useFileStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -103,10 +103,10 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
         router.push(url);
       }
 
-      setChatInput(input);
+      const messageId = setChatInput(input);
       await addMessage.mutateAsync({
         message: {
-          id: uuidv4(),
+          id: messageId,
           content: input,
           role: "user",
           experimental_attachments: files ? Array.from(files).map(fileToAttachment) : [],
