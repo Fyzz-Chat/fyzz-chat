@@ -38,15 +38,20 @@ export function ModelMenu() {
   const [open, setOpen] = useState(false);
   const { model, providers } = useModelStore();
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const providerIcon = getProviderIcon(providers, model.id);
+  const providerIcon = getProviderIcon(providers, model?.id);
 
   if (isDesktop) {
     return (
       <>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild className="hidden md:block">
-            <Button variant="secondary" size="sm" className="md:flex items-center gap-2">
-              <span>{model.name}</span>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="md:flex items-center gap-2"
+              disabled={!model}
+            >
+              <span>{model?.name || "Set an API key first"}</span>
               <ChevronDown size={16} />
             </Button>
           </PopoverTrigger>
@@ -115,7 +120,7 @@ function StatusList({
   const modelCount = providers.flatMap((provider) => provider.models).length;
 
   return (
-    <Command className="rounded-none md:rounded-md" defaultValue={model.name}>
+    <Command className="rounded-none md:rounded-md" defaultValue={model?.name || ""}>
       <CommandInput placeholder={`Filter ${modelCount} models...`} />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>

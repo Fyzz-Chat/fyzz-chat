@@ -28,7 +28,9 @@ export const providerIcons = {
   perplexity: LazyPerplexity,
 };
 
-export function getProviderIcon(providers: PublicProvider[], modelId: string) {
+export function getProviderIcon(providers: PublicProvider[], modelId: string | null) {
+  if (!modelId) return "openai";
+
   const provider = providers.find((p) => p.models.some((m) => m.id === modelId));
   return provider?.icon;
 }

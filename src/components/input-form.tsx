@@ -66,8 +66,8 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
     const { files, setFiles } = useFileStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
-    const imageSupport = model.features?.some((feature) => feature.name === "Images");
-    const pdfSupport = model.features?.some((feature) => feature.name === "PDFs");
+    const imageSupport = model?.features?.some((feature) => feature.name === "Images");
+    const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs");
 
     async function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
       if (e.key === "Enter" && !e.shiftKey && !isMobile) {
