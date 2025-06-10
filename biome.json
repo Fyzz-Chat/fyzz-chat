@@ -5,7 +5,7 @@
     "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineEnding": "crlf",
+    "lineEnding": "lf",
     "lineWidth": 90,
     "attributePosition": "auto"
   },
@@ -79,9 +79,7 @@
         "useValidTypeof": "error"
       }
     },
-    "ignore": [
-      "src/lib/prisma/client/**"
-    ]
+    "ignore": ["src/lib/prisma/client/**"]
   },
   "javascript": {
     "formatter": {
