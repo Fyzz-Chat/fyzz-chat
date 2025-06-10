@@ -114,6 +114,7 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
         conversationId: stableId,
       });
       setInput("");
+      localStorage.removeItem("fyzz-input-content");
     }
 
     function handlePaste(e: ClipboardEvent<HTMLTextAreaElement>) {
@@ -211,6 +212,14 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
         cameraInputRef.current.value = "";
       }
     }, [files]);
+
+    useEffect(() => {
+      const storedInput = localStorage.getItem("fyzz-input-content");
+      if (storedInput) {
+        setInput(storedInput);
+      }
+    }, []);
+
     return (
       <div
         className={cn(

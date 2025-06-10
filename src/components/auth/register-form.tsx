@@ -6,17 +6,24 @@ import useToast from "@/hooks/use-toast";
 import { registerUser } from "@/lib/actions/users";
 import publicConf from "@/lib/public-config";
 import { type FormState, initialState } from "@/lib/utils";
+import { useInputStore } from "@/stores/input-store";
 import { ExternalLink } from "lucide-react";
 import { useActionState } from "react";
 import PendingSubmitButton from "./pending-submit-button";
 
 export default function RegisterForm() {
   const [state, formAction, isPending] = useActionState(registerUser, initialState);
+  const { input } = useInputStore();
 
   const toastCallback = (state: FormState) => {
     if (state.message === "Registered successfully") {
-      window.location.href = publicConf.redirectPath;
       localStorage.setItem("fyzz-auth-method", "password");
+
+      if (input) {
+        localStorage.setItem("fyzz-input-content", input);
+      }
+
+      window.location.href = publicConf.redirectPath;
     }
   };
 

@@ -6,16 +6,23 @@ import useToast from "@/hooks/use-toast";
 import { signInUser } from "@/lib/actions/users";
 import publicConf from "@/lib/public-config";
 import { type FormState, initialState } from "@/lib/utils";
+import { useInputStore } from "@/stores/input-store";
 import { useActionState } from "react";
 import PendingSubmitButton from "./pending-submit-button";
 
 export default function LoginForm() {
   const [state, formAction, isPending] = useActionState(signInUser, initialState);
+  const { input } = useInputStore();
 
   const toastCallback = (state: FormState) => {
     if (state.message === "Signed in successfully") {
-      window.location.href = publicConf.redirectPath;
       localStorage.setItem("fyzz-auth-method", "password");
+
+      if (input) {
+        localStorage.setItem("fyzz-input-content", input);
+      }
+
+      window.location.href = publicConf.redirectPath;
     }
   };
 
