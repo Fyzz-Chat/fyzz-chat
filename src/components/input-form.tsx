@@ -22,6 +22,7 @@ import {
 } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
+import useTempChat from "@/hooks/use-temp-chat";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
@@ -54,6 +55,7 @@ function fileToAttachment(file: File): Attachment {
 
 const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
   ({ className }, ref) => {
+    useTempChat();
     const router = useRouter();
     const pathname = usePathname();
     const isMobile = useMediaQuery("(max-width: 640px)");

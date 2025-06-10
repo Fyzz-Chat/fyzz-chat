@@ -12,7 +12,6 @@ import { ChevronDown, MessageCircleDashed } from "lucide-react";
 import { useState } from "react";
 import React from "react";
 import { HoverPopover } from "./hover-popover";
-import TemporaryChatIcon from "./temporary-chat-icon";
 import { TemporaryChatSwitch } from "./temporary-chat-switch";
 import { Button } from "./ui/button";
 import {
