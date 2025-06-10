@@ -20,7 +20,7 @@ import {
 import { getConversations } from "@/lib/dao/conversations";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import Image from "next/image";
-import Link from "next/link";
+import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
 export async function AppSidebar() {
@@ -32,10 +32,10 @@ export async function AppSidebar() {
       <Sidebar className="border-none">
         <SidebarHeader className="flex-col gap-4 py-4 pl-4 pr-4 md:pr-2">
           <div className="flex justify-between items-center w-full">
-            <Link href="/chat" className="flex items-center justify-start gap-2">
+            <FastLink href="/chat" className="flex items-center justify-start gap-2">
               <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
               <p className="text-md font-bold">Fyzz.chat</p>
-            </Link>
+            </FastLink>
             <NewChatButton />
           </div>
           <div className="flex items-center">
