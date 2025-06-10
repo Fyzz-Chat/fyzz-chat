@@ -322,7 +322,7 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
                         type="button"
                         size="icon"
                         variant="ghost"
-                        className="shrink-0 size-9"
+                        className="shrink-0 size-9 p-5"
                         disabled={!imageSupport && !pdfSupport}
                       >
                         <Paperclip size={16} />
