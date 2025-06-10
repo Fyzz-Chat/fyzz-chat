@@ -61,7 +61,6 @@ export function ModelMenu() {
             <TemporaryChatSwitch />
           </PopoverContent>
         </Popover>
-        <TemporaryChatIcon className="-mb-4" />
       </>
     );
   }
@@ -92,7 +91,6 @@ export function ModelMenu() {
           </div>
         </DrawerContent>
       </Drawer>
-      <TemporaryChatIcon className="size-7" />
     </>
   );
 }
