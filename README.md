@@ -6,7 +6,7 @@
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=AUTH_SECRET,DATABASE_URL&envDescription=Set%20an%20auth%20secret%20to%20be%20used%20with%20Auth.js%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20an%20auth%20secret%20to%20be%20used%20with%20Auth.js%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat)
 
 ### Coolify
 
@@ -14,14 +14,16 @@ Coming soon!
 
 ## Docs for Self-hosters
 
+### Environment Variables
+
 The following environment variables are required:
 
 - `AUTH_SECRET`: A random string of at least 32 characters.
 - `DATABASE_URL`: The URL of your database.
+- `OPENAI_API_KEY`: The API key for OpenAI.
 
 The following environment variables are optional and control which models are available for use:
 
-- `OPENAI_API_KEY`: The API key for OpenAI.
 - `ANTHROPIC_API_KEY`: The API key for Anthropic.
 - `XAI_API_KEY`: The API key for XAI.
 - `GOOGLE_GENERATIVE_AI_API_KEY`: The API key for Google Generative AI.
@@ -43,6 +45,19 @@ The last two are required to create signed URLs for uploaded files.
 
 [!NOTE]
 If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will persisted in the database.
+
+### Database migration
+
+Before you can start using the application, you need to run the following command to create the database schema:
+
+```bash
+bun run db-push
+
+# or
+
+bunx prisma db push
+```
+
 
 ## Docs for Builders
 
