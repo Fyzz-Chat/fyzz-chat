@@ -16,7 +16,12 @@ export default function LastMessage({ conversationId }: { conversationId: string
       messages[lastMessageIndex].role === "assistant" &&
       status !== "ready"
     ) {
-      return <MemoizedMessageItem message={messages[lastMessageIndex]} conversationId={conversationId} />;
+      return (
+        <MemoizedMessageItem
+          message={messages[lastMessageIndex]}
+          conversationId={conversationId}
+        />
+      );
     }
     return null;
   }, [messages, lastMessageIndex, status]);
