@@ -13,7 +13,7 @@ export function MessageItem({
   conversationId,
 }: { message: Message; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
-  const { emptySubmit, reload } = useChatContext();
+  const { emptySubmit, reload, deleteMessagesAfter } = useChatContext();
   const { temporaryChat } = useModelStore();
 
   async function handleRegenerateMessage() {
@@ -24,6 +24,7 @@ export function MessageItem({
     });
 
     if (temporaryChat) {
+      deleteMessagesAfter(message.id);
       reload();
     } else {
       emptySubmit();

@@ -1,3 +1,4 @@
+import type { Message } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -40,4 +41,21 @@ export function ensure(condition: any, message: string): asserts condition {
   if (!condition) {
     throw new Error(message);
   }
+}
+
+export function filterMessagesUpToAnchor(old: Message[], messageId: string): Message[] {
+  const anchorMessage = old.find((m: Message) => m.id === messageId);
+  if (!anchorMessage) {
+    return old;
+  }
+  const anchorMessageDate = new Date(anchorMessage.createdAt as Date);
+  const isUserMessage = anchorMessage.role === "user";
+
+  // Keep messages older than the anchor message and the anchor itself if it's a user message
+  return old.filter((m: Message) => {
+    const messageDate = new Date(m.createdAt as Date);
+    const isBefore = messageDate < anchorMessageDate;
+    const isAnchorAndUserMessage = isUserMessage && m.id === messageId;
+    return isBefore || isAnchorAndUserMessage;
+  });
 }

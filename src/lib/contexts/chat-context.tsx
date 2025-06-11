@@ -1,5 +1,6 @@
 "use client";
 
+import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import { useChat } from "@ai-sdk/react";
@@ -24,6 +25,7 @@ interface ChatContextType {
   setStableId: (stableId: string) => void;
   messages: Message[];
   setChatInput: (input: string) => string;
+  deleteMessagesAfter: (messageId: string) => void;
   status: ChatStatus;
   error?: Error;
   stop: () => void;
@@ -54,40 +56,49 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [params.id]);
 
-  const { messages, status, input, setInput, handleSubmit, error, stop, reload } =
-    useChat({
-      api: temporaryChat ? "/api/chat/temp" : "/api/chat",
-      id: stableId,
-      experimental_prepareRequestBody: ({ messages, id }) => {
-        return {
-          message: messages[messages.length - 1],
-          messages: temporaryChat ? messages : null,
-          id,
-          model: model.id,
-          temporaryChat,
-          browse,
-        };
-      },
-      sendExtraMessageFields: true,
-      generateId: () => nextMessageId.current,
-      onFinish: async (message: Message) => {
-        await addMessage.mutateAsync({
-          message,
-          conversationId: stableId,
-        });
-        const conversation = queryClient.getQueryData<{
-          id: string;
-          model: string;
-          title: string;
-        }>(conversationKeys.details(stableId));
+  const {
+    messages,
+    status,
+    input,
+    setInput,
+    handleSubmit,
+    error,
+    stop,
+    reload,
+    setMessages,
+  } = useChat({
+    api: temporaryChat ? "/api/chat/temp" : "/api/chat",
+    id: stableId,
+    experimental_prepareRequestBody: ({ messages, id }) => {
+      return {
+        message: messages[messages.length - 1],
+        messages: temporaryChat ? messages : null,
+        id,
+        model: model.id,
+        temporaryChat,
+        browse,
+      };
+    },
+    sendExtraMessageFields: true,
+    generateId: () => nextMessageId.current,
+    onFinish: async (message: Message) => {
+      await addMessage.mutateAsync({
+        message,
+        conversationId: stableId,
+      });
+      const conversation = queryClient.getQueryData<{
+        id: string;
+        model: string;
+        title: string;
+      }>(conversationKeys.details(stableId));
 
-        if (conversation?.title === "New Chat") {
-          queryClient.invalidateQueries({
-            queryKey: conversationKeys.list(),
-          });
-        }
-      },
-    });
+      if (conversation?.title === "New Chat") {
+        queryClient.invalidateQueries({
+          queryKey: conversationKeys.list(),
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     if (status === "ready" && input && stableId && !sentRef.current) {
@@ -116,6 +127,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setFiles(undefined);
   }
 
+  function deleteMessagesAfter(messageId: string) {
+    setMessages((old: Message[]) => filterMessagesUpToAnchor(old, messageId));
+  }
+
   return (
     <ChatContext.Provider
       value={{
@@ -123,6 +138,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setStableId,
         messages,
         setChatInput,
+        deleteMessagesAfter,
         status,
         error,
         stop,

@@ -3,6 +3,7 @@ import {
   saveConversation,
   saveConversationModel,
 } from "@/lib/actions/conversations";
+import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
 import {
@@ -252,17 +253,7 @@ export function useRegenerateMessage() {
       queryClient.setQueryData(conversationKeys.messages(conversationId), (old: any) => {
         if (!old) return old;
 
-        const anchorMessage = old.find((message: Message) => message.id === messageId);
-        const anchorMessageDate = new Date(anchorMessage.createdAt as Date);
-        const isUserMessage = anchorMessage.role === "user";
-
-        // Keep messages older than the anchor message and the anchor itself if it's a user message
-        return old.filter((message: Message) => {
-          const messageDate = new Date(message.createdAt as Date);
-          const isBefore = messageDate < anchorMessageDate;
-          const isAnchorAndUserMessage = isUserMessage && message.id === messageId;
-          return isBefore || isAnchorAndUserMessage;
-        });
+        return filterMessagesUpToAnchor(old, messageId);
       });
     },
   });
