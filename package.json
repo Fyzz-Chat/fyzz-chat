@@ -52,6 +52,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "javascript-time-ago": "2.5.11",
+    "jsonwebtoken": "9.0.2",
     "lucide-react": "0.501.0",
     "marked": "15.0.8",
     "next": "15.3.3",
@@ -79,6 +80,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@next/bundle-analyzer": "15.3.1",
+    "@types/jsonwebtoken": "9.0.9",
     "@types/node": "22",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
