@@ -107,7 +107,10 @@ export async function deleteConversation(conversationId: string) {
   await prisma.conversation.delete({ where: { id: conversationId, userId } });
 }
 
-export async function shareConversationUntilLatestMessage(conversationId: string) {
+export async function shareConversationUntilLatestMessage(
+  conversationId: string,
+  duration: string
+) {
   const user = await getUserIdFromSession();
 
   const message = await prisma.message.findFirst({
@@ -126,7 +129,25 @@ export async function shareConversationUntilLatestMessage(conversationId: string
     throw new Error("No message found");
   }
 
-  const token = jwt.sign({ messageId: message.id }, conf.jwtSecret);
+  let expiresIn = addDurationToDate(new Date(), duration);
+
+  const token = jwt.sign({ messageId: message.id, expiresIn }, conf.jwtSecret);
 
   return token;
+}
+
+function addDurationToDate(date: Date, duration: string): Date | null {
+  if (duration === "1D") {
+    date.setDate(date.getDate() + 1);
+  } else if (duration === "1W") {
+    date.setDate(date.getDate() + 7);
+  } else if (duration === "1M") {
+    date.setMonth(date.getMonth() + 1);
+  } else if (duration === "INFINITY") {
+    return null;
+  } else {
+    return null;
+  }
+
+  return date;
 }

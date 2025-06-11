@@ -1,49 +1,82 @@
 "use client";
 
-import { Share } from "lucide-react";
+import { CalendarIcon, InfinityIcon, Share } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { shareConversationUntilLatestMessage } from "@/lib/actions/conversations";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+
+const buttons = [
+  {
+    label: "1D",
+  },
+  {
+    label: "1W",
+  },
+  {
+    label: "1M",
+  },
+];
 
 export default function ShareConversationButton({
   conversationId,
   className,
 }: { conversationId: string; className?: string }) {
-  async function handleShareConversationUntilLatestMessage() {
-    const token = await shareConversationUntilLatestMessage(conversationId);
+  const [open, setOpen] = useState(false);
+
+  async function handleShareConversationUntilLatestMessage(duration: string) {
+    const token = await shareConversationUntilLatestMessage(conversationId, duration);
     const url = `${window.location.origin}/share/${token}`;
     await navigator.clipboard.writeText(url);
 
     toast.success("Copied to clipboard", {
       description: "Share this link with others.",
     });
+
+    setOpen(false);
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className={cn("size-8 p-5", className)}>
+          <Share size={20} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="p-2" align="end">
+        <DropdownMenuLabel className="text-center">
+          Share conversation for
+        </DropdownMenuLabel>
+        <div className="flex items-center gap-1">
+          {buttons.map((button) => (
+            <Button
+              key={button.label}
+              variant="ghost"
+              size="sm"
+              className="h-8 px-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+              onClick={() => handleShareConversationUntilLatestMessage(button.label)}
+            >
+              {button.label}
+            </Button>
+          ))}
           <Button
             variant="ghost"
-            size="icon"
-            className={cn("size-8 p-5", className)}
-            onClick={handleShareConversationUntilLatestMessage}
+            size="sm"
+            className="h-8 px-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+            onClick={() => handleShareConversationUntilLatestMessage("INFINITY")}
           >
-            <Share size={20} />
+            <InfinityIcon size={16} />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Share conversation</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
