@@ -25,6 +25,8 @@ export default async function ChatPage({
   const formattedMessages = processMessages(messages.messages);
   return (
     <>
+      {/* Hidden element to catch initial focus and prevent share button autofocus */}
+      <div tabIndex={-1} className="sr-only" aria-hidden="true" />
       {jwtConfigured && (
         <ShareConversationButton
           conversationId={id}
