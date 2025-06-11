@@ -241,8 +241,13 @@ export function useRegenerateMessage() {
     mutationFn: ({
       messageId,
       conversationId,
-    }: { messageId: string; conversationId: string }) =>
-      deleteMessageChainAfter(messageId, conversationId),
+      temporaryChat = false,
+    }: { messageId: string; conversationId: string; temporaryChat?: boolean }) => {
+      if (temporaryChat) {
+        return Promise.resolve();
+      }
+      return deleteMessageChainAfter(messageId, conversationId);
+    },
     onSuccess: (_, { conversationId, messageId }) => {
       queryClient.setQueryData(conversationKeys.messages(conversationId), (old: any) => {
         if (!old) return old;

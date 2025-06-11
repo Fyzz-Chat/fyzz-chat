@@ -27,6 +27,7 @@ interface ChatContextType {
   status: ChatStatus;
   error?: Error;
   stop: () => void;
+  reload: () => void;
   emptySubmit: () => void;
   browse: boolean;
   setBrowse: (browse: boolean) => void;
@@ -53,39 +54,40 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [params.id]);
 
-  const { messages, status, input, setInput, handleSubmit, error, stop } = useChat({
-    api: temporaryChat ? "/api/chat/temp" : "/api/chat",
-    id: stableId,
-    experimental_prepareRequestBody: ({ messages, id }) => {
-      return {
-        message: messages[messages.length - 1],
-        messages: temporaryChat ? messages : null,
-        id,
-        model: model.id,
-        temporaryChat,
-        browse,
-      };
-    },
-    sendExtraMessageFields: true,
-    generateId: () => nextMessageId.current,
-    onFinish: async (message: Message) => {
-      await addMessage.mutateAsync({
-        message,
-        conversationId: stableId,
-      });
-      const conversation = queryClient.getQueryData<{
-        id: string;
-        model: string;
-        title: string;
-      }>(conversationKeys.details(stableId));
-
-      if (conversation?.title === "New Chat") {
-        queryClient.invalidateQueries({
-          queryKey: conversationKeys.list(),
+  const { messages, status, input, setInput, handleSubmit, error, stop, reload } =
+    useChat({
+      api: temporaryChat ? "/api/chat/temp" : "/api/chat",
+      id: stableId,
+      experimental_prepareRequestBody: ({ messages, id }) => {
+        return {
+          message: messages[messages.length - 1],
+          messages: temporaryChat ? messages : null,
+          id,
+          model: model.id,
+          temporaryChat,
+          browse,
+        };
+      },
+      sendExtraMessageFields: true,
+      generateId: () => nextMessageId.current,
+      onFinish: async (message: Message) => {
+        await addMessage.mutateAsync({
+          message,
+          conversationId: stableId,
         });
-      }
-    },
-  });
+        const conversation = queryClient.getQueryData<{
+          id: string;
+          model: string;
+          title: string;
+        }>(conversationKeys.details(stableId));
+
+        if (conversation?.title === "New Chat") {
+          queryClient.invalidateQueries({
+            queryKey: conversationKeys.list(),
+          });
+        }
+      },
+    });
 
   useEffect(() => {
     if (status === "ready" && input && stableId && !sentRef.current) {
@@ -124,6 +126,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         status,
         error,
         stop,
+        reload,
         emptySubmit,
         browse,
         setBrowse,

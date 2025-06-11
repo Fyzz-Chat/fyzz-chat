@@ -1,6 +1,7 @@
 import { useChatContext } from "@/lib/contexts/chat-context";
 import { useRegenerateMessage } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
+import { useModelStore } from "@/stores/model-store";
 import type { Message } from "ai";
 import { Copy, RefreshCw } from "lucide-react";
 import { MessageContent } from "./message-content";
@@ -12,14 +13,21 @@ export function MessageItem({
   conversationId,
 }: { message: Message; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
-  const { emptySubmit } = useChatContext();
+  const { emptySubmit, reload } = useChatContext();
+  const { temporaryChat } = useModelStore();
 
   async function handleRegenerateMessage() {
     await regenerateMessage.mutateAsync({
       messageId: message.id,
       conversationId,
+      temporaryChat,
     });
-    emptySubmit();
+
+    if (temporaryChat) {
+      reload();
+    } else {
+      emptySubmit();
+    }
   }
 
   return (
