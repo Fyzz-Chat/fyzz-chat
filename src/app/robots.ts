@@ -6,6 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: "/share/",
     },
     sitemap: `${conf.host}/sitemap.xml`,
   };
