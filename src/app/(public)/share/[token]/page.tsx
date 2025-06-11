@@ -1,4 +1,5 @@
 import { MessageContent } from "@/components/message-content";
+import { ScrollToBottom } from "@/components/share/scroll-to-bottom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
@@ -39,6 +40,7 @@ export default async function SharePage({
           ))}
         </div>
       </ScrollArea>
+      <ScrollToBottom />
       <div className="relative h-6 -mt-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
     </>
   );
