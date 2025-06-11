@@ -1,3 +1,4 @@
+import ShareConversationButton from "@/components/chat/share-conversation-button";
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import { getConversation } from "@/lib/dao/conversations";
@@ -20,13 +21,19 @@ export default async function ChatPage({
 
   const formattedMessages = processMessages(messages.messages);
   return (
-    <MessagesScrollArea className="relative h-[calc(100svh-114px)] md:h-[calc(100svh-142px)]">
-      <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-background to-transparent pointer-events-none z-10 rounded-t-xl" />
-      <MessagesList
-        id={id}
-        initialConversation={conversation}
-        initialMessages={formattedMessages}
+    <>
+      <ShareConversationButton
+        conversationId={id}
+        className="absolute top-4 right-4 md:top-2 md:right-2 z-10"
       />
-    </MessagesScrollArea>
+      <MessagesScrollArea className="relative h-[calc(100svh-114px)] md:h-[calc(100svh-142px)]">
+        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-background to-transparent pointer-events-none z-10 rounded-t-xl" />
+        <MessagesList
+          id={id}
+          initialConversation={conversation}
+          initialMessages={formattedMessages}
+        />
+      </MessagesScrollArea>
+    </>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 // xonokai, tomorrow, twilight, prism
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";

@@ -10,6 +10,9 @@ import type { PartialConversation } from "@/types/chat";
 import { openai } from "@ai-sdk/openai";
 import type { JsonValue } from "@prisma/client/runtime/library";
 import { type Message, generateText } from "ai";
+import jwt from "jsonwebtoken";
+
+import conf from "@/lib/config";
 
 export async function saveConversation(conversation: PartialConversation) {
   const userId = await getUserIdFromSession();
@@ -102,4 +105,28 @@ export async function deleteConversation(conversationId: string) {
   }
 
   await prisma.conversation.delete({ where: { id: conversationId, userId } });
+}
+
+export async function shareConversationUntilLatestMessage(conversationId: string) {
+  const user = await getUserIdFromSession();
+
+  const message = await prisma.message.findFirst({
+    where: {
+      conversation: {
+        id: conversationId,
+        userId: user,
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!message) {
+    throw new Error("No message found");
+  }
+
+  const token = jwt.sign({ messageId: message.id }, conf.jwtSecret);
+
+  return token;
 }

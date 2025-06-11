@@ -22,6 +22,9 @@ const schema = z.object({
   awsUploadsBucket: z.string().default(""),
   awsCloudfrontKeyPairId: z.string().default(""),
   awsCloudfrontPrivateKey: z.string().default(""),
+
+  // JWT
+  jwtSecret: z.string().default(""),
 });
 
 const envVars = {
@@ -44,6 +47,9 @@ const envVars = {
   awsUploadsBucket: process.env.AWS_UPLOADS_BUCKET,
   awsCloudfrontKeyPairId: process.env.AWS_CLOUDFRONT_KEY_PAIR_ID,
   awsCloudfrontPrivateKey: process.env.AWS_CLOUDFRONT_PRIVATE_KEY,
+
+  // JWT
+  jwtSecret: process.env.JWT_SECRET,
 };
 
 const conf = schema.parse(envVars);

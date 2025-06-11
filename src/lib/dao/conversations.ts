@@ -219,3 +219,53 @@ export async function mapMessages(messages: Message[]) {
 
   return mappedMessages;
 }
+
+export async function public_getConversationUntilMessage(messageId: string) {
+  const message = await prisma.message.findUnique({
+    where: {
+      id: messageId,
+    },
+    select: {
+      conversationId: true,
+      createdAt: true,
+    },
+  });
+
+  if (!message) {
+    return null;
+  }
+
+  const conversation = await prisma.conversation.findUnique({
+    where: {
+      id: message?.conversationId,
+    },
+    select: {
+      title: true,
+      messages: {
+        where: {
+          createdAt: {
+            lte: message.createdAt,
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          role: true,
+          parts: true,
+        },
+      },
+    },
+  });
+
+  return {
+    ...conversation,
+    messages: conversation?.messages.map((message: any) => ({
+      ...message,
+      parts: JSON.parse(message.parts as string),
+    })),
+  };
+}
