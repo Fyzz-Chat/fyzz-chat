@@ -26,6 +26,7 @@ model User {
   freeMessages  Int            @default(10) @map("free_messages")
   memory        String?
   memoryEnabled Boolean        @default(false) @map("memory_enabled")
+  mcpServers    Json?          @map("mcp_servers")
   notifications Notification[]
   conversations Conversation[]
   createdAt     DateTime       @default(now()) @map("created_at")
