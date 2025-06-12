@@ -10,30 +10,38 @@ export async function getMcpClients() {
   const response = await getMcpServers();
 
   if (!response) {
-    return undefined;
+    return [];
   }
 
   const servers = JSON.parse(response as string).mcpServers;
+  const clientPromises: Promise<any>[] = [];
 
-  const firstServer = Object.keys(servers)[0];
-  const firstServerUrl = servers[firstServer].url;
+  for (const serverKey of Object.keys(servers)) {
+    const server = servers[serverKey];
+    const serverUrl = server.url;
 
-  if (!firstServerUrl || !firstServerUrl.startsWith("https")) {
-    return undefined;
+    if (!serverUrl || !serverUrl.startsWith("https")) {
+      continue;
+    }
+
+    const clientPromise = serverUrl.includes("/sse")
+      ? createSseMcpClient(serverUrl)
+      : createHttpMcpClient(serverUrl, userId.toString());
+
+    clientPromises.push(clientPromise);
   }
 
-  if (firstServerUrl.includes("/sse")) {
-    const client = await createSseMcpClient(firstServerUrl);
-    logTime(beforeFetch);
-    return client;
-  }
-
-  const client = await createHttpMcpClient(firstServerUrl, userId.toString());
+  const clients = await Promise.all(clientPromises);
   logTime(beforeFetch);
-  return client;
+
+  return clients;
 }
 
 function logTime(start: number) {
   const after = performance.now();
   logger.debug(`MCP client fetched in: ${(after - start).toFixed(2)}ms`);
+}
+
+export async function closeMcpClients(clients: any[]) {
+  await Promise.all(clients.map((client) => client.close()));
 }

@@ -13,7 +13,7 @@ import {
 } from "@/lib/dao/conversations";
 import { getMessages, saveMessage, uploadAttachments } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
-import { getMcpClients } from "@/lib/services/mcp-clients";
+import { closeMcpClients, getMcpClients } from "@/lib/services/mcp-clients";
 import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import {
   type Message,
@@ -103,9 +103,15 @@ export async function POST(req: NextRequest) {
   const mcpClients = await getMcpClients();
 
   if (mcpClients && supportsTools) {
+    const toolsPromises = mcpClients?.map(async (client) => {
+      const clientTools = await client.tools();
+      return { ...clientTools };
+    });
+    const toolsArray = await Promise.all(toolsPromises);
+
     tools = {
       ...tools,
-      ...(await mcpClients.tools()),
+      ...Object.assign({}, ...toolsArray),
     };
   }
 
@@ -153,11 +159,13 @@ export async function POST(req: NextRequest) {
         await saveMessage(lastMessage, id);
       } finally {
         await unlockConversation(id);
+        await closeMcpClients(mcpClients);
       }
     },
     onError: async (error) => {
       console.error(error);
       await unlockConversation(id);
+      await closeMcpClients(mcpClients);
     },
   });
 
