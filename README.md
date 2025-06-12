@@ -30,9 +30,9 @@ The following environment variables are optional and control which models are av
 - `PERPLEXITY_API_KEY`: The API key for Perplexity.
 - `FIREWORKS_API_KEY`: The API key for Fireworks.
 
-If you don't set any of these, the application will still start up, but the model selection will be empty.
+If you don't set any of these, the application will still start up, but you will only be able to use models from OpenAI.
 
-The following environment variables are also optional, and control whether uploaded files will be persisted in a CDN or in the database:
+The following environment variables are also optional and control whether uploaded files will be persisted in a CDN or in the database:
 
 - `AWS_ACCESS_KEY_ID`: Your AWS access key ID.
 - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key.
@@ -44,7 +44,7 @@ The following environment variables are also optional, and control whether uploa
 The last two are required to create signed URLs for uploaded files.
 
 [!NOTE]
-If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will persisted in the database.
+If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will be persisted in the database.
 
 ### Database migration
 
