@@ -139,3 +139,8 @@ td {
 table tr:nth-child(2n) {
   background: hsl(var(--muted));
 }
+
+::view-transition-old(.fade),
+::view-transition-new(.fade) {
+  animation-duration: 100ms;
+}
