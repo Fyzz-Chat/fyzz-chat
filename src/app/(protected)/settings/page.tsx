@@ -1,5 +1,6 @@
 import DeleteAccountForm from "@/components/settings/delete-account-form";
 import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
+import { McpTab } from "@/components/settings/mcp-tab";
 import MemoryForm from "@/components/settings/memory-form";
 import PasswordForm from "@/components/settings/password-form";
 import {
@@ -25,6 +26,7 @@ export default async function SettingsPage() {
       password: true,
       memory: true,
       memoryEnabled: true,
+      mcpServers: true,
     },
   });
   const hasPassword = Boolean(user?.password);
@@ -40,10 +42,9 @@ export default async function SettingsPage() {
             </p>
           </div>
           <Tabs defaultValue="memory" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="memory" className="space-x-2">
-                <span>Memory</span>
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="memory">Memory</TabsTrigger>
+              <TabsTrigger value="mcp">MCP</TabsTrigger>
               <TabsTrigger value="security">Security</TabsTrigger>
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="display">Display</TabsTrigger>
@@ -65,6 +66,9 @@ export default async function SettingsPage() {
                   </CardContent>
                 </ScrollArea>
               </Card>
+            </TabsContent>
+            <TabsContent value="mcp">
+              <McpTab userMcpServers={user?.mcpServers} />
             </TabsContent>
             <TabsContent value="security">
               <Card>

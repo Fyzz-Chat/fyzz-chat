@@ -181,3 +181,27 @@ export async function updateUserMemory(_prevState: any, formData: FormData) {
     description: "Your memory has been updated.",
   };
 }
+
+export async function saveMcpServers(mcpServers: string) {
+  const userId = await getUserIdFromSession();
+
+  try {
+    const parsed = JSON.parse(mcpServers);
+    if (!parsed.mcpServers) {
+      return "missing_key";
+    }
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return "invalid_json";
+    }
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      mcpServers,
+    },
+  });
+
+  return "success";
+}
