@@ -13,6 +13,7 @@ import {
 } from "@/lib/dao/conversations";
 import { getMessages, saveMessage, uploadAttachments } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
+import { getMcpClients } from "@/lib/services/mcp-clients";
 import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import {
   type Message,
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
 
   const filteredMessages = filterMessages(messages, modelId);
 
-  const tools: any = {};
+  let tools: any = {};
 
   let memoryPrompt = "";
 
@@ -99,11 +100,20 @@ export async function POST(req: NextRequest) {
     modelId === "claude-3-7-sonnet-20250219";
   const openaiThinking = modelId === "o3-mini" || modelId === "o4-mini";
 
+  const mcpClients = await getMcpClients();
+
+  if (mcpClients && supportsTools) {
+    tools = {
+      ...tools,
+      ...(await mcpClients.tools()),
+    };
+  }
+
   const result = streamText({
     model,
     messages: filteredMessages,
     system: extendedSystemPrompt,
-    maxSteps: 2,
+    maxSteps: 3,
     temperature: modelId === "o4-mini" ? 1 : undefined,
     experimental_transform: smoothStream({
       delayInMs: 10,

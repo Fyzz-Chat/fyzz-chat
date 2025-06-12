@@ -182,6 +182,19 @@ export async function updateUserMemory(_prevState: any, formData: FormData) {
   };
 }
 
+export async function getMcpServers() {
+  const userId = await getUserIdFromSession();
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      mcpServers: true,
+    },
+  });
+
+  return user?.mcpServers;
+}
+
 export async function saveMcpServers(mcpServers: string) {
   const userId = await getUserIdFromSession();
 
@@ -190,6 +203,9 @@ export async function saveMcpServers(mcpServers: string) {
     if (!parsed.mcpServers) {
       return "missing_key";
     }
+
+    // Prettify the JSON before saving
+    mcpServers = JSON.stringify(parsed, null, 4);
   } catch (error) {
     if (error instanceof SyntaxError) {
       return "invalid_json";
