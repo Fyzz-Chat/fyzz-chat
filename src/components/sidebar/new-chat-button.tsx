@@ -6,11 +6,9 @@ import { SquarePenIcon } from "lucide-react";
 import { FastLink } from "../fast-link";
 
 export function NewChatButton() {
-  const { setOpenMobile } = useSidebar();
-
   return (
     <Button asChild variant="ghost" className="size-8 p-5 touch-manipulation" size="icon">
-      <FastLink href="/chat" prefetch onClick={() => setOpenMobile(false)}>
+      <FastLink href="/chat" prefetch>
         <SquarePenIcon className="size-5" />
       </FastLink>
     </Button>

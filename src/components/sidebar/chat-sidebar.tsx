@@ -17,7 +17,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { getProviderIcon, providerIcons } from "@/lib/providers";
 import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
@@ -25,7 +24,6 @@ import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
-import type { PublicProvider } from "@/types/provider";
 import { MessageSquare, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { createElement } from "react";
@@ -170,7 +168,6 @@ function ConversationLink({
 }) {
   const deleteConversation = useDeleteConversation();
   const router = useRouter();
-  const { setOpenMobile } = useSidebar();
   const { providers } = useModelStore();
   const providerIcon = getProviderIcon(providers, chat.model);
 
@@ -183,7 +180,6 @@ function ConversationLink({
           "flex w-full flex-col items-start gap-1 rounded-lg p-3 text-left text-sm transition-colors",
           currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
         )}
-        onClick={() => setOpenMobile(false)}
       >
         <div className="flex w-full items-center gap-2">
           {providerIcon ? (

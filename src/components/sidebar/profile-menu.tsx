@@ -1,8 +1,7 @@
 "use client";
 
-import { useSidebar } from "@/components/ui/sidebar";
+import { FastLink } from "@/components/fast-link";
 import { ExternalLink, FileText, Settings } from "lucide-react";
-import Link from "next/link";
 import {
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -18,8 +17,6 @@ export default function ProfileMenu({
   authorized: boolean;
   userEmail: string;
 }) {
-  const { isMobile, setOpenMobile } = useSidebar();
-
   return (
     <>
       <DropdownMenuLabel className="font-normal opacity-80">
@@ -31,7 +28,6 @@ export default function ProfileMenu({
           href="/privacy-policy"
           target="_blank"
           className="flex items-center gap-2 size-full px-2 py-1.5"
-          onClick={() => isMobile && setOpenMobile(false)}
         >
           <FileText className="shrink-0" />
           <span className="relative">
@@ -44,14 +40,13 @@ export default function ProfileMenu({
       {authorized && (
         <>
           <DropdownMenuItem className="p-0 h-10 cursor-pointer" asChild>
-            <Link
+            <FastLink
               href="/settings"
               className="flex items-center gap-2 size-full px-2 py-1.5"
-              onClick={() => isMobile && setOpenMobile(false)}
             >
               <Settings className="shrink-0" />
               <span>Settings</span>
-            </Link>
+            </FastLink>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
         </>
