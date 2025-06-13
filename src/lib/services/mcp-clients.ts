@@ -1,7 +1,7 @@
 import { getMcpServers } from "@/lib/actions/users";
 import { createHttpMcpClient, createSseMcpClient } from "@/lib/backend/tools/mcp-clients";
+import { logDuration } from "@/lib/backend/utils";
 import { getUserIdFromSession } from "@/lib/dao/users";
-import { logger } from "@/lib/logger";
 
 export async function getMcpClients() {
   const beforeFetch = performance.now();
@@ -32,14 +32,9 @@ export async function getMcpClients() {
   }
 
   const clients = await Promise.all(clientPromises);
-  logTime(beforeFetch);
+  logDuration(beforeFetch, "MCP client fetched");
 
   return clients;
-}
-
-function logTime(start: number) {
-  const after = performance.now();
-  logger.debug(`MCP client fetched in: ${(after - start).toFixed(2)}ms`);
 }
 
 export async function closeMcpClients(clients: any[]) {

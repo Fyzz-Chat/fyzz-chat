@@ -1,6 +1,7 @@
 import { appendMessageToConversation } from "@/lib/dao/conversations";
 import { uploadAttachments } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
 import { openai } from "@ai-sdk/openai";
 import { experimental_generateImage as generateImage } from "ai";
 import type { NextRequest } from "next/server";
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
       prompt: prompt,
     });
   } catch (error) {
-    console.error("Image generation error:", error);
+    logger.error("Image generation error:", error);
     return new Response("Failed to generate image", { status: 500 });
   }
 }

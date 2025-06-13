@@ -4,7 +4,7 @@ import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import { getModel } from "@/lib/backend/providers";
 import { memoryTool } from "@/lib/backend/tools/memory";
-import { filterMessages } from "@/lib/backend/utils";
+import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
   getConversation,
@@ -13,6 +13,7 @@ import {
 } from "@/lib/dao/conversations";
 import { getMessages, saveMessage, uploadAttachments } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients } from "@/lib/services/mcp-clients";
 import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import {
@@ -28,10 +29,9 @@ import { v4 as uuidv4 } from "uuid";
 export const maxDuration = 55;
 
 export async function POST(req: NextRequest) {
-  const start = Date.now();
+  const start = performance.now();
   const user = await getUserFromSession();
-  const userFetched = Date.now();
-  console.log(`User fetched in: ${userFetched - start}ms`);
+  logDuration(start, "User fetched");
 
   const { id, message, model: modelId, browse } = await req.json();
   const { model, supportsTools } = getModel(modelId, browse);
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
         : experimental_attachments;
       textMessage.files = attachments;
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       await unlockConversation(id);
       return new Response("file_too_large", { status: 400 });
     }
@@ -163,14 +163,13 @@ export async function POST(req: NextRequest) {
       }
     },
     onError: async (error) => {
-      console.error(error);
+      logger.error(error);
       await unlockConversation(id);
       await closeMcpClients(mcpClients);
     },
   });
 
-  const end = Date.now();
-  console.log(`Response time: ${end - start}ms`);
+  logDuration(start, "Response time");
 
   result.consumeStream();
 

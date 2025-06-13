@@ -1,4 +1,5 @@
 import { getModelPublic } from "@/lib/backend/providers";
+import { logger } from "@/lib/logger";
 import type { Attachment, Message } from "ai";
 
 export function filterMessages(messages: Message[], modelId: string) {
@@ -44,4 +45,9 @@ function filterUnsupportedAttachments(
     if (pdfSupport && attachment.contentType?.startsWith("application/pdf")) return true;
     return false;
   });
+}
+
+export function logDuration(start: number, message: string) {
+  const after = performance.now();
+  logger.debug(`${message}: ${(after - start).toFixed(2)}ms`);
 }

@@ -1,5 +1,6 @@
 import { randomBytes, scryptSync } from "crypto";
 import { getUserByEmail, saveUser } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
 import NextAuth from "next-auth";
 import { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -114,7 +115,7 @@ export function hashPassword(plainPassword: string) {
     const hash = scryptSync(plainPassword, salt, 64).toString("hex");
     return `${salt}:${hash}`;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 }
 
@@ -134,6 +135,6 @@ export async function verifyPassword(plainPassword: string, hashedPassword: stri
     const match = await bcrypt.compare(plainPassword, hashedPassword);
     return match;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 }

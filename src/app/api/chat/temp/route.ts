@@ -1,17 +1,17 @@
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import { getModel } from "@/lib/backend/providers";
-import { filterMessages } from "@/lib/backend/utils";
+import { filterMessages, logDuration } from "@/lib/backend/utils";
 import { getUserFromSession } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
 import { smoothStream, streamText } from "ai";
 import type { NextRequest } from "next/server";
 
 export const maxDuration = 55;
 
 export async function POST(req: NextRequest) {
-  const start = Date.now();
+  const start = performance.now();
   await getUserFromSession();
-  const userFetched = Date.now();
-  console.log(`User fetched in: ${userFetched - start}ms`);
+  logDuration(start, "User fetched");
 
   const { messages, model: modelId, browse } = await req.json();
   const { model } = getModel(modelId, browse);
@@ -32,12 +32,11 @@ export async function POST(req: NextRequest) {
       delayInMs: 10,
     }),
     onError: async (error) => {
-      console.error(error);
+      logger.error(error);
     },
   });
 
-  const end = Date.now();
-  console.log(`Response time: ${end - start}ms`);
+  logDuration(start, "Response time");
 
   result.consumeStream();
 

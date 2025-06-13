@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { NextResponse } from "next/server";
 
@@ -41,7 +42,7 @@ export async function GET() {
       { status: dbCheck.status === "PASS" ? 200 : 207 }
     );
   } catch (error: any) {
-    console.error("Health check failed:", error);
+    logger.error("Health check failed:", error);
 
     const endTime = Date.now();
     const responseTime = endTime - startTime;
