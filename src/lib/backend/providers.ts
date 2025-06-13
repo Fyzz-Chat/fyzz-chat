@@ -70,7 +70,7 @@ export function getModel(modelId: string, browse: boolean) {
 
 export function getAnthropicProviderOptions(modelId: string): AnthropicProviderOptions {
   return {
-    thinking: isThinkingAnthropic(modelId)
+    thinking: isThinkingModel(modelId, "anthropic")
       ? { type: "enabled", budgetTokens: 5000 }
       : { type: "disabled" },
   };
@@ -78,20 +78,17 @@ export function getAnthropicProviderOptions(modelId: string): AnthropicProviderO
 
 export function getOpenaiProviderOptions(modelId: string) {
   return {
-    reasoningEffort: isThinkingOpenai(modelId) ? "low" : null,
+    reasoningEffort: isThinkingModel(modelId, "openai") ? "low" : null,
   };
 }
 
-function isThinkingAnthropic(modelId: string) {
-  return (
-    modelId === "claude-3-7-sonnet-20250219" ||
-    modelId === "claude-sonnet-4-20250514" ||
-    modelId === "claude-opus-4-20250514"
-  );
-}
+function isThinkingModel(modelId: string, providerId: string) {
+  const model = filterProviders()
+    .filter((provider) => provider.id === providerId)
+    .flatMap((provider) => provider.models)
+    .find((model) => model.id === modelId);
 
-function isThinkingOpenai(modelId: string) {
-  return modelId === "o3-mini" || modelId === "o4-mini";
+  return model?.features?.includes(reasoning);
 }
 
 function filterProviders(): Provider[] {
