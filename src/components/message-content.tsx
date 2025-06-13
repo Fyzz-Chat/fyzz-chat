@@ -300,7 +300,7 @@ export function MessageContent({ message }: { message: Message }) {
             ))}
           </div>
           {message.parts?.some((part) => part.type === "source") && (
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               {message.parts
                 ?.filter((part) => part.type === "source")
                 .map((part, index) => (
@@ -308,9 +308,9 @@ export function MessageContent({ message }: { message: Message }) {
                     key={`source-${part.source.id}`}
                     href={part.source.url}
                     target="_blank"
-                    className="hover:text-accent"
+                    className="text-blue-400 hover:underline"
                   >
-                    [{index + 1}]
+                    [{index + 1}] {part.source.url}
                   </a>
                 ))}
             </div>
