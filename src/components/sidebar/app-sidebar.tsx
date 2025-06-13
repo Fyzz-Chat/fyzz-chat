@@ -53,7 +53,6 @@ export async function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="h-auto">
                   <SidebarMenuButton>
-                    {" "}
                     <Avatar className="size-7">
                       <AvatarImage src={user?.picture || ""} />
                       <AvatarFallback className="text-muted-foreground">
@@ -66,7 +65,7 @@ export async function AppSidebar() {
                     </Avatar>
                     <p>{user?.name || "Anonymous"}</p>
                   </SidebarMenuButton>
-                </DropdownMenuTrigger>{" "}
+                </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64 md:w-[15rem]">
                   <ProfileMenu
                     authorized={Boolean(user)}

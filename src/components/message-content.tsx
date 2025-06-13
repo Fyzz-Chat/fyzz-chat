@@ -39,10 +39,11 @@ const MemoizedSyntaxHighlighter = memo(
         style={tomorrow}
         language={language}
         PreTag="div"
-        className="rounded-md border !bg-sidebar/90 p-4"
+        className="rounded-md border !bg-sidebar/90 p-4 !text-sm"
         customStyle={{
           margin: 0,
           borderRadius: "0.375rem",
+          fontSize: "14px !important",
         }}
         {...props}
       >
@@ -114,8 +115,8 @@ const CodeBlock = memo(
             {children.replace(/\n$/, "")}
           </MemoizedSyntaxHighlighter>
         ) : (
-          <div className="bg-sidebar/90 p-[1em] rounded-md border text-base text-sidebar-foreground overflow-auto">
-            <code>{children}</code>
+          <div className="bg-sidebar/90 p-[1em] rounded-md border !text-sm text-sidebar-foreground overflow-auto">
+            <code style={{ fontSize: "14px !important" }}>{children}</code>
           </div>
         )}
       </div>
@@ -135,7 +136,8 @@ const MemoizedMarkdownBlock = memo(
               <CodeBlock language={match[1]}>{String(children)}</CodeBlock>
             ) : (
               <code
-                className="bg-sidebar border text-sidebar-foreground px-1 py-0.5 rounded text-sm"
+                className="bg-sidebar border text-sidebar-foreground px-1 py-0.5 rounded !text-sm"
+                style={{ fontSize: "14px !important" }}
                 {...props}
               >
                 {children}
@@ -143,25 +145,25 @@ const MemoizedMarkdownBlock = memo(
             );
           },
           p({ children }) {
-            return <p className="mb-2 last:mb-0">{children}</p>;
+            return <p className="mb-2 last:mb-0 leading-6">{children}</p>;
           },
           ul({ children }) {
             return <ul className="list-disc pl-6 mb-2">{children}</ul>;
           },
           ol({ children }) {
-            return <ol className="list-decimal pl-6 mb-2">{children}</ol>;
+            return <ol className="list-decimal pl-6 mb-4">{children}</ol>;
           },
           li({ children }) {
-            return <li className="mb-1">{children}</li>;
+            return <li className="leading-8">{children}</li>;
           },
           h1({ children }) {
-            return <h1 className="text-xl font-bold mb-2 mt-4">{children}</h1>;
+            return <h1 className="text-xl font-bold mb-2 mt-6">{children}</h1>;
           },
           h2({ children }) {
-            return <h2 className="text-lg font-bold mb-2 mt-3">{children}</h2>;
+            return <h2 className="text-lg font-bold mb-2 mt-6">{children}</h2>;
           },
           h3({ children }) {
-            return <h3 className="text-md font-bold mb-2 mt-3">{children}</h3>;
+            return <h3 className="text-md font-bold mb-2 mt-6">{children}</h3>;
           },
           a({ children, href }) {
             return (
@@ -238,7 +240,7 @@ export function MessageContent({ message }: { message: Message }) {
           data-role="user"
           style={{ wordBreak: "break-word" }}
         >
-          <p>{message.content}</p>
+          <p className="leading-7">{message.content}</p>
         </div>
       </div>
     );
@@ -254,7 +256,7 @@ export function MessageContent({ message }: { message: Message }) {
           ) {
             return (
               <div key={`${message.id}-tool-result-${index}`}>
-                <p className="text-sm text-muted-foreground">Memory updated</p>
+                <p className="text-sm text-muted-foreground leading-6">Memory updated</p>
               </div>
             );
           }
@@ -274,7 +276,7 @@ export function MessageContent({ message }: { message: Message }) {
                   <div className="relative h-full pt-4 pb-6">
                     <div className="absolute top-4 left-0 right-0 w-full h-4 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
                     <ScrollArea className="h-full px-6">
-                      <p className="text-sm text-muted-foreground pt-2 pb-4">
+                      <p className="text-sm text-muted-foreground pt-2 pb-4 leading-6">
                         {part.reasoning}
                       </p>
                     </ScrollArea>

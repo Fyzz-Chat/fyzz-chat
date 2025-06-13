@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import conf from "@/lib/config";
@@ -15,7 +15,7 @@ export const viewport: Viewport = {
   interactiveWidget: "resizes-content",
 };
 
-const montserrat = Montserrat({ subsets: ["latin"] });
+const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(conf.host),
@@ -53,7 +53,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          montserrat.className,
+          openSans.className,
           "flex flex-col min-h-svh min-w-80 justify-center md:overscroll-none"
         )}
       >
