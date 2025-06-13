@@ -32,8 +32,8 @@ export default async function SettingsPage() {
   const hasPassword = Boolean(user?.password);
 
   return (
-    <ViewTransitionWrapper className="flex flex-1">
-      <div className="relative flex flex-1 flex-col items-center justify-start pt-16 px-4 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
+    <div className="relative flex flex-1 flex-col items-center justify-start pt-16 px-4 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
+      <ViewTransitionWrapper className="flex flex-1">
         <div className="flex flex-col gap-4 w-full max-w-xl">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold">Settings</h1>
@@ -97,7 +97,7 @@ export default async function SettingsPage() {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
-    </ViewTransitionWrapper>
+      </ViewTransitionWrapper>
+    </div>
   );
 }
