@@ -199,13 +199,15 @@ export async function saveMcpServers(mcpServers: string) {
   const userId = await getUserIdFromSession();
 
   try {
-    const parsed = JSON.parse(mcpServers);
-    if (!parsed.mcpServers) {
-      return "missing_key";
-    }
+    if (mcpServers !== "") {
+      const parsed = JSON.parse(mcpServers);
+      if (!parsed.mcpServers) {
+        return "missing_key";
+      }
 
-    // Prettify the JSON before saving
-    mcpServers = JSON.stringify(parsed, null, 4);
+      // Prettify the JSON before saving
+      mcpServers = JSON.stringify(parsed, null, 4);
+    }
   } catch (error) {
     if (error instanceof SyntaxError) {
       return "invalid_json";
