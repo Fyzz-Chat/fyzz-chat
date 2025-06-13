@@ -133,12 +133,7 @@ export async function POST(req: NextRequest) {
 
         const lastMessage = updatedMessages[updatedMessages.length - 1];
         const sources = await result.sources;
-        sources.map((source) => {
-          lastMessage.parts?.push({
-            type: "source",
-            source,
-          });
-        });
+        addSourcesToMessage(lastMessage, sources);
 
         await saveMessage(lastMessage, id);
       } finally {
@@ -173,4 +168,13 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
   return false;
+}
+
+function addSourcesToMessage(message: Message, sources: any) {
+  sources.forEach((source: any) => {
+    message.parts?.push({
+      type: "source",
+      source,
+    });
+  });
 }
