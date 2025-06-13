@@ -7,7 +7,11 @@ import type {
   PublicModel,
   PublicProvider,
 } from "@/types/provider";
-import { type AnthropicProvider, anthropic } from "@ai-sdk/anthropic";
+import {
+  type AnthropicProvider,
+  type AnthropicProviderOptions,
+  anthropic,
+} from "@ai-sdk/anthropic";
 import type { AzureOpenAIProvider } from "@ai-sdk/azure";
 import { createAzure } from "@ai-sdk/azure";
 import { type FireworksProvider, fireworks } from "@ai-sdk/fireworks";
@@ -62,6 +66,32 @@ export function getModel(modelId: string, browse: boolean) {
   const { id, provider, tools } = model;
 
   return { model: provider(id, browse), supportsTools: tools };
+}
+
+export function getAnthropicProviderOptions(modelId: string): AnthropicProviderOptions {
+  return {
+    thinking: isThinkingAnthropic(modelId)
+      ? { type: "enabled", budgetTokens: 5000 }
+      : { type: "disabled" },
+  };
+}
+
+export function getOpenaiProviderOptions(modelId: string) {
+  return {
+    reasoningEffort: isThinkingOpenai(modelId) ? "low" : null,
+  };
+}
+
+function isThinkingAnthropic(modelId: string) {
+  return (
+    modelId === "claude-3-7-sonnet-20250219" ||
+    modelId === "claude-sonnet-4-20250514" ||
+    modelId === "claude-opus-4-20250514"
+  );
+}
+
+function isThinkingOpenai(modelId: string) {
+  return modelId === "o3-mini" || modelId === "o4-mini";
 }
 
 function filterProviders(): Provider[] {

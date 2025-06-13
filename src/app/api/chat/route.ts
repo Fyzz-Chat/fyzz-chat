@@ -2,7 +2,11 @@ import { updateConversationTitle } from "@/lib/actions/conversations";
 import { awsConfigured } from "@/lib/aws/s3";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
-import { getModel } from "@/lib/backend/providers";
+import {
+  getAnthropicProviderOptions,
+  getModel,
+  getOpenaiProviderOptions,
+} from "@/lib/backend/providers";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
@@ -14,8 +18,7 @@ import {
 import { getMessages, saveMessage, uploadAttachments } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import { closeMcpClients, getMcpClients } from "@/lib/services/mcp-clients";
-import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
+import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import {
   type Message,
   appendClientMessage,
@@ -81,7 +84,7 @@ export async function POST(req: NextRequest) {
 
   const filteredMessages = filterMessages(messages, modelId);
 
-  let tools: any = {};
+  const tools: any = {};
 
   let memoryPrompt = "";
 
@@ -94,25 +97,12 @@ export async function POST(req: NextRequest) {
   }
 
   const extendedSystemPrompt = `${systemPrompt}${memoryPrompt}`;
-  const anthropicThinking =
-    modelId === "claude-sonnet-4-20250514" ||
-    modelId === "claude-opus-4-20250514" ||
-    modelId === "claude-3-7-sonnet-20250219";
-  const openaiThinking = modelId === "o3-mini" || modelId === "o4-mini";
 
   const mcpClients = await getMcpClients();
 
   if (mcpClients && supportsTools) {
-    const toolsPromises = mcpClients?.map(async (client) => {
-      const clientTools = await client.tools();
-      return { ...clientTools };
-    });
-    const toolsArray = await Promise.all(toolsPromises);
-
-    tools = {
-      ...tools,
-      ...Object.assign({}, ...toolsArray),
-    };
+    const mcpTools = await getMcpTools(mcpClients);
+    Object.assign(tools, mcpTools);
   }
 
   const result = streamText({
@@ -127,14 +117,8 @@ export async function POST(req: NextRequest) {
     tools,
     experimental_generateMessageId: () => uuidv4(),
     providerOptions: {
-      anthropic: {
-        thinking: anthropicThinking
-          ? { type: "enabled", budgetTokens: 5000 }
-          : { type: "disabled" },
-      } satisfies AnthropicProviderOptions,
-      openai: {
-        reasoningEffort: openaiThinking ? "low" : null,
-      },
+      anthropic: getAnthropicProviderOptions(modelId),
+      openai: getOpenaiProviderOptions(modelId),
     },
     onFinish: async ({ response }) => {
       try {
@@ -162,8 +146,8 @@ export async function POST(req: NextRequest) {
         await closeMcpClients(mcpClients);
       }
     },
-    onError: async (error) => {
-      logger.error(error);
+    onError: async (error: any) => {
+      logger.error(error.error.message);
       await unlockConversation(id);
       await closeMcpClients(mcpClients);
     },

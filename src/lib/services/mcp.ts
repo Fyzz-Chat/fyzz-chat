@@ -37,6 +37,16 @@ export async function getMcpClients() {
   return clients;
 }
 
+export async function getMcpTools(clients: any[]) {
+  const toolsPromises = clients?.map(async (client) => {
+    const clientTools = await client.tools();
+    return { ...clientTools };
+  });
+  const toolsArray = await Promise.all(toolsPromises);
+
+  return Object.assign({}, ...toolsArray);
+}
+
 export async function closeMcpClients(clients: any[]) {
   await Promise.all(clients.map((client) => client.close()));
 }
