@@ -1,8 +1,7 @@
 "use client";
 
 import Link, { type LinkProps } from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useRef } from "react";
+import React from "react";
 
 type FastLinkProps = LinkProps & {
   children: React.ReactNode;
@@ -17,19 +16,20 @@ type FastLinkProps = LinkProps & {
  */
 export const FastLink = React.forwardRef<HTMLAnchorElement, FastLinkProps>(
   ({ className, children, ...props }, ref) => {
-    const router = useRouter();
-    const navigatedRef = useRef(false);
-
     function handleMouseDown(e: React.MouseEvent<HTMLAnchorElement>) {
+      if (e.button !== 0) return;
       e.preventDefault();
-      navigatedRef.current = true;
-      router.push(props.href.toString());
+      const anchor = (e.target as HTMLElement).closest("a");
+      if (anchor) {
+        anchor.click();
+      }
     }
 
     function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
-      if (navigatedRef.current) {
+      // Prevent click again since we're using mouse down, but
+      // allow click if it comes from a keyboard event
+      if (e.isTrusted && e.detail !== 0) {
         e.preventDefault();
-        navigatedRef.current = false;
       }
       props.onClick?.(e);
     }
