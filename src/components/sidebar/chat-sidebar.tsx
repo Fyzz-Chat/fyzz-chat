@@ -170,7 +170,7 @@ function ConversationLink({
 }) {
   const deleteConversation = useDeleteConversation();
   const router = useRouter();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { setOpenMobile } = useSidebar();
   const { providers } = useModelStore();
   const providerIcon = getProviderIcon(providers, chat.model);
 
@@ -183,7 +183,7 @@ function ConversationLink({
           "flex w-full flex-col items-start gap-1 rounded-lg p-3 text-left text-sm transition-colors",
           currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
         )}
-        onClick={() => isMobile && setOpenMobile(false)}
+        onClick={() => setOpenMobile(false)}
       >
         <div className="flex w-full items-center gap-2">
           {providerIcon ? (
