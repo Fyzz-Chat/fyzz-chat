@@ -26,9 +26,6 @@ const nextConfig = {
       "@prisma": "./prisma",
     },
   },
-  experimental: {
-    viewTransition: true,
-  },
 };
 
 const withBundleAnalyzer = NextBundleAnalyzer({

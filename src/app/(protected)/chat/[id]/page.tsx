@@ -1,12 +1,12 @@
 import ShareConversationButton from "@/components/chat/share-conversation-button";
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
+import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import conf from "@/lib/config";
 import { getConversation } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { processMessages } from "@/lib/message-processor";
-import { unstable_ViewTransition as ViewTransition } from "react";
 
 export default async function ChatPage({
   params,
@@ -25,7 +25,7 @@ export default async function ChatPage({
 
   const formattedMessages = processMessages(messages.messages);
   return (
-    <ViewTransition default="fade">
+    <ViewTransitionWrapper>
       {/* Hidden element to catch initial focus and prevent share button autofocus */}
       <div tabIndex={-1} className="sr-only" aria-hidden="true" />
       {jwtConfigured && (
@@ -42,6 +42,6 @@ export default async function ChatPage({
           initialMessages={formattedMessages}
         />
       </MessagesScrollArea>
-    </ViewTransition>
+    </ViewTransitionWrapper>
   );
 }

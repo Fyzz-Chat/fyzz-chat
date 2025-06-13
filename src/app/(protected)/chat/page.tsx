@@ -2,9 +2,9 @@ import AuthCard from "@/components/auth/auth-card";
 import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
 import ChatWelcomeSection from "@/components/chat/chat-welcome-section";
+import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { unstable_ViewTransition as ViewTransition } from "react";
 
 const LazyIntroDialog = dynamic(() => import("@/components/chat/intro-dialog"));
 
@@ -17,13 +17,13 @@ export default async function ChatPage({
 
   return (
     <div className="flex-1 flex items-center justify-center p-4">
-      <ViewTransition default="fade">
+      <ViewTransitionWrapper>
         <div className="max-w-xl w-full space-y-4">
           <ChatWelcomeSection>
             <LazyIntroDialog />
           </ChatWelcomeSection>
         </div>
-      </ViewTransition>
+      </ViewTransitionWrapper>
       <div
         className={cn(
           "hidden fixed items-center justify-center inset-0 backdrop-blur-sm z-20 animate-in fade-in slide-in-from-bottom-4 duration-500",

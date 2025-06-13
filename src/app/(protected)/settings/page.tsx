@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import { unstable_ViewTransition as ViewTransition } from "react";
 
 export default async function SettingsPage() {
   const userId = await getUserIdFromSession();
@@ -32,7 +32,7 @@ export default async function SettingsPage() {
   const hasPassword = Boolean(user?.password);
 
   return (
-    <ViewTransition default="fade">
+    <ViewTransitionWrapper className="flex flex-1">
       <div className="relative flex flex-1 flex-col items-center justify-start pt-16 px-4 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
         <div className="flex flex-col gap-4 w-full max-w-xl">
           <div className="flex flex-col gap-2">
@@ -98,6 +98,6 @@ export default async function SettingsPage() {
           </Tabs>
         </div>
       </div>
-    </ViewTransition>
+    </ViewTransitionWrapper>
   );
 }
