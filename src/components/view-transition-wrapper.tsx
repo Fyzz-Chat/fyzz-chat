@@ -16,7 +16,7 @@ export default function ViewTransitionWrapper({
   return (
     <div
       className={cn(
-        "transition-opacity duration-500",
+        "transition-opacity duration-200",
         visible ? "opacity-100" : "opacity-0",
         className
       )}
