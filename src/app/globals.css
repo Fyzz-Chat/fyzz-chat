@@ -39,7 +39,7 @@
     --sidebar-ring: 11.63 100% 68.63%;
     --font-sans: Montserrat, sans-serif;
     --font-serif: Merriweather, serif;
-    --font-mono: 'Ubuntu Mono', monospace;
+    --font-mono: "Ubuntu Mono", monospace;
     --shadow-2xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
     --shadow-xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
     --shadow-sm: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px
@@ -89,7 +89,7 @@
     --sidebar-ring: 11.63 100% 68.63%;
     --font-sans: Montserrat, sans-serif;
     --font-serif: Merriweather, serif;
-    --font-mono: 'Ubuntu Mono', monospace;
+    --font-mono: "Ubuntu Mono", monospace;
     --shadow-2xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
     --shadow-xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
     --shadow-sm: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px
