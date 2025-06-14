@@ -22,6 +22,7 @@ export function MessageItem({
   const [inProgress, setInProgress] = useState(false);
 
   async function handleRegenerateMessage() {
+    setInProgress(true);
     await regenerateMessage.mutateAsync({
       messageId: message.id,
       conversationId,
@@ -34,6 +35,7 @@ export function MessageItem({
     } else {
       emptySubmit();
     }
+    setInProgress(false);
   }
 
   async function handleEditMessage() {
@@ -165,11 +167,16 @@ export function MessageItem({
                   message.role === "user" && isEditing && "hidden"
                 )}
                 onClick={handleRegenerateMessage}
+                disabled={inProgress}
               >
-                <RefreshCw
-                  size={18}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
-                />
+                {inProgress ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <RefreshCw
+                    size={18}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                  />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="text-xs">
