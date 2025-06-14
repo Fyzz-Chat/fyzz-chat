@@ -117,7 +117,13 @@ const CodeBlock = memo(
           </MemoizedSyntaxHighlighter>
         ) : (
           <div className="bg-sidebar/90 p-4 rounded-md border !text-sm text-sidebar-foreground overflow-auto">
-            <code style={{ fontSize: "14px !important", lineHeight: "1.5" }}>
+            <code
+              style={{
+                fontSize: "14px !important",
+                lineHeight: "1.5",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
               {children}
             </code>
           </div>
