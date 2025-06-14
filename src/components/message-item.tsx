@@ -3,7 +3,7 @@ import { useRegenerateMessage } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { Message } from "ai";
-import { Check, Copy, Edit, RefreshCw, X } from "lucide-react";
+import { Check, Copy, Edit, Loader2, RefreshCw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { MessageContent } from "./message-content";
@@ -19,6 +19,7 @@ export function MessageItem({
   const { temporaryChat } = useModelStore();
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(message.content);
+  const [inProgress, setInProgress] = useState(false);
 
   async function handleRegenerateMessage() {
     await regenerateMessage.mutateAsync({
@@ -40,6 +41,7 @@ export function MessageItem({
   }
 
   async function handleSaveMessage() {
+    setInProgress(true);
     await regenerateMessage.mutateAsync({
       messageId: message.id,
       conversationId,
@@ -54,6 +56,7 @@ export function MessageItem({
     } else {
       emptySubmit();
     }
+    setInProgress(false);
   }
 
   function handleCancelEdit() {
@@ -113,6 +116,7 @@ export function MessageItem({
               size="icon"
               className="size-8 p-0"
               onClick={handleCancelEdit}
+              disabled={inProgress}
             >
               <X size={18} />
             </Button>
@@ -121,8 +125,9 @@ export function MessageItem({
               size="icon"
               className="size-8 p-0"
               onClick={handleSaveMessage}
+              disabled={inProgress}
             >
-              <Check size={18} />
+              {inProgress ? <Loader2 className="animate-spin" /> : <Check size={18} />}
             </Button>
           </>
         )}
