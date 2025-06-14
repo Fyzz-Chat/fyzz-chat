@@ -145,8 +145,8 @@ export async function POST(req: NextRequest) {
         const usage = await result.usage;
         logger.debug(JSON.stringify(usage));
 
-        await saveTokenUsage(lastUserMessage.id, usage.promptTokens, 0);
-        await saveMessage(lastMessage, id, modelId, 0, usage.completionTokens);
+        await saveTokenUsage(lastUserMessage.id, usage.promptTokens || 0, 0);
+        await saveMessage(lastMessage, id, modelId, 0, usage.completionTokens || 0);
       } finally {
         await unlockConversation(id);
         await closeMcpClients(mcpClients);
