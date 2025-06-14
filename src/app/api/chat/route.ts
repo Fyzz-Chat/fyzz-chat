@@ -15,7 +15,12 @@ import {
   lockConversation,
   unlockConversation,
 } from "@/lib/dao/conversations";
-import { getMessages, saveMessage, uploadAttachments } from "@/lib/dao/messages";
+import {
+  getMessages,
+  saveMessage,
+  saveTokenUsage,
+  uploadAttachments,
+} from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
@@ -135,7 +140,11 @@ export async function POST(req: NextRequest) {
         const sources = await result.sources;
         addSourcesToMessage(lastMessage, sources);
 
-        await saveMessage(lastMessage, id);
+        const usage = await result.usage;
+        logger.debug(JSON.stringify(usage));
+
+        await saveTokenUsage(textMessage.id, usage.promptTokens, 0);
+        await saveMessage(lastMessage, id, 0, usage.completionTokens);
       } finally {
         await unlockConversation(id);
         await closeMcpClients(mcpClients);

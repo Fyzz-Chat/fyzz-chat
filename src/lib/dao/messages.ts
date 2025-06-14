@@ -63,7 +63,12 @@ export async function getMessages(conversationId: string, page?: number, limit?:
   };
 }
 
-export async function saveMessage(message: Message | UIMessage, conversationId: string) {
+export async function saveMessage(
+  message: Message | UIMessage,
+  conversationId: string,
+  promptTokens: number,
+  completionTokens: number
+) {
   const userId = await getUserIdFromSession();
 
   const newMessage = await prisma.message.create({
@@ -72,6 +77,8 @@ export async function saveMessage(message: Message | UIMessage, conversationId: 
       parts: JSON.stringify(message.parts),
       toolInvocations: JSON.stringify(message.toolInvocations),
       conversationId,
+      promptTokens,
+      completionTokens,
     },
   });
 
@@ -129,4 +136,25 @@ export async function uploadAttachments(
   );
 
   return attachments;
+}
+
+export async function saveTokenUsage(
+  messageId: string,
+  promptTokens: number,
+  completionTokens: number
+) {
+  const userId = await getUserIdFromSession();
+
+  await prisma.message.update({
+    where: {
+      id: messageId,
+      conversation: {
+        userId,
+      },
+    },
+    data: {
+      promptTokens,
+      completionTokens,
+    },
+  });
 }
