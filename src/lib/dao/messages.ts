@@ -66,6 +66,7 @@ export async function getMessages(conversationId: string, page?: number, limit?:
 export async function saveMessage(
   message: Message | UIMessage,
   conversationId: string,
+  model: string,
   promptTokens: number,
   completionTokens: number
 ) {
@@ -77,6 +78,7 @@ export async function saveMessage(
       parts: JSON.stringify(message.parts),
       toolInvocations: JSON.stringify(message.toolInvocations),
       conversationId,
+      model,
       promptTokens,
       completionTokens,
     },
