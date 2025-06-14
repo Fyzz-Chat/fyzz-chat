@@ -68,9 +68,10 @@ export function MessageItem({
 
   useEffect(() => {
     if (isEditing) {
-      const textarea = document.getElementById("edit-message");
+      const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
       if (textarea) {
         textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
       }
     }
 
