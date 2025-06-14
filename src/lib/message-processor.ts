@@ -1,13 +1,8 @@
 import type { Message } from "@/lib/prisma/client";
-
-interface RawMessage extends Omit<Message, "reasoning"> {
-  reasoning: string | undefined;
-}
+import type { UIMessage } from "ai";
 
 interface ProcessedMessage {
   content?: string;
-  reasoning: string | undefined;
-  signature: string | null;
   parts: Array<{
     type: "text" | "reasoning";
     text?: string;
@@ -20,7 +15,7 @@ interface ProcessedMessage {
   }>;
 }
 
-function processMessage(message: RawMessage): ProcessedMessage {
+function processMessage(message: UIMessage): ProcessedMessage {
   const parts: ProcessedMessage["parts"] = [];
 
   if (message.parts) {
@@ -28,23 +23,6 @@ function processMessage(message: RawMessage): ProcessedMessage {
       ...message,
       parts: message.parts as ProcessedMessage["parts"],
     };
-  }
-
-  if (message.reasoning) {
-    const details: ProcessedMessage["parts"][0]["details"] = [];
-    if (message.signature) {
-      details.push({
-        type: "text",
-        text: message.reasoning,
-        signature: message.signature,
-      });
-    }
-
-    parts.push({
-      type: "reasoning",
-      reasoning: message.reasoning,
-      details,
-    });
   }
 
   if (message.content) {
@@ -60,6 +38,6 @@ function processMessage(message: RawMessage): ProcessedMessage {
   };
 }
 
-export function processMessages(messages: RawMessage[]): ProcessedMessage[] {
+export function processMessages(messages: UIMessage[]): ProcessedMessage[] {
   return messages.map(processMessage);
 }

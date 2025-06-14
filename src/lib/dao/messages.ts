@@ -18,6 +18,16 @@ export async function getMessages(conversationId: string, page?: number, limit?:
           userId,
         },
       },
+      select: {
+        id: true,
+        content: true,
+        role: true,
+        model: true,
+        parts: true,
+        files: true,
+        createdAt: true,
+        updatedAt: true,
+      },
       orderBy: {
         createdAt: "asc",
       },
@@ -47,6 +57,16 @@ export async function getMessages(conversationId: string, page?: number, limit?:
         id: conversationId,
         userId,
       },
+    },
+    select: {
+      id: true,
+      content: true,
+      role: true,
+      model: true,
+      parts: true,
+      files: true,
+      createdAt: true,
+      updatedAt: true,
     },
     orderBy: {
       createdAt: "asc",

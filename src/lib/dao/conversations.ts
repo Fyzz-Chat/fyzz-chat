@@ -4,6 +4,7 @@ import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import type { Message } from "@/lib/prisma/client";
 import prisma from "@/lib/prisma/prisma";
+import type { PartialMessage } from "@/types/chat";
 import type { JsonArray } from "@prisma/client/runtime/library";
 import type { UIMessage } from "ai";
 import { logger } from "../logger";
@@ -110,7 +111,7 @@ export async function appendMessageToConversation(
     data: {
       ...message,
       parts: JSON.stringify(message.parts),
-      toolInvocations: JSON.stringify(message.toolInvocations),
+      toolInvocations: undefined,
       conversationId,
     },
   });
@@ -200,14 +201,12 @@ export async function isConversationLocked(conversationId: string): Promise<bool
   return !!conversation;
 }
 
-export async function mapMessages(messages: Message[]) {
+export async function mapMessages(messages: PartialMessage[]): Promise<UIMessage[]> {
   const mappedMessages = await Promise.all(
     messages.map(async (message) => ({
       ...message,
       role: message.role as "system" | "user" | "assistant" | "data",
-      reasoning: message.reasoning ?? undefined,
       parts: JSON.parse(message.parts as string),
-      toolInvocations: JSON.parse(message.toolInvocations as string),
       experimental_attachments:
         (message.files as JsonArray[])?.map((file: any) => ({
           name: file.name,
