@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metaTitle = "Fyzz.chat - Chat with the best AI models, all in one place";
 export const metaDescription =
   "One platform for GPT, Perplexity, Gemini, and more. Chat, speak with PDFs, and analyze images.";
-export const canonicalUrl = "https://www.fyzz.chat";
+export const canonicalUrl = "https://www.fyzz.chat/chat";
 
 export const openGraph: Metadata["openGraph"] = {
   title: metaTitle,
