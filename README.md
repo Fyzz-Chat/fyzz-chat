@@ -43,8 +43,8 @@ The following environment variables are also optional and control whether upload
 
 The last two are required to create signed URLs for uploaded files.
 
-[!WARNING]
-If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will be persisted in the database.
+> [!WARNING]
+> If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will be persisted in the database.
 
 ### Database migration
 
