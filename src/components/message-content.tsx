@@ -44,6 +44,7 @@ const MemoizedSyntaxHighlighter = memo(
           margin: 0,
           borderRadius: "0.375rem",
           fontSize: "14px !important",
+          padding: "1rem !important",
         }}
         {...props}
       >
@@ -115,8 +116,10 @@ const CodeBlock = memo(
             {children.replace(/\n$/, "")}
           </MemoizedSyntaxHighlighter>
         ) : (
-          <div className="bg-sidebar/90 p-[1em] rounded-md border !text-sm text-sidebar-foreground overflow-auto">
-            <code style={{ fontSize: "14px !important" }}>{children}</code>
+          <div className="bg-sidebar/90 p-4 rounded-md border !text-sm text-sidebar-foreground overflow-auto">
+            <code style={{ fontSize: "14px !important", lineHeight: "1.5" }}>
+              {children}
+            </code>
           </div>
         )}
       </div>
@@ -136,7 +139,7 @@ const MemoizedMarkdownBlock = memo(
               <CodeBlock language={match[1]}>{String(children)}</CodeBlock>
             ) : (
               <code
-                className="bg-sidebar border text-sidebar-foreground px-1 py-0.5 rounded !text-sm"
+                className="bg-sidebar border text-sidebar-foreground px-1 py-0.5 rounded"
                 style={{ fontSize: "14px !important" }}
                 {...props}
               >
@@ -148,13 +151,13 @@ const MemoizedMarkdownBlock = memo(
             return <p className="mb-2 last:mb-0 leading-6">{children}</p>;
           },
           ul({ children }) {
-            return <ul className="list-disc pl-6 mb-2">{children}</ul>;
+            return <ul className="list-disc pl-6 mb-2 space-y-2">{children}</ul>;
           },
           ol({ children }) {
-            return <ol className="list-decimal pl-6 mb-4">{children}</ol>;
+            return <ol className="list-decimal pl-6 mb-4 space-y-2">{children}</ol>;
           },
           li({ children }) {
-            return <li className="leading-8">{children}</li>;
+            return <li className="leading-7">{children}</li>;
           },
           h1({ children }) {
             return <h1 className="text-xl font-bold mb-2 mt-6">{children}</h1>;
