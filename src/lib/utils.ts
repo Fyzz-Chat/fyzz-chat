@@ -43,7 +43,11 @@ export function ensure(condition: any, message: string): asserts condition {
   }
 }
 
-export function filterMessagesUpToAnchor(old: Message[], messageId: string): Message[] {
+export function filterMessagesUpToAnchor(
+  old: Message[],
+  messageId: string,
+  newContent?: string
+): Message[] {
   const anchorMessage = old.find((m: Message) => m.id === messageId);
   if (!anchorMessage) {
     return old;
@@ -52,10 +56,28 @@ export function filterMessagesUpToAnchor(old: Message[], messageId: string): Mes
   const isUserMessage = anchorMessage.role === "user";
 
   // Keep messages older than the anchor message and the anchor itself if it's a user message
-  return old.filter((m: Message) => {
-    const messageDate = new Date(m.createdAt as Date);
-    const isBefore = messageDate < anchorMessageDate;
-    const isAnchorAndUserMessage = isUserMessage && m.id === messageId;
-    return isBefore || isAnchorAndUserMessage;
-  });
+  return old
+    .filter((m: Message) => {
+      const messageDate = new Date(m.createdAt as Date);
+      const isBefore = messageDate < anchorMessageDate;
+      const isAnchorAndUserMessage = isUserMessage && m.id === messageId;
+      return isBefore || isAnchorAndUserMessage;
+    })
+    .map((m: Message) => {
+      if (m.id === messageId) {
+        return {
+          ...m,
+          content: newContent ?? m.content,
+          parts: newContent
+            ? [
+                {
+                  type: "text",
+                  text: newContent,
+                },
+              ]
+            : m.parts,
+        };
+      }
+      return m;
+    });
 }

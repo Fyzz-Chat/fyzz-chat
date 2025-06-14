@@ -25,7 +25,7 @@ interface ChatContextType {
   setStableId: (stableId: string) => void;
   messages: Message[];
   setChatInput: (input: string) => string;
-  deleteMessagesAfter: (messageId: string) => void;
+  deleteMessagesAfter: (messageId: string, newContent?: string) => void;
   status: ChatStatus;
   error?: Error;
   stop: () => void;
@@ -127,8 +127,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setFiles(undefined);
   }
 
-  function deleteMessagesAfter(messageId: string) {
-    setMessages((old: Message[]) => filterMessagesUpToAnchor(old, messageId));
+  function deleteMessagesAfter(messageId: string, newContent?: string) {
+    setMessages((old: Message[]) => filterMessagesUpToAnchor(old, messageId, newContent));
   }
 
   return (

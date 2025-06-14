@@ -5,7 +5,11 @@ import "server-only";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 
-export async function deleteMessageChainAfter(messageId: string, conversationId: string) {
+export async function deleteMessageChainAfter(
+  messageId: string,
+  conversationId: string,
+  newContent?: string
+) {
   const userId = await getUserIdFromSession();
 
   const message = await prisma.message.findUnique({
@@ -42,6 +46,25 @@ export async function deleteMessageChainAfter(messageId: string, conversationId:
         conversation: {
           userId,
         },
+      },
+    });
+  } else if (newContent) {
+    await prisma.message.update({
+      where: {
+        id: messageId,
+        conversationId,
+        conversation: {
+          userId,
+        },
+      },
+      data: {
+        content: newContent,
+        parts: JSON.stringify([
+          {
+            type: "text",
+            text: newContent,
+          },
+        ]),
       },
     });
   }

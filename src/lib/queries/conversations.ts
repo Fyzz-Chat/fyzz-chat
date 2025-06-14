@@ -243,17 +243,23 @@ export function useRegenerateMessage() {
       messageId,
       conversationId,
       temporaryChat = false,
-    }: { messageId: string; conversationId: string; temporaryChat?: boolean }) => {
+      newContent,
+    }: {
+      messageId: string;
+      conversationId: string;
+      temporaryChat?: boolean;
+      newContent?: string;
+    }) => {
       if (temporaryChat) {
         return Promise.resolve();
       }
-      return deleteMessageChainAfter(messageId, conversationId);
+      return deleteMessageChainAfter(messageId, conversationId, newContent);
     },
-    onSuccess: (_, { conversationId, messageId }) => {
+    onSuccess: (_, { conversationId, messageId, newContent }) => {
       queryClient.setQueryData(conversationKeys.messages(conversationId), (old: any) => {
         if (!old) return old;
 
-        return filterMessagesUpToAnchor(old, messageId);
+        return filterMessagesUpToAnchor(old, messageId, newContent);
       });
     },
   });
