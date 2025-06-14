@@ -62,7 +62,7 @@ export default async function SettingsPage() {
               </TabsList>
             </div>
             <TabsContent value="memory">
-              <Card className="mb-5">
+              <Card>
                 <ScrollArea>
                   <CardHeader>
                     <CardTitle>Memory Settings</CardTitle>
