@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "../src/lib/prisma/client"
+  output   = "../src/lib/prisma/client"
 }
 
 datasource db {
@@ -15,7 +15,6 @@ datasource db {
 }
 
 model User {
-
   id            Int            @id @default(autoincrement())
   name          String
   email         String         @unique
@@ -36,7 +35,6 @@ model User {
 }
 
 model Notification {
-
   id        Int      @id @default(autoincrement())
   type      String
   title     String
@@ -53,7 +51,6 @@ model Notification {
 }
 
 model Conversation {
-
   id            String    @id @default(uuid())
   title         String
   messages      Message[]
@@ -69,19 +66,20 @@ model Conversation {
 }
 
 model Message {
-
-  id              String       @id @default(uuid())
-  content         String
-  role            String
-  reasoning       String?
-  signature       String?
-  parts           Json?
-  toolInvocations Json?
-  files           Json?
-  conversationId  String       @map("conversation_id")
-  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  createdAt       DateTime     @default(now()) @map("created_at")
-  updatedAt       DateTime     @updatedAt @map("updated_at")
+  id               String       @id @default(uuid())
+  content          String
+  role             String
+  reasoning        String?
+  signature        String?
+  parts            Json?
+  toolInvocations  Json?
+  files            Json?
+  promptTokens     Int?         @default(0) @map("prompt_tokens")
+  completionTokens Int?         @default(0) @map("completion_tokens")
+  conversationId   String       @map("conversation_id")
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
 
   @@map("messages")
 }
