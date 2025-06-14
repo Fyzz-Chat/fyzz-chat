@@ -137,13 +137,15 @@ export async function POST(req: NextRequest) {
         }
 
         const lastMessage = updatedMessages[updatedMessages.length - 1];
+        const lastUserMessage = updatedMessages[updatedMessages.length - 2];
+
         const sources = await result.sources;
         addSourcesToMessage(lastMessage, sources);
 
         const usage = await result.usage;
         logger.debug(JSON.stringify(usage));
 
-        await saveTokenUsage(textMessage.id, usage.promptTokens, 0);
+        await saveTokenUsage(lastUserMessage.id, usage.promptTokens, 0);
         await saveMessage(lastMessage, id, modelId, 0, usage.completionTokens);
       } finally {
         await unlockConversation(id);
