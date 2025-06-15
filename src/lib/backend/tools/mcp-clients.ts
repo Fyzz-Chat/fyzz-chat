@@ -1,15 +1,11 @@
-import { createHash } from "crypto";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { experimental_createMCPClient as createMCPClient } from "ai";
 
-export async function createHttpMcpClient(serverUrl: string, sessionId: string) {
+export async function createHttpMcpClient(serverUrl: string) {
   const url = new URL(serverUrl);
-  const hashSessionId = createHash("sha1").update(sessionId).digest("hex");
 
   return await createMCPClient({
-    transport: new StreamableHTTPClientTransport(url, {
-      sessionId: hashSessionId,
-    }),
+    transport: new StreamableHTTPClientTransport(url),
   });
 }
 

@@ -1,11 +1,9 @@
 import { getMcpServers } from "@/lib/actions/users";
 import { createHttpMcpClient, createSseMcpClient } from "@/lib/backend/tools/mcp-clients";
 import { logDuration } from "@/lib/backend/utils";
-import { getUserIdFromSession } from "@/lib/dao/users";
 
 export async function getMcpClients() {
   const beforeFetch = performance.now();
-  const userId = await getUserIdFromSession();
 
   const response = await getMcpServers();
 
@@ -26,7 +24,7 @@ export async function getMcpClients() {
 
     const clientPromise = serverUrl.includes("/sse")
       ? createSseMcpClient(serverUrl)
-      : createHttpMcpClient(serverUrl, userId.toString());
+      : createHttpMcpClient(serverUrl);
 
     clientPromises.push(clientPromise);
   }
