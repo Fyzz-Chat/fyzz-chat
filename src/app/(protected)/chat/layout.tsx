@@ -1,9 +1,13 @@
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
-import ModelStoreInitializer from "@/components/chat/model-store-initializer";
 import InputForm from "@/components/input-form";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { ChatProvider } from "@/lib/contexts/chat-context";
+import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
+
+const LazyModelStoreInitializer = dynamic(
+  () => import("@/components/chat/model-store-initializer")
+);
 
 export default async function ChatLayout({
   children,
@@ -14,7 +18,7 @@ export default async function ChatLayout({
 
   return (
     <ChatProvider>
-      <ModelStoreInitializer providers={providers} />
+      <LazyModelStoreInitializer providers={providers} />
       <div className="relative flex flex-1 flex-col min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
         {children}
         <div className="absolute max-w-5xl mx-auto bottom-0 left-0 right-0">
