@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 const LazyIntroDialog = dynamic(() => import("@/components/chat/intro-dialog"));
+const LazyAuthCard = dynamic(() => import("@/components/auth/auth-card"));
 
 export default async function ChatPage({
   searchParams,
@@ -30,7 +31,7 @@ export default async function ChatPage({
           (login === "true" || register === "true") && "flex"
         )}
       >
-        <AuthCard
+        <LazyAuthCard
           title={login === "true" ? "Welcome back!" : "Let's get started!"}
           description={
             login === "true"
@@ -42,7 +43,7 @@ export default async function ChatPage({
           ctaLink={`/chat?${login === "true" ? "register=true" : "login=true"}`}
         >
           {login === "true" ? <LoginForm /> : <RegisterForm />}
-        </AuthCard>
+        </LazyAuthCard>
       </div>
     </div>
   );
