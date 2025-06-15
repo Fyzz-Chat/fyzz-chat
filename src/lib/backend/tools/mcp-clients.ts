@@ -1,5 +1,6 @@
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { experimental_createMCPClient as createMCPClient } from "ai";
+import { Experimental_StdioMCPTransport as StdioMCPTransport } from "ai/mcp-stdio";
 
 export async function createHttpMcpClient(serverUrl: string) {
   const url = new URL(serverUrl);
@@ -19,5 +20,19 @@ export async function createSseMcpClient(
       url: serverUrl,
       headers,
     },
+  });
+}
+
+export async function createStdioMcpClient(
+  command: string,
+  args: string[],
+  env: Record<string, string>
+) {
+  return await createMCPClient({
+    transport: new StdioMCPTransport({
+      command,
+      args,
+      env,
+    }),
   });
 }

@@ -1,5 +1,9 @@
 import { getMcpServers } from "@/lib/actions/users";
-import { createHttpMcpClient, createSseMcpClient } from "@/lib/backend/tools/mcp-clients";
+import {
+  createHttpMcpClient,
+  createSseMcpClient,
+  createStdioMcpClient,
+} from "@/lib/backend/tools/mcp-clients";
 import { logDuration } from "@/lib/backend/utils";
 
 export async function getMcpClients() {
@@ -17,8 +21,17 @@ export async function getMcpClients() {
   for (const serverKey of Object.keys(servers)) {
     const server = servers[serverKey];
     const serverUrl = server.url;
+    const command = server.command;
+    const args = server.args;
+    const env = server.env || {};
 
-    if (!serverUrl || !serverUrl.startsWith("https")) {
+    if (command && args) {
+      const clientPromise = createStdioMcpClient(command, args, env);
+      clientPromises.push(clientPromise);
+      continue;
+    }
+
+    if (!serverUrl || !serverUrl.startsWith("http")) {
       continue;
     }
 
