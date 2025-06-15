@@ -1,4 +1,3 @@
-import AuthCard from "@/components/auth/auth-card";
 import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
 import ChatWelcomeSection from "@/components/chat/chat-welcome-section";
@@ -15,6 +14,8 @@ export default async function ChatPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { login, register } = await searchParams;
+  const isLogin = login === "true";
+  const isRegister = register === "true";
 
   return (
     <div className="flex-1 flex items-center justify-center p-4">
@@ -25,26 +26,27 @@ export default async function ChatPage({
           </ChatWelcomeSection>
         </div>
       </ViewTransitionWrapper>
-      <div
-        className={cn(
-          "hidden fixed items-center justify-center inset-0 backdrop-blur-sm z-20 animate-in fade-in slide-in-from-bottom-4 duration-500",
-          (login === "true" || register === "true") && "flex"
-        )}
-      >
-        <LazyAuthCard
-          title={login === "true" ? "Welcome back!" : "Let's get started!"}
-          description={
-            login === "true"
-              ? "Sign in to your account to continue"
-              : "Create an account to continue"
-          }
-          ctaQuestion={login === "true" ? "First time here?" : "Already have an account?"}
-          ctaText={login === "true" ? "Sign up" : "Login"}
-          ctaLink={`/chat?${login === "true" ? "register=true" : "login=true"}`}
+      {(isLogin || isRegister) && (
+        <div
+          className={cn(
+            "flex fixed items-center justify-center inset-0 backdrop-blur-sm z-20 animate-in fade-in slide-in-from-bottom-4 duration-500"
+          )}
         >
-          {login === "true" ? <LoginForm /> : <RegisterForm />}
-        </LazyAuthCard>
-      </div>
+          <LazyAuthCard
+            title={isLogin ? "Welcome back!" : "Let's get started!"}
+            description={
+              isLogin
+                ? "Sign in to your account to continue"
+                : "Create an account to continue"
+            }
+            ctaQuestion={isLogin ? "First time here?" : "Already have an account?"}
+            ctaText={isLogin ? "Sign up" : "Login"}
+            ctaLink={`/chat?${isLogin ? "register=true" : "login=true"}`}
+          >
+            {isLogin ? <LoginForm /> : <RegisterForm />}
+          </LazyAuthCard>
+        </div>
+      )}
     </div>
   );
 }
