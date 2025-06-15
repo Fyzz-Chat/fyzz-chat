@@ -206,7 +206,7 @@ export async function mapMessages(messages: PartialMessage[]): Promise<UIMessage
     messages.map(async (message) => ({
       ...message,
       role: message.role as "system" | "user" | "assistant" | "data",
-      parts: JSON.parse(message.parts as string),
+      parts: filterParts(JSON.parse(message.parts as string)),
       experimental_attachments:
         (message.files as JsonArray[])?.map((file: any) => ({
           name: file.name,
@@ -217,6 +217,18 @@ export async function mapMessages(messages: PartialMessage[]): Promise<UIMessage
   );
 
   return mappedMessages;
+}
+
+function filterParts(parts: UIMessage["parts"]) {
+  return parts.filter((part) => {
+    if (part.type === "step-start") {
+      return false;
+    }
+    if (part.type === "tool-invocation") {
+      return part.toolInvocation.toolName === "memory";
+    }
+    return true;
+  });
 }
 
 export async function public_getConversationUntilMessage(messageId: string) {
