@@ -16,7 +16,6 @@ import {
   type FormEvent,
   type KeyboardEvent,
   forwardRef,
-  memo,
   useEffect,
   useRef,
 } from "react";
@@ -30,9 +29,8 @@ import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
 import type { Attachment } from "ai";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { v4 as uuidv4 } from "uuid";
-import { ModelMenu } from "./model-menu";
 import { AspectRatio } from "./ui/aspect-ratio";
 import {
   DropdownMenu,
@@ -43,7 +41,7 @@ import {
 import { Input } from "./ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
-const MemoizedModelMenu = memo(ModelMenu);
+const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
 function fileToAttachment(file: File): Attachment {
   return {
@@ -322,7 +320,7 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
           />
           <div className="flex items-center w-full gap-2">
             <div className="flex items-center gap-2 mr-auto">
-              <MemoizedModelMenu />
+              <LazyModelMenu />
             </div>
             <TooltipProvider>
               <Tooltip delayDuration={0}>

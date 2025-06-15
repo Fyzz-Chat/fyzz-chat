@@ -8,8 +8,8 @@ import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
-import { ChevronDown, MessageCircleDashed } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { memo, useState } from "react";
 import React from "react";
 import { HoverPopover } from "./hover-popover";
 import { TemporaryChatSwitch } from "./temporary-chat-switch";
@@ -33,7 +33,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 
-export function ModelMenu() {
+function ModelMenu() {
   const [open, setOpen] = useState(false);
   const { model, providers } = useModelStore();
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -172,3 +172,5 @@ function StatusList({
     </Command>
   );
 }
+
+export default memo(ModelMenu);
