@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import { MemoryStick, Monitor, Puzzle, Shield, User } from "lucide-react";
+import { Brain, Monitor, Puzzle, Shield, User } from "lucide-react";
 
 export default async function SettingsPage() {
   const userId = await getUserIdFromSession();
@@ -49,7 +49,7 @@ export default async function SettingsPage() {
                   value="memory"
                   className="flex items-center justify-center min-w-20 px-3 py-2"
                 >
-                  <MemoryStick className="w-4 h-4 mr-2" />
+                  <Brain className="w-4 h-4 mr-2" />
                   Memory
                 </TabsTrigger>
                 <TabsTrigger
