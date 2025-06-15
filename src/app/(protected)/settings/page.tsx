@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
+import { MemoryStick, Monitor, Puzzle, Shield, User } from "lucide-react";
 
 export default async function SettingsPage() {
   const userId = await getUserIdFromSession();
@@ -32,7 +33,7 @@ export default async function SettingsPage() {
   const hasPassword = Boolean(user?.password);
 
   return (
-    <div className="relative flex flex-1 flex-col items-center justify-start pt-16 px-4 min-w-[320px] max-h-svh md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
+    <div className="relative flex flex-1 flex-col items-center justify-start pt-16 px-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
       <ViewTransitionWrapper className="flex flex-1 w-full md:overflow-y-auto">
         <div className="flex flex-col gap-4 w-full max-w-xl mx-auto">
           <div className="flex flex-col gap-2">
@@ -41,22 +42,42 @@ export default async function SettingsPage() {
               Manage your account settings and preferences.
             </p>
           </div>
-          <Tabs defaultValue="memory" className="w-full">
+          <Tabs defaultValue="memory" className="w-full pb-5">
             <div className="overflow-x-auto md:overflow-x-visible">
-              <TabsList className="flex w-full min-w-max gap-2 md:grid md:grid-cols-5 md:gap-0 px-1">
-                <TabsTrigger value="memory" className="flex-shrink-0 min-w-20 px-3">
+              <TabsList className="grid grid-cols-3 w-full md:grid-cols-5 md:gap-0 px-1 h-auto">
+                <TabsTrigger
+                  value="memory"
+                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                >
+                  <MemoryStick className="w-4 h-4 mr-2" />
                   Memory
                 </TabsTrigger>
-                <TabsTrigger value="security" className="flex-shrink-0 min-w-20 px-3">
+                <TabsTrigger
+                  value="security"
+                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
                   Security
                 </TabsTrigger>
-                <TabsTrigger value="account" className="flex-shrink-0 min-w-20 px-3">
+                <TabsTrigger
+                  value="account"
+                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                >
+                  <User className="w-4 h-4 mr-2" />
                   Account
                 </TabsTrigger>
-                <TabsTrigger value="display" className="flex-shrink-0 min-w-20 px-3">
+                <TabsTrigger
+                  value="display"
+                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                >
+                  <Monitor className="w-4 h-4 mr-2" />
                   Display
                 </TabsTrigger>
-                <TabsTrigger value="mcp" className="flex-shrink-0 min-w-20 px-3">
+                <TabsTrigger
+                  value="mcp"
+                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                >
+                  <Puzzle className="w-4 h-4 mr-2" />
                   MCP
                 </TabsTrigger>
               </TabsList>
