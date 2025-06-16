@@ -28,14 +28,13 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
     apple: "/apple-icon.png",
   },
-  // creator: "",
+  creator: "Richard Kovacs",
   robots: "index, follow",
   openGraph: {
     ...openGraph,
     url: conf.host,
   },
   twitter: {
-    // creator: "@",
     card: "summary_large_image",
     title: metaTitle,
     description: metaDescription,

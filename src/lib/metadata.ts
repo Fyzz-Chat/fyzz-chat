@@ -23,6 +23,7 @@ export const openGraph: Metadata["openGraph"] = {
 export const twitter: Metadata["twitter"] = {
   title: metaTitle,
   description: metaDescription,
+  creator: "@rchardkovacs",
   card: "summary_large_image",
   images: [
     {
