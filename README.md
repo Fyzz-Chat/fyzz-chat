@@ -12,6 +12,10 @@
 
 Coming soon!
 
+## Hosted version
+
+Interested in the hosted version? Check out [Fyzz Chat](https://www.fyzz.chat/chat) in action. We have everything configured for you, plus some extra features.
+
 ## Docs for Self-hosters
 
 ### Environment Variables
