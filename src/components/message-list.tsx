@@ -13,6 +13,17 @@ import { useModelStore } from "@/stores/model-store";
 
 const MemoizedMessageItem = memo(MessageItem);
 
+function getErrorMessage(error: { message: string }) {
+  if (error.message === "content_filter") {
+    return "Uh oh! This message was a little too spicy. Please try again with a different message.";
+  } else if (error.message === "file_too_large") {
+    return "Uh oh! That was a huge file. Try something smaller than 4MB next time.";
+  } else if (error.message === "conversation_locked") {
+    return "Woah, slow down! We are still in the middle of saving your previous message.";
+  }
+  return "Something went wrong.";
+}
+
 export function MessagesList({
   initialConversation,
   initialMessages,
@@ -50,13 +61,7 @@ export function MessagesList({
       {error && (
         <div className="flex flex-col gap-1">
           <div className="text-destructive p-4 border border-destructive rounded-lg">
-            <p>
-              {error.message === "content_filter"
-                ? "Uh oh! This message was a little too spicy. Please try again in a different conversation."
-                : error.message === "file_too_large"
-                  ? "Uh oh! That was a huge file. Try something smaller than 25MB next time."
-                  : "Something went wrong."}
-            </p>
+            <p>{getErrorMessage(error)}</p>
           </div>
           <span className="h-8" />
         </div>
