@@ -161,7 +161,13 @@ export async function POST(req: NextRequest) {
 
   logDuration(start, "Response time");
 
-  result.consumeStream();
+  result.consumeStream({
+    onError: async (error: any) => {
+      logger.error(error.message);
+      await unlockConversation(id);
+      await closeMcpClients(mcpClients);
+    },
+  });
 
   return result.toDataStreamResponse({
     sendReasoning: true,
