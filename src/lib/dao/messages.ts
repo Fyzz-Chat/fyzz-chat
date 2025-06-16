@@ -126,8 +126,8 @@ export async function uploadAttachments(
   for (const attachment of messageAttachments) {
     const base64Data = attachment.url.split(",")[1];
     const decodedData = Buffer.from(base64Data, "base64");
-    if (decodedData.length > 25 * 1024 * 1024) {
-      throw new Error(`File "${attachment.name}" exceeds the maximum size limit of 25MB`);
+    if (decodedData.length > 4 * 1024 * 1024) {
+      throw new Error(`File "${attachment.name}" exceeds the maximum size limit of 4MB`);
     }
   }
 
