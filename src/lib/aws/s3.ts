@@ -1,6 +1,7 @@
 import conf from "@/lib/config";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
+import { getSignedUrl as presignUrl } from "@aws-sdk/s3-request-presigner";
 import { ensure } from "../utils";
 
 let client: S3Client | null = null;
@@ -62,4 +63,22 @@ export function getFileUrlSigned(key: string) {
   const urlSigned = getSignedUrl({ url, keyPairId, dateLessThan, privateKey });
 
   return urlSigned;
+}
+
+export async function generatePresignedUploadUrl(
+  key: string,
+  expiresInSeconds = 60 * 10
+): Promise<string> {
+  ensure(client, "AWS is not configured");
+
+  const command = new PutObjectCommand({
+    Bucket: conf.awsUploadsBucket,
+    Key: key,
+  });
+
+  const url = await presignUrl(client, command, {
+    expiresIn: expiresInSeconds,
+  });
+
+  return url;
 }
