@@ -8,7 +8,7 @@ import {
   useCreateConversation,
   useCreateConversationOptimistic,
 } from "@/lib/queries/conversations";
-import { Camera, Paperclip, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   type ClipboardEvent,
@@ -23,18 +23,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import CameraCaptureInput from "@/components/input-form/camera-capture-input";
 import FileList from "@/components/input-form/file-list";
 import FileUploadInput from "@/components/input-form/file-upload-input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
+import AttachmentButton from "@/components/input-form/attachment-button";
 import useTempChat from "@/hooks/use-temp-chat";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -174,10 +164,6 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
       }
     }
 
-    function handleCameraClick() {
-      cameraInputRef.current?.click();
-    }
-
     useEffect(() => {
       if (!files && fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -230,44 +216,12 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
             <div className="flex items-center gap-2 mr-auto">
               <LazyModelMenu />
             </div>
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        className="shrink-0 size-9 p-5"
-                        disabled={!imageSupport && !pdfSupport}
-                      >
-                        <Paperclip size={16} />
-                      </Button>
-                    </TooltipTrigger>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    onCloseAutoFocus={(e) => e.preventDefault()}
-                  >
-                    <DropdownMenuItem
-                      onClick={handleCameraClick}
-                      className="flex lg:hidden"
-                    >
-                      <Camera size={16} />
-                      <span>Take photo</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
-                      <Paperclip size={16} />
-                      <span>Upload files</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <TooltipContent>
-                  <p>Attach files</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <AttachmentButton
+              imageSupport={imageSupport}
+              pdfSupport={pdfSupport}
+              cameraInputRef={cameraInputRef}
+              fileInputRef={fileInputRef}
+            />
             {status === "submitted" || status === "streaming" ? (
               <Button
                 type="submit"
