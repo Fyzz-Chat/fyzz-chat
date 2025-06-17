@@ -8,12 +8,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { FileText, Trash } from "lucide-react";
 import Image from "next/image";
 
 export default function FileList() {
   const { files, setFiles } = useFileStore();
+
+  if (!isFileList(files)) {
+    return null;
+  }
 
   return (
     <div

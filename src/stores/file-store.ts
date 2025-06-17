@@ -1,8 +1,10 @@
+import { isFileList } from "@/lib/utils";
+import type { Attachment } from "ai";
 import { create } from "zustand";
 
 interface FileStore {
-  files: FileList | undefined;
-  setFiles: (files: FileList | undefined) => void;
+  files: Attachment[] | FileList | undefined;
+  setFiles: (files: Attachment[] | FileList | undefined) => void;
 }
 
 const scaleImageToMaxSize = async (file: File, maxSizeKB = 3000): Promise<Blob> => {
@@ -74,6 +76,11 @@ export const useFileStore = create<FileStore>((set) => ({
   setFiles: async (files) => {
     if (!files) {
       set({ files: undefined });
+      return;
+    }
+
+    if (!isFileList(files)) {
+      set({ files });
       return;
     }
 

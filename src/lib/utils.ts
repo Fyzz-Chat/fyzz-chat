@@ -81,3 +81,12 @@ export function filterMessagesUpToAnchor(
       return m;
     });
 }
+
+export function isFileList(value: any): value is FileList {
+  return (
+    value &&
+    typeof value === "object" &&
+    typeof value.length === "number" &&
+    typeof value.item === "function"
+  );
+}

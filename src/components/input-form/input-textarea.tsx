@@ -1,6 +1,7 @@
 "use client";
 
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
+import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import type { ClipboardEvent, KeyboardEvent } from "react";
@@ -37,7 +38,7 @@ export default function InputTextarea({
 
       const newFiles = new DataTransfer();
       // First add existing files if any
-      if (files) {
+      if (isFileList(files)) {
         Array.from(files).forEach((existingFile) => {
           newFiles.items.add(existingFile);
         });

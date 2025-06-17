@@ -17,7 +17,7 @@ import ActionButton from "@/components/input-form/action-button";
 import AttachmentButton from "@/components/input-form/attachment-button";
 import InputTextarea from "@/components/input-form/input-textarea";
 import useTempChat from "@/hooks/use-temp-chat";
-import { cn } from "@/lib/utils";
+import { cn, isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
@@ -84,7 +84,9 @@ export default function InputForm({ className }: { className?: string }) {
         id: messageId,
         content: input,
         role: "user",
-        experimental_attachments: files ? Array.from(files).map(fileToAttachment) : [],
+        experimental_attachments: isFileList(files)
+          ? Array.from(files).map(fileToAttachment)
+          : [],
       },
       conversationId: stableId,
     });
