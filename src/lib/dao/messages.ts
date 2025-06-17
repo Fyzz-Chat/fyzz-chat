@@ -117,49 +117,6 @@ export async function saveMessage(
   return newMessage;
 }
 
-export async function uploadAttachments(
-  messageAttachments: Attachment[],
-  userId: number,
-  conversationId: string
-) {
-  // Validate file sizes upfront before starting any uploads
-  for (const attachment of messageAttachments) {
-    const base64Data = attachment.url.split(",")[1];
-    const decodedData = Buffer.from(base64Data, "base64");
-    if (decodedData.length > 4 * 1024 * 1024) {
-      throw new Error(`File "${attachment.name}" exceeds the maximum size limit of 4MB`);
-    }
-  }
-
-  const attachments = await Promise.all(
-    messageAttachments.map(async (attachment: Attachment) => {
-      const base64Data = attachment.url.split(",")[1];
-      const decodedData = Buffer.from(base64Data, "base64");
-
-      const blob = new Blob([decodedData], { type: attachment.contentType });
-
-      const fileId = uuidv4();
-      const filePath = `${userId}/${conversationId}/${fileId}`;
-
-      const file = new File([blob], attachment.name || fileId, {
-        type: attachment.contentType,
-      });
-
-      if (awsConfigured) {
-        await uploadFile(file, filePath);
-      }
-
-      return {
-        name: attachment.name || fileId,
-        contentType: attachment.contentType,
-        url: filePath,
-      };
-    })
-  );
-
-  return attachments;
-}
-
 export async function saveTokenUsage(
   messageId: string,
   promptTokens: number,

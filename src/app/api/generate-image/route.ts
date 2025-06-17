@@ -1,6 +1,5 @@
 import { appendMessageToConversation } from "@/lib/dao/conversations";
-import { uploadAttachments } from "@/lib/dao/messages";
-import { getUserFromSession } from "@/lib/dao/users";
+import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { openai } from "@ai-sdk/openai";
 import { experimental_generateImage as generateImage } from "ai";
@@ -9,7 +8,7 @@ import type { NextRequest } from "next/server";
 export const maxDuration = 55;
 
 export async function POST(req: NextRequest) {
-  const user = await getUserFromSession();
+  await getUserIdFromSession();
 
   if (!process.env.OPENAI_API_KEY) {
     return new Response("OpenAI API key not configured", { status: 500 });
@@ -38,12 +37,12 @@ export async function POST(req: NextRequest) {
       url: `data:image/png;base64,${image.base64}`,
     };
 
-    // Upload the image and get the attachment
-    const attachments = await uploadAttachments(
-      [imageAttachment],
-      user.id,
-      conversationId
-    );
+    // DEPRECATED: Upload the image and get the attachment
+    // const attachments = await uploadAttachments(
+    //   [imageAttachment],
+    //   user.id,
+    //   conversationId
+    // );
 
     const userMessage: any = {
       role: "user",
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
     const assistantMessage: any = {
       role: "assistant",
       content: "Here is your generated image:",
-      files: attachments,
+      // files: attachments,
     };
 
     await appendMessageToConversation(userMessage, conversationId);
