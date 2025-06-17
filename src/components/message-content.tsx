@@ -2,6 +2,13 @@
 
 // xonokai, tomorrow, twilight, prism
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -12,7 +19,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { Message } from "ai";
-import { Copy, FileText } from "lucide-react";
+import { Copy, Download, FileText, Maximize2 } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -220,16 +227,41 @@ export function MessageContent({ message }: { message: Message }) {
         {message.experimental_attachments?.map((attachment, index) => {
           if (attachment.contentType?.startsWith("image/")) {
             return (
-              <div
-                key={`${message.id}-attachment-${index}`}
-                className="relative w-full h-64 flex justify-end"
-              >
-                <img
-                  src={attachment.url}
-                  alt={attachment.name || ""}
-                  className="absolute h-full rounded-lg object-contain"
-                />
-              </div>
+              <Dialog key={`${message.id}-attachment-${index}`}>
+                <DialogTrigger asChild>
+                  <div className="group relative w-full max-w-md cursor-pointer">
+                    <div className="relative aspect-video overflow-hidden rounded-lg">
+                      <img
+                        src={attachment.url}
+                        alt={attachment.name || "User uploaded image"}
+                        className="h-full w-full object-cover group-hover:brightness-75"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <Maximize2 className="size-4 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="w-fit h-fit max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background rounded-lg">
+                  <DialogHeader className="sr-only">
+                    <DialogTitle>{attachment.name || "User uploaded image"}</DialogTitle>
+                  </DialogHeader>
+                  <div className="relative">
+                    <img
+                      src={attachment.url}
+                      alt={attachment.name || "User uploaded image"}
+                      className="w-auto h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+                    />
+                    {attachment.name && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                        <p className="text-white text-sm font-medium">
+                          {attachment.name}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
             );
           }
 
