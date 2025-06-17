@@ -1,5 +1,5 @@
 import { updateConversationTitle } from "@/lib/actions/conversations";
-import { awsConfigured } from "@/lib/aws/s3";
+import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import {
@@ -15,16 +15,12 @@ import {
   lockConversation,
   unlockConversation,
 } from "@/lib/dao/conversations";
-import {
-  getMessages,
-  saveMessage,
-  saveTokenUsage,
-  uploadAttachments,
-} from "@/lib/dao/messages";
+import { getMessages, saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import {
+  type Attachment,
   type Message,
   appendClientMessage,
   appendResponseMessages,
@@ -65,10 +61,25 @@ export async function POST(req: NextRequest) {
 
   if (experimental_attachments) {
     try {
-      const attachments = awsConfigured
-        ? await uploadAttachments(experimental_attachments, user.id, id)
-        : experimental_attachments;
-      textMessage.files = attachments;
+      if (awsConfigured) {
+        const key = `${user.id}/${id}`;
+        // Files saved in the database must be the keys
+        textMessage.files = experimental_attachments.map((attachment: Attachment) => ({
+          ...attachment,
+          url: `${key}/${attachment.url}`,
+        }));
+
+        // Files sent to the model must be the signed URLs
+        message.experimental_attachments = experimental_attachments.map(
+          (attachment: Attachment) => ({
+            ...attachment,
+            url: getFileUrlSigned(`${key}/${attachment.url}`),
+          })
+        );
+      } else {
+        // If AWS is not configured, we simply save the files in the database
+        textMessage.files = experimental_attachments;
+      }
     } catch (error) {
       logger.error(error);
       await unlockConversation(id);

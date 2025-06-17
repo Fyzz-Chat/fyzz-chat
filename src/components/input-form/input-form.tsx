@@ -17,23 +17,14 @@ import ActionButton from "@/components/input-form/action-button";
 import AttachmentButton from "@/components/input-form/attachment-button";
 import InputTextarea from "@/components/input-form/input-textarea";
 import useTempChat from "@/hooks/use-temp-chat";
-import { cn, isFileList } from "@/lib/utils";
+import { cn, fileToAttachment, isFileList, uploadFiles } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
-import type { Attachment } from "ai";
 import dynamic from "next/dynamic";
 
 const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
-
-function fileToAttachment(file: File): Attachment {
-  return {
-    name: file.name,
-    contentType: file.type,
-    url: URL.createObjectURL(file),
-  };
-}
 
 export default function InputForm({ className }: { className?: string }) {
   useTempChat();
@@ -45,7 +36,7 @@ export default function InputForm({ className }: { className?: string }) {
   const { input, setInput } = useInputStore();
   const { model, temporaryChat } = useModelStore();
   const { stableId, status, setChatInput } = useChatContext();
-  const { files } = useFileStore();
+  const { files, setFiles } = useFileStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const imageSupport = model?.features?.some((feature) => feature.name === "Images");
@@ -78,6 +69,9 @@ export default function InputForm({ className }: { className?: string }) {
       router.push(url);
     }
 
+    const attachments = await uploadFiles(stableId, files);
+    setFiles(attachments);
+
     const messageId = setChatInput(input);
     await addMessage.mutateAsync({
       message: {
@@ -85,8 +79,10 @@ export default function InputForm({ className }: { className?: string }) {
         content: input,
         role: "user",
         experimental_attachments: isFileList(files)
-          ? Array.from(files).map(fileToAttachment)
-          : [],
+          ? Array.from(files).map((file) =>
+              fileToAttachment(file, URL.createObjectURL(file))
+            )
+          : attachments,
       },
       conversationId: stableId,
     });

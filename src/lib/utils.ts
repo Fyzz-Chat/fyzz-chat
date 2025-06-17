@@ -1,4 +1,4 @@
-import type { Message } from "ai";
+import type { Attachment, Message } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -89,4 +89,73 @@ export function isFileList(value: any): value is FileList {
     typeof value.length === "number" &&
     typeof value.item === "function"
   );
+}
+
+export async function uploadFiles(
+  conversationId: string,
+  fileList?: Attachment[] | FileList
+): Promise<Attachment[]> {
+  if (!fileList) {
+    return [];
+  }
+
+  if (!isFileList(fileList)) {
+    return fileList;
+  }
+
+  const uploadResults = fileList
+    ? await fetch(
+        `/api/conversations/${conversationId}/upload?count=${fileList.length}`
+      ).then((res) => res.json())
+    : [];
+
+  const uploads = await Promise.all(
+    Array.from(fileList).map(async (file, index) => {
+      console.debug(`Uploading file ${index + 1} of ${fileList.length}...`);
+
+      const { key, url } = uploadResults[index];
+
+      if (!url) {
+        const base64 = await fileToBase64(file);
+        return fileToAttachment(file, base64);
+      }
+
+      const response = await fetch(url, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      console.debug(`File ${index + 1} of ${fileList.length} uploaded successfully.`);
+
+      return fileToAttachment(file, key);
+    })
+  );
+
+  return uploads;
+}
+
+export function fileToAttachment(file: File, key: string): Attachment {
+  return {
+    name: file.name,
+    contentType: file.type,
+    url: key,
+  };
+}
+
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
 }
