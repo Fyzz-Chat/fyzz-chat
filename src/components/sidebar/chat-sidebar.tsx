@@ -263,11 +263,14 @@ function ConversationLink({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteClick} disabled={isDeleting}>
+            <AlertDialogAction
+              onClick={handleDeleteClick}
+              disabled={isDeleting}
+              className="w-20"
+            >
               {isDeleting ? (
                 <>
                   <Loader2 size={16} className="animate-spin mr-2" />
-                  Deleting...
                 </>
               ) : (
                 "Delete"
