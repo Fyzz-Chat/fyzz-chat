@@ -22,13 +22,13 @@ import TextareaAutosize from "react-textarea-autosize";
 
 import CameraCaptureInput from "@/components/input-form/camera-capture-input";
 import FileList from "@/components/input-form/file-list";
+import FileUploadInput from "@/components/input-form/file-upload-input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -221,17 +221,10 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
             className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-sm resize-none"
           />
           <CameraCaptureInput ref={cameraInputRef} />
-          <Input
+          <FileUploadInput
             ref={fileInputRef}
-            type="file"
-            multiple
-            onChange={(event) => {
-              if (event.target.files) {
-                setFiles(event.target.files);
-              }
-            }}
-            accept={`${imageSupport ? "image/png,image/jpeg,image/jpg,image/webp" : ""}${imageSupport && pdfSupport ? "," : ""}${pdfSupport ? "application/pdf" : ""}`}
-            className="hidden"
+            imageSupport={imageSupport}
+            pdfSupport={pdfSupport}
           />
           <div className="flex items-center w-full gap-2">
             <div className="flex items-center gap-2 mr-auto">
