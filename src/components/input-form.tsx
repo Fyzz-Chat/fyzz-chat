@@ -11,7 +11,6 @@ import {
 import { Camera, Paperclip, Send } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  type ChangeEvent,
   type ClipboardEvent,
   type FormEvent,
   type KeyboardEvent,
@@ -21,6 +20,7 @@ import {
 } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
+import CameraCaptureInput from "@/components/input-form/camera-capture-input";
 import FileList from "@/components/input-form/file-list";
 import {
   DropdownMenu,
@@ -178,36 +178,6 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
       cameraInputRef.current?.click();
     }
 
-    function handlePhotoCapture(event: ChangeEvent<HTMLInputElement>) {
-      if (event.target.files && event.target.files.length > 0) {
-        try {
-          // Ensure we have a valid file
-          const file = event.target.files[0];
-          if (!file.type.startsWith("image/")) {
-            console.error("Invalid file type from camera");
-            return;
-          }
-
-          // Create a new File object to ensure proper handling
-          const processedFile = new File(
-            [file],
-            `camera-${Date.now()}.${file.type.split("/")[1]}`,
-            {
-              type: file.type,
-            }
-          );
-
-          // Create a new FileList with the processed file
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(processedFile);
-
-          setFiles(dataTransfer.files);
-        } catch (error) {
-          console.error("Error processing camera input:", error);
-        }
-      }
-    }
-
     useEffect(() => {
       if (!files && fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -250,14 +220,7 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
             rows={1}
             className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-sm resize-none"
           />
-          <Input
-            ref={cameraInputRef}
-            type="file"
-            capture="environment"
-            accept="image/*"
-            className="hidden"
-            onChange={handlePhotoCapture}
-          />
+          <CameraCaptureInput ref={cameraInputRef} />
           <Input
             ref={fileInputRef}
             type="file"
