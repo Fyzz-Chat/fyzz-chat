@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -245,6 +246,9 @@ export function MessageContent({ message }: { message: Message }) {
                 <DialogContent className="w-fit h-fit max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background rounded-lg">
                   <DialogHeader className="sr-only">
                     <DialogTitle>{attachment.name || "User uploaded image"}</DialogTitle>
+                    <DialogDescription>
+                      Full size view of the uploaded image
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="relative">
                     <img
