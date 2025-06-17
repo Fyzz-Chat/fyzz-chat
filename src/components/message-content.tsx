@@ -20,7 +20,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { Message } from "ai";
-import { Copy, Download, FileText, Maximize2 } from "lucide-react";
+import { Check, Copy, FileText, Maximize2 } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -68,9 +68,20 @@ const CodeBlock = memo(
   ({ language, children }: { language: string; children: string }) => {
     const [isRendered, setIsRendered] = useState(false);
     const [isStable, setIsStable] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
     const codeRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef(children);
     const timeoutRef = useRef<NodeJS.Timeout>(null);
+
+    const handleCopy = async () => {
+      try {
+        await navigator.clipboard.writeText(String(children));
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 1500);
+      } catch (err) {
+        console.error("Failed to copy text: ", err);
+      }
+    };
 
     useEffect(() => {
       setIsStable(false);
@@ -111,14 +122,27 @@ const CodeBlock = memo(
 
     return (
       <div className="relative my-2 overflow-x-auto group/code" ref={codeRef}>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-2 size-8 opacity-0 group-hover/code:opacity-100 transition-opacity duration-100 z-10"
-          onClick={() => navigator.clipboard.writeText(String(children))}
-        >
-          <Copy className="size-4" />
-        </Button>
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`absolute top-2 right-2 size-8 transition-opacity duration-100 z-10 ${
+              isCopied ? "opacity-100" : "opacity-0 group-hover/code:opacity-100"
+            }`}
+            onClick={handleCopy}
+          >
+            {isCopied ? (
+              <Check className="size-4 text-green-500" />
+            ) : (
+              <Copy className="size-4" />
+            )}
+          </Button>
+          {isCopied && (
+            <div className="absolute top-2 right-12 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20">
+              Copied!
+            </div>
+          )}
+        </div>
         {isRendered && isStable ? (
           <MemoizedSyntaxHighlighter language={language}>
             {children.replace(/\n$/, "")}
