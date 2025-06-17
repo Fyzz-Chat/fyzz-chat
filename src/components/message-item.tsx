@@ -20,6 +20,7 @@ export function MessageItem({
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(message.content);
   const [inProgress, setInProgress] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   async function handleRegenerateMessage() {
     setInProgress(true);
@@ -64,6 +65,16 @@ export function MessageItem({
   function handleCancelEdit() {
     setIsEditing(false);
     setContent(message.content);
+  }
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
   }
 
   useEffect(() => {
@@ -134,29 +145,43 @@ export function MessageItem({
             </Button>
           </>
         )}
-        <TooltipProvider>
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "size-8 p-0",
-                  message.role === "user" && isEditing && "hidden"
-                )}
-                onClick={() => navigator.clipboard.writeText(message.content)}
-              >
-                <Copy
-                  size={18}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
-                />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">
-              <p>Copy message</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="relative">
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "size-8 p-0",
+                    message.role === "user" && isEditing && "hidden"
+                  )}
+                  onClick={handleCopy}
+                >
+                  {isCopied ? (
+                    <Check
+                      size={18}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                    />
+                  ) : (
+                    <Copy
+                      size={18}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                    />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                <p>Copy message</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {isCopied && (
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20 animate-in fade-in-0 duration-200">
+              Copied!
+            </div>
+          )}
+        </div>
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
