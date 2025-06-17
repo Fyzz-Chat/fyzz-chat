@@ -8,7 +8,7 @@ import {
   useCreateConversation,
   useCreateConversationOptimistic,
 } from "@/lib/queries/conversations";
-import { Camera, FileText, Paperclip, Send, Trash } from "lucide-react";
+import { Camera, Paperclip, Send } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   type ChangeEvent,
@@ -21,6 +21,20 @@ import {
 } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
+import FileList from "@/components/input-form/file-list";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import useTempChat from "@/hooks/use-temp-chat";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -30,16 +44,6 @@ import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
 import type { Attachment } from "ai";
 import dynamic from "next/dynamic";
-import Image from "next/image";
-import { AspectRatio } from "./ui/aspect-ratio";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Input } from "./ui/input";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
@@ -234,59 +238,7 @@ const InputForm = forwardRef<HTMLTextAreaElement, { className?: string }>(
             temporaryChat && "dark:bg-black"
           )}
         >
-          <div
-            className="flex items-center w-full gap-2 transition-all duration-300"
-            style={{
-              marginBottom: files && files.length > 0 ? "16px" : "0px",
-              height: files && files.length > 0 ? "54px" : "0px",
-            }}
-          >
-            {Array.from(files || []).map((file, index) => (
-              <div key={`${file.name}-${index}`} className="relative w-24">
-                <AspectRatio ratio={16 / 9} className="bg-muted">
-                  <TooltipProvider>
-                    <Tooltip delayDuration={0}>
-                      <TooltipTrigger asChild>
-                        {file.type.startsWith("image/") ? (
-                          <Image
-                            src={URL.createObjectURL(file)}
-                            alt={file.name}
-                            fill
-                            className="size-full rounded-md object-cover"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full border rounded-md">
-                            <FileText size={24} />
-                          </div>
-                        )}
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{file.name}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </AspectRatio>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  className="absolute -top-3 -right-3 rounded-full size-6 bg-muted border z-10"
-                  onClick={() => {
-                    const fileList = Array.from(files || []);
-                    const newFiles = new DataTransfer();
-                    for (let i = 0; i < fileList.length; i++) {
-                      if (fileList[i] !== file) {
-                        newFiles.items.add(fileList[i]);
-                      }
-                    }
-                    setFiles(newFiles.files);
-                  }}
-                >
-                  <Trash size={12} />
-                </Button>
-              </div>
-            ))}
-          </div>
+          <FileList />
           <TextareaAutosize
             id="message-input"
             ref={ref}
