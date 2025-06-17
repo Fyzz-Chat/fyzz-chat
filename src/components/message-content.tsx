@@ -230,11 +230,11 @@ export function MessageContent({ message }: { message: Message }) {
               <Dialog key={`${message.id}-attachment-${index}`}>
                 <DialogTrigger asChild>
                   <div className="group relative w-full max-w-md cursor-pointer">
-                    <div className="relative aspect-video overflow-hidden rounded-lg">
+                    <div className="relative overflow-hidden rounded-lg">
                       <img
                         src={attachment.url}
                         alt={attachment.name || "User uploaded image"}
-                        className="h-full w-full object-cover group-hover:brightness-75"
+                        className="w-full h-auto object-contain group-hover:brightness-75"
                       />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <Maximize2 className="size-4 text-white" />
