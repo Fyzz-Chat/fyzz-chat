@@ -2,7 +2,16 @@
 
 ![GitHub Workflow Status](https://github.com/Fyzz-Chat/fyzz-chat/actions/workflows/prod.yml/badge.svg)
 
-## 1-click Deployments
+## About Fyzz Chat
+
+Fyzz Chat is an open-source & self-hostable alternative to ChatGPT, Claude, Gemini, Perplexity, or actually any other LLM you can think of.
+
+Although it comes with some of the most popular models preconfigured for you (you only need some API keys to get started), you can easily add your own models to it if you'd like because Fyzz Chat is built on top of the [Vercel AI SDK](https://ai-sdk.dev/docs/introduction).
+
+## Quick Start
+
+> [!NOTE]
+> Regardless of where you deploy Fyzz Chat, you will need a PostgreSQL database first to store your data.
 
 ### Vercel
 
@@ -16,7 +25,30 @@ Coming soon!
 
 Interested in the hosted version? Check out [Fyzz Chat](https://www.fyzz.chat/chat) in action. We have everything configured for you, plus some extra features.
 
+However, if you prefer to host it yourself, read on!
+
 ## Docs for Self-hosters
+
+There are two ways to self-host Fyzz Chat:
+
+- You can deploy it from the repository as a Next.js project
+- You can use the [Docker image](https://github.com/Fyzz-Chat/fyzz-chat/pkgs/container/fyzz-chat) (which is a containerized version of the Next.js project)
+
+### Database
+
+Fyzz Chat uses Prisma to interact with the database. By default, it uses PostgreSQL as the database engine.
+
+Regardless of where you will host it, you will have to migrate it first to create the database schema. (You will need to have the `DATABASE_URL` environment variable set up for this to work.)
+
+```bash
+bun run db-push
+
+# or
+
+bunx prisma db push
+```
+
+The next step is to set up the environment variables.
 
 ### Environment Variables
 
@@ -26,7 +58,7 @@ The following environment variables are required:
 - `DATABASE_URL`: The URL of your database.
 - `OPENAI_API_KEY`: The API key for OpenAI.
 
-The following environment variables are optional and control which models are available for use:
+The following environment variables are optional and control which additional models are available for use:
 
 - `ANTHROPIC_API_KEY`: The API key for Anthropic.
 - `XAI_API_KEY`: The API key for XAI.
@@ -50,18 +82,9 @@ The last two are required to create signed URLs for uploaded files.
 > [!WARNING]
 > If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will be persisted in the database.
 
-### Database migration
+#### AWS
 
-Before you can start using the application, you need to run the following command to create the database schema:
-
-```bash
-bun run db-push
-
-# or
-
-bunx prisma db push
-```
-
+# TODO: Add docs for AWS
 
 ## Docs for Builders
 
@@ -99,9 +122,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying [`src/app/(public)/page.tsx`](<src/app/(public)/page.tsx>). The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+# TODO: Rewrite Catalyst docs
 
 ## Database
 
