@@ -177,7 +177,7 @@ export function MessageItem({
             </Tooltip>
           </TooltipProvider>
           {isCopied && (
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20 animate-in fade-in-0 duration-200">
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20">
               Copied!
             </div>
           )}
