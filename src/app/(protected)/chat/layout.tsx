@@ -1,5 +1,5 @@
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
-import InputForm from "@/components/input-form";
+import InputForm from "@/components/input-form/input-form";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { ChatProvider } from "@/lib/contexts/chat-context";
 import dynamic from "next/dynamic";
