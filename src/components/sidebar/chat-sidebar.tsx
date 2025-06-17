@@ -24,9 +24,10 @@ import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
-import { MessageSquare, Trash2 } from "lucide-react";
+import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { createElement } from "react";
+import { createElement, useState } from "react";
+import type React from "react";
 import { useInView } from "react-intersection-observer";
 
 function groupConversationsByTime(conversations: PartialConversation[]) {
@@ -169,7 +170,39 @@ function ConversationLink({
   const deleteConversation = useDeleteConversation();
   const router = useRouter();
   const { providers } = useModelStore();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const providerIcon = getProviderIcon(providers, chat.model);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteConversation.mutateAsync({
+        conversationId: chat.id,
+      });
+      if (currentId === chat.id) {
+        router.push("/chat");
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Failed to delete conversation:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleModalOpenChange = (open: boolean) => {
+    // Prevent modal from closing while delete operation is in progress
+    if (!open && isDeleting) {
+      return;
+    }
+    setIsModalOpen(open);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default AlertDialogAction behavior
+    handleDelete();
+  };
 
   return (
     <div className="group/chat relative">
@@ -204,7 +237,7 @@ function ConversationLink({
           </p>
         )}
       </FastLink>
-      <AlertDialog>
+      <AlertDialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
         <AlertDialogTrigger asChild>
           <Button
             variant="ghost"
@@ -228,18 +261,16 @@ function ConversationLink({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                await deleteConversation.mutateAsync({
-                  conversationId: chat.id,
-                });
-                if (currentId === chat.id) {
-                  router.push("/chat");
-                }
-              }}
-            >
-              Delete
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteClick} disabled={isDeleting}>
+              {isDeleting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
