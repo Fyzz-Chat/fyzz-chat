@@ -235,10 +235,10 @@ export function MessageContent({ message }: { message: Message }) {
                       <img
                         src={attachment.url}
                         alt={attachment.name || "User uploaded image"}
-                        className="w-full h-auto object-contain group-hover/image:brightness-75 transition-all duration-200"
+                        className="w-full h-auto object-contain group-hover/image:brightness-50 transition-all duration-200"
                       />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-200">
-                        <Maximize2 className="size-4 text-white" />
+                        <Maximize2 className="size-5 text-white" />
                       </div>
                     </div>
                   </div>
