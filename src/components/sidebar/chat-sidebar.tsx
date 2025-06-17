@@ -29,6 +29,7 @@ import { useParams, useRouter } from "next/navigation";
 import { createElement, useState } from "react";
 import type React from "react";
 import { useInView } from "react-intersection-observer";
+import { toast } from "sonner";
 
 function groupConversationsByTime(conversations: PartialConversation[]) {
   const now = new Date();
@@ -184,8 +185,8 @@ function ConversationLink({
         router.push("/chat");
       }
       setIsModalOpen(false);
-    } catch (error) {
-      console.error("Failed to delete conversation:", error);
+    } catch (_) {
+      toast.error("Could not delete conversation. Please try again.");
     } finally {
       setIsDeleting(false);
     }
