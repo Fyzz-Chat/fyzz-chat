@@ -13,10 +13,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 export function MessageItem({
   message,
   conversationId,
-}: { message: Message; conversationId: string }) {
+}: { message: Message & { model?: string }; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
   const { emptySubmit, reload, deleteMessagesAfter } = useChatContext();
-  const { temporaryChat } = useModelStore();
+  const { temporaryChat, getModel } = useModelStore();
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(message.content);
   const [inProgress, setInProgress] = useState(false);
@@ -210,6 +210,13 @@ export function MessageItem({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        {message.role === "assistant" && (
+          <div className="flex h-full self-center ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+            <p className="text-xs text-muted-foreground">
+              {getModel(message.model)?.name}
+            </p>
+          </div>
+        )}
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>

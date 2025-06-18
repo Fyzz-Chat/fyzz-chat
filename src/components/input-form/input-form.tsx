@@ -83,6 +83,7 @@ export default function InputForm({ className }: { className?: string }) {
               fileToAttachment(file, URL.createObjectURL(file))
             )
           : attachments,
+        model: model.id,
       },
       conversationId: stableId,
     });

@@ -182,7 +182,7 @@ export function useAddMessage() {
       message,
       conversationId,
     }: {
-      message: Message;
+      message: Message & { model?: string };
       conversationId: string;
     }) => {
       // Optimistically update the cache

@@ -10,13 +10,14 @@ interface ModelStore {
   setAvailableModels: (availableModels: PublicModel[]) => void;
   providers: PublicProvider[];
   setProviders: (providers: PublicProvider[]) => void;
+  getModel: (modelId?: string) => PublicModel;
 }
 
 function getModelById(models: PublicModel[], modelId: string): PublicModel {
   return models.find((m) => m.id === modelId) || models[0];
 }
 
-export const useModelStore = create<ModelStore>((set) => ({
+export const useModelStore = create<ModelStore>((set, get) => ({
   model: {} as PublicModel,
   setModel: (modelId: string) =>
     set((state) => ({
@@ -32,4 +33,6 @@ export const useModelStore = create<ModelStore>((set) => ({
     })),
   providers: [],
   setProviders: (providers: PublicProvider[]) => set({ providers }),
+  getModel: (modelId?: string) =>
+    getModelById(get().availableModels, modelId || get().model.id),
 }));
