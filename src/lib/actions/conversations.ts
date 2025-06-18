@@ -113,6 +113,12 @@ export async function shareConversationUntilLatestMessage(
 ) {
   const user = await getUserIdFromSession();
 
+  const jwtConfigured = conf.jwtSecret !== "";
+
+  if (!jwtConfigured) {
+    throw new Error("JWT is not configured");
+  }
+
   const message = await prisma.message.findFirst({
     where: {
       conversation: {
