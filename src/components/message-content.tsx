@@ -153,7 +153,7 @@ const CodeBlock = memo(
               style={{
                 fontSize: "14px !important",
                 lineHeight: "1.5",
-                fontFamily: "var(--font-mono)",
+                fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
               }}
             >
               {children}
