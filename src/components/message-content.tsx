@@ -176,7 +176,7 @@ const MemoizedMarkdownBlock = memo(
             return match ? (
               <CodeBlock language={match[1]}>{String(children)}</CodeBlock>
             ) : (
-              <span className="inline-block max-w-full overflow-x-auto align-bottom">
+              <span className="inline-block max-w-full overflow-x-auto overflow-y-hidden align-bottom">
                 <code
                   className="bg-sidebar border text-sidebar-foreground px-1 py-0.5 rounded"
                   style={{ fontSize: "14px !important" }}
