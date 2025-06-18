@@ -138,7 +138,7 @@ const CodeBlock = memo(
             )}
           </Button>
           {isCopied && (
-            <div className="absolute top-2 right-12 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20">
+            <div className="absolute top-3 right-12 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20">
               Copied!
             </div>
           )}
