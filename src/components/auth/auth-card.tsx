@@ -1,15 +1,14 @@
-import conf from "@/lib/config";
-import Link from "next/link";
-import type { ReactNode } from "react";
+import OAuthForm from "@/components/auth/oauth-form";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "../ui/card";
-import OAuthForm from "./oauth-form";
+} from "@/components/ui/card";
+import conf from "@/lib/config";
+import Link from "next/link";
+import type { ReactNode } from "react";
 
 export default function AuthCard({
   title,
@@ -32,7 +31,7 @@ export default function AuthCard({
   return (
     <Card className="w-[22rem] lg:w-[23rem] p-1 lg:p-3">
       <CardHeader className="text-center">
-        <CardTitle>{title}</CardTitle>
+        <h1 className="text-2xl font-semibold leading-none tracking-tight">{title}</h1>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
