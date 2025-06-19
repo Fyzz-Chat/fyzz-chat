@@ -1,10 +1,8 @@
 import "server-only";
 
-import { awsConfigured, uploadFile } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import type { Attachment, Message, UIMessage } from "ai";
-import { v4 as uuidv4 } from "uuid";
+import type { Message, UIMessage } from "ai";
 import { mapMessages } from "./conversations";
 
 export async function getMessages(conversationId: string, page?: number, limit?: number) {
