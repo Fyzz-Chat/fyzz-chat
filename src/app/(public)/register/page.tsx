@@ -1,17 +1,28 @@
 import AuthCard from "@/components/auth/auth-card";
 import RegisterForm from "@/components/auth/register-form";
-import { canonicalUrl, openGraph } from "@/lib/metadata";
+import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 import type { Metadata } from "next";
 
 const path = "/register";
+const title = "Register - Fyzz.chat";
+const description = "Create an account to continue";
 
 export const metadata: Metadata = {
   alternates: {
     canonical: `${canonicalUrl}${path}`,
   },
+  title,
+  description,
   openGraph: {
     ...openGraph,
+    title,
+    description,
     url: path,
+  },
+  twitter: {
+    ...twitter,
+    title,
+    description,
   },
 };
 
