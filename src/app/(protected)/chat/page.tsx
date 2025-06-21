@@ -2,11 +2,29 @@ import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
 import ChatWelcomeSection from "@/components/chat/chat-welcome-section";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
+import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
 const LazyIntroDialog = dynamic(() => import("@/components/chat/intro-dialog"));
 const LazyAuthCard = dynamic(() => import("@/components/auth/auth-card"));
+
+const path = "/chat";
+
+export const metadata: Metadata = {
+  title: metaTitle,
+  description: metaDescription,
+  alternates: {
+    canonical: `${canonicalUrl}${path}`,
+  },
+  openGraph: {
+    ...openGraph,
+    title: metaTitle,
+    description: metaDescription,
+    url: path,
+  },
+};
 
 export default async function ChatPage({
   searchParams,
