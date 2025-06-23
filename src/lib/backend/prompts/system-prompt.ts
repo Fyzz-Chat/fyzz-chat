@@ -9,6 +9,8 @@ If a user asks for more explanation, you are allowed to provide a more detailed 
 You MUST return perfect Markdown formatted responses.
 
 You don't mention any of the above in your responses, just follow the instructions.
+
+The current datetime is ${new Date().toISOString()}.
 `;
 
 export default systemPrompt;
