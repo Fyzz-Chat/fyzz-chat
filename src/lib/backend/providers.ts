@@ -24,9 +24,9 @@ import { extractReasoningMiddleware } from "ai";
 
 const azureConfigured =
   process.env.AZURE_API_KEY !== undefined &&
-  process.env.AZURE_RESOURCE_NAME !== undefined &&
-  process.env.AZURE_GPT41_API_KEY !== undefined &&
-  process.env.AZURE_GPT41_RESOURCE_NAME !== undefined;
+  process.env.AZURE_RESOURCE_NAME !== undefined; // &&
+// process.env.AZURE_GPT41_API_KEY !== undefined &&
+// process.env.AZURE_GPT41_RESOURCE_NAME !== undefined;
 const openaiConfigured = process.env.OPENAI_API_KEY !== undefined && !azureConfigured;
 const anthropicConfigured = process.env.ANTHROPIC_API_KEY !== undefined;
 const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
@@ -125,11 +125,11 @@ const azure = createAzure({
   apiVersion: "2024-12-01-preview",
 });
 
-const azure41 = createAzure({
-  apiVersion: "2024-12-01-preview",
-  apiKey: process.env.AZURE_GPT41_API_KEY,
-  resourceName: process.env.AZURE_GPT41_RESOURCE_NAME,
-});
+// const azure41 = createAzure({
+//   apiVersion: "2024-12-01-preview",
+//   apiKey: process.env.AZURE_GPT41_API_KEY,
+//   resourceName: process.env.AZURE_GPT41_RESOURCE_NAME,
+// });
 
 function wrappedGoogle(model: string, browse: boolean) {
   return google(model, { useSearchGrounding: browse });
@@ -208,14 +208,14 @@ const providers: Provider[] = [
         id: "gpt-4.1",
         name: "GPT-4.1",
         features: [images, coding],
-        provider: wrappedModel(azure41),
+        provider: wrappedModel(azure),
         tools: true,
       },
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
         features: [images, coding],
-        provider: wrappedModel(azure41),
+        provider: wrappedModel(azure),
         tools: true,
       },
       {
@@ -229,7 +229,7 @@ const providers: Provider[] = [
         id: "o4-mini",
         name: "o4-mini",
         features: [images, reasoning],
-        provider: wrappedModel(azure41),
+        provider: wrappedModel(azure),
         tools: true,
       },
     ],
