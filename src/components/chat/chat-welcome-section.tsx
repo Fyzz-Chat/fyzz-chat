@@ -2,8 +2,10 @@
 
 import ExampleButton from "@/components/chat/example-button";
 import ModelSetter from "@/components/chat/model-setter";
+import type { SessionUser } from "@/lib/dao/users";
 import { useModelStore } from "@/stores/model-store";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import IconSpy from "../icons/icon-spy";
 
 const examples = [
@@ -13,8 +15,24 @@ const examples = [
   "How can you help me? ",
 ];
 
-export default function ChatWelcomeSection({ children }: { children?: ReactNode }) {
+const welcomeMessages = [
+  "Ready to achieve, {name}?",
+  "Let's get after it, {name}!",
+  "Time to excel, {name}!",
+  "{name}, let's make progress!",
+];
+
+function getRandomWelcomeMessage(userName: string) {
+  const randomIndex = Math.floor(Math.random() * welcomeMessages.length);
+  return welcomeMessages[randomIndex].replace("{name}", userName);
+}
+
+export default function ChatWelcomeSection({
+  children,
+  user,
+}: { children?: ReactNode; user: SessionUser | null }) {
   const { temporaryChat } = useModelStore();
+  const [message, setMessage] = useState<string>("Chat with me");
 
   if (temporaryChat) {
     return (
@@ -39,9 +57,15 @@ export default function ChatWelcomeSection({ children }: { children?: ReactNode 
     );
   }
 
+  useEffect(() => {
+    if (user) {
+      setMessage(getRandomWelcomeMessage(user.name));
+    }
+  }, [user]);
+
   return (
     <>
-      <h1 className="text-4xl font-bold">Chat with me</h1>
+      <h1 className="text-4xl font-bold">{message}</h1>
       {children}
       <ul className="flex flex-col">
         {examples.map((example) => (

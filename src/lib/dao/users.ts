@@ -17,7 +17,7 @@ export async function getUserByEmail(email: string) {
   return user;
 }
 
-type SessionUser = {
+export type SessionUser = {
   id: number;
   name: string;
   email: string;
