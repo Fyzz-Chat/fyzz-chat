@@ -1,7 +1,6 @@
 import type { Locale } from "@/types/locale";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
 const locales: Locale[] = ["en", "hu"];
@@ -32,10 +31,9 @@ export async function middleware(request: NextRequest) {
 
   const locale = getLocale(request);
 
-  const cookieStore = await cookies();
-  cookieStore.set("locale", locale);
-
-  return NextResponse.next();
+  return NextResponse.next({
+    headers: { "Set-Cookie": `locale=${locale}; Path=/; HttpOnly; SameSite=Lax` },
+  });
 }
 
 export const config = {
