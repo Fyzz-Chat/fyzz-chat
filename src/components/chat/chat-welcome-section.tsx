@@ -34,6 +34,12 @@ export default function ChatWelcomeSection({
   const { temporaryChat } = useModelStore();
   const [message, setMessage] = useState<string>("Chat with me");
 
+  useEffect(() => {
+    if (user) {
+      setMessage(getRandomWelcomeMessage(user.name));
+    }
+  }, [user]);
+
   if (temporaryChat) {
     return (
       <div className="flex items-start mx-auto flex-col gap-4 py-6 px-6 lg:px-14 bg-muted/30 border border-muted rounded-lg w-fit">
@@ -56,12 +62,6 @@ export default function ChatWelcomeSection({
       </div>
     );
   }
-
-  useEffect(() => {
-    if (user) {
-      setMessage(getRandomWelcomeMessage(user.name));
-    }
-  }, [user]);
 
   return (
     <>
