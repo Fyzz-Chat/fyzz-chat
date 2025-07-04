@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 const dictionaries = {
   en: () => import("./dictionaries/en.json").then((module) => module.default),
+  de: () => import("./dictionaries/de.json").then((module) => module.default),
   hu: () => import("./dictionaries/hu.json").then((module) => module.default),
 };
 
