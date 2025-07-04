@@ -1,0 +1,23 @@
+{
+  "sidebar": {
+    "separators": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "lastWeek": "Previous 7 days",
+      "older": "Older"
+    }
+  },
+  "home": {
+    "incognito": {
+      "title": "Incognito Mode",
+      "intro": "This conversation",
+      "list": [
+        "Won't appear in your chat history",
+        "Won't be saved on our servers",
+        "Won't store uploaded files",
+        "Won't update memory",
+        "Will only exist until you start a new one"
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "sidebar": {
+    "separators": {
+      "today": "Ma",
+      "yesterday": "Tegnap",
+      "lastWeek": "Előző 7 nap",
+      "older": "Régebbi"
+    }
+  },
+  "home": {
+    "incognito": {
+      "title": "Inkognitó mód",
+      "intro": "Ez a beszélgetés",
+      "list": [
+        "Nem fog megjelenni a beszélgetések között",
+        "Nem lesz elmentve a szerverünkön",
+        "Nem fogja eltárolni a feltöltött fájlokat",
+        "Nem fogja frissíteni a memóriát",
+        "Csak addig fog létezni, amíg új beszélgetést nem kezdesz"
+      ]
+    }
+  }
+}
