@@ -1,0 +1,23 @@
+{
+  "sidebar": {
+    "separators": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "lastWeek": "Letzte 7 Tage",
+      "older": "Älter"
+    }
+  },
+  "home": {
+    "incognito": {
+      "title": "Inkognito-Modus",
+      "intro": "Diese Unterhaltung",
+      "list": [
+        "Erscheint nicht in der Chat-Verlauf",
+        "Wird nicht auf unseren Servern gespeichert",
+        "Speichert keine hochgeladenen Dateien",
+        "Aktualisiert keine Erinnerungen",
+        "Existiert nur bis du eine neue Unterhaltung beginnst"
+      ]
+    }
+  }
+} 
