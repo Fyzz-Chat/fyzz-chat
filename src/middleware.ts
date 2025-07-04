@@ -2,7 +2,6 @@ import { locales } from "@/lib/backend/locale/dictionaries";
 import type { Locale } from "@/types/locale";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
 const defaultLocale = "en";
@@ -21,8 +20,8 @@ function getLocale(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
-  const cookieStore = await cookies();
-  const storedLocale = cookieStore.get("locale")?.value as Locale;
+  const cookie = request.cookies.get("locale");
+  const storedLocale = cookie?.value as Locale;
   const pathnameHasLocale = locales.some((locale) => locale === storedLocale);
 
   if (pathnameHasLocale) {
