@@ -4,6 +4,7 @@ import ExampleButton from "@/components/chat/example-button";
 import ModelSetter from "@/components/chat/model-setter";
 import type { SessionUser } from "@/lib/dao/users";
 import { useModelStore } from "@/stores/model-store";
+import type { Dictionary } from "@/types/locale";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import IconSpy from "../icons/icon-spy";
@@ -30,7 +31,9 @@ function getRandomWelcomeMessage(userName: string) {
 export default function ChatWelcomeSection({
   children,
   user,
-}: { children?: ReactNode; user: SessionUser | null }) {
+  home,
+}: { children?: ReactNode; user: SessionUser | null; home: Dictionary["home"] }) {
+  const { incognito } = home;
   const { temporaryChat } = useModelStore();
   const [message, setMessage] = useState<string>("Chat with me");
 
@@ -46,17 +49,15 @@ export default function ChatWelcomeSection({
         <div className="flex-shrink-0 text-muted-foreground gap-2 flex flex-col justify-center items-center w-full ">
           <IconSpy size={50} />
           <h3 className="text-3xl font-bold text-muted-foreground mb-5">
-            Incognito Mode
+            {incognito.title}
           </h3>
         </div>
         <div className="flex flex-col gap-2">
-          <p>This conversation</p>
+          <p>{incognito.intro}</p>
           <ul className="text-sm text-muted-foreground/80 space-y-3">
-            <li>• Won't appear in your chat history</li>
-            <li>• Won't be saved on our servers</li>
-            <li>• Won't store uploaded files</li>
-            <li>• Won't update memory</li>
-            <li>• Will only exist until you start a new one</li>
+            {incognito.list.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
           </ul>
         </div>
       </div>
