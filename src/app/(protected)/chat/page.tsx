@@ -40,7 +40,7 @@ export default async function ChatPage({
   return (
     <div className="flex-1 flex items-center justify-center p-4">
       <ViewTransitionWrapper className="flex flex-1 items-center justify-center">
-        <div className="max-w-xl w-full space-y-4">
+        <div className="max-w-2xl w-full space-y-4">
           <ChatWelcomeSection user={user}>
             <LazyIntroDialog />
           </ChatWelcomeSection>
