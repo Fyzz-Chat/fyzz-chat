@@ -14,5 +14,3 @@ export const getDictionary = async () => {
 
   return dictionaries[lang]();
 };
-
-export type Dictionary = Awaited<ReturnType<typeof getDictionary>>;
