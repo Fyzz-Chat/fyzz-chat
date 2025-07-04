@@ -1,9 +1,8 @@
-import type { Locale } from "@/types/locale";
+import { locales } from "@/lib/backend/locale/dictionaries";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { type NextRequest, NextResponse } from "next/server";
 
-const locales: Locale[] = ["en", "hu"];
 const defaultLocale = "en";
 
 function getLocale(request: NextRequest) {
