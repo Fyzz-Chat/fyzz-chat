@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
+import type { Dictionary } from "@/types/locale";
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { createElement, useState } from "react";
@@ -68,9 +69,11 @@ function groupConversationsByTime(conversations: PartialConversation[]) {
 export default function ChatSidebar({
   conversations,
   authorized,
+  separators,
 }: {
   conversations: any;
   authorized: boolean;
+  separators: Dictionary["sidebar"]["separators"];
 }) {
   const { id } = useParams();
   const { searchQuery } = useSearchStore();
@@ -96,7 +99,9 @@ export default function ChatSidebar({
     <div className="flex flex-col flex-1 overflow-auto no-scrollbar">
       {groupedConversations.today.length > 0 && (
         <SidebarGroup>
-          <SidebarGroupLabel className="text-primary/70">Today</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-primary/70">
+            {separators.today}
+          </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.today.map((chat: PartialConversation) => (
               <ConversationLink key={chat.id} chat={chat} currentId={id as string} />
@@ -106,7 +111,9 @@ export default function ChatSidebar({
       )}
       {groupedConversations.yesterday.length > 0 && (
         <SidebarGroup>
-          <SidebarGroupLabel className="text-primary/70">Yesterday</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-primary/70">
+            {separators.yesterday}
+          </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.yesterday.map((chat: PartialConversation) => (
               <ConversationLink key={chat.id} chat={chat} currentId={id as string} />
@@ -117,7 +124,7 @@ export default function ChatSidebar({
       {groupedConversations.lastWeek.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
-            Previous 7 days
+            {separators.lastWeek}
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.lastWeek.map((chat: PartialConversation) => (
@@ -128,7 +135,9 @@ export default function ChatSidebar({
       )}
       {groupedConversations.older.length > 0 && (
         <SidebarGroup>
-          <SidebarGroupLabel className="text-primary/70">Older</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-primary/70">
+            {separators.older}
+          </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.older.map((chat: PartialConversation) => (
               <ConversationLink key={chat.id} chat={chat} currentId={id as string} />

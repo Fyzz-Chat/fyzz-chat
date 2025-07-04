@@ -19,11 +19,14 @@ import {
 } from "@/components/ui/sidebar";
 import { getConversations } from "@/lib/dao/conversations";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
+import type { Dictionary } from "@/types/locale";
 import Image from "next/image";
 import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
-export async function AppSidebar() {
+export async function AppSidebar({
+  separators,
+}: { separators: Dictionary["sidebar"]["separators"] }) {
   const user = await getUserFromSessionPublic();
   const conversations = user ? await getConversations(1, 15) : [];
 
@@ -44,7 +47,11 @@ export async function AppSidebar() {
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-sidebar to-transparent pointer-events-none z-10" />
-          <ChatSidebar conversations={conversations} authorized={Boolean(user)} />
+          <ChatSidebar
+            conversations={conversations}
+            authorized={Boolean(user)}
+            separators={separators}
+          />
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-sidebar to-transparent pointer-events-none z-10" />
         </SidebarContent>
         <SidebarFooter className="pl-4 py-4 pr-4 md:pr-2">
