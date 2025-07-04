@@ -30,9 +30,13 @@ export async function middleware(request: NextRequest) {
 
   const locale = getLocale(request);
 
-  return NextResponse.next({
-    headers: { "Set-Cookie": `locale=${locale}; Path=/; HttpOnly; SameSite=Lax` },
+  const response = NextResponse.next();
+  response.cookies.set("locale", locale, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
   });
+  return response;
 }
 
 export const config = {
