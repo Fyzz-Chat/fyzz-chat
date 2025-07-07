@@ -9,6 +9,23 @@
     }
   },
   "home": {
+    "welcome": {
+      "messages": [
+        "Bereit für Erfolg, {name}?",
+        "Hallo, {name}! Wie kann ich helfen?",
+        "Hallo, {name}! Lass uns starten!",
+        "Hey, {name}! Wie kann ich dir helfen?"
+      ],
+      "modalTrigger": "Welches Modell soll ich verwenden?",
+      "modalTitle": "Wir haben {modelCount} Modelle zur Auswahl",
+      "modalDescription": "Welches ist das Richtige für dich?",
+      "examples": [
+        "105 Grad Fahrenheit in Celsius ",
+        "Wo leben Lamas in freier Natur? ",
+        "Welches ist das kleinste Land Afrikas? ",
+        "Wie kannst du mir helfen? "
+      ]
+    },
     "incognito": {
       "title": "Inkognito-Modus",
       "intro": "Diese Unterhaltung",

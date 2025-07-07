@@ -9,6 +9,23 @@
     }
   },
   "home": {
+    "welcome": {
+      "messages": [
+        "Kezdhetjük, {name}?",
+        "Vágjunk bele, {name}!",
+        "Ma mit oldunk meg, {name}?",
+        "{name}, miben tudok segíteni?"
+      ],
+      "modalTrigger": "Melyik modellt használjam?",
+      "modalTitle": "{modelCount} modellünk van",
+      "modalDescription": "Melyiket érdemes választanod?",
+      "examples": [
+        "105 fok Fahrenheit Celsiusban ",
+        "Mi a lámák természetes élőhelye? ",
+        "Melyik a legkisebb ország Afrikában? ",
+        "Hogyan tudsz nekem segíteni? "
+      ]
+    },
     "incognito": {
       "title": "Inkognitó mód",
       "intro": "Ez a beszélgetés",

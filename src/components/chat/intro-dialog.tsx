@@ -8,22 +8,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getDictionary } from "@/lib/backend/locale/dictionaries";
 import { countModels } from "@/lib/backend/providers";
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
 import IntroDialogDescription from "./intro-dialog-description";
 
-export default function Examples() {
+export default async function Examples() {
+  const dict = await getDictionary();
   const numModels = countModels();
+  const title = dict.home.welcome.modalTitle.replace(
+    "{modelCount}",
+    numModels.toString()
+  );
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Which model should I use?</Button>
+        <Button variant="outline">{dict.home.welcome.modalTrigger}</Button>
       </DialogTrigger>
       <DialogContent className="px-0">
         <DialogHeader className="px-6">
-          <DialogTitle>We have {numModels} models</DialogTitle>
-          <DialogDescription>Which one should you use?</DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{dict.home.welcome.modalDescription}</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[350px]">
           <div className="flex flex-col gap-4 px-6 pb-4 sm:pb-0">
