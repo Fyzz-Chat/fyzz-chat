@@ -24,9 +24,7 @@ import Image from "next/image";
 import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
-export async function AppSidebar({
-  separators,
-}: { separators: Dictionary["sidebar"]["separators"] }) {
+export async function AppSidebar({ sidebar }: { sidebar: Dictionary["sidebar"] }) {
   const user = await getUserFromSessionPublic();
   const conversations = user ? await getConversations(1, 15) : [];
 
@@ -42,7 +40,7 @@ export async function AppSidebar({
             <NewChatButton />
           </div>
           <div className="flex items-center">
-            <SearchField />
+            <SearchField placeholder={sidebar.search} />
           </div>
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
@@ -50,7 +48,7 @@ export async function AppSidebar({
           <ChatSidebar
             conversations={conversations}
             authorized={Boolean(user)}
-            separators={separators}
+            separators={sidebar.separators}
           />
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-sidebar to-transparent pointer-events-none z-10" />
         </SidebarContent>

@@ -1,5 +1,6 @@
 {
   "sidebar": {
+    "search": "Search...",
     "separators": {
       "today": "Today",
       "yesterday": "Yesterday",

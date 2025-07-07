@@ -18,7 +18,7 @@ export default async function Layout({
   return (
     <ChatLayoutProvider>
       <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar separators={dict.sidebar.separators} />
+        <AppSidebar sidebar={dict.sidebar} />
         <SidebarInset className="relative md:p-2 bg-sidebar overflow-auto">
           <SidebarTrigger className="absolute size-8 top-4 left-4 z-20 p-5 touch-manipulation" />
           {children}

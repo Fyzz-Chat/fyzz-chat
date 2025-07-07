@@ -16,7 +16,7 @@ function useIsMac() {
   return isMac;
 }
 
-export function SearchField() {
+export function SearchField({ placeholder }: { placeholder: string }) {
   const [search, setSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const { setSearchQuery } = useSearchStore();
@@ -48,7 +48,7 @@ export function SearchField() {
         ref={inputRef}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search..."
+        placeholder={placeholder}
       />
       <div
         className={cn(
