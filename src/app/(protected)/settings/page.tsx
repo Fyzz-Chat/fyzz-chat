@@ -13,11 +13,13 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
+import { getDictionary } from "@/lib/backend/locale/dictionaries";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import { Brain, Monitor, Puzzle, Shield, User } from "lucide-react";
 
 export default async function SettingsPage() {
+  const dict = await getDictionary();
   const userId = await getUserIdFromSession();
   const user = await prisma.user.findUnique({
     where: {
@@ -37,10 +39,8 @@ export default async function SettingsPage() {
       <ViewTransitionWrapper className="flex flex-1 w-full md:overflow-y-auto">
         <div className="flex flex-col gap-4 w-full max-w-xl mx-auto">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold">Settings</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage your account settings and preferences.
-            </p>
+            <h1 className="text-2xl font-bold">{dict.settings.title}</h1>
+            <p className="text-sm text-muted-foreground">{dict.settings.description}</p>
           </div>
           <Tabs defaultValue="memory" className="w-full pb-5">
             <div className="overflow-x-auto md:overflow-x-visible">
@@ -50,7 +50,7 @@ export default async function SettingsPage() {
                   className="flex items-center justify-center min-w-20 px-3 py-2"
                 >
                   <Brain className="w-4 h-4 mr-2" />
-                  Memory
+                  {dict.settings.memory.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="security"
@@ -86,15 +86,14 @@ export default async function SettingsPage() {
               <Card>
                 <ScrollArea>
                   <CardHeader>
-                    <CardTitle>Memory Settings</CardTitle>
-                    <CardDescription>
-                      Control how the application remembers your interactions.
-                    </CardDescription>
+                    <CardTitle>{dict.settings.memory.title}</CardTitle>
+                    <CardDescription>{dict.settings.memory.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <MemoryForm
                       memory={user?.memory ?? undefined}
                       memoryEnabled={user?.memoryEnabled ?? false}
+                      dict={dict.settings.memory}
                     />
                   </CardContent>
                 </ScrollArea>

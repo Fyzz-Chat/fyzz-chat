@@ -43,5 +43,30 @@
         "Csak addig fog létezni, amíg új beszélgetést nem kezdesz"
       ]
     }
+  },
+  "settings": {
+    "title": "Beállítások",
+    "description": "Fiókbeállítások és preferenciák.",
+    "memory": {
+      "tabTitle": "Emlékek",
+      "title": "Emlékek beállításai",
+      "description": "Beállíthatod, hogy mit jegyezzünk meg a beszélgetéseidből.",
+      "sectionTitle": "Emlékek",
+      "toggleTitle": "Emlékek engedélyezése",
+      "toggleDescription": "Ha az emlékek engedélyezve vannak, a modellek megjegyzik a veled kapcsolatos legfontosabb információkat és felhasználják őket a következő válaszadáskor.",
+      "toggleDescriptionDisabled": "Először engedélyezd az emlékeket, hogy szerkeszthess.",
+      "toggleDescriptionEnabled": "Itt tudod szerkeszteni az emlékeket. Kattints a Mentés gombra, ha kész vagy.",
+      "saveButton": "Mentés",
+      "sonner": {
+        "enabled": {
+          "title": "Emlékek bekapcsolva",
+          "description": "A modellek emlékezni fognak veled kapcsolatos információkra."
+        },
+        "disabled": {
+          "title": "Emlékek kikapcsolva",
+          "description": "A modellek többé nem fognak emlékezni a veled kapcsolatos információkra."
+        }
+      }
+    }
   }
 }

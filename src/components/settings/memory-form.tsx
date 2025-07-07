@@ -7,15 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import useToast from "@/hooks/use-toast";
 import { updateUserMemory, updateUserMemoryEnabled } from "@/lib/actions/users";
 import { initialState } from "@/lib/utils";
+import type { Dictionary } from "@/types/locale";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function MemoryForm({
   memory,
   memoryEnabled,
+  dict,
 }: {
   memory?: string;
   memoryEnabled: boolean;
+  dict: Dictionary["settings"]["memory"];
 }) {
   const [state, formAction, isPending] = useActionState(updateUserMemory, initialState);
   const [content, setContent] = useState(memory ?? "");
@@ -31,10 +34,10 @@ export default function MemoryForm({
     }
 
     updateUserMemoryEnabled(enabled).then((enabled: boolean) => {
-      const title = enabled ? "Memory enabled" : "Memory disabled";
+      const title = enabled ? dict.sonner.enabled.title : dict.sonner.disabled.title;
       const description = enabled
-        ? "Models will now store information about you."
-        : "Models will no longer store information about you.";
+        ? dict.sonner.enabled.description
+        : dict.sonner.disabled.description;
 
       toast(title, {
         description,
@@ -44,20 +47,15 @@ export default function MemoryForm({
 
   return (
     <div className="flex flex-col gap-4 items-start">
-      <h4 className="text-sm font-medium">Memory</h4>
+      <h4 className="text-sm font-medium">{dict.sectionTitle}</h4>
       <div className="flex items-center gap-2">
         <Switch id="memory" checked={enabled} onCheckedChange={setEnabled} />
-        <Label htmlFor="memory">Enable memory</Label>
+        <Label htmlFor="memory">{dict.toggleTitle}</Label>
       </div>
       <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">{dict.toggleDescription}</p>
         <p className="text-sm text-muted-foreground">
-          If memory is enabled, the model will store information about you and will use it
-          to improve the quality of its responses.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {enabled
-            ? "You can edit the memory here manually. Press Save when you're done."
-            : "Enable memory to edit."}
+          {enabled ? dict.toggleDescriptionEnabled : dict.toggleDescriptionDisabled}
         </p>
       </div>
       <form action={formAction} className="flex flex-col gap-4 w-full items-start">
@@ -70,7 +68,7 @@ export default function MemoryForm({
           className="resize-none"
         />
         <Button type="submit" className="px-5 self-end" disabled={!enabled || isPending}>
-          Save
+          {dict.saveButton}
         </Button>
       </form>
     </div>

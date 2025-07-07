@@ -43,5 +43,30 @@
         "Existiert nur bis du eine neue Unterhaltung beginnst"
       ]
     }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Verwalte deine Kontoeinstellungen und Präferenzen.",
+    "memory": {
+      "tabTitle": "Memorie",
+      "title": "Memorie Einstellungen",
+      "description": "Steuere, wie die Anwendung deine Interaktionen speichert.",
+      "sectionTitle": "Memorie",
+      "toggleTitle": "Memorie aktivieren",
+      "toggleDescription": "Wenn die Memorie aktiviert ist, speichert das Modell Informationen über dich und verwendet sie, um die Qualität seiner Antworten zu verbessern.",
+      "toggleDescriptionDisabled": "Aktiviere die Memorie, um sie zu bearbeiten.",
+      "toggleDescriptionEnabled": "Du kannst die Memorie hier manuell bearbeiten. Klicke auf Speichern, wenn du fertig bist.",
+      "saveButton": "Speichern",
+      "sonner": {
+        "enabled": {
+          "title": "Memorie aktiviert",
+          "description": "Modellen speichern Informationen über dich."
+        },
+        "disabled": {
+          "title": "Memorie deaktiviert",
+          "description": "Modellen speichern keine Informationen über dich mehr."
+        }
+      }
+    }
   }
 }
