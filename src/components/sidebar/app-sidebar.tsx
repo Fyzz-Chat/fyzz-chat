@@ -75,6 +75,7 @@ export async function AppSidebar({ sidebar }: { sidebar: Dictionary["sidebar"] }
                   <ProfileMenu
                     authorized={Boolean(user)}
                     userEmail={user?.email || "My account"}
+                    menu={sidebar.menu}
                   />
                 </DropdownMenuContent>
               </DropdownMenu>

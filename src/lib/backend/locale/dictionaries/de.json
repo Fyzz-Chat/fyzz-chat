@@ -6,6 +6,12 @@
       "yesterday": "Gestern",
       "lastWeek": "Letzte 7 Tage",
       "older": "Älter"
+    },
+    "menu": {
+      "privacyPolicy": "Datenschutz",
+      "settings": "Einstellungen",
+      "signOut": "Abmelden",
+      "signIn": "Anmelden"
     }
   },
   "home": {

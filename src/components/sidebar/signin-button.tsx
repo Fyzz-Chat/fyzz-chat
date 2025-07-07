@@ -4,7 +4,7 @@ import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SidebarMenuButton, useSidebar } from "../ui/sidebar";
 
-export function SignIn() {
+export function SignIn({ buttonText }: { buttonText: string }) {
   const router = useRouter();
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -18,7 +18,7 @@ export function SignIn() {
   return (
     <SidebarMenuButton className="h-10" onClick={handleClick}>
       <LogIn className="shrink-0" />
-      <span>Sign In</span>
+      <span>{buttonText}</span>
     </SidebarMenuButton>
   );
 }

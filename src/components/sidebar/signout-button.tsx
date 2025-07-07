@@ -5,7 +5,7 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { SidebarMenuButton } from "../ui/sidebar";
 
-export function SignOut() {
+export function SignOut({ buttonText }: { buttonText: string }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignOut = async () => {
@@ -24,7 +24,7 @@ export function SignOut() {
       ) : (
         <LogOut className="shrink-0" />
       )}
-      <span>Sign Out</span>
+      <span>{buttonText}</span>
     </SidebarMenuButton>
   );
 }
