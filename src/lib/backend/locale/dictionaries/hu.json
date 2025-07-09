@@ -84,7 +84,14 @@
       "description": "Itt tudod kitörölni a fiókodat.",
       "deleteCardTitle": "Fiók törlése",
       "deleteCardDescription": "Ha nem szeretnéd többé használni ezt a szolgáltatást, kérheted a fiókod törlését. Ez a művelet további megerősítési lépéseket igényel.",
-      "deleteButton": "Törlés"
+      "deleteButton": "Törlés",
+      "dialog": {
+        "title": "Fióktörlés megerősítése",
+        "descriptionRed": "Figyelem: Ez a művelet nem visszavonható.",
+        "description": "Biztonsági okokból, kérjük, írd be a 'delete my account' szöveget a folytatáshoz:",
+        "cancelButton": "Mégsem",
+        "deleteButton": "Fiók törlése"
+      }
     }
   }
 }

@@ -84,7 +84,14 @@
       "description": "You can delete your account here.",
       "deleteCardTitle": "Delete Account",
       "deleteCardDescription": "If you no longer wish to use this service, you can request account deletion. This action requires additional confirmation steps.",
-      "deleteButton": "Delete"
+      "deleteButton": "Delete",
+      "dialog": {
+        "title": "Confirm Account Deletion",
+        "descriptionRed": "Warning: This action cannot be undone.",
+        "description": "For security, please type 'delete my account' to proceed:",
+        "cancelButton": "Cancel",
+        "deleteButton": "Delete Account"
+      }
     }
   }
 }

@@ -58,16 +58,14 @@ export default function DeleteAccountForm({
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader className="text-left">
-            <AlertDialogTitle className="text-left">
-              Confirm Account Deletion
-            </AlertDialogTitle>
+            <AlertDialogTitle className="text-left">{dict.dialog.title}</AlertDialogTitle>
             <AlertDialogDescription className="text-left">
               <span className="text-red-600 dark:text-red-400 font-medium block">
-                Warning: This action cannot be undone.
+                {dict.dialog.descriptionRed}
               </span>
               <span className="mt-4 block">
                 <span className="text-sm font-medium mb-2 block">
-                  For security, please type "delete my account" to proceed:
+                  {dict.dialog.description}
                 </span>
                 <Input
                   value={confirmText}
@@ -78,10 +76,12 @@ export default function DeleteAccountForm({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-row gap-2 justify-end items-center">
-            <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="mt-0">
+              {dict.dialog.cancelButton}
+            </AlertDialogCancel>
             <form action={formAction}>
               <Button type="submit" variant="destructive" disabled={!isConfirmed}>
-                Delete Account
+                {dict.dialog.deleteButton}
               </Button>
             </form>
           </AlertDialogFooter>

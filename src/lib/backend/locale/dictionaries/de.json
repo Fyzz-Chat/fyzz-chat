@@ -84,7 +84,14 @@
       "description": "Du kannst deinen Konto hier löschen.",
       "deleteCardTitle": "Konto löschen",
       "deleteCardDescription": "Wenn du diese Dienst nicht mehr nutzen möchtest, kannst du deinen Konto löschen. Diese Aktion benötigt zusätzliche Bestätigungsschritte.",
-      "deleteButton": "Löschen"
+      "deleteButton": "Löschen",
+      "dialog": {
+        "title": "Konto löschen bestätigen",
+        "descriptionRed": "Warnung: Diese Aktion kann nicht rückgängig gemacht werden.",
+        "description": "Für Sicherheitsgründe, bitte gib 'delete my account' ein, um fortzufahren:",
+        "cancelButton": "Abbrechen",
+        "deleteButton": "Konto löschen"
+      }
     }
   }
 }
