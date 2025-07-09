@@ -68,6 +68,15 @@
           "description": "Models will no longer store information about you."
         }
       }
+    },
+    "security": {
+      "tabTitle": "Security",
+      "title": "Password",
+      "description": "You can change your password here.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "saveButton": "Save"
     }
   }
 }

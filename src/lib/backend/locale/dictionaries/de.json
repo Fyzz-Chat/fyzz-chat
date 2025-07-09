@@ -68,6 +68,15 @@
           "description": "Modellen speichern keine Informationen über dich mehr."
         }
       }
+    },
+    "security": {
+      "tabTitle": "Sicherheit",
+      "title": "Passwort",
+      "description": "Du kannst dein Passwort hier ändern.",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "saveButton": "Speichern"
     }
   }
 }

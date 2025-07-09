@@ -68,6 +68,15 @@
           "description": "A modellek többé nem fognak emlékezni a veled kapcsolatos információkra."
         }
       }
+    },
+    "security": {
+      "tabTitle": "Biztonság",
+      "title": "Jelszó",
+      "description": "Itt tudod megváltoztatni a jelszavad.",
+      "currentPassword": "Jelenlegi jelszó",
+      "newPassword": "Új jelszó",
+      "confirmPassword": "Jelszó megerősítése",
+      "saveButton": "Mentés"
     }
   }
 }

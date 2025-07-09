@@ -57,7 +57,7 @@ export default async function SettingsPage() {
                   className="flex items-center justify-center min-w-20 px-3 py-2"
                 >
                   <Shield className="w-4 h-4 mr-2" />
-                  Security
+                  {dict.settings.security.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="account"
@@ -102,11 +102,11 @@ export default async function SettingsPage() {
             <TabsContent value="security">
               <Card>
                 <CardHeader>
-                  <CardTitle>Password</CardTitle>
-                  <CardDescription>You can change your password here.</CardDescription>
+                  <CardTitle>{dict.settings.security.title}</CardTitle>
+                  <CardDescription>{dict.settings.security.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <PasswordForm hasPassword={hasPassword} />
+                  <PasswordForm hasPassword={hasPassword} dict={dict.settings.security} />
                 </CardContent>
               </Card>
             </TabsContent>
