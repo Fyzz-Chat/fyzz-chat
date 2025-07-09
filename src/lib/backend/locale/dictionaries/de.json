@@ -182,6 +182,20 @@
     "firstTime": {
       "title": "Erstmalig hier?",
       "link": "Registrieren"
+    },
+    "success": {
+      "title": "Erfolgreich angemeldet",
+      "description": "Du wurdest erfolgreich angemeldet."
+    },
+    "errors": {
+      "invalidCredentials": {
+        "title": "Fehler beim Anmelden",
+        "description": "Email oder Passwort ist falsch."
+      },
+      "generic": {
+        "title": "Etwas ist schiefgelaufen",
+        "description": "Bitte versuche es erneut."
+      }
     }
   },
   "register": {

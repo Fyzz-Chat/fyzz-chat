@@ -19,7 +19,7 @@ export default function RegisterForm({
   const { input } = useInputStore();
 
   const toastCallback = (state: FormState) => {
-    if (state.message === "Registered successfully") {
+    if (state.success) {
       localStorage.setItem("fyzz-auth-method", "password");
 
       if (input) {

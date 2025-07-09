@@ -182,6 +182,20 @@
     "firstTime": {
       "title": "Először vagy itt?",
       "link": "Regisztrálj"
+    },
+    "success": {
+      "title": "Sikeres bejelentkezés",
+      "description": "Sikeresen bejelentkeztél."
+    },
+    "errors": {
+      "invalidCredentials": {
+        "title": "Sikertelen bejelentkezés",
+        "description": "Email vagy jelszó nem megfelelő."
+      },
+      "generic": {
+        "title": "Valami nem sikerült",
+        "description": "Kérlek, próbáld újra."
+      }
     }
   },
   "register": {

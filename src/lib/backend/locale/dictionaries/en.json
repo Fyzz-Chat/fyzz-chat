@@ -182,6 +182,20 @@
     "firstTime": {
       "title": "First time here?",
       "link": "Sign up"
+    },
+    "success": {
+      "title": "Signed in successfully",
+      "description": "You have been successfully signed in."
+    },
+    "errors": {
+      "invalidCredentials": {
+        "title": "Failed to sign in",
+        "description": "Email or password is incorrect."
+      },
+      "generic": {
+        "title": "Something went wrong",
+        "description": "Please try again."
+      }
     }
   },
   "register": {

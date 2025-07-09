@@ -18,7 +18,7 @@ export default function LoginForm({
   const { input } = useInputStore();
 
   const toastCallback = (state: FormState) => {
-    if (state.message === "Signed in successfully") {
+    if (state.success) {
       localStorage.setItem("fyzz-auth-method", "password");
 
       if (input) {
