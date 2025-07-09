@@ -45,6 +45,29 @@
       ]
     }
   },
+  "input": {
+    "placeholder": {
+      "desktop": "(Shift + Enter for new line)",
+      "mobile": "Enter message..."
+    },
+    "modelMenu": {
+      "placeholder": "Filter {number} models...",
+      "noResults": "No results found.",
+      "features": {
+        "image": "Supports images",
+        "code": "Excels at coding tasks",
+        "reasoning": "Reasoning model",
+        "pdf": "Supports PDFs",
+        "web": "Searches the web for information"
+      },
+      "temporaryChat": "Temporary Chat"
+    },
+    "attach": {
+      "tooltip": "Attach files",
+      "camera": "Take photo",
+      "file": "Upload files"
+    }
+  },
   "settings": {
     "title": "Settings",
     "description": "Manage your account settings and preferences.",

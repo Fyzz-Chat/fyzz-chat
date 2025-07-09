@@ -45,6 +45,29 @@
       ]
     }
   },
+  "input": {
+    "placeholder": {
+      "desktop": "(Neue Zeile: Shift + Enter)",
+      "mobile": "Nachricht eingeben..."
+    },
+    "modelMenu": {
+      "placeholder": "Filter {number} Modelle...",
+      "noResults": "Keine Ergebnisse gefunden.",
+      "features": {
+        "image": "Unterstützt Bilder",
+        "code": "Sehr gut für Codierungsaufgaben",
+        "reasoning": "Reasoning Modell",
+        "pdf": "Unterstützt PDFs",
+        "web": "Sucht im Web nach Informationen"
+      },
+      "temporaryChat": "Temporäre Chat"
+    },
+    "attach": {
+      "tooltip": "Dateien anhängen",
+      "camera": "Foto machen",
+      "file": "Dateien hochladen"
+    }
+  },
   "settings": {
     "title": "Einstellungen",
     "description": "Verwalte deine Kontoeinstellungen und Präferenzen.",

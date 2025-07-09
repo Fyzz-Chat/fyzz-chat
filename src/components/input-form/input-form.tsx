@@ -22,11 +22,15 @@ import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
+import type { Dictionary } from "@/types/locale";
 import dynamic from "next/dynamic";
 
 const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
-export default function InputForm({ className }: { className?: string }) {
+export default function InputForm({
+  className,
+  dict,
+}: { className?: string; dict: Dictionary["input"] }) {
   useTempChat();
   const router = useRouter();
   const pathname = usePathname();
@@ -126,6 +130,7 @@ export default function InputForm({ className }: { className?: string }) {
           handleSendMessage={handleSendMessage}
           imageSupport={imageSupport}
           pdfSupport={pdfSupport}
+          dict={dict}
         />
         <CameraCaptureInput ref={cameraInputRef} />
         <FileUploadInput
@@ -135,13 +140,14 @@ export default function InputForm({ className }: { className?: string }) {
         />
         <div className="flex items-center w-full gap-2">
           <div className="flex items-center gap-2 mr-auto">
-            <LazyModelMenu />
+            <LazyModelMenu dict={dict.modelMenu} />
           </div>
           <AttachmentButton
             imageSupport={imageSupport}
             pdfSupport={pdfSupport}
             cameraInputRef={cameraInputRef}
             fileInputRef={fileInputRef}
+            dict={dict.attach}
           />
           <ActionButton />
         </div>

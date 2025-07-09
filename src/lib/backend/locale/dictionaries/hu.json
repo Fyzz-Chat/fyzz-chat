@@ -45,6 +45,29 @@
       ]
     }
   },
+  "input": {
+    "placeholder": {
+      "desktop": "(Új sor: Shift + Enter)",
+      "mobile": "Írj valamit..."
+    },
+    "modelMenu": {
+      "placeholder": "Válassz {number} modell közül...",
+      "noResults": "Nincs találat.",
+      "features": {
+        "image": "Támogat képeket",
+        "code": "Kódolási feladatokban kiváló",
+        "reasoning": "Gondolkodó modell",
+        "pdf": "Támogat PDF-eket",
+        "web": "Az interneten keres információt"
+      },
+      "temporaryChat": "Ideiglenes chat"
+    },
+    "attach": {
+      "tooltip": "Fájlok csatolása",
+      "camera": "Fénykép készítése",
+      "file": "Fájl feltöltése"
+    }
+  },
   "settings": {
     "title": "Beállítások",
     "description": "Fiókbeállítások és preferenciák.",

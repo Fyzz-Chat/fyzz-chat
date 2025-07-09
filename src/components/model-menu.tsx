@@ -7,6 +7,7 @@ import { getProviderIcon } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+import type { Dictionary } from "@/types/locale";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { ChevronDown } from "lucide-react";
 import { memo, useState } from "react";
@@ -33,7 +34,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 
-function ModelMenu() {
+function ModelMenu({ dict }: { dict: Dictionary["input"]["modelMenu"] }) {
   const [open, setOpen] = useState(false);
   const { model, providers } = useModelStore();
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -55,9 +56,9 @@ function ModelMenu() {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0" align="start">
-            <StatusList setOpen={setOpen} providers={providers} />
+            <StatusList setOpen={setOpen} providers={providers} dict={dict} />
             <Separator />
-            <TemporaryChatSwitch />
+            <TemporaryChatSwitch dict={dict.temporaryChat} />
           </PopoverContent>
         </Popover>
       </>
@@ -84,9 +85,9 @@ function ModelMenu() {
             </DrawerDescription>
           </DrawerHeader>
           <div className="mt-4 border-t">
-            <StatusList setOpen={setOpen} providers={providers} />
+            <StatusList setOpen={setOpen} providers={providers} dict={dict} />
             <Separator />
-            <TemporaryChatSwitch />
+            <TemporaryChatSwitch dict={dict.temporaryChat} />
           </div>
         </DrawerContent>
       </Drawer>
@@ -97,9 +98,11 @@ function ModelMenu() {
 function StatusList({
   setOpen,
   providers,
+  dict,
 }: {
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
+  dict: Dictionary["input"]["modelMenu"];
 }) {
   const { stableId } = useChatContext();
 
@@ -118,9 +121,11 @@ function StatusList({
 
   return (
     <Command className="rounded-none md:rounded-md" defaultValue={model?.name || ""}>
-      <CommandInput placeholder={`Filter ${modelCount} models...`} />
+      <CommandInput
+        placeholder={dict.placeholder.replace("{number}", modelCount.toString())}
+      />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>{dict.noResults}</CommandEmpty>
         {providers.map((provider) => (
           <CommandGroup
             key={`${provider.id}-${provider.name}`}

@@ -1,12 +1,15 @@
 "use client";
 
 import { useModelStore } from "@/stores/model-store";
+import type { Dictionary } from "@/types/locale";
 import { MessageCircleDashed } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 
-export function TemporaryChatSwitch() {
+export function TemporaryChatSwitch({
+  dict,
+}: { dict: Dictionary["input"]["modelMenu"]["temporaryChat"] }) {
   const pathname = usePathname();
   const { temporaryChat, setTemporaryChat } = useModelStore();
 
@@ -31,7 +34,7 @@ export function TemporaryChatSwitch() {
           className="flex items-center gap-2 w-full px-2 py-1.5 cursor-pointer"
         >
           <MessageCircleDashed size={16} />
-          <p>Temporary chat</p>
+          <p>{dict}</p>
           <Switch
             id="temporary-chat"
             className="ml-auto"

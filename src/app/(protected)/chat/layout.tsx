@@ -1,5 +1,6 @@
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import InputForm from "@/components/input-form/input-form";
+import { getDictionary } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { ChatProvider } from "@/lib/contexts/chat-context";
 import dynamic from "next/dynamic";
@@ -14,6 +15,7 @@ export default async function ChatLayout({
 }: {
   children: ReactNode;
 }) {
+  const dict = await getDictionary();
   const providers = getProvidersPublic();
 
   return (
@@ -24,7 +26,7 @@ export default async function ChatLayout({
         <div className="absolute max-w-5xl mx-auto bottom-0 left-0 right-0">
           <div className="relative h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
           <ChatLayoutWrapper>
-            <InputForm />
+            <InputForm dict={dict.input} />
           </ChatLayoutWrapper>
         </div>
       </div>
