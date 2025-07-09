@@ -18,10 +18,10 @@
   "home": {
     "welcome": {
       "messages": [
-        "Ready to achieve, {name}?",
-        "Let's get after it, {name}!",
-        "Time to excel, {name}!",
-        "{name}, let's make progress!"
+        "Ready to achieve?",
+        "Let's get after it!",
+        "Time to excel!",
+        "Let's make progress!"
       ],
       "modal": {
         "trigger": "Which model should I use?",

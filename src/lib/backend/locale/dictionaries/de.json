@@ -18,10 +18,10 @@
   "home": {
     "welcome": {
       "messages": [
-        "Bereit für Erfolg, {name}?",
-        "Hallo, {name}! Wie kann ich helfen?",
-        "Hallo, {name}! Lass uns starten!",
-        "Hey, {name}! Wie kann ich dir helfen?"
+        "Bereit für Erfolg?",
+        "Hallo! Wie kann ich helfen?",
+        "Hallo! Lass uns starten!",
+        "Hey! Wie kann ich dir helfen?"
       ],
       "modal": {
         "trigger": "Welches Modell soll ich verwenden?",

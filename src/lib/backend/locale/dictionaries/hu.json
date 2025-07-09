@@ -18,10 +18,10 @@
   "home": {
     "welcome": {
       "messages": [
-        "Kezdhetjük, {name}?",
-        "Vágjunk bele, {name}!",
-        "Ma mit oldunk meg, {name}?",
-        "{name}, miben tudok segíteni?"
+        "Kezdhetjük?",
+        "Vágjunk bele!",
+        "Ma mit oldunk meg?",
+        "Miben tudok segíteni?"
       ],
       "modal": {
         "trigger": "Melyik modellt használjam?",
