@@ -71,7 +71,7 @@ export default async function SettingsPage() {
                   className="flex items-center justify-center min-w-20 px-3 py-2"
                 >
                   <Monitor className="w-4 h-4 mr-2" />
-                  Display
+                  {dict.settings.display.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="mcp"
@@ -122,7 +122,7 @@ export default async function SettingsPage() {
               </Card>
             </TabsContent>
             <TabsContent value="display">
-              <DisplaySettingsTab />
+              <DisplaySettingsTab dict={dict.settings.display} />
             </TabsContent>
             <TabsContent value="mcp">
               <McpTab userMcpServers={user?.mcpServers} />

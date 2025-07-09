@@ -92,6 +92,23 @@
         "cancelButton": "Abbrechen",
         "deleteButton": "Konto löschen"
       }
+    },
+    "display": {
+      "tabTitle": "Anzeige",
+      "title": "Anzeige Einstellungen",
+      "description": "Wähle, wie du deine Chat-Oberfläche anzeigen möchtest",
+      "layout": {
+        "title": "Oberfläche",
+        "description": "Wähle deine bevorzugte Chat-Oberfläche",
+        "options": {
+          "wide": "Breit",
+          "compact": "Kompakt"
+        }
+      },
+      "theme": {
+        "title": "Farbschema",
+        "description": "Wähle dein bevorzugtes Farbschema"
+      }
     }
   }
 }

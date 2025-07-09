@@ -92,6 +92,23 @@
         "cancelButton": "Cancel",
         "deleteButton": "Delete Account"
       }
+    },
+    "display": {
+      "tabTitle": "Display",
+      "title": "Display Settings",
+      "description": "Choose how you want to display your chat interface",
+      "layout": {
+        "title": "Layout",
+        "description": "Select your preferred chat layout",
+        "options": {
+          "wide": "Wide",
+          "compact": "Compact"
+        }
+      },
+      "theme": {
+        "title": "Theme",
+        "description": "Choose your preferred color theme"
+      }
     }
   }
 }

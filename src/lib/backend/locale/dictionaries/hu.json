@@ -92,6 +92,23 @@
         "cancelButton": "Mégsem",
         "deleteButton": "Fiók törlése"
       }
+    },
+    "display": {
+      "tabTitle": "Kijelző",
+      "title": "Kijelző beállítások",
+      "description": "Állítsd be, hogy hogyan szeretnéd megjeleníteni a chat ablakot",
+      "layout": {
+        "title": "Elrendezés",
+        "description": "Válassz a kedvenc elrendezésed közül",
+        "options": {
+          "wide": "Széles",
+          "compact": "Kompakt"
+        }
+      },
+      "theme": {
+        "title": "Téma",
+        "description": "Válaszd ki a kedvenc témádat"
+      }
     }
   }
 }
