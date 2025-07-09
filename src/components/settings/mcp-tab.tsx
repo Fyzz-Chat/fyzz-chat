@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { saveMcpServers } from "@/lib/actions/users";
+import type { Dictionary } from "@/types/locale";
 import { MissingKeyError } from "@/types/mcp";
 import type { JsonValue } from "@prisma/client/runtime/library";
 import { useForm } from "react-hook-form";
@@ -23,7 +24,10 @@ const placeholderServers = `{
   }
 }`;
 
-export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
+export function McpTab({
+  userMcpServers,
+  dict,
+}: { userMcpServers?: JsonValue; dict: Dictionary["settings"]["mcp"] }) {
   const { register, handleSubmit } = useForm<{ mcpServers: string }>({
     defaultValues: {
       mcpServers: userMcpServers ? (userMcpServers as string) : "",
@@ -47,17 +51,17 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
         throw new SyntaxError("Invalid JSON");
       }
 
-      toast.success("MCP servers updated", {
-        description: "Your MCP servers have been updated.",
+      toast.success(dict.success.title, {
+        description: dict.success.description,
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        toast.error("Invalid JSON", {
-          description: "Please provide a valid JSON object.",
+        toast.error(dict.error.title, {
+          description: dict.error.description,
         });
       } else if (error instanceof MissingKeyError) {
-        toast.error("Missing mcpServers key", {
-          description: "Please provide a JSON with an mcpServers key.",
+        toast.error(dict.missingKey.title, {
+          description: dict.missingKey.description,
         });
       }
     }
@@ -66,11 +70,8 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>MCP Servers</CardTitle>
-        <CardDescription>
-          Add MCP servers to your account. Only HTTP and SSE servers are supported at the
-          moment.
-        </CardDescription>
+        <CardTitle>{dict.title}</CardTitle>
+        <CardDescription>{dict.description}</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -83,7 +84,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
             placeholder={placeholderServers}
           />
           <Button type="submit" className="px-5 self-end">
-            Save
+            {dict.saveButton}
           </Button>
         </form>
       </CardContent>

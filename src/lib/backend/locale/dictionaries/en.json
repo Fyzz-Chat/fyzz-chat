@@ -109,6 +109,24 @@
         "title": "Theme",
         "description": "Choose your preferred color theme"
       }
+    },
+    "mcp": {
+      "tabTitle": "MCP",
+      "title": "MCP Servers",
+      "description": "Add MCP servers to your account. Only HTTP and SSE servers are supported at the moment.",
+      "saveButton": "Save",
+      "success": {
+        "title": "MCP servers updated",
+        "description": "Your MCP servers have been updated."
+      },
+      "error": {
+        "title": "Invalid JSON",
+        "description": "Please provide a valid JSON object."
+      },
+      "missingKey": {
+        "title": "Missing mcpServers key",
+        "description": "Please provide a JSON with an mcpServers key."
+      }
     }
   }
 }

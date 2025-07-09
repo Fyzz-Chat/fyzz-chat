@@ -125,7 +125,7 @@ export default async function SettingsPage() {
               <DisplaySettingsTab dict={dict.settings.display} />
             </TabsContent>
             <TabsContent value="mcp">
-              <McpTab userMcpServers={user?.mcpServers} />
+              <McpTab userMcpServers={user?.mcpServers} dict={dict.settings.mcp} />
             </TabsContent>
           </Tabs>
         </div>

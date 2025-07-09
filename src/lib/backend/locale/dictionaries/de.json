@@ -109,6 +109,24 @@
         "title": "Farbschema",
         "description": "Wähle dein bevorzugtes Farbschema"
       }
+    },
+    "mcp": {
+      "tabTitle": "MCP",
+      "title": "MCP Server",
+      "description": "Füge MCP Server zu deinem Konto hinzu. Aktuell werden nur HTTP und SSE Server unterstützt.",
+      "saveButton": "Speichern",
+      "success": {
+        "title": "MCP Server aktualisiert",
+        "description": "Deine MCP Server wurden aktualisiert."
+      },
+      "error": {
+        "title": "Ungültige JSON",
+        "description": "Bitte gib eine gültige JSON-Objekt ein."
+      },
+      "missingKey": {
+        "title": "Fehlender mcpServers Schlüssel",
+        "description": "Bitte gib eine JSON-Objekt ein, das den mcpServers Schlüssel enthält."
+      }
     }
   }
 }

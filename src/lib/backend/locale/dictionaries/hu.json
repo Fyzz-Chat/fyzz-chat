@@ -109,6 +109,24 @@
         "title": "Téma",
         "description": "Válaszd ki a kedvenc témádat"
       }
+    },
+    "mcp": {
+      "tabTitle": "MCP",
+      "title": "MCP szerverek",
+      "description": "Adj hozzá MCP szervereket a fiókodhoz. Jelenleg csak HTTP és SSE szervereket támogatunk.",
+      "saveButton": "Mentés",
+      "success": {
+        "title": "MCP szerverek frissítve",
+        "description": "Az MCP szervereid frissítve lettek."
+      },
+      "error": {
+        "title": "Érvénytelen JSON",
+        "description": "Kérlek, adj meg egy érvényes JSON objektumot."
+      },
+      "missingKey": {
+        "title": "Hiányzó mcpServers kulcs",
+        "description": "Kérlek, adj meg egy JSON objektumot, amely tartalmazza az mcpServers kulcsot."
+      }
     }
   }
 }
