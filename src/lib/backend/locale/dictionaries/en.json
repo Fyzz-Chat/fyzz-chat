@@ -173,12 +173,37 @@
   "login": {
     "title": "Welcome back!",
     "description": "Sign in to your account to continue",
-    "email": "Email",
+    "email": {
+      "label": "Email",
+      "placeholder": "johndoe@example.com"
+    },
     "password": "Password",
     "signIn": "Sign in",
     "firstTime": {
       "title": "First time here?",
       "link": "Sign up"
+    }
+  },
+  "register": {
+    "title": "Let's get started!",
+    "description": "Create an account to continue",
+    "name": {
+      "label": "Name",
+      "placeholder": "John Doe"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "johndoe@example.com"
+    },
+    "password": "Password",
+    "privacyPolicy": {
+      "text": "By signing up, you agree to our",
+      "link": "Privacy Policy"
+    },
+    "signUp": "Sign up",
+    "alreadyHaveAccount": {
+      "title": "Already have an account?",
+      "link": "Sign in"
     }
   }
 }

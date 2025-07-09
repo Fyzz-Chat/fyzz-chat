@@ -173,12 +173,37 @@
   "login": {
     "title": "Willkommen zurück!",
     "description": "Melde dich an, um fortzufahren",
-    "email": "Email",
+    "email": {
+      "label": "Email",
+      "placeholder": "max.mustermann@example.com"
+    },
     "password": "Passwort",
     "signIn": "Anmelden",
     "firstTime": {
       "title": "Erstmalig hier?",
       "link": "Registrieren"
+    }
+  },
+  "register": {
+    "title": "Los geht's!",
+    "description": "Erstelle ein Konto, um fortzufahren",
+    "name": {
+      "label": "Name",
+      "placeholder": "Max Mustermann"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "max.mustermann@example.com"
+    },
+    "password": "Passwort",
+    "privacyPolicy": {
+      "text": "Durch das Registrieren, stimmst du unseren",
+      "link": "Datenschutzbestimmungen"
+    },
+    "signUp": "Registrieren",
+    "alreadyHaveAccount": {
+      "title": "Hast du bereits ein Konto?",
+      "link": "Anmelden"
     }
   }
 }

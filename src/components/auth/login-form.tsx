@@ -7,10 +7,13 @@ import { signInUser } from "@/lib/actions/users";
 import publicConf from "@/lib/public-config";
 import { type FormState, initialState } from "@/lib/utils";
 import { useInputStore } from "@/stores/input-store";
+import type { Translations } from "@/types/locale";
 import { useActionState } from "react";
 import PendingSubmitButton from "./pending-submit-button";
 
-export default function LoginForm() {
+export default function LoginForm({
+  translations,
+}: { translations: Translations["login"] }) {
   const [state, formAction, isPending] = useActionState(signInUser, initialState);
   const { input } = useInputStore();
 
@@ -31,18 +34,18 @@ export default function LoginForm() {
   return (
     <form className="flex flex-col gap-4" action={formAction}>
       <Label htmlFor="email" className="space-y-1">
-        <span>Email</span>
+        <span>{translations.email.label}</span>
         <Input
           type="email"
           id="email"
           name="email"
-          placeholder="johndoe@example.com"
+          placeholder={translations.email.placeholder}
           required
           autoFocus
         />
       </Label>
       <Label htmlFor="password" className="space-y-1">
-        <span>Password</span>
+        <span>{translations.password}</span>
         <Input
           type="password"
           id="password"
@@ -51,7 +54,11 @@ export default function LoginForm() {
           required
         />
       </Label>
-      <PendingSubmitButton isPending={isPending} text="Sign in" className="mt-[18px]" />
+      <PendingSubmitButton
+        isPending={isPending}
+        text={translations.signIn}
+        className="mt-[18px]"
+      />
     </form>
   );
 }

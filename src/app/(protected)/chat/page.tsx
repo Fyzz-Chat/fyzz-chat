@@ -55,17 +55,27 @@ export default async function ChatPage({
           )}
         >
           <LazyAuthCard
-            title={isLogin ? translations.login.title : "Let's get started!"}
+            title={isLogin ? translations.login.title : translations.register.title}
             description={
-              isLogin ? translations.login.description : "Create an account to continue"
+              isLogin ? translations.login.description : translations.register.description
             }
             ctaQuestion={
-              isLogin ? translations.login.firstTime.title : "Already have an account?"
+              isLogin
+                ? translations.login.firstTime.title
+                : translations.register.alreadyHaveAccount.title
             }
-            ctaText={isLogin ? translations.login.firstTime.link : "Login"}
+            ctaText={
+              isLogin
+                ? translations.login.firstTime.link
+                : translations.register.alreadyHaveAccount.link
+            }
             ctaLink={`/chat?${isLogin ? "register=true" : "login=true"}`}
           >
-            {isLogin ? <LoginForm /> : <RegisterForm />}
+            {isLogin ? (
+              <LoginForm translations={translations.login} />
+            ) : (
+              <RegisterForm translations={translations.register} />
+            )}
           </LazyAuthCard>
         </div>
       )}

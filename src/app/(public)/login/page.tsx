@@ -38,7 +38,7 @@ export default async function Login() {
         ctaText={translations.login.firstTime.link}
         ctaLink="/register"
       >
-        <LoginForm />
+        <LoginForm translations={translations.login} />
       </AuthCard>
     </main>
   );

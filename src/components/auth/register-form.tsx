@@ -7,11 +7,14 @@ import { registerUser } from "@/lib/actions/users";
 import publicConf from "@/lib/public-config";
 import { type FormState, initialState } from "@/lib/utils";
 import { useInputStore } from "@/stores/input-store";
+import type { Translations } from "@/types/locale";
 import { ExternalLink } from "lucide-react";
 import { useActionState } from "react";
 import PendingSubmitButton from "./pending-submit-button";
 
-export default function RegisterForm() {
+export default function RegisterForm({
+  translations,
+}: { translations: Translations["register"] }) {
   const [state, formAction, isPending] = useActionState(registerUser, initialState);
   const { input } = useInputStore();
 
@@ -32,28 +35,28 @@ export default function RegisterForm() {
   return (
     <form className="flex flex-col gap-4" action={formAction}>
       <Label htmlFor="name" className="space-y-1">
-        <span>Name</span>
+        <span>{translations.name.label}</span>
         <Input
           type="text"
           id="name"
           name="name"
-          placeholder="John Doe"
+          placeholder={translations.name.placeholder}
           required
           autoFocus
         />
       </Label>
       <Label htmlFor="email" className="space-y-1">
-        <span>Email</span>
+        <span>{translations.email.label}</span>
         <Input
           type="email"
           id="email"
           name="email"
-          placeholder="johndoe@example.com"
+          placeholder={translations.email.placeholder}
           required
         />
       </Label>
       <Label htmlFor="password" className="space-y-1">
-        <span>Password</span>
+        <span>{translations.password}</span>
         <Input
           type="password"
           id="password"
@@ -63,17 +66,21 @@ export default function RegisterForm() {
         />
       </Label>
       <div className="text-xs text-muted-foreground mt-2">
-        By signing up, you agree to our{" "}
+        {translations.privacyPolicy.text}{" "}
         <a
           href="/privacy-policy"
           target="_blank"
           className="text-primary hover:underline inline-flex items-center relative"
         >
-          <span>Privacy Policy</span>
+          <span>{translations.privacyPolicy.link}</span>
           <ExternalLink size={10} className="ml-1 relative top-[-1px]" />
         </a>
       </div>
-      <PendingSubmitButton isPending={isPending} text="Sign up" className="mt-[18px]" />
+      <PendingSubmitButton
+        isPending={isPending}
+        text={translations.signUp}
+        className="mt-[18px]"
+      />
     </form>
   );
 }
