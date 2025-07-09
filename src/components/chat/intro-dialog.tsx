@@ -11,7 +11,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getDictionary } from "@/lib/backend/locale/dictionaries";
 import { countModels } from "@/lib/backend/providers";
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
-import IntroDialogDescription from "./intro-dialog-description";
 
 export default async function Examples() {
   const dict = await getDictionary();
@@ -34,32 +33,29 @@ export default async function Examples() {
         <ScrollArea className="max-h-[350px]">
           <div className="flex flex-col gap-4 px-6 pb-4 sm:pb-0">
             <p>
-              Models with the <Image className="inline-flex text-orange-500" /> can
-              analyze uploaded images.
+              <Image className="inline-flex text-orange-500" />:{" "}
+              {dict.home.welcome.modal.types.image}
             </p>
             <p>
-              Models with the <FileText className="inline-flex text-purple-500" /> icon
-              can analyze uploaded PDFs.
+              <FileText className="inline-flex text-purple-500" />:{" "}
+              {dict.home.welcome.modal.types.pdf}
             </p>
             <p>
-              Models with the <Brain className="inline-flex text-yellow-500" /> icon take
-              time to respond. Use them for complex questions.
+              <Brain className="inline-flex text-yellow-500" />:{" "}
+              {dict.home.welcome.modal.types.reasoning}
             </p>
             <p>
-              Models with the <Globe className="inline-flex text-blue-500" /> icon have
-              internet access.
+              <Globe className="inline-flex text-blue-500" />:{" "}
+              {dict.home.welcome.modal.types.internet}
             </p>
             <p>
-              Models with the <CodeXml className="inline-flex text-green-500" /> icon are
-              ideal for coding questions.
+              <CodeXml className="inline-flex text-green-500" />:{" "}
+              {dict.home.welcome.modal.types.coding}
             </p>
-            <p>
-              But generally, all models are general-purpose. Experiment to find the best
-              fit for you.
-            </p>
-            <p>
-              Click the model's <IntroDialogDescription /> in the lower left corner of the
-              input field to switch models.
+            <p>{dict.home.welcome.modal.general}</p>
+            <p className="md:hidden">{dict.home.welcome.modal.switchModel.mobile}</p>
+            <p className="hidden md:block">
+              {dict.home.welcome.modal.switchModel.desktop}
             </p>
           </div>
         </ScrollArea>

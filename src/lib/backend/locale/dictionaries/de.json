@@ -26,7 +26,19 @@
       "modal": {
         "trigger": "Welches Modell soll ich verwenden?",
         "title": "Wir haben {modelCount} Modelle zur Auswahl",
-        "description": "Welches ist das Richtige für dich?"
+        "description": "Welches ist das Richtige für dich?",
+        "types": {
+          "image": "Diese Modelle können hochgeladene Bilder analysieren.",
+          "pdf": "Diese Modelle können hochgeladene PDFs analysieren.",
+          "reasoning": "Diese Modelle nehmen länger, um zu antworten. Verwende sie für komplexe Fragen.",
+          "internet": "Diese Modelle haben Internet-Zugriff.",
+          "coding": "Diese Modelle sind ideal für Codierungsfragen."
+        },
+        "general": "Aber im Allgemeinen sind alle Modelle allgemein zweckmäßig. Experimentiere, um das Beste für dich zu finden.",
+        "switchModel": {
+          "mobile": "Klicke auf das Modell-Symbol in der unteren linken Ecke des Eingabefelds, um ein Modell zu wechseln.",
+          "desktop": "Klicke auf den Namen des Modells in der unteren linken Ecke des Eingabefelds, um ein Modell zu wechseln."
+        }
       },
       "examples": [
         "105 Grad Fahrenheit in Celsius ",
