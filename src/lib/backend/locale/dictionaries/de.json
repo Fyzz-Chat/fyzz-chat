@@ -77,6 +77,14 @@
       "newPassword": "Neues Passwort",
       "confirmPassword": "Passwort bestätigen",
       "saveButton": "Speichern"
+    },
+    "account": {
+      "tabTitle": "Konto",
+      "title": "Kontoverwaltung",
+      "description": "Du kannst deinen Konto hier löschen.",
+      "deleteCardTitle": "Konto löschen",
+      "deleteCardDescription": "Wenn du diese Dienst nicht mehr nutzen möchtest, kannst du deinen Konto löschen. Diese Aktion benötigt zusätzliche Bestätigungsschritte.",
+      "deleteButton": "Löschen"
     }
   }
 }

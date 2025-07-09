@@ -77,6 +77,14 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm Password",
       "saveButton": "Save"
+    },
+    "account": {
+      "tabTitle": "Account",
+      "title": "Account Management",
+      "description": "You can delete your account here.",
+      "deleteCardTitle": "Delete Account",
+      "deleteCardDescription": "If you no longer wish to use this service, you can request account deletion. This action requires additional confirmation steps.",
+      "deleteButton": "Delete"
     }
   }
 }

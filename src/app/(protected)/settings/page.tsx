@@ -64,7 +64,7 @@ export default async function SettingsPage() {
                   className="flex items-center justify-center min-w-20 px-3 py-2"
                 >
                   <User className="w-4 h-4 mr-2" />
-                  Account
+                  {dict.settings.account.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="display"
@@ -113,11 +113,11 @@ export default async function SettingsPage() {
             <TabsContent value="account">
               <Card>
                 <CardHeader>
-                  <CardTitle>Account Management</CardTitle>
-                  <CardDescription>You can delete your account here.</CardDescription>
+                  <CardTitle>{dict.settings.account.title}</CardTitle>
+                  <CardDescription>{dict.settings.account.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <DeleteAccountForm />
+                  <DeleteAccountForm dict={dict.settings.account} />
                 </CardContent>
               </Card>
             </TabsContent>

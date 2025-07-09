@@ -77,6 +77,14 @@
       "newPassword": "Új jelszó",
       "confirmPassword": "Jelszó megerősítése",
       "saveButton": "Mentés"
+    },
+    "account": {
+      "tabTitle": "Fiók",
+      "title": "Fiókkezelés",
+      "description": "Itt tudod kitörölni a fiókodat.",
+      "deleteCardTitle": "Fiók törlése",
+      "deleteCardDescription": "Ha nem szeretnéd többé használni ezt a szolgáltatást, kérheted a fiókod törlését. Ez a művelet további megerősítési lépéseket igényel.",
+      "deleteButton": "Törlés"
     }
   }
 }

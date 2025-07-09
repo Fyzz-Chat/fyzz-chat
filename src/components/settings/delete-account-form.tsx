@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import useToast from "@/hooks/use-toast";
 import { deleteUser } from "@/lib/actions/users";
 import { type FormState, initialState } from "@/lib/utils";
+import type { Dictionary } from "@/types/locale";
 import { signOut } from "next-auth/react";
 import { useActionState } from "react";
 import { useState } from "react";
@@ -19,7 +20,9 @@ import {
 } from "../ui/alert-dialog";
 import { Input } from "../ui/input";
 
-export default function DeleteAccountForm() {
+export default function DeleteAccountForm({
+  dict,
+}: { dict: Dictionary["settings"]["account"] }) {
   const [state, formAction] = useActionState(deleteUser, initialState);
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -45,15 +48,12 @@ export default function DeleteAccountForm() {
 
   return (
     <div className="flex flex-col gap-2 p-4 border border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900 rounded-lg">
-      <h4 className="text-lg font-semibold">Delete Account</h4>
-      <p className="text-sm">
-        If you no longer wish to use this service, you can request account deletion. This
-        action requires additional confirmation steps.
-      </p>
+      <h4 className="text-lg font-semibold">{dict.deleteCardTitle}</h4>
+      <p className="text-sm">{dict.deleteCardDescription}</p>
       <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogTrigger asChild>
           <Button type="button" variant="destructive" className="w-fit mt-2 self-end">
-            Delete
+            {dict.deleteButton}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
