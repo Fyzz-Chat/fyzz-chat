@@ -10,11 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
-import type { Dictionary } from "@/types/locale";
+import type { Translations } from "@/types/locale";
 
 export function LayoutSelector({
-  dict,
-}: { dict: Dictionary["settings"]["display"]["layout"] }) {
+  translations,
+}: { translations: Translations["settings"]["display"]["layout"] }) {
   const { layout, setLayout } = useChatLayout();
 
   return (
@@ -26,17 +26,19 @@ export function LayoutSelector({
           ) : (
             <IconViewportNarrow size={16} />
           )}
-          <span>{layout === "wide" ? dict.options.wide : dict.options.compact}</span>
+          <span>
+            {layout === "wide" ? translations.options.wide : translations.options.compact}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setLayout("wide")} className="gap-2">
           <IconViewportWide size={16} />
-          <span>{dict.options.wide}</span>
+          <span>{translations.options.wide}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setLayout("compact")} className="gap-2">
           <IconViewportNarrow size={16} />
-          <span>{dict.options.compact}</span>
+          <span>{translations.options.compact}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

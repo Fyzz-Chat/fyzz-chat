@@ -4,7 +4,7 @@ import ExampleButton from "@/components/chat/example-button";
 import ModelSetter from "@/components/chat/model-setter";
 import type { SessionUser } from "@/lib/dao/users";
 import { useModelStore } from "@/stores/model-store";
-import type { Dictionary } from "@/types/locale";
+import type { Translations } from "@/types/locale";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import IconSpy from "../icons/icon-spy";
@@ -17,9 +17,13 @@ function getRandomWelcomeMessage(messages: string[], userName: string) {
 export default function ChatWelcomeSection({
   children,
   user,
-  home,
-}: { children?: ReactNode; user: SessionUser | null; home: Dictionary["home"] }) {
-  const { welcome, incognito } = home;
+  translations,
+}: {
+  children?: ReactNode;
+  user: SessionUser | null;
+  translations: Translations["home"];
+}) {
+  const { welcome, incognito } = translations;
   const { temporaryChat } = useModelStore();
   const [message, setMessage] = useState<string>(welcome.messages[0]);
 

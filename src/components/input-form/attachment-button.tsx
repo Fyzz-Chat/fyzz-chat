@@ -13,7 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Dictionary } from "@/types/locale";
+import type { Translations } from "@/types/locale";
 import { Camera, Paperclip } from "lucide-react";
 import type { RefObject } from "react";
 
@@ -22,13 +22,13 @@ export default function AttachmentButton({
   pdfSupport,
   cameraInputRef,
   fileInputRef,
-  dict,
+  translations,
 }: {
   imageSupport?: boolean;
   pdfSupport?: boolean;
   cameraInputRef: RefObject<HTMLInputElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  dict: Dictionary["input"]["attach"];
+  translations: Translations["input"]["attach"];
 }) {
   function handleCameraClick() {
     cameraInputRef.current?.click();
@@ -58,16 +58,16 @@ export default function AttachmentButton({
           <DropdownMenuContent align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
             <DropdownMenuItem onClick={handleCameraClick} className="flex lg:hidden">
               <Camera size={16} />
-              <span>{dict.camera}</span>
+              <span>{translations.camera}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleFileClick}>
               <Paperclip size={16} />
-              <span>{dict.file}</span>
+              <span>{translations.file}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <TooltipContent>
-          <p>{dict.tooltip}</p>
+          <p>{translations.tooltip}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

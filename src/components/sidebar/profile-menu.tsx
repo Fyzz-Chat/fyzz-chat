@@ -1,7 +1,7 @@
 "use client";
 
 import { FastLink } from "@/components/fast-link";
-import type { Dictionary } from "@/types/locale";
+import type { Translations } from "@/types/locale";
 import { ExternalLink, FileText, Settings } from "lucide-react";
 import {
   DropdownMenuItem,
@@ -14,11 +14,11 @@ import { SignOut } from "./signout-button";
 export default function ProfileMenu({
   authorized,
   userEmail,
-  menu,
+  translations,
 }: {
   authorized: boolean;
   userEmail: string;
-  menu: Dictionary["sidebar"]["menu"];
+  translations: Translations["sidebar"]["menu"];
 }) {
   return (
     <>
@@ -34,7 +34,7 @@ export default function ProfileMenu({
         >
           <FileText className="shrink-0" />
           <span className="relative">
-            {menu.privacyPolicy}
+            {translations.privacyPolicy}
             <ExternalLink className="absolute -top-0 -right-4 !w-3 !h-3" />
           </span>
         </a>
@@ -48,7 +48,7 @@ export default function ProfileMenu({
               className="flex items-center gap-2 size-full px-2 py-1.5"
             >
               <Settings className="shrink-0" />
-              <span>{menu.settings}</span>
+              <span>{translations.settings}</span>
             </FastLink>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -56,9 +56,9 @@ export default function ProfileMenu({
       )}
       <DropdownMenuItem asChild>
         {authorized ? (
-          <SignOut buttonText={menu.signOut} />
+          <SignOut buttonText={translations.signOut} />
         ) : (
-          <SignIn buttonText={menu.signIn} />
+          <SignIn buttonText={translations.signIn} />
         )}
       </DropdownMenuItem>
     </>

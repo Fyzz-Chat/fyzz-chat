@@ -8,14 +8,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getDictionary } from "@/lib/backend/locale/dictionaries";
+import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { countModels } from "@/lib/backend/providers";
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
 
 export default async function Examples() {
-  const dict = await getDictionary();
+  const translations = await getTranslations();
   const numModels = countModels();
-  const title = dict.home.welcome.modal.title.replace(
+  const title = translations.home.welcome.modal.title.replace(
     "{modelCount}",
     numModels.toString()
   );
@@ -23,39 +23,43 @@ export default async function Examples() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">{dict.home.welcome.modal.trigger}</Button>
+        <Button variant="outline">{translations.home.welcome.modal.trigger}</Button>
       </DialogTrigger>
       <DialogContent className="px-0">
         <DialogHeader className="px-6">
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{dict.home.welcome.modal.description}</DialogDescription>
+          <DialogDescription>
+            {translations.home.welcome.modal.description}
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[350px]">
           <div className="flex flex-col gap-4 px-6 pb-4 sm:pb-0">
             <p>
               <Image className="inline-flex text-orange-500" />:{" "}
-              {dict.home.welcome.modal.types.image}
+              {translations.home.welcome.modal.types.image}
             </p>
             <p>
               <FileText className="inline-flex text-purple-500" />:{" "}
-              {dict.home.welcome.modal.types.pdf}
+              {translations.home.welcome.modal.types.pdf}
             </p>
             <p>
               <Brain className="inline-flex text-yellow-500" />:{" "}
-              {dict.home.welcome.modal.types.reasoning}
+              {translations.home.welcome.modal.types.reasoning}
             </p>
             <p>
               <Globe className="inline-flex text-blue-500" />:{" "}
-              {dict.home.welcome.modal.types.internet}
+              {translations.home.welcome.modal.types.internet}
             </p>
             <p>
               <CodeXml className="inline-flex text-green-500" />:{" "}
-              {dict.home.welcome.modal.types.coding}
+              {translations.home.welcome.modal.types.coding}
             </p>
-            <p>{dict.home.welcome.modal.general}</p>
-            <p className="md:hidden">{dict.home.welcome.modal.switchModel.mobile}</p>
+            <p>{translations.home.welcome.modal.general}</p>
+            <p className="md:hidden">
+              {translations.home.welcome.modal.switchModel.mobile}
+            </p>
             <p className="hidden md:block">
-              {dict.home.welcome.modal.switchModel.desktop}
+              {translations.home.welcome.modal.switchModel.desktop}
             </p>
           </div>
         </ScrollArea>

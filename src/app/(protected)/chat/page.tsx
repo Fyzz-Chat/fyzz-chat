@@ -2,7 +2,7 @@ import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
 import ChatWelcomeSection from "@/components/chat/chat-welcome-section";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
-import { getDictionary } from "@/lib/backend/locale/dictionaries";
+import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ export default async function ChatPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const dict = await getDictionary();
+  const translations = await getTranslations();
   const user = await getUserFromSessionPublic();
   const { login, register } = await searchParams;
   const isLogin = login === "true";
@@ -43,7 +43,7 @@ export default async function ChatPage({
     <div className="flex-1 flex items-center justify-center p-4">
       <ViewTransitionWrapper className="flex flex-1 items-center justify-center">
         <div className="max-w-2xl w-full space-y-4">
-          <ChatWelcomeSection user={user} home={dict.home}>
+          <ChatWelcomeSection user={user} translations={translations.home}>
             <LazyIntroDialog />
           </ChatWelcomeSection>
         </div>

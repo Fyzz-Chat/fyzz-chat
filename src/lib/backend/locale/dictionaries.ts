@@ -11,7 +11,7 @@ const dictionaries = {
   hu: () => import("./dictionaries/hu.json").then((module) => module.default),
 };
 
-export const getDictionary = async () => {
+export const getTranslations = async () => {
   const cookieStore = await cookies();
   const lang = (cookieStore.get("locale")?.value as Locale) || "en";
 

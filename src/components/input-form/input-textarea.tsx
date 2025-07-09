@@ -4,7 +4,7 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
-import type { Dictionary } from "@/types/locale";
+import type { Translations } from "@/types/locale";
 import type { ClipboardEvent, KeyboardEvent } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
@@ -12,12 +12,12 @@ export default function InputTextarea({
   imageSupport,
   pdfSupport,
   handleSendMessage,
-  dict,
+  translations,
 }: {
   imageSupport?: boolean;
   pdfSupport?: boolean;
   handleSendMessage: (e: KeyboardEvent<HTMLTextAreaElement>) => Promise<void>;
-  dict: Dictionary["input"];
+  translations: Translations["input"];
 }) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { input, setInput } = useInputStore();
@@ -86,7 +86,9 @@ export default function InputTextarea({
   return (
     <TextareaAutosize
       id="message-input"
-      placeholder={isMobile ? dict.placeholder.mobile : dict.placeholder.desktop}
+      placeholder={
+        isMobile ? translations.placeholder.mobile : translations.placeholder.desktop
+      }
       value={input}
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={handleKeyDown}

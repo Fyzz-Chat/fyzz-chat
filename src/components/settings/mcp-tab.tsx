@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { saveMcpServers } from "@/lib/actions/users";
-import type { Dictionary } from "@/types/locale";
+import type { Translations } from "@/types/locale";
 import { MissingKeyError } from "@/types/mcp";
 import type { JsonValue } from "@prisma/client/runtime/library";
 import { useForm } from "react-hook-form";
@@ -26,8 +26,8 @@ const placeholderServers = `{
 
 export function McpTab({
   userMcpServers,
-  dict,
-}: { userMcpServers?: JsonValue; dict: Dictionary["settings"]["mcp"] }) {
+  translations,
+}: { userMcpServers?: JsonValue; translations: Translations["settings"]["mcp"] }) {
   const { register, handleSubmit } = useForm<{ mcpServers: string }>({
     defaultValues: {
       mcpServers: userMcpServers ? (userMcpServers as string) : "",
@@ -51,17 +51,17 @@ export function McpTab({
         throw new SyntaxError("Invalid JSON");
       }
 
-      toast.success(dict.success.title, {
-        description: dict.success.description,
+      toast.success(translations.success.title, {
+        description: translations.success.description,
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        toast.error(dict.error.title, {
-          description: dict.error.description,
+        toast.error(translations.error.title, {
+          description: translations.error.description,
         });
       } else if (error instanceof MissingKeyError) {
-        toast.error(dict.missingKey.title, {
-          description: dict.missingKey.description,
+        toast.error(translations.missingKey.title, {
+          description: translations.missingKey.description,
         });
       }
     }
@@ -70,8 +70,8 @@ export function McpTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{dict.title}</CardTitle>
-        <CardDescription>{dict.description}</CardDescription>
+        <CardTitle>{translations.title}</CardTitle>
+        <CardDescription>{translations.description}</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -84,7 +84,7 @@ export function McpTab({
             placeholder={placeholderServers}
           />
           <Button type="submit" className="px-5 self-end">
-            {dict.saveButton}
+            {translations.saveButton}
           </Button>
         </form>
       </CardContent>
