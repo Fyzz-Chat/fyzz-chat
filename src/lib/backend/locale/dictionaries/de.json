@@ -169,5 +169,16 @@
         "description": "Bitte gib eine JSON-Objekt ein, das den mcpServers Schlüssel enthält."
       }
     }
+  },
+  "login": {
+    "title": "Willkommen zurück!",
+    "description": "Melde dich an, um fortzufahren",
+    "email": "Email",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "firstTime": {
+      "title": "Erstmalig hier?",
+      "link": "Registrieren"
+    }
   }
 }

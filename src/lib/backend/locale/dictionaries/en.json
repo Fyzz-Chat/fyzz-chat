@@ -169,5 +169,16 @@
         "description": "Please provide a JSON with an mcpServers key."
       }
     }
+  },
+  "login": {
+    "title": "Welcome back!",
+    "description": "Sign in to your account to continue",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "firstTime": {
+      "title": "First time here?",
+      "link": "Sign up"
+    }
   }
 }

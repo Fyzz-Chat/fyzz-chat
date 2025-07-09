@@ -1,5 +1,6 @@
 import AuthCard from "@/components/auth/auth-card";
 import LoginForm from "@/components/auth/login-form";
+import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 import type { Metadata } from "next";
 
@@ -26,14 +27,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Login() {
+export default async function Login() {
+  const translations = await getTranslations();
   return (
     <main className="m-auto">
       <AuthCard
-        title="Welcome back!"
-        description="Sign in to your account to continue"
-        ctaQuestion="First time here?"
-        ctaText="Sign up"
+        title={translations.login.title}
+        description={translations.login.description}
+        ctaQuestion={translations.login.firstTime.title}
+        ctaText={translations.login.firstTime.link}
         ctaLink="/register"
       >
         <LoginForm />

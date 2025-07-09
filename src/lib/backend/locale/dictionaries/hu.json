@@ -169,5 +169,16 @@
         "description": "Kérlek, adj meg egy JSON objektumot, amely tartalmazza az mcpServers kulcsot."
       }
     }
+  },
+  "login": {
+    "title": "Üdv újra!",
+    "description": "Jelentkezz be a folytatáshoz",
+    "email": "Email",
+    "password": "Jelszó",
+    "signIn": "Bejelentkezés",
+    "firstTime": {
+      "title": "Először vagy itt?",
+      "link": "Regisztrálj"
+    }
   }
 }
