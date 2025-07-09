@@ -23,15 +23,17 @@
         "Time to excel, {name}!",
         "{name}, let's make progress!"
       ],
-      "modalTrigger": "Which model should I use?",
-      "modalTitle": "We have {modelCount} models available",
-      "modalDescription": "Which one should you use?",
-      "examples": [
-        "105 degrees Fahrenheit to Celsius ",
-        "Where do llamas live naturally? ",
-        "What is the smallest country in Africa? ",
-        "How can you help me? "
-      ]
+      "modal": {
+        "trigger": "Which model should I use?",
+        "title": "We have {modelCount} models available",
+        "description": "Which one should you use?"
+      },
+        "examples": [
+          "105 degrees Fahrenheit to Celsius ",
+          "Where do llamas live naturally? ",
+          "What is the smallest country in Africa? ",
+          "How can you help me? "
+        ]
     },
     "incognito": {
       "title": "Incognito Mode",
@@ -76,10 +78,12 @@
       "title": "Memory Settings",
       "description": "Control how the application remembers your interactions.",
       "sectionTitle": "Memory",
-      "toggleTitle": "Enable Memory",
-      "toggleDescription": "If memory is enabled, the model will store information about you and will use it to improve the quality of its responses.",
-      "toggleDescriptionDisabled": "Enable memory to edit.",
-      "toggleDescriptionEnabled": "You can edit the memory here manually. Press Save when you're done.",
+      "toggle": {
+        "title": "Enable Memory",
+        "description": "If memory is enabled, the model will store information about you and will use it to improve the quality of its responses.",
+        "descriptionDisabled": "Enable memory to edit.",
+        "descriptionEnabled": "You can edit the memory here manually. Press Save when you're done."
+      },
       "saveButton": "Save",
       "sonner": {
         "enabled": {
@@ -105,8 +109,10 @@
       "tabTitle": "Account",
       "title": "Account Management",
       "description": "You can delete your account here.",
-      "deleteCardTitle": "Delete Account",
-      "deleteCardDescription": "If you no longer wish to use this service, you can request account deletion. This action requires additional confirmation steps.",
+      "deleteCard": {
+        "title": "Delete Account",
+        "description": "If you no longer wish to use this service, you can request account deletion. This action requires additional confirmation steps."
+      },
       "deleteButton": "Delete",
       "dialog": {
         "title": "Confirm Account Deletion",

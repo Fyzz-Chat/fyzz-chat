@@ -16,7 +16,7 @@ import IntroDialogDescription from "./intro-dialog-description";
 export default async function Examples() {
   const dict = await getDictionary();
   const numModels = countModels();
-  const title = dict.home.welcome.modalTitle.replace(
+  const title = dict.home.welcome.modal.title.replace(
     "{modelCount}",
     numModels.toString()
   );
@@ -24,12 +24,12 @@ export default async function Examples() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">{dict.home.welcome.modalTrigger}</Button>
+        <Button variant="outline">{dict.home.welcome.modal.trigger}</Button>
       </DialogTrigger>
       <DialogContent className="px-0">
         <DialogHeader className="px-6">
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{dict.home.welcome.modalDescription}</DialogDescription>
+          <DialogDescription>{dict.home.welcome.modal.description}</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[350px]">
           <div className="flex flex-col gap-4 px-6 pb-4 sm:pb-0">

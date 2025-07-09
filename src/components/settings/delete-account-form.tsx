@@ -48,8 +48,8 @@ export default function DeleteAccountForm({
 
   return (
     <div className="flex flex-col gap-2 p-4 border border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900 rounded-lg">
-      <h4 className="text-lg font-semibold">{dict.deleteCardTitle}</h4>
-      <p className="text-sm">{dict.deleteCardDescription}</p>
+      <h4 className="text-lg font-semibold">{dict.deleteCard.title}</h4>
+      <p className="text-sm">{dict.deleteCard.description}</p>
       <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogTrigger asChild>
           <Button type="button" variant="destructive" className="w-fit mt-2 self-end">

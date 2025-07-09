@@ -50,12 +50,12 @@ export default function MemoryForm({
       <h4 className="text-sm font-medium">{dict.sectionTitle}</h4>
       <div className="flex items-center gap-2">
         <Switch id="memory" checked={enabled} onCheckedChange={setEnabled} />
-        <Label htmlFor="memory">{dict.toggleTitle}</Label>
+        <Label htmlFor="memory">{dict.toggle.title}</Label>
       </div>
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">{dict.toggleDescription}</p>
+        <p className="text-sm text-muted-foreground">{dict.toggle.description}</p>
         <p className="text-sm text-muted-foreground">
-          {enabled ? dict.toggleDescriptionEnabled : dict.toggleDescriptionDisabled}
+          {enabled ? dict.toggle.descriptionEnabled : dict.toggle.descriptionDisabled}
         </p>
       </div>
       <form action={formAction} className="flex flex-col gap-4 w-full items-start">

@@ -23,9 +23,11 @@
         "Hallo, {name}! Lass uns starten!",
         "Hey, {name}! Wie kann ich dir helfen?"
       ],
-      "modalTrigger": "Welches Modell soll ich verwenden?",
-      "modalTitle": "Wir haben {modelCount} Modelle zur Auswahl",
-      "modalDescription": "Welches ist das Richtige für dich?",
+      "modal": {
+        "trigger": "Welches Modell soll ich verwenden?",
+        "title": "Wir haben {modelCount} Modelle zur Auswahl",
+        "description": "Welches ist das Richtige für dich?"
+      },
       "examples": [
         "105 Grad Fahrenheit in Celsius ",
         "Wo leben Lamas in freier Natur? ",
@@ -76,10 +78,12 @@
       "title": "Memorie Einstellungen",
       "description": "Steuere, wie die Anwendung deine Interaktionen speichert.",
       "sectionTitle": "Memorie",
-      "toggleTitle": "Memorie aktivieren",
-      "toggleDescription": "Wenn die Memorie aktiviert ist, speichert das Modell Informationen über dich und verwendet sie, um die Qualität seiner Antworten zu verbessern.",
-      "toggleDescriptionDisabled": "Aktiviere die Memorie, um sie zu bearbeiten.",
-      "toggleDescriptionEnabled": "Du kannst die Memorie hier manuell bearbeiten. Klicke auf Speichern, wenn du fertig bist.",
+      "toggle": {
+        "title": "Memorie aktivieren",
+        "description": "Wenn die Memorie aktiviert ist, speichert das Modell Informationen über dich und verwendet sie, um die Qualität seiner Antworten zu verbessern.",
+        "descriptionDisabled": "Aktiviere die Memorie, um sie zu bearbeiten.",
+        "descriptionEnabled": "Du kannst die Memorie hier manuell bearbeiten. Klicke auf Speichern, wenn du fertig bist."
+      },
       "saveButton": "Speichern",
       "sonner": {
         "enabled": {
@@ -105,8 +109,10 @@
       "tabTitle": "Konto",
       "title": "Kontoverwaltung",
       "description": "Du kannst deinen Konto hier löschen.",
-      "deleteCardTitle": "Konto löschen",
-      "deleteCardDescription": "Wenn du diese Dienst nicht mehr nutzen möchtest, kannst du deinen Konto löschen. Diese Aktion benötigt zusätzliche Bestätigungsschritte.",
+      "deleteCard": {
+        "title": "Konto löschen",
+        "description": "Wenn du diese Dienst nicht mehr nutzen möchtest, kannst du deinen Konto löschen. Diese Aktion benötigt zusätzliche Bestätigungsschritte."
+      },
       "deleteButton": "Löschen",
       "dialog": {
         "title": "Konto löschen bestätigen",

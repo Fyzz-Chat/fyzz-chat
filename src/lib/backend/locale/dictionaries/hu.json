@@ -23,9 +23,11 @@
         "Ma mit oldunk meg, {name}?",
         "{name}, miben tudok segíteni?"
       ],
-      "modalTrigger": "Melyik modellt használjam?",
-      "modalTitle": "{modelCount} modellünk van",
-      "modalDescription": "Melyiket érdemes választanod?",
+      "modal": {
+        "trigger": "Melyik modellt használjam?",
+        "title": "{modelCount} modellünk van",
+        "description": "Melyiket érdemes választanod?"
+      },
       "examples": [
         "105 fok Fahrenheit Celsiusban ",
         "Mi a lámák természetes élőhelye? ",
@@ -76,10 +78,12 @@
       "title": "Emlékek beállításai",
       "description": "Beállíthatod, hogy mit jegyezzünk meg a beszélgetéseidből.",
       "sectionTitle": "Emlékek",
-      "toggleTitle": "Emlékek engedélyezése",
-      "toggleDescription": "Ha az emlékek engedélyezve vannak, a modellek megjegyzik a veled kapcsolatos legfontosabb információkat és felhasználják őket a következő válaszadáskor.",
-      "toggleDescriptionDisabled": "Először engedélyezd az emlékeket, hogy szerkeszthess.",
-      "toggleDescriptionEnabled": "Itt tudod szerkeszteni az emlékeket. Kattints a Mentés gombra, ha kész vagy.",
+      "toggle": {
+        "title": "Emlékek engedélyezése",
+        "description": "Ha az emlékek engedélyezve vannak, a modellek megjegyzik a veled kapcsolatos legfontosabb információkat és felhasználják őket a következő válaszadáskor.",
+        "descriptionDisabled": "Először engedélyezd az emlékeket, hogy szerkeszthess.",
+        "descriptionEnabled": "Itt tudod szerkeszteni az emlékeket. Kattints a Mentés gombra, ha kész vagy."
+      },
       "saveButton": "Mentés",
       "sonner": {
         "enabled": {
@@ -105,8 +109,10 @@
       "tabTitle": "Fiók",
       "title": "Fiókkezelés",
       "description": "Itt tudod kitörölni a fiókodat.",
-      "deleteCardTitle": "Fiók törlése",
-      "deleteCardDescription": "Ha nem szeretnéd többé használni ezt a szolgáltatást, kérheted a fiókod törlését. Ez a művelet további megerősítési lépéseket igényel.",
+      "deleteCard": {
+        "title": "Fiók törlése",
+        "description": "Ha nem szeretnéd többé használni ezt a szolgáltatást, kérheted a fiókod törlését. Ez a művelet további megerősítési lépéseket igényel."
+      },
       "deleteButton": "Törlés",
       "dialog": {
         "title": "Fióktörlés megerősítése",
