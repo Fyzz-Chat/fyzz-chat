@@ -359,6 +359,13 @@ const providers: Provider[] = [
     icon: "xai",
     models: [
       {
+        id: "grok-4-0709",
+        name: "Grok 4",
+        features: [images, reasoning],
+        provider: wrappedModel(xai),
+        tools: true,
+      },
+      {
         id: "grok-3-mini-beta",
         name: "Grok 3 mini",
         features: [reasoning],
