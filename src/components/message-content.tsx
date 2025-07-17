@@ -228,6 +228,15 @@ const MemoizedMarkdownBlock = memo(
               </ScrollArea>
             );
           },
+          img({ src, alt }) {
+            return (
+              <img
+                src={src}
+                alt={alt}
+                className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
+              />
+            );
+          },
         }}
       >
         {content}

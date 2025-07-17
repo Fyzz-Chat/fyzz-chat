@@ -27,7 +27,8 @@ const azureConfigured =
   process.env.AZURE_RESOURCE_NAME !== undefined; // &&
 // process.env.AZURE_GPT41_API_KEY !== undefined &&
 // process.env.AZURE_GPT41_RESOURCE_NAME !== undefined;
-const openaiConfigured = process.env.OPENAI_API_KEY !== undefined && !azureConfigured;
+export const openaiConfigured = process.env.OPENAI_API_KEY !== undefined;
+const openaiConfiguredAzureNot = openaiConfigured && !azureConfigured;
 const anthropicConfigured = process.env.ANTHROPIC_API_KEY !== undefined;
 const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
 const xaiConfigured = process.env.XAI_API_KEY !== undefined;
@@ -96,7 +97,7 @@ function filterProviders(): Provider[] {
     if (provider.id === "azure" && !azureConfigured) {
       return false;
     }
-    if (provider.id === "openai" && !openaiConfigured) {
+    if (provider.id === "openai" && !openaiConfiguredAzureNot) {
       return false;
     }
     if (provider.id === "anthropic" && !anthropicConfigured) {

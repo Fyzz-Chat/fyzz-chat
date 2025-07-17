@@ -2,7 +2,6 @@ import "server-only";
 
 import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
-import type { Message } from "@/lib/prisma/client";
 import prisma from "@/lib/prisma/prisma";
 import type { PartialMessage } from "@/types/chat";
 import type { JsonArray } from "@prisma/client/runtime/library";

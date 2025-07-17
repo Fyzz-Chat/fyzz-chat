@@ -6,7 +6,9 @@ import {
   getAnthropicProviderOptions,
   getModel,
   getOpenaiProviderOptions,
+  openaiConfigured,
 } from "@/lib/backend/providers";
+import { generateImageTool } from "@/lib/backend/tools/generate-image";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
@@ -102,6 +104,10 @@ export async function POST(req: NextRequest) {
 
   const tools: any = {};
 
+  if (openaiConfigured) {
+    tools.generateImage = await generateImageTool(id);
+  }
+
   let memoryPrompt = "";
 
   if (user.memoryEnabled) {
@@ -183,7 +189,7 @@ export async function POST(req: NextRequest) {
   return result.toDataStreamResponse({
     sendReasoning: true,
     sendSources: true,
-    getErrorMessage: (error: any) => error.data.error.code,
+    getErrorMessage: (error: any) => JSON.stringify(error),
   });
 }
 
