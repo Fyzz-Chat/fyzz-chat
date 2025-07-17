@@ -19,6 +19,11 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
       const { image } = await experimental_generateImage({
         model: openai.image("gpt-image-1"),
         prompt,
+        providerOptions: {
+          openai: {
+            quality: "medium",
+          },
+        },
       });
 
       const key = `${userId}/${conversationId}/${uuidv4()}`;
