@@ -82,7 +82,7 @@ export async function getMessages(conversationId: string, page?: number, limit?:
 }
 
 export async function saveMessage(
-  message: Message | UIMessage,
+  message: Message,
   conversationId: string,
   model: string,
   promptTokens: number,
@@ -90,9 +90,12 @@ export async function saveMessage(
 ) {
   const userId = await getUserIdFromSession();
 
+  const { experimental_attachments, ...messageWithoutAttachments } = message;
+
   const newMessage = await prisma.message.create({
     data: {
-      ...message,
+      ...messageWithoutAttachments,
+      files: JSON.stringify(experimental_attachments),
       parts: JSON.stringify(message.parts),
       toolInvocations: JSON.stringify(message.toolInvocations),
       conversationId,

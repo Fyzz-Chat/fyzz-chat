@@ -24,6 +24,7 @@ import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp"
 import {
   type Attachment,
   type Message,
+  type Tool,
   appendClientMessage,
   appendResponseMessages,
   smoothStream,
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
 
   const filteredMessages = filterMessages(messages, modelId);
 
-  const tools: any = {};
+  const tools: { [key: string]: Tool } = {};
 
   if (openaiConfigured) {
     tools.generateImage = await generateImageTool(id);

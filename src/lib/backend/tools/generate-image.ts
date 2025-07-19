@@ -46,7 +46,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
 
       const signedUrl = getFileUrlSigned(key);
 
-      return { image: signedUrl, prompt };
+      return { image: signedUrl, url: key, name: prompt, contentType: image.mimeType };
     },
   });
 }

@@ -228,14 +228,8 @@ const MemoizedMarkdownBlock = memo(
               </ScrollArea>
             );
           },
-          img({ src, alt }) {
-            return (
-              <img
-                src={src}
-                alt={alt}
-                className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
-              />
-            );
+          img() {
+            return null;
           },
         }}
       >
@@ -378,6 +372,23 @@ export function MessageContent({ message }: { message: Message }) {
                 <MemoizedMarkdownBlock content={block} />
               </div>
             ))}
+          </div>
+          <div className="flex flex-col gap-2">
+            {message.parts
+              ?.filter(
+                (part) =>
+                  part.type === "tool-invocation" &&
+                  part.toolInvocation.toolName === "generateImage" &&
+                  part.toolInvocation.state === "result"
+              )
+              .map((part: any, index) => (
+                <img
+                  className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
+                  key={`${message.id}-tool-result-${index}`}
+                  src={part.toolInvocation.result.image}
+                  alt={part.toolInvocation.result.name}
+                />
+              ))}
           </div>
           {message.parts?.some((part) => part.type === "source") && (
             <div className="flex flex-col gap-2">

@@ -202,32 +202,60 @@ export async function isConversationLocked(conversationId: string): Promise<bool
 
 export async function mapMessages(messages: PartialMessage[]): Promise<UIMessage[]> {
   const mappedMessages = await Promise.all(
-    messages.map(async (message) => ({
-      ...message,
-      role: message.role as "system" | "user" | "assistant" | "data",
-      parts: filterParts(JSON.parse(message.parts as string)),
-      experimental_attachments:
-        (message.files as JsonArray[])?.map((file: any) => ({
+    messages.map(async (message) => {
+      const { files, ...messageWithoutFiles } = message;
+      const parts = safeParse(messageWithoutFiles.parts, []);
+      const parsedFiles = safeParse(files, []);
+
+      return {
+        ...messageWithoutFiles,
+        role: messageWithoutFiles.role as "system" | "user" | "assistant" | "data",
+        parts: filterParts(parts),
+        experimental_attachments: parsedFiles.map((file: any) => ({
           name: file.name,
           contentType: file.contentType,
           url: awsConfigured ? getFileUrlSigned(file.url) : file.url,
-        })) ?? [],
-    }))
+        })),
+      };
+    })
   );
 
   return mappedMessages;
 }
 
 function filterParts(parts: UIMessage["parts"]) {
-  return parts.filter((part) => {
-    if (part.type === "step-start") {
-      return false;
-    }
-    if (part.type === "tool-invocation") {
-      return part.toolInvocation.toolName === "memory";
-    }
-    return true;
-  });
+  return parts
+    .filter((part) => {
+      if (part.type === "step-start") {
+        return false;
+      }
+      if (part.type === "tool-invocation") {
+        return (
+          part.toolInvocation.toolName === "memory" ||
+          part.toolInvocation.toolName === "generateImage"
+        );
+      }
+      return true;
+    })
+    .map((part) => {
+      if (
+        part.type === "tool-invocation" &&
+        part.toolInvocation.toolName === "generateImage" &&
+        part.toolInvocation.state === "result"
+      ) {
+        return {
+          ...part,
+          toolInvocation: {
+            ...part.toolInvocation,
+            result: {
+              ...part.toolInvocation.result,
+              image: getFileUrlSigned(part.toolInvocation.result.url),
+            },
+          },
+        };
+      }
+      return part;
+    });
 }
 
 export async function public_getConversationUntilMessage(messageId: string) {
@@ -278,4 +306,35 @@ export async function public_getConversationUntilMessage(messageId: string) {
       parts: JSON.parse(message.parts as string),
     })),
   };
+}
+
+/**
+ * Safely parse JSON strings that might be corrupted, null, or invalid
+ * @param jsonString - The string to parse or already parsed object
+ * @param fallback - The fallback value to return if parsing fails
+ * @returns Parsed JSON or fallback value
+ */
+function safeParse<T>(jsonString: any, fallback: T): T {
+  // Handle null or undefined
+  if (jsonString == null) {
+    return fallback;
+  }
+
+  // If it's already an object/array (not a string), return it as-is
+  if (typeof jsonString !== "string") {
+    return jsonString as T;
+  }
+
+  // Handle empty string
+  if (jsonString.trim() === "") {
+    return fallback;
+  }
+
+  try {
+    const parsed = JSON.parse(jsonString);
+    return parsed;
+  } catch (error) {
+    logger.error(`Failed to parse JSON: ${jsonString}`, error);
+    return fallback;
+  }
 }
