@@ -99,6 +99,9 @@ export async function POST(req: NextRequest) {
       messages: existingMessages,
       message,
     });
+  } else if (existingMessages.length === 0) {
+    await unlockConversation(id);
+    throw new Error("Cannot send an empty message to a new conversation.");
   }
 
   const filteredMessages = filterMessages(messages, modelId);
