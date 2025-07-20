@@ -233,6 +233,13 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
       },
+      {
+        id: "o3",
+        name: "o3",
+        features: [images, reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+      },
     ],
   },
   {
@@ -275,6 +282,13 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
       },
+      {
+        id: "o3",
+        name: "o3",
+        features: [images, reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+      },
     ],
   },
   {
@@ -310,13 +324,6 @@ const providers: Provider[] = [
         provider: wrappedModel(anthropic),
         tools: true,
       },
-      {
-        id: "claude-opus-4-20250514",
-        name: "Claude Opus 4",
-        features: [images, pdf, reasoning],
-        provider: wrappedModel(anthropic),
-        tools: true,
-      },
     ],
   },
   {
@@ -339,14 +346,14 @@ const providers: Provider[] = [
         tools: true,
       },
       {
-        id: "gemini-2.5-flash-preview-04-17",
+        id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
         features: [images, pdf, search],
         provider: wrappedGoogle,
         tools: true,
       },
       {
-        id: "models/gemini-2.5-pro-preview-03-25",
+        id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
         features: [images, pdf, reasoning],
         provider: wrappedGoogle,
