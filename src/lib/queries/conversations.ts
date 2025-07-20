@@ -139,13 +139,32 @@ export function useUpdateConversationModel() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ conversationId, model }: { conversationId: string; model: string }) =>
-      saveConversationModel(conversationId, model),
+    mutationFn: ({
+      conversationId,
+      model,
+    }: { conversationId: string; model: string }) => {
+      // Check if conversation exists in cache (indicates it was created in DB)
+      const conversationExists = queryClient.getQueryData(
+        conversationKeys.details(conversationId)
+      );
+
+      if (!conversationExists) {
+        // Conversation hasn't been created yet, skip the database update
+        return Promise.resolve(null);
+      }
+
+      return saveConversationModel(conversationId, model);
+    },
     onSuccess: (updatedConversation, { conversationId }) => {
-      queryClient.setQueryData(conversationKeys.details(conversationId), (old: any) => ({
-        ...old,
-        model: updatedConversation?.model,
-      }));
+      if (updatedConversation) {
+        queryClient.setQueryData(
+          conversationKeys.details(conversationId),
+          (old: any) => ({
+            ...old,
+            model: updatedConversation.model,
+          })
+        );
+      }
     },
   });
 }
