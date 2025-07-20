@@ -38,13 +38,6 @@ export default function InputForm({
   const createConversationOptimistic = useCreateConversationOptimistic();
   const addMessage = useAddMessage();
 
-  const stableId = useChatStore((state) => state.stableId);
-  const status = useChatStore((state) => state.status);
-
-  const input = useInputStore((state) => state.input);
-  const setInput = useInputStore((state) => state.setInput);
-
-  const model = useModelStore((state) => state.model);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
 
   const files = useFileStore((state) => state.files);
@@ -56,6 +49,10 @@ export default function InputForm({
   async function handleSendMessage(
     e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
   ) {
+    const { model } = useModelStore.getState();
+    const { input, setInput } = useInputStore.getState();
+    const { stableId, status } = useChatStore.getState();
+
     e.preventDefault();
     if (!input.trim()) return;
 
