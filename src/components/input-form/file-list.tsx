@@ -14,7 +14,8 @@ import { FileText, Trash } from "lucide-react";
 import Image from "next/image";
 
 export default function FileList() {
-  const { files, setFiles } = useFileStore();
+  const files = useFileStore((state) => state.files);
+  const setFiles = useFileStore((state) => state.setFiles);
 
   if (!isFileList(files)) {
     return null;

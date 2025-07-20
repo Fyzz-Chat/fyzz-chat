@@ -8,7 +8,7 @@ const CameraCaptureInput = forwardRef<
   HTMLInputElement,
   InputHTMLAttributes<HTMLInputElement>
 >((props, ref) => {
-  const { setFiles } = useFileStore();
+  const setFiles = useFileStore((state) => state.setFiles);
 
   function handlePhotoCapture(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files && event.target.files.length > 0) {

@@ -36,7 +36,7 @@ export function MessagesList({
   const router = useRouter();
   const { status, error } = useChatContext();
   const setModel = useModelStore((state) => state.setModel);
-  const { files } = useFileStore();
+  const files = useFileStore((state) => state.files);
   const { data: conversation } = useConversation(id, initialConversation);
   const { data: messages } = useMessages(id, initialMessages);
   const showLoading = status === "submitted"; // || (messages?.length === 1 && status !== "streaming");

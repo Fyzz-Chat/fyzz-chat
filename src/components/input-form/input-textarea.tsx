@@ -18,7 +18,8 @@ export default function InputTextarea({
 }) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { input, setInput } = useInputStore();
-  const { files, setFiles } = useFileStore();
+  const files = useFileStore((state) => state.files);
+  const setFiles = useFileStore((state) => state.setFiles);
   const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
   const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
 

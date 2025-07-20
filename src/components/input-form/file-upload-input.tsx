@@ -9,7 +9,7 @@ interface FileUploadInputProps extends InputHTMLAttributes<HTMLInputElement> {}
 
 const FileUploadInput = forwardRef<HTMLInputElement, FileUploadInputProps>(
   ({ ...props }, ref) => {
-    const { setFiles } = useFileStore();
+    const setFiles = useFileStore((state) => state.setFiles);
     const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
     const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
 
