@@ -161,6 +161,18 @@ export async function POST(req: NextRequest) {
         const lastMessage = updatedMessages[updatedMessages.length - 1];
         const lastUserMessage = updatedMessages[updatedMessages.length - 2];
 
+        if (!lastUserMessage || lastUserMessage.role !== "user") {
+          logger.error({
+            message: "Invalid message order detected before saving.",
+            description:
+              "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
+            conversationId: id,
+            lastUserMessageRole: lastUserMessage?.role,
+            lastMessageRole: lastMessage?.role,
+            historyLength: updatedMessages.length,
+          });
+        }
+
         const sources = await result.sources;
         addSourcesToMessage(lastMessage, sources);
 
