@@ -37,10 +37,17 @@ export default function InputForm({
   const createConversation = useCreateConversation();
   const createConversationOptimistic = useCreateConversationOptimistic();
   const addMessage = useAddMessage();
-  const { input, setInput } = useInputStore();
-  const { model, temporaryChat } = useModelStore();
   const { stableId, status, setChatInput } = useChatContext();
-  const { files, setFiles } = useFileStore();
+
+  const input = useInputStore((state) => state.input);
+  const setInput = useInputStore((state) => state.setInput);
+
+  const model = useModelStore((state) => state.model);
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
+
+  const files = useFileStore((state) => state.files);
+  const setFiles = useFileStore((state) => state.setFiles);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
