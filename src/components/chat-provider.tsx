@@ -91,8 +91,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Effect to sync state FROM `useChat` hook TO the Zustand store
   useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    const isStreaming = status === "streaming" && lastMessage?.role === "assistant";
+
     useChatStore.setState({
-      messages,
+      lastMessage: isStreaming ? lastMessage : null,
       status,
       error,
       input,

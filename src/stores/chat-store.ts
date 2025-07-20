@@ -3,10 +3,9 @@ import { create } from "zustand";
 
 type ChatStatus = "submitted" | "streaming" | "ready" | "error";
 
-// This interface holds all the state and actions
 interface ChatStore {
   // State
-  messages: Message[];
+  lastMessage: Message | null;
   status: ChatStatus;
   error?: Error;
   input: string;
@@ -25,7 +24,7 @@ interface ChatStore {
 
 // Create the store with initial empty/stub values
 export const useChatStore = create<ChatStore>((set) => ({
-  messages: [],
+  lastMessage: null,
   status: "ready",
   error: undefined,
   input: "",

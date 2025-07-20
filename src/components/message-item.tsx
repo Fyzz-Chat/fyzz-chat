@@ -15,11 +15,10 @@ export function MessageItem({
   conversationId,
 }: { message: Message & { model?: string }; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
-  const emptySubmit = useChatStore((state) => state.emptySubmit);
-  const reload = useChatStore((state) => state.reload);
-  const deleteMessagesAfter = useChatStore((state) => state.deleteMessagesAfter);
+
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const getModel = useModelStore((state) => state.getModel);
+
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(message.content);
   const [inProgress, setInProgress] = useState(false);
@@ -34,9 +33,11 @@ export function MessageItem({
     });
 
     if (temporaryChat) {
+      const { deleteMessagesAfter, reload } = useChatStore.getState();
       deleteMessagesAfter(message.id);
       reload();
     } else {
+      const { emptySubmit } = useChatStore.getState();
       emptySubmit();
     }
     setInProgress(false);
@@ -57,9 +58,11 @@ export function MessageItem({
     setIsEditing(false);
 
     if (temporaryChat) {
+      const { deleteMessagesAfter, reload } = useChatStore.getState();
       deleteMessagesAfter(message.id, content);
       reload();
     } else {
+      const { emptySubmit } = useChatStore.getState();
       emptySubmit();
     }
     setInProgress(false);

@@ -40,7 +40,6 @@ export default function InputForm({
 
   const stableId = useChatStore((state) => state.stableId);
   const status = useChatStore((state) => state.status);
-  const setChatInput = useChatStore((state) => state.setChatInput);
 
   const input = useInputStore((state) => state.input);
   const setInput = useInputStore((state) => state.setInput);
@@ -84,6 +83,7 @@ export default function InputForm({
     const attachments = await uploadFiles(stableId, files);
     setFiles(attachments);
 
+    const { setChatInput } = useChatStore.getState();
     const messageId = setChatInput(input);
     await addMessage.mutateAsync({
       message: {

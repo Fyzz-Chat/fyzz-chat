@@ -3,8 +3,10 @@
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { ScrollToBottomButton } from "@/components/scroll-to-bottom-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMessages } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
+import { useParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 export default function MessagesScrollArea({
@@ -14,10 +16,15 @@ export default function MessagesScrollArea({
   children: ReactNode;
   className?: string;
 }) {
+  const params = useParams();
+  const conversationId = params.id as string;
   const viewportRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
-  const messages = useChatStore((state) => state.messages);
-  const lastMessage = messages[messages.length - 1];
+
+  // Listen to the actual message data that's being rendered
+  const { data: messages } = useMessages(conversationId);
+  // Also listen to streaming message for real-time updates
+  const lastMessage = useChatStore((state) => state.lastMessage);
   const [positionChecked, setPositionChecked] = useState(false);
 
   const scrollToBottom = () => {
@@ -35,12 +42,12 @@ export default function MessagesScrollArea({
     scrollToBottom();
   }, []);
 
-  // Scroll to bottom when the last message changes
+  // Scroll to bottom when messages change (TanStack Query data) OR when streaming message updates
   useEffect(() => {
-    if (lastMessage && autoScroll) {
+    if (autoScroll) {
       scrollToBottom();
     }
-  }, [lastMessage, autoScroll]);
+  }, [messages, lastMessage, autoScroll]);
 
   const isUserAtBottom = useCallback(() => {
     const viewport = viewportRef.current;

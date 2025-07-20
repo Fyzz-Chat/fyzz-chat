@@ -56,6 +56,7 @@ export function MessagesList({
       <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
   }, [messages]);
+
   return (
     <div className="flex flex-col gap-4 px-4 sm:px-8 pt-8">
       {memoizedConversationMessages}
