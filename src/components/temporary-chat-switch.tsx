@@ -11,7 +11,8 @@ export function TemporaryChatSwitch({
   translations,
 }: { translations: Translations["input"]["modelMenu"] }) {
   const pathname = usePathname();
-  const { temporaryChat, setTemporaryChat } = useModelStore();
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
+  const setTemporaryChat = useModelStore((state) => state.setTemporaryChat);
 
   const isNewChat = pathname === "/chat";
   const isDisabled = !isNewChat;

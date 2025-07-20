@@ -74,7 +74,7 @@ export function useConversations(
 }
 
 export function useConversation(id: string, initialConversation?: any) {
-  const { temporaryChat } = useModelStore();
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
   const queryClient = useQueryClient();
 
   return useQuery({
@@ -104,7 +104,7 @@ export function useConversation(id: string, initialConversation?: any) {
 }
 
 export function useMessages(id: string, initialMessages?: any) {
-  const { temporaryChat } = useModelStore();
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
   const queryClient = useQueryClient();
 
   return useQuery({

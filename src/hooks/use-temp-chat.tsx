@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function useTempChat() {
-  const { setTemporaryChat } = useModelStore();
+  const setTemporaryChat = useModelStore((state) => state.setTemporaryChat);
   const pathname = usePathname();
 
   useEffect(() => {

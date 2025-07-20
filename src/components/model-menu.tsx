@@ -38,7 +38,8 @@ function ModelMenu({
   translations,
 }: { translations: Translations["input"]["modelMenu"] }) {
   const [open, setOpen] = useState(false);
-  const { model, providers } = useModelStore();
+  const model = useModelStore((state) => state.model);
+  const providers = useModelStore((state) => state.providers);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const providerIcon = getProviderIcon(providers, model?.id);
 
@@ -46,7 +47,7 @@ function ModelMenu({
     return (
       <>
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild className="hidden md:block">
+          <PopoverTrigger asChild className="hidden md:flex">
             <Button
               variant="secondary"
               size="sm"
@@ -116,7 +117,8 @@ function StatusList({
 }) {
   const { stableId } = useChatContext();
 
-  const { model, setModel } = useModelStore();
+  const model = useModelStore((state) => state.model);
+  const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
 
   const handleModelChange = (value: string) => {

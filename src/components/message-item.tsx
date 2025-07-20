@@ -16,7 +16,8 @@ export function MessageItem({
 }: { message: Message & { model?: string }; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
   const { emptySubmit, reload, deleteMessagesAfter } = useChatContext();
-  const { temporaryChat, getModel } = useModelStore();
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
+  const getModel = useModelStore((state) => state.getModel);
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(message.content);
   const [inProgress, setInProgress] = useState(false);

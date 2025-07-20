@@ -24,7 +24,7 @@ export default function ChatWelcomeSection({
   translations: Translations["home"];
 }) {
   const { welcome, incognito } = translations;
-  const { temporaryChat } = useModelStore();
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
   const [message, setMessage] = useState<string>(welcome.messages[0]);
 
   useEffect(() => {

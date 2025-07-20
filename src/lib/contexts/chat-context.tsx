@@ -42,7 +42,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [stableId, setStableId] = useState("");
   const queryClient = useQueryClient();
   const addMessage = useAddMessage();
-  const { model, temporaryChat } = useModelStore();
+  const model = useModelStore((state) => state.model);
+  const temporaryChat = useModelStore((state) => state.temporaryChat);
   const sentRef = useRef(false);
   const { files, setFiles } = useFileStore();
   const [browse, setBrowse] = useState(false);

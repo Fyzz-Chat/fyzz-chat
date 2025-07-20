@@ -10,7 +10,7 @@ const MemoizedMessageItem = memo(MessageItem);
 export default function LastMessage({ conversationId }: { conversationId: string }) {
   const { messages, status } = useChatContext();
   const lastMessageIndex = messages.length - 1;
-  const { model } = useModelStore();
+  const model = useModelStore((state) => state.model);
 
   const memoizedLastMessage = useMemo(() => {
     if (

@@ -179,7 +179,7 @@ function ConversationLink({
 }) {
   const deleteConversation = useDeleteConversation();
   const router = useRouter();
-  const { providers } = useModelStore();
+  const providers = useModelStore((state) => state.providers);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const providerIcon = getProviderIcon(providers, chat.model);
