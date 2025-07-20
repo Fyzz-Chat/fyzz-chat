@@ -41,3 +41,6 @@ src/lib/prisma/client
 
 # copilot instructions
 /.github/copilot-instructions.md
+
+# Million Lint
+.million

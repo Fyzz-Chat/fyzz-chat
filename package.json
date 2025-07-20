@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "million-dev": "MILLION_LINT=true next dev",
     "analyze": "ANALYZE=true next build",
     "build": "next build",
     "start": "next start",
@@ -84,6 +85,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@million/lint": "1.0.14",
     "@next/bundle-analyzer": "15.3.1",
     "@types/jsonwebtoken": "9.0.9",
     "@types/negotiator": "0.6.4",

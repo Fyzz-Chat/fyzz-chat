@@ -1,3 +1,4 @@
+import MillionLint from "@million/lint";
 import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
@@ -28,8 +29,25 @@ const nextConfig = {
   },
 };
 
-const withBundleAnalyzer = NextBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
+const withBundleAnalyzer = (nextConfig) => {
+  if (process.env.ANALYZE === "true") {
+    return NextBundleAnalyzer({
+      enabled: true,
+    })(nextConfig);
+  } else {
+    return nextConfig;
+  }
+};
 
-export default withBundleAnalyzer(nextConfig);
+const withMillionLint = (nextConfig) => {
+  if (process.env.MILLION_LINT === "true") {
+    return MillionLint.next({
+      enabled: true,
+      rsc: true,
+    })(nextConfig);
+  } else {
+    return nextConfig;
+  }
+};
+
+export default withMillionLint(withBundleAnalyzer(nextConfig));
