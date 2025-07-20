@@ -92,30 +92,32 @@ export async function saveMessage(
 
   const { experimental_attachments, ...messageWithoutAttachments } = message;
 
-  const newMessage = await prisma.message.create({
-    data: {
-      ...messageWithoutAttachments,
-      files: JSON.stringify(experimental_attachments),
-      parts: JSON.stringify(message.parts),
-      toolInvocations: JSON.stringify(message.toolInvocations),
-      conversationId,
-      model,
-      promptTokens,
-      completionTokens,
-    },
-  });
+  return prisma.$transaction(async (tx) => {
+    const newMessage = await tx.message.create({
+      data: {
+        ...messageWithoutAttachments,
+        files: JSON.stringify(experimental_attachments),
+        parts: JSON.stringify(message.parts),
+        toolInvocations: JSON.stringify(message.toolInvocations),
+        conversationId,
+        model,
+        promptTokens,
+        completionTokens,
+      },
+    });
 
-  await prisma.conversation.update({
-    where: {
-      id: conversationId,
-      userId,
-    },
-    data: {
-      lastMessageAt: new Date(),
-    },
-  });
+    await tx.conversation.update({
+      where: {
+        id: conversationId,
+        userId,
+      },
+      data: {
+        lastMessageAt: new Date(),
+      },
+    });
 
-  return newMessage;
+    return newMessage;
+  });
 }
 
 export async function saveTokenUsage(

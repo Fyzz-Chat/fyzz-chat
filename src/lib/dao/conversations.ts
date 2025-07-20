@@ -106,23 +106,26 @@ export async function appendMessageToConversation(
 ) {
   const userId = await getUserIdFromSession();
 
-  const newMessage = await prisma.message.create({
-    data: {
-      ...message,
-      parts: JSON.stringify(message.parts),
-      toolInvocations: undefined,
-      conversationId,
-    },
-  });
+  const newMessage = await prisma.$transaction(async (tx) => {
+    const createdMessage = await tx.message.create({
+      data: {
+        ...message,
+        parts: JSON.stringify(message.parts),
+        toolInvocations: undefined,
+        conversationId,
+      },
+    });
 
-  await prisma.conversation.update({
-    where: {
-      id: conversationId,
-      userId,
-    },
-    data: {
-      lastMessageAt: new Date(),
-    },
+    await tx.conversation.update({
+      where: {
+        id: conversationId,
+        userId,
+      },
+      data: {
+        lastMessageAt: new Date(),
+      },
+    });
+    return createdMessage;
   });
 
   return mapMessages([newMessage]);
