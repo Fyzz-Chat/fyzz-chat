@@ -16,7 +16,7 @@ export default function RegisterForm({
   translations,
 }: { translations: Translations["register"] }) {
   const [state, formAction, isPending] = useActionState(registerUser, initialState);
-  const { input } = useInputStore();
+  const input = useInputStore((state) => state.input);
 
   const toastCallback = (state: FormState) => {
     if (state.success) {

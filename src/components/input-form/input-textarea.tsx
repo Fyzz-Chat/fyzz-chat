@@ -17,7 +17,8 @@ export default function InputTextarea({
   translations: Translations["input"];
 }) {
   const isMobile = useMediaQuery("(max-width: 640px)");
-  const { input, setInput } = useInputStore();
+  const input = useInputStore((state) => state.input);
+  const setInput = useInputStore((state) => state.setInput);
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
   const imageSupport = useModelStore((state) => state.isImageSupportEnabled());

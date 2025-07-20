@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useInputStore } from "@/stores/input-store";
 
 export default function ExampleButton({ example }: { example: string }) {
-  const { setInput } = useInputStore();
+  const setInput = useInputStore((state) => state.setInput);
 
   const handleExampleClick = (example: string) => {
     setInput(example);

@@ -8,7 +8,7 @@ import { Send } from "lucide-react";
 
 export default function ActionButton() {
   const { status, stop, error } = useChatContext();
-  const { input } = useInputStore();
+  const input = useInputStore((state) => state.input);
 
   return status === "submitted" || status === "streaming" ? (
     <Button type="submit" size="icon" className="shrink-0 size-9" onClick={() => stop()}>

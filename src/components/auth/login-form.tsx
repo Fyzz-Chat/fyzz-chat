@@ -15,7 +15,7 @@ export default function LoginForm({
   translations,
 }: { translations: Translations["login"] }) {
   const [state, formAction, isPending] = useActionState(signInUser, initialState);
-  const { input } = useInputStore();
+  const input = useInputStore((state) => state.input);
 
   const toastCallback = (state: FormState) => {
     if (state.success) {
