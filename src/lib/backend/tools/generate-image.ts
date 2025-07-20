@@ -1,4 +1,5 @@
 import { generatePresignedUploadUrl, getFileUrlSigned } from "@/lib/aws/s3";
+import { logDuration } from "@/lib/backend/utils";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { fileToAttachment } from "@/lib/utils";
@@ -16,6 +17,8 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
       prompt: z.string().describe("The prompt to generate the image from"),
     }),
     execute: async ({ prompt }) => {
+      const start = performance.now();
+
       const { image } = await experimental_generateImage({
         model: openai.image("gpt-image-1"),
         prompt,
@@ -45,6 +48,8 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
       logger.debug("Generated image uploaded successfully");
 
       const signedUrl = getFileUrlSigned(key);
+
+      logDuration(start, "Image generated");
 
       return { image: signedUrl, url: key, name: prompt, contentType: image.mimeType };
     },
