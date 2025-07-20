@@ -43,8 +43,6 @@ export default function InputForm({
   const { files, setFiles } = useFileStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  const imageSupport = model?.features?.some((feature) => feature.name === "Images");
-  const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs");
 
   async function handleSendMessage(
     e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
@@ -104,13 +102,6 @@ export default function InputForm({
     }
   }, [files]);
 
-  useEffect(() => {
-    const storedInput = localStorage.getItem("fyzz-input-content");
-    if (storedInput) {
-      setInput(storedInput);
-    }
-  }, []);
-
   return (
     <div
       className={cn(
@@ -128,23 +119,15 @@ export default function InputForm({
         <FileList />
         <InputTextarea
           handleSendMessage={handleSendMessage}
-          imageSupport={imageSupport}
-          pdfSupport={pdfSupport}
           translations={translations}
         />
         <CameraCaptureInput ref={cameraInputRef} />
-        <FileUploadInput
-          ref={fileInputRef}
-          imageSupport={imageSupport}
-          pdfSupport={pdfSupport}
-        />
+        <FileUploadInput ref={fileInputRef} />
         <div className="flex items-center w-full gap-2">
           <div className="flex items-center gap-2 mr-auto">
             <LazyModelMenu translations={translations.modelMenu} />
           </div>
           <AttachmentButton
-            imageSupport={imageSupport}
-            pdfSupport={pdfSupport}
             cameraInputRef={cameraInputRef}
             fileInputRef={fileInputRef}
             translations={translations.attach}

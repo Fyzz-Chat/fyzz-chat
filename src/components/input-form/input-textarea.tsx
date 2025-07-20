@@ -4,24 +4,23 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
+import { useModelStore } from "@/stores/model-store";
 import type { Translations } from "@/types/locale";
-import type { ClipboardEvent, KeyboardEvent } from "react";
+import { type ClipboardEvent, type KeyboardEvent, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 export default function InputTextarea({
-  imageSupport,
-  pdfSupport,
   handleSendMessage,
   translations,
 }: {
-  imageSupport?: boolean;
-  pdfSupport?: boolean;
   handleSendMessage: (e: KeyboardEvent<HTMLTextAreaElement>) => Promise<void>;
   translations: Translations["input"];
 }) {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const { input, setInput } = useInputStore();
   const { files, setFiles } = useFileStore();
+  const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
+  const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
 
   async function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey && !isMobile) {
@@ -82,6 +81,13 @@ export default function InputTextarea({
       }
     }
   }
+
+  useEffect(() => {
+    const storedInput = localStorage.getItem("fyzz-input-content");
+    if (storedInput) {
+      setInput(storedInput);
+    }
+  }, []);
 
   return (
     <TextareaAutosize

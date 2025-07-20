@@ -13,23 +13,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useModelStore } from "@/stores/model-store";
 import type { Translations } from "@/types/locale";
 import { Camera, Paperclip } from "lucide-react";
 import type { RefObject } from "react";
 
 export default function AttachmentButton({
-  imageSupport,
-  pdfSupport,
   cameraInputRef,
   fileInputRef,
   translations,
 }: {
-  imageSupport?: boolean;
-  pdfSupport?: boolean;
   cameraInputRef: RefObject<HTMLInputElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
   translations: Translations["input"]["attach"];
 }) {
+  const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
+  const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
+
   function handleCameraClick() {
     cameraInputRef.current?.click();
   }

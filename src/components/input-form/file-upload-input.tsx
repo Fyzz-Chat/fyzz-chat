@@ -2,16 +2,16 @@
 
 import { Input } from "@/components/ui/input";
 import { useFileStore } from "@/stores/file-store";
+import { useModelStore } from "@/stores/model-store";
 import { type InputHTMLAttributes, forwardRef } from "react";
 
-interface FileUploadInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  imageSupport?: boolean;
-  pdfSupport?: boolean;
-}
+interface FileUploadInputProps extends InputHTMLAttributes<HTMLInputElement> {}
 
 const FileUploadInput = forwardRef<HTMLInputElement, FileUploadInputProps>(
-  ({ imageSupport, pdfSupport, ...props }, ref) => {
+  ({ ...props }, ref) => {
     const { setFiles } = useFileStore();
+    const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
+    const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
 
     return (
       <Input
