@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     experimental_transform: smoothStream({
       delayInMs: 10,
     }),
+    abortSignal: req.signal,
     onError: async (error) => {
       logger.error(error);
     },

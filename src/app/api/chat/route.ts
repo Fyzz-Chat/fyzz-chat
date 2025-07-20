@@ -143,6 +143,7 @@ export async function POST(req: NextRequest) {
       anthropic: getAnthropicProviderOptions(modelId),
       openai: getOpenaiProviderOptions(modelId),
     },
+    abortSignal: req.signal,
     onFinish: async ({ response }) => {
       try {
         const updatedMessages = appendResponseMessages({
