@@ -121,7 +121,7 @@ export default function InputForm({
       <form
         onSubmit={handleSendMessage}
         className={cn(
-          "flex flex-col items-end border rounded-t-xl sm:rounded-b-xl p-4 bg-card transition-colors",
+          "flex flex-col items-end border rounded-t-xl sm:rounded-b-xl p-4 bg-card transition-colors duration-200 focus-within:border-primary",
           temporaryChat && "dark:bg-black"
         )}
       >
