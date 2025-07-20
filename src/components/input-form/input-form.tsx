@@ -1,6 +1,5 @@
 "use client";
 
-import { useChatContext } from "@/lib/contexts/chat-context";
 import {
   useAddMessage,
   useCreateConversation,
@@ -18,6 +17,7 @@ import AttachmentButton from "@/components/input-form/attachment-button";
 import InputTextarea from "@/components/input-form/input-textarea";
 import useTempChat from "@/hooks/use-temp-chat";
 import { cn, fileToAttachment, isFileList, uploadFiles } from "@/lib/utils";
+import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
@@ -37,7 +37,10 @@ export default function InputForm({
   const createConversation = useCreateConversation();
   const createConversationOptimistic = useCreateConversationOptimistic();
   const addMessage = useAddMessage();
-  const { stableId, status, setChatInput } = useChatContext();
+
+  const stableId = useChatStore((state) => state.stableId);
+  const status = useChatStore((state) => state.status);
+  const setChatInput = useChatStore((state) => state.setChatInput);
 
   const input = useInputStore((state) => state.input);
   const setInput = useInputStore((state) => state.setInput);

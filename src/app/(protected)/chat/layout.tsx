@@ -1,8 +1,8 @@
+import { ChatProvider } from "@/components/chat-provider";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import InputForm from "@/components/input-form/input-form";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
-import { ChatProvider } from "@/lib/contexts/chat-context";
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 

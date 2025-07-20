@@ -1,6 +1,5 @@
 "use client";
 
-import { useChatContext } from "@/lib/contexts/chat-context";
 import { useConversation, useMessages } from "@/lib/queries/conversations";
 import { useRouter } from "next/navigation";
 import { memo, useEffect, useMemo } from "react";
@@ -8,6 +7,7 @@ import LastMessage from "./last-message";
 import { MessageItem } from "./message-item";
 import { LoadingDots } from "./ui/loading-dots";
 
+import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 
@@ -34,7 +34,8 @@ export function MessagesList({
   id: string;
 }) {
   const router = useRouter();
-  const { status, error } = useChatContext();
+  const status = useChatStore((state) => state.status);
+  const error = useChatStore((state) => state.error);
   const setModel = useModelStore((state) => state.setModel);
   const files = useFileStore((state) => state.files);
   const { data: conversation } = useConversation(id, initialConversation);

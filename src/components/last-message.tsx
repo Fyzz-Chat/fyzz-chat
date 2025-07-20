@@ -1,6 +1,6 @@
 "use client";
 
-import { useChatContext } from "@/lib/contexts/chat-context";
+import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import { memo, useMemo } from "react";
 import { MessageItem } from "./message-item";
@@ -8,7 +8,8 @@ import { MessageItem } from "./message-item";
 const MemoizedMessageItem = memo(MessageItem);
 
 export default function LastMessage({ conversationId }: { conversationId: string }) {
-  const { messages, status } = useChatContext();
+  const messages = useChatStore((state) => state.messages);
+  const status = useChatStore((state) => state.status);
   const lastMessageIndex = messages.length - 1;
   const model = useModelStore((state) => state.model);
 

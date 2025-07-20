@@ -1,11 +1,11 @@
 "use client";
 
-import { useChatContext } from "@/lib/contexts/chat-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { featureIcons, providerIcons } from "@/lib/providers";
 import { getProviderIcon } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
+import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Translations } from "@/types/locale";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
@@ -115,7 +115,7 @@ function StatusList({
   providers: PublicProvider[];
   translations: Translations["input"]["modelMenu"];
 }) {
-  const { stableId } = useChatContext();
+  const stableId = useChatStore((state) => state.stableId);
 
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);

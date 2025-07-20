@@ -3,8 +3,8 @@
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { ScrollToBottomButton } from "@/components/scroll-to-bottom-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useChatContext } from "@/lib/contexts/chat-context";
 import { cn } from "@/lib/utils";
+import { useChatStore } from "@/stores/chat-store";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 export default function MessagesScrollArea({
@@ -16,7 +16,7 @@ export default function MessagesScrollArea({
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
-  const { messages } = useChatContext();
+  const messages = useChatStore((state) => state.messages);
   const lastMessage = messages[messages.length - 1];
   const [positionChecked, setPositionChecked] = useState(false);
 

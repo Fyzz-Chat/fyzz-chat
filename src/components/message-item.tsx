@@ -1,6 +1,6 @@
-import { useChatContext } from "@/lib/contexts/chat-context";
 import { useRegenerateMessage } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
+import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Message } from "ai";
 import { Check, Copy, Edit, Loader2, RefreshCw, X } from "lucide-react";
@@ -15,7 +15,9 @@ export function MessageItem({
   conversationId,
 }: { message: Message & { model?: string }; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
-  const { emptySubmit, reload, deleteMessagesAfter } = useChatContext();
+  const emptySubmit = useChatStore((state) => state.emptySubmit);
+  const reload = useChatStore((state) => state.reload);
+  const deleteMessagesAfter = useChatStore((state) => state.deleteMessagesAfter);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const getModel = useModelStore((state) => state.getModel);
   const [isEditing, setIsEditing] = useState(false);
