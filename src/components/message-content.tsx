@@ -244,11 +244,6 @@ const MemoizedMarkdownBlock = memo(
 );
 
 export function MessageContent({ message }: { message: Message }) {
-  const blocks = useMemo(
-    () => parseMarkdownIntoBlocks(message.content),
-    [message.content]
-  );
-
   if (message.role === "user") {
     return (
       <div className="flex flex-col gap-2 items-end w-full">
@@ -324,6 +319,22 @@ export function MessageContent({ message }: { message: Message }) {
     return (
       <div className="flex flex-col gap-4">
         {message.parts?.map((part, index) => {
+          if (part.type === "text") {
+            const blocks = parseMarkdownIntoBlocks(part.text);
+            return (
+              <div key={`${message.id}-block-${index}`} className="flex flex-col gap-1">
+                {blocks.map((block, index) => (
+                  <div
+                    key={`${message.id}-block-${index}`}
+                    className="break-words"
+                    style={{ wordBreak: "break-word" }}
+                  >
+                    <MemoizedMarkdownBlock content={block} />
+                  </div>
+                ))}
+              </div>
+            );
+          }
           if (
             part.type === "tool-invocation" &&
             part.toolInvocation.toolName === "memory"
@@ -360,53 +371,42 @@ export function MessageContent({ message }: { message: Message }) {
               </Sheet>
             );
           }
-        })}
-        <div className="flex flex-col gap-1">
-          <div>
-            {blocks.map((block, index) => (
+          if (
+            part.type === "tool-invocation" &&
+            part.toolInvocation.toolName === "generateImage" &&
+            part.toolInvocation.state === "result"
+          ) {
+            return (
               <div
-                key={`${message.id}-block-${index}`}
-                className="break-words"
-                style={{ wordBreak: "break-word" }}
+                key={`${message.id}-tool-result-${index}`}
+                className="flex flex-col gap-2"
               >
-                <MemoizedMarkdownBlock content={block} />
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col gap-2">
-            {message.parts
-              ?.filter(
-                (part) =>
-                  part.type === "tool-invocation" &&
-                  part.toolInvocation.toolName === "generateImage" &&
-                  part.toolInvocation.state === "result"
-              )
-              .map((part: any, index) => (
                 <img
                   className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
                   key={`${message.id}-tool-result-${index}`}
                   src={part.toolInvocation.result.image}
                   alt={part.toolInvocation.result.name}
                 />
+              </div>
+            );
+          }
+        })}
+        {message.parts?.some((part) => part.type === "source") && (
+          <div className="flex flex-col gap-2">
+            {message.parts
+              ?.filter((part) => part.type === "source")
+              .map((part, index) => (
+                <a
+                  key={`source-${part.source.id}`}
+                  href={part.source.url}
+                  target="_blank"
+                  className="text-blue-400 hover:underline"
+                >
+                  [{index + 1}] {part.source.url}
+                </a>
               ))}
           </div>
-          {message.parts?.some((part) => part.type === "source") && (
-            <div className="flex flex-col gap-2">
-              {message.parts
-                ?.filter((part) => part.type === "source")
-                .map((part, index) => (
-                  <a
-                    key={`source-${part.source.id}`}
-                    href={part.source.url}
-                    target="_blank"
-                    className="text-blue-400 hover:underline"
-                  >
-                    [{index + 1}] {part.source.url}
-                  </a>
-                ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     );
   }
