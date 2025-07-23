@@ -219,5 +219,11 @@
       "title": "Hast du bereits ein Konto?",
       "link": "Anmelden"
     }
+  },
+  "chat": {
+    "reasoning": {
+      "title": "Gedankenprozess",
+      "streaming": "Denke nach..."
+    }
   }
 }

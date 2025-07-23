@@ -219,5 +219,11 @@
       "title": "Already have an account?",
       "link": "Sign in"
     }
+  },
+  "chat": {
+    "reasoning": {
+      "title": "Thought process",
+      "streaming": "Thinking"
+    }
   }
 }

@@ -19,6 +19,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { useChatStore } from "@/stores/chat-store";
 import type { Message } from "ai";
 import { Check, Copy, FileText, Maximize2 } from "lucide-react";
 import { marked } from "marked";
@@ -243,6 +245,142 @@ const MemoizedMarkdownBlock = memo(
   }
 );
 
+function ReasoningPreview({
+  reasoning,
+  messageId,
+}: { reasoning: string; messageId?: string }) {
+  const [displayedReasoning, setDisplayedReasoning] = useState("");
+  const [expressionIndex, setExpressionIndex] = useState(0);
+  const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const expressions = [
+    "Thinking",
+    "Analyzing",
+    "Gathering sources",
+    "Collecting information",
+    "Reasoning",
+    "Concluding",
+    "Scheming",
+    "Plotting",
+    "Brewing ideas",
+    "Consulting the digital oracle",
+    "Waking up the circuits",
+    "Herding electrons",
+  ];
+
+  // Check for streaming reasoning from the chat store
+  const lastMessage = useChatStore((state) => state.lastMessage);
+  const status = useChatStore((state) => state.status);
+
+  // Get streaming reasoning if this is the current message being streamed
+  const streamingReasoning =
+    lastMessage && lastMessage.id === messageId && status === "streaming"
+      ? (lastMessage.parts?.find((part) => part.type === "reasoning") as any)
+          ?.reasoning || ""
+      : "";
+
+  // Use streaming reasoning if available, otherwise use the static reasoning
+  const currentReasoning = streamingReasoning || reasoning;
+
+  // Rotate expressions every 2 seconds when streaming
+  useEffect(() => {
+    if (lastMessage?.id !== messageId || status !== "streaming") {
+      setExpressionIndex(0);
+      setOutgoingIndex(null);
+      return;
+    }
+
+    let animationTimeout: NodeJS.Timeout;
+    const interval = setInterval(() => {
+      setExpressionIndex((prevIndex) => {
+        setOutgoingIndex(prevIndex);
+        return (prevIndex + 1) % expressions.length;
+      });
+
+      animationTimeout = setTimeout(() => {
+        setOutgoingIndex(null);
+      }, 300); // Animation duration
+    }, 1500);
+
+    return () => {
+      clearInterval(interval);
+      if (animationTimeout) clearTimeout(animationTimeout);
+    };
+  }, [lastMessage?.id, messageId, status, expressions.length]);
+
+  useEffect(() => {
+    if (currentReasoning !== displayedReasoning) {
+      // Only show content when there's actual reasoning
+      if (currentReasoning.trim()) {
+        setDisplayedReasoning(currentReasoning);
+
+        // Smooth scroll to bottom after content update
+        setTimeout(() => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+          }
+        }, 50);
+      }
+
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    }
+  }, [currentReasoning, displayedReasoning]);
+
+  // If no reasoning, don't show anything
+  if (!currentReasoning.trim()) {
+    return null;
+  }
+
+  const isStreaming = lastMessage?.id === messageId && status === "streaming";
+  const currentText = isStreaming ? expressions[expressionIndex] : "Thought process";
+
+  return (
+    <div className="relative flex flex-col items-start text-muted-foreground gap-2 text-xs w-full max-w-xs">
+      {/* Animated expression */}
+      <div className="relative text-start h-4 w-full">
+        {outgoingIndex !== null && isStreaming && (
+          <p className="animate-slide-up-out absolute inset-0">
+            {expressions[outgoingIndex]}
+          </p>
+        )}
+        <p
+          key={currentText}
+          className={cn(
+            "absolute inset-0",
+            outgoingIndex !== null ? "animate-slide-in-from-bottom" : ""
+          )}
+        >
+          {currentText}
+        </p>
+      </div>
+
+      {/* Preview window with blurred borders */}
+      <div className="relative h-16 overflow-hidden rounded-md border border-border/50 bg-muted/20">
+        {/* Top blur gradient */}
+        <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none z-10" />
+
+        {/* Bottom blur gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
+
+        {/* Scrolling text content */}
+        <div
+          ref={scrollRef}
+          className="px-3 py-2 h-full overflow-y-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
+          <div className="text-xs text-muted-foreground leading-relaxed text-left">
+            {displayedReasoning}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function MessageContent({ message }: { message: Message }) {
   if (message.role === "user") {
     return (
@@ -348,8 +486,8 @@ export function MessageContent({ message }: { message: Message }) {
           if (part.type === "reasoning") {
             return (
               <Sheet key={`${message.id}-reasoning-${index}`}>
-                <SheetTrigger className="text-sm text-muted-foreground mr-auto">
-                  Reasoning
+                <SheetTrigger className="mr-auto">
+                  <ReasoningPreview reasoning={part.reasoning} messageId={message.id} />
                 </SheetTrigger>
                 <SheetContent className="px-0">
                   <SheetHeader className="px-6">
@@ -395,16 +533,19 @@ export function MessageContent({ message }: { message: Message }) {
           <div className="flex flex-col gap-2">
             {message.parts
               ?.filter((part) => part.type === "source")
-              .map((part, index) => (
-                <a
-                  key={`source-${part.source.id}`}
-                  href={part.source.url}
-                  target="_blank"
-                  className="text-blue-400 hover:underline"
-                >
-                  [{index + 1}] {part.source.url}
-                </a>
-              ))}
+              .map((part, index) => {
+                const sourcePart = part as any; // Type assertion for dynamic source parts
+                return (
+                  <a
+                    key={`source-${sourcePart.source.id}`}
+                    href={sourcePart.source.url}
+                    target="_blank"
+                    className="text-blue-400 hover:underline"
+                  >
+                    [{index + 1}] {sourcePart.source.url}
+                  </a>
+                );
+              })}
           </div>
         )}
       </div>

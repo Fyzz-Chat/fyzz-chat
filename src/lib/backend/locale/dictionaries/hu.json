@@ -219,5 +219,11 @@
       "title": "Már van fiókod?",
       "link": "Jelentkezz be"
     }
+  },
+  "chat": {
+    "reasoning": {
+      "title": "Gondolatmenet",
+      "streaming": "Gondolkozom..."
+    }
   }
 }
