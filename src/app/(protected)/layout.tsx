@@ -20,7 +20,7 @@ export default async function Layout({
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar translations={translations.sidebar} />
         <SidebarInset className="relative md:p-2 bg-sidebar overflow-auto">
-          <SidebarTrigger className="absolute size-8 top-4 left-4 z-20 p-5 touch-manipulation" />
+          <SidebarTrigger className="absolute size-8 top-2 left-2 md:top-4 md:left-4 z-20 p-5 touch-manipulation" />
           {children}
         </SidebarInset>
       </SidebarProvider>

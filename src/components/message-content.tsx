@@ -362,10 +362,10 @@ function ReasoningPreview({
       {/* Preview window with blurred borders */}
       <div className="relative h-16 overflow-hidden rounded-md border border-border/50 bg-muted/20">
         {/* Top blur gradient */}
-        <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none" />
 
         {/* Bottom blur gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-10" />
+        <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
 
         {/* Scrolling text content */}
         <div

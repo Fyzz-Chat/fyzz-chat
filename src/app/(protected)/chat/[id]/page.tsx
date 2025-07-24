@@ -31,7 +31,7 @@ export default async function ChatPage({
       {jwtConfigured && (
         <ShareConversationButton
           conversationId={id}
-          className="absolute top-4 right-4 md:top-2 md:right-2 z-10"
+          className="absolute top-2 right-2 z-10"
         />
       )}
       <MessagesScrollArea className="relative h-[calc(100svh-114px)] md:h-[calc(100svh-142px)]">
