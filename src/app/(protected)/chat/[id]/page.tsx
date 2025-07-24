@@ -34,8 +34,8 @@ export default async function ChatPage({
           className="absolute top-2 right-2 z-10"
         />
       )}
-      <MessagesScrollArea className="relative h-[calc(100svh-114px)] md:h-[calc(100svh-142px)]">
-        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-background to-transparent pointer-events-none z-10 rounded-t-[20px]" />
+      <MessagesScrollArea className="relative h-[calc(100svh-170px)] md:h-[calc(100svh-198px)]">
+        <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
         <MessagesList
           id={id}
           initialConversation={conversation}
