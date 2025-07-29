@@ -80,7 +80,6 @@ export async function getConversationsByCursor(
       model: true,
       messages: {
         select: {
-          id: true,
           content: true,
         },
         take: 1,
