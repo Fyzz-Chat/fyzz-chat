@@ -71,18 +71,18 @@ export default function ChatSidebar({
   authorized,
   translations,
 }: {
-  conversations: any;
+  conversations: { items: any; nextCursor: string | undefined };
   authorized: boolean;
   translations: Translations["sidebar"]["separators"];
 }) {
   const { searchQuery } = useSearchStore();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useConversations(
     conversations,
-    searchQuery,
-    authorized
+    authorized,
+    searchQuery
   );
 
-  const allConversations = data?.pages.flatMap((page) => page.conversations) || [];
+  const allConversations = data?.pages.flatMap((page) => page.items) || [];
   const groupedConversations = groupConversationsByTime(allConversations);
 
   // Setup intersection observer for infinite scroll using react-intersection-observer

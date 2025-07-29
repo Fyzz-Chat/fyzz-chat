@@ -82,9 +82,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       }>(conversationKeys.details(stableId));
 
       if (conversation?.title === "New Chat") {
-        queryClient.invalidateQueries({
-          queryKey: conversationKeys.list(),
-        });
+        queryClient.invalidateQueries(conversationKeys.list());
       }
     },
   });

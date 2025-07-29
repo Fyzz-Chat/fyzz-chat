@@ -17,8 +17,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { getConversations } from "@/lib/dao/conversations";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
+import { caller } from "@/lib/trpc/server";
 import type { Translations } from "@/types/locale";
 import Image from "next/image";
 import { FastLink } from "../fast-link";
@@ -28,7 +28,12 @@ export async function AppSidebar({
   translations,
 }: { translations: Translations["sidebar"] }) {
   const user = await getUserFromSessionPublic();
-  const conversations = user ? await getConversations(1, 15) : [];
+  const initialConversationsData = user
+    ? await caller.infiniteConversations({
+        limit: 15,
+        search: "",
+      })
+    : { items: [], nextCursor: undefined };
 
   return (
     <>
@@ -48,7 +53,7 @@ export async function AppSidebar({
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-sidebar to-transparent pointer-events-none z-10" />
           <ChatSidebar
-            conversations={conversations}
+            conversations={initialConversationsData}
             authorized={Boolean(user)}
             translations={translations.separators}
           />

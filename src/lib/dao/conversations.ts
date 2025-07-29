@@ -26,77 +26,89 @@ export async function getConversation(id: string) {
   return conversation;
 }
 
-export async function getConversations(
-  page: number,
+export async function getConversationsByCursor(
   limit: number,
+  cursor?: string,
   search?: string
-): Promise<{ conversations: any[]; hasMore: boolean }> {
+) {
   const userId = await getUserIdFromSession();
-  const skip = (page - 1) * limit;
 
-  const [conversations, total] = await Promise.all([
-    prisma.conversation.findMany({
-      where: {
-        userId,
-        ...(search
-          ? {
-              OR: [
-                { title: { contains: search, mode: "insensitive" } },
-                {
-                  messages: {
-                    some: { content: { contains: search, mode: "insensitive" } },
-                  },
+  // Parse cursor if provided (format: "timestamp_id")
+  let cursorDate: Date | undefined;
+  let cursorId: string | undefined;
+
+  if (cursor) {
+    const [timestamp, id] = cursor.split("_");
+    cursorDate = new Date(timestamp);
+    cursorId = id;
+  }
+
+  const items = await prisma.conversation.findMany({
+    // +1 to check if there is a next page
+    take: limit + 1,
+    where: {
+      userId,
+      ...(search
+        ? {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              {
+                messages: {
+                  some: { content: { contains: search, mode: "insensitive" } },
                 },
-              ],
-            }
-          : {}),
-      },
-      select: {
-        id: true,
-        title: true,
-        lastMessageAt: true,
-        model: true,
-        messages: {
-          select: {
-            id: true,
-            content: true,
-          },
-          take: 1,
-          orderBy: {
-            createdAt: "desc",
-          },
+              },
+            ],
+          }
+        : {}),
+      // Cursor condition: get items older than cursor
+      ...(cursorDate && cursorId
+        ? {
+            OR: [
+              { lastMessageAt: { lt: cursorDate } },
+              {
+                lastMessageAt: cursorDate,
+                id: { lt: cursorId },
+              },
+            ],
+          }
+        : {}),
+    },
+    select: {
+      id: true,
+      title: true,
+      lastMessageAt: true,
+      model: true,
+      messages: {
+        select: {
+          id: true,
+          content: true,
+        },
+        take: 1,
+        orderBy: {
+          createdAt: "desc",
         },
       },
-      orderBy: {
-        lastMessageAt: "desc",
-      },
-      skip,
-      take: limit,
-    }),
-    prisma.conversation.count({
-      where: {
-        userId,
-        ...(search
-          ? {
-              OR: [
-                { title: { contains: search, mode: "insensitive" } },
-                {
-                  messages: {
-                    some: { content: { contains: search, mode: "insensitive" } },
-                  },
-                },
-              ],
-            }
-          : {}),
-      },
-    }),
-  ]);
+    },
+    orderBy: [
+      { lastMessageAt: "desc" },
+      { id: "desc" }, // Tie-breaker for same timestamps
+    ],
+  });
 
-  const hasMore = skip + conversations.length < total;
+  let nextCursor: string | undefined = undefined;
+  // Check if there is a next page
+  if (items.length > limit) {
+    // The +1 at the top is adjusted here
+    const lastItem = items.pop();
+    if (lastItem) {
+      // Create cursor: "timestamp_id"
+      nextCursor = `${lastItem.lastMessageAt.toISOString()}_${lastItem.id}`;
+    }
+  }
 
   return {
-    conversations,
-    hasMore,
+    items,
+    nextCursor,
   };
 }
 

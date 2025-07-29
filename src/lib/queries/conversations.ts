@@ -3,10 +3,12 @@ import {
   saveConversation,
   saveConversationModel,
 } from "@/lib/actions/conversations";
+import { useTRPC } from "@/lib/trpc/client";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
 import {
+  keepPreviousData,
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -19,58 +21,39 @@ import { processMessages } from "../message-processor";
 export const conversationKeys = {
   details: (id: string) => ["conversations", id, "details"] as const,
   messages: (id: string) => ["conversations", id, "messages"] as const,
-  list: (search?: string) => {
-    const keys = ["conversations", "list"];
-    if (search) {
-      keys.push(search);
-    }
-    return keys;
-  },
+  list: () => ({
+    predicate: (query: any) => {
+      const key = query.queryKey as any[];
+      return key[0]?.[0] === "infiniteConversations";
+    },
+  }),
 };
 
 export function useConversations(
   conversations: any,
-  search?: string,
-  authorized?: boolean
+  authorized: boolean,
+  search?: string
 ) {
-  return useInfiniteQuery({
-    queryKey: conversationKeys.list(search),
-    queryFn: async ({ pageParam = 1 }) => {
-      const searchParams = new URLSearchParams({
-        page: pageParam.toString(),
-        limit: "15",
-        ...(search ? { search } : {}),
-      });
+  const trpc = useTRPC();
 
-      if (!authorized) {
-        return {
-          conversations: [],
-          nextPage: undefined,
-        };
-      }
+  const initialData = {
+    pages: [conversations],
+    pageParams: [null] as (string | null)[],
+  };
 
-      const response = await fetch(`/api/conversations?${searchParams.toString()}`);
-      const data = await response.json();
-      return {
-        conversations: data.conversations,
-        nextPage: data.hasMore ? pageParam + 1 : undefined,
-      };
+  const myQuery = trpc.infiniteConversations.infiniteQueryOptions(
+    {
+      search: search,
     },
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 1,
-    initialData: !search
-      ? () => ({
-          pages: [
-            {
-              conversations: conversations.conversations,
-              nextPage: conversations.hasMore ? 1 : undefined,
-            },
-          ],
-          pageParams: [1],
-        })
-      : undefined,
-    placeholderData: (previousData) => previousData,
-  });
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialData: search ? undefined : initialData,
+      placeholderData: keepPreviousData,
+      enabled: authorized,
+    }
+  );
+
+  return useInfiniteQuery(myQuery);
 }
 
 export function useConversation(id: string, initialConversation?: any) {
@@ -176,18 +159,21 @@ export function useDeleteConversation() {
     mutationFn: ({ conversationId }: { conversationId: string }) =>
       deleteConversation(conversationId),
     onSuccess: (_, { conversationId }) => {
-      // Update all conversation list caches (including filtered ones)
-      const queries = queryClient.getQueriesData({ queryKey: ["conversations", "list"] });
+      // Update tRPC infinite conversation caches
+      const queries = queryClient.getQueriesData(conversationKeys.list());
       queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (old: any) => ({
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            conversations: page.conversations.filter(
-              (conv: PartialConversation) => conv.id !== conversationId
-            ),
-          })),
-        }));
+        queryClient.setQueryData(queryKey, (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page: any) => ({
+              ...page,
+              items: page.items.filter(
+                (conv: PartialConversation) => conv.id !== conversationId
+              ),
+            })),
+          };
+        });
       });
     },
   });
@@ -216,8 +202,8 @@ export function useAddMessage() {
         optimisticMessage,
       ]);
 
-      // Update all conversation list caches (including filtered ones)
-      const queries = queryClient.getQueriesData({ queryKey: ["conversations", "list"] });
+      // Update tRPC infinite conversation caches
+      const queries = queryClient.getQueriesData(conversationKeys.list());
       queries.forEach(([queryKey]) => {
         queryClient.setQueryData(queryKey, (old: any) => {
           if (!old) return old;
@@ -225,7 +211,7 @@ export function useAddMessage() {
             ...old,
             pages: old.pages.map((page: any) => ({
               ...page,
-              conversations: page.conversations.map((conv: PartialConversation) =>
+              items: page.items.map((conv: PartialConversation) =>
                 conv.id === conversationId
                   ? {
                       ...conv,
@@ -249,7 +235,7 @@ export function useAddMessage() {
       queryClient.invalidateQueries({
         queryKey: conversationKeys.messages(conversationId),
       });
-      queryClient.invalidateQueries({ queryKey: conversationKeys.list() });
+      queryClient.invalidateQueries(conversationKeys.list());
     },
   });
 }
@@ -301,24 +287,20 @@ export function useCreateConversation() {
           newConversation.messages
         );
 
-        // Get all conversation list queries
-        const queries = queryClient.getQueriesData({
-          queryKey: ["conversations", "list"],
-        });
+        // Get all tRPC infinite conversation queries
+        const queries = queryClient.getQueriesData(conversationKeys.list());
         queries.forEach(([queryKey]) => {
-          // Only update the unfiltered list optimistically
-          if (queryKey.length === 2) {
-            // ["conversations", "list"]
+          const key = queryKey as any[];
+          // Only update unfiltered list optimistically (no search param)
+          if (!key[1]?.input?.search) {
             queryClient.setQueryData(queryKey, (old: any) => {
               if (!old) return old;
               return {
                 ...old,
                 pages: [
                   {
-                    conversations: [
-                      newConversation,
-                      ...(old.pages[0]?.conversations || []),
-                    ],
+                    items: [newConversation, ...(old.pages[0]?.items || [])],
+                    nextCursor: old.pages[0]?.nextCursor,
                   },
                   ...old.pages.slice(1),
                 ],
@@ -339,7 +321,7 @@ export function useCreateConversation() {
       queryClient.invalidateQueries({
         queryKey: conversationKeys.messages(newConversation.id),
       });
-      queryClient.invalidateQueries({ queryKey: conversationKeys.list() });
+      queryClient.invalidateQueries(conversationKeys.list());
     },
   });
 }
