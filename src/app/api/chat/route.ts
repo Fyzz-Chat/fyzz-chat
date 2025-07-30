@@ -13,7 +13,6 @@ import { memoryTool } from "@/lib/backend/tools/memory";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
-  getConversation,
   lockConversation,
   unlockConversation,
 } from "@/lib/dao/conversations";
@@ -21,6 +20,7 @@ import { getMessages, saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
+import { caller } from "@/lib/trpc/server";
 import {
   type Attachment,
   type Message,
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   }
 
   const [existingConversation, conversationMessages] = await Promise.all([
-    getConversation(id),
+    caller.conversation({ id }),
     getMessages(id),
   ]);
 

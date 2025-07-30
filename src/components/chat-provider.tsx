@@ -1,5 +1,7 @@
 "use client";
 
+import { useAddMessage } from "@/lib/queries/conversations";
+import { useTRPC } from "@/lib/trpc/client";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
@@ -10,7 +12,6 @@ import type { Message } from "ai";
 import { useParams } from "next/navigation";
 import React, { type ReactNode, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { conversationKeys, useAddMessage } from "../lib/queries/conversations";
 
 /**
  * This component is a "controller" that bridges the `ai/react` `useChat` hook
@@ -22,6 +23,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const params = useParams();
   const queryClient = useQueryClient();
   const addMessage = useAddMessage();
+  const trpc = useTRPC();
 
   // Get state and actions using granular selectors to prevent infinite loops
   const model = useModelStore((state) => state.model);
@@ -79,10 +81,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         id: string;
         model: string;
         title: string;
-      }>(conversationKeys.details(stableId));
+      }>(trpc.conversation.queryKey({ id: stableId }));
 
       if (conversation?.title === "New Chat") {
-        queryClient.invalidateQueries(conversationKeys.list());
+        queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
       }
     },
   });

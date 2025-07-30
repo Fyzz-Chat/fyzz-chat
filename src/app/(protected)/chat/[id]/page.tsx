@@ -3,10 +3,10 @@ import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import conf from "@/lib/config";
-import { getConversation } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { processMessages } from "@/lib/message-processor";
+import { caller } from "@/lib/trpc/server";
 
 export default async function ChatPage({
   params,
@@ -19,7 +19,7 @@ export default async function ChatPage({
 
   const jwtConfigured = conf.jwtSecret !== "";
 
-  const conversationData = getConversation(id);
+  const conversationData = caller.conversation({ id });
   const messagesData = getMessages(id, 1, 10);
   const [conversation, messages] = await Promise.all([conversationData, messagesData]);
 
