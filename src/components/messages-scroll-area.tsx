@@ -47,7 +47,7 @@ export default function MessagesScrollArea({
     if (autoScroll) {
       scrollToBottom();
     }
-  }, [messages, lastMessage, autoScroll]);
+  }, [messages?.messages, lastMessage, autoScroll]);
 
   const isUserAtBottom = useCallback(() => {
     const viewport = viewportRef.current;

@@ -1,4 +1,5 @@
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
+import { getMessages } from "@/lib/dao/messages";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 import { z } from "zod";
 
@@ -13,6 +14,19 @@ export const appRouter = createTRPCRouter({
       return {
         greeting: `hello ${opts.input.text}`,
       };
+    }),
+  messages: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        page: z.number().optional(),
+        limit: z.number().optional(),
+      })
+    )
+    .query(async (opts) => {
+      const { id, page, limit } = opts.input;
+      const messages = await getMessages(id, page, limit);
+      return messages;
     }),
   conversation: protectedProcedure
     .input(z.object({ id: z.string() }))

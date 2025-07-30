@@ -5,7 +5,11 @@ import prisma from "@/lib/prisma/prisma";
 import type { Message, UIMessage } from "ai";
 import { mapMessages } from "./conversations";
 
-export async function getMessages(conversationId: string, page?: number, limit?: number) {
+export async function getMessages(
+  conversationId: string,
+  page?: number,
+  limit?: number
+): Promise<{ messages: UIMessage[]; hasMore: boolean }> {
   const userId = await getUserIdFromSession();
 
   if (page === undefined || limit === undefined) {
@@ -32,7 +36,7 @@ export async function getMessages(conversationId: string, page?: number, limit?:
     });
 
     return {
-      messages: await mapMessages(messages),
+      messages: mapMessages(messages),
       hasMore: false,
     };
   }
@@ -76,7 +80,7 @@ export async function getMessages(conversationId: string, page?: number, limit?:
   const hasMore = skip > 0;
 
   return {
-    messages: await mapMessages(messages),
+    messages: mapMessages(messages),
     hasMore,
   };
 }

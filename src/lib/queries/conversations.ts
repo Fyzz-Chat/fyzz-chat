@@ -14,13 +14,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import type { Message } from "ai";
+import type { Message, UIMessage } from "ai";
 import { deleteMessageChainAfter } from "../actions/messages";
-import { processMessages } from "../message-processor";
-
-export const conversationKeys = {
-  messages: (id: string) => ["conversations", id, "messages"] as const,
-};
 
 export function useConversations(
   conversations: any,
@@ -68,36 +63,25 @@ export function useConversation(id: string, initialConversation?: any) {
   return useQuery(myQuery);
 }
 
-export function useMessages(id: string, initialMessages?: any) {
+export function useMessages(
+  id: string,
+  initialMessages?: { messages: UIMessage[]; hasMore: boolean }
+) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
-  const queryClient = useQueryClient();
+  const trpc = useTRPC();
 
-  return useQuery({
-    queryKey: conversationKeys.messages(id),
-    queryFn: async () => {
-      if (temporaryChat) {
-        return queryClient.getQueryData<any>(conversationKeys.messages(id));
-      }
+  const myQuery = trpc.messages.queryOptions(
+    { id },
+    {
+      enabled: !temporaryChat,
+      initialData: initialMessages ? initialMessages : undefined,
+      refetchOnMount: !temporaryChat,
+      refetchOnWindowFocus: !temporaryChat,
+      refetchOnReconnect: !temporaryChat,
+    }
+  );
 
-      const response = await fetch(`/api/conversations/${id}/messages`);
-      const data = await response.json();
-
-      if (data.messages.length === 0) {
-        return queryClient.getQueryData<any>(conversationKeys.messages(id));
-      }
-
-      return processMessages(data.messages);
-    },
-    initialData: () => {
-      if (initialMessages) {
-        return initialMessages;
-      }
-      return null;
-    },
-    refetchOnMount: !temporaryChat,
-    refetchOnWindowFocus: !temporaryChat,
-    refetchOnReconnect: !temporaryChat,
-  });
+  return useQuery(myQuery);
 }
 
 export function useUpdateConversationModel() {
@@ -184,10 +168,16 @@ export function useAddMessage() {
       };
 
       // Update conversation detail cache
-      queryClient.setQueryData(conversationKeys.messages(conversationId), (old: any) => [
-        ...(old || []),
-        optimisticMessage,
-      ]);
+      queryClient.setQueryData(
+        trpc.messages.queryKey({ id: conversationId }),
+        (old: any) => {
+          if (!old) return { messages: [optimisticMessage], hasMore: false };
+          return {
+            ...old,
+            messages: [...(old.messages || []), optimisticMessage],
+          };
+        }
+      );
 
       // Update tRPC infinite conversation caches
       const queries = queryClient.getQueriesData(
@@ -221,9 +211,7 @@ export function useAddMessage() {
       queryClient.invalidateQueries(
         trpc.conversation.queryFilter({ id: conversationId })
       );
-      queryClient.invalidateQueries({
-        queryKey: conversationKeys.messages(conversationId),
-      });
+      queryClient.invalidateQueries(trpc.messages.queryFilter({ id: conversationId }));
       queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
     },
   });
@@ -231,6 +219,7 @@ export function useAddMessage() {
 
 export function useRegenerateMessage() {
   const queryClient = useQueryClient();
+  const trpc = useTRPC();
 
   return useMutation({
     mutationFn: ({
@@ -250,11 +239,22 @@ export function useRegenerateMessage() {
       return deleteMessageChainAfter(messageId, conversationId, newContent);
     },
     onSuccess: (_, { conversationId, messageId, newContent }) => {
-      queryClient.setQueryData(conversationKeys.messages(conversationId), (old: any) => {
-        if (!old) return old;
+      queryClient.setQueryData(
+        trpc.messages.queryKey({ id: conversationId }),
+        (old: any) => {
+          if (!old) return old;
 
-        return filterMessagesUpToAnchor(old, messageId, newContent);
-      });
+          const filteredMessages = filterMessagesUpToAnchor(
+            old.messages,
+            messageId,
+            newContent
+          );
+          return {
+            messages: filteredMessages,
+            hasMore: old.hasMore,
+          };
+        }
+      );
     },
   });
 }
@@ -272,10 +272,10 @@ export function useCreateConversation() {
           trpc.conversation.queryKey({ id: newConversation.id }),
           newConversation
         );
-        queryClient.setQueryData(
-          conversationKeys.messages(newConversation.id),
-          newConversation.messages
-        );
+        queryClient.setQueryData(trpc.messages.queryKey({ id: newConversation.id }), {
+          messages: newConversation.messages,
+          hasMore: false,
+        });
 
         // Get all tRPC infinite conversation queries
         const queries = queryClient.getQueriesData(
@@ -310,9 +310,9 @@ export function useCreateConversation() {
       queryClient.invalidateQueries(
         trpc.conversation.queryFilter({ id: newConversation.id })
       );
-      queryClient.invalidateQueries({
-        queryKey: conversationKeys.messages(newConversation.id),
-      });
+      queryClient.invalidateQueries(
+        trpc.messages.queryFilter({ id: newConversation.id })
+      );
       queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
     },
   });
@@ -327,10 +327,10 @@ export function useCreateConversationOptimistic() {
         trpc.conversation.queryKey({ id: conversation.id }),
         conversation
       );
-      queryClient.setQueryData(
-        conversationKeys.messages(conversation.id),
-        conversation.messages
-      );
+      queryClient.setQueryData(trpc.messages.queryKey({ id: conversation.id }), {
+        messages: conversation.messages,
+        hasMore: false,
+      });
     },
   });
 }

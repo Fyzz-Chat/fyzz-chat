@@ -13,6 +13,7 @@ import { type Message, generateText } from "ai";
 import jwt from "jsonwebtoken";
 
 import conf from "@/lib/config";
+import { mapMessages } from "@/lib/dao/conversations";
 
 export async function saveConversation(conversation: PartialConversation) {
   const userId = await getUserIdFromSession();
@@ -33,7 +34,10 @@ export async function saveConversation(conversation: PartialConversation) {
     },
   });
 
-  return newConversation;
+  return {
+    ...newConversation,
+    messages: mapMessages(newConversation.messages),
+  };
 }
 
 async function saveConversationTitle(conversationId: string, title: string) {

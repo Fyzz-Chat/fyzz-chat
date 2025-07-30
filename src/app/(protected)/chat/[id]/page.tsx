@@ -3,9 +3,7 @@ import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import conf from "@/lib/config";
-import { getMessages } from "@/lib/dao/messages";
 import { getUserIdFromSession } from "@/lib/dao/users";
-import { processMessages } from "@/lib/message-processor";
 import { caller } from "@/lib/trpc/server";
 
 export default async function ChatPage({
@@ -20,10 +18,9 @@ export default async function ChatPage({
   const jwtConfigured = conf.jwtSecret !== "";
 
   const conversationData = caller.conversation({ id });
-  const messagesData = getMessages(id, 1, 10);
+  const messagesData = caller.messages({ id, page: 1, limit: 10 });
   const [conversation, messages] = await Promise.all([conversationData, messagesData]);
 
-  const formattedMessages = processMessages(messages.messages);
   return (
     <ViewTransitionWrapper>
       {/* Hidden element to catch initial focus and prevent share button autofocus */}
@@ -39,7 +36,7 @@ export default async function ChatPage({
         <MessagesList
           id={id}
           initialConversation={conversation}
-          initialMessages={formattedMessages}
+          initialMessages={messages}
         />
       </MessagesScrollArea>
     </ViewTransitionWrapper>

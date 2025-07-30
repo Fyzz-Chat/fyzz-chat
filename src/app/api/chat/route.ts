@@ -16,7 +16,7 @@ import {
   lockConversation,
   unlockConversation,
 } from "@/lib/dao/conversations";
-import { getMessages, saveMessage, saveTokenUsage } from "@/lib/dao/messages";
+import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   const [existingConversation, conversationMessages] = await Promise.all([
     caller.conversation({ id }),
-    getMessages(id),
+    caller.messages({ id }),
   ]);
 
   let existingMessages: Message[] = conversationMessages.messages;

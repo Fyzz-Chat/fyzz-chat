@@ -1,5 +1,6 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import { cache } from "react";
+import superjson from "superjson";
 import { getUserIdFromSession } from "../dao/users";
 
 export const createTRPCContext = cache(async () => {
@@ -20,7 +21,7 @@ const t = initTRPC.context<Context>().create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
    */
-  // transformer: superjson,
+  transformer: superjson,
 });
 
 // Base router and procedure helpers

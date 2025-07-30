@@ -10,6 +10,7 @@ import { LoadingDots } from "./ui/loading-dots";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
+import type { UIMessage } from "ai";
 
 const MemoizedMessageItem = memo(MessageItem);
 
@@ -30,7 +31,7 @@ export function MessagesList({
   id,
 }: {
   initialConversation?: any;
-  initialMessages?: any;
+  initialMessages?: { messages: UIMessage[]; hasMore: boolean };
   id: string;
 }) {
   const router = useRouter();
@@ -52,10 +53,10 @@ export function MessagesList({
   }, [conversation]);
 
   const memoizedConversationMessages = useMemo(() => {
-    return messages?.map((message: any) => (
+    return messages?.messages?.map((message: any) => (
       <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
-  }, [messages]);
+  }, [messages?.messages]);
 
   return (
     <div className="flex flex-col gap-4 px-4 sm:px-8 pt-8">

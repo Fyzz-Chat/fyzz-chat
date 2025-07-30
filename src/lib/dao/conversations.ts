@@ -214,25 +214,23 @@ export async function isConversationLocked(conversationId: string): Promise<bool
   return !!conversation;
 }
 
-export async function mapMessages(messages: PartialMessage[]): Promise<UIMessage[]> {
-  const mappedMessages = await Promise.all(
-    messages.map(async (message) => {
-      const { files, ...messageWithoutFiles } = message;
-      const parts = safeParse(messageWithoutFiles.parts, []);
-      const parsedFiles = safeParse(files, []);
+export function mapMessages(messages: PartialMessage[]): UIMessage[] {
+  const mappedMessages = messages.map((message) => {
+    const { files, ...messageWithoutFiles } = message;
+    const parts = safeParse(messageWithoutFiles.parts, []);
+    const parsedFiles = safeParse(files, []);
 
-      return {
-        ...messageWithoutFiles,
-        role: messageWithoutFiles.role as "system" | "user" | "assistant" | "data",
-        parts: filterParts(parts),
-        experimental_attachments: parsedFiles.map((file: any) => ({
-          name: file.name,
-          contentType: file.contentType,
-          url: awsConfigured ? getFileUrlSigned(file.url) : file.url,
-        })),
-      };
-    })
-  );
+    return {
+      ...messageWithoutFiles,
+      role: messageWithoutFiles.role as "system" | "user" | "assistant" | "data",
+      parts: filterParts(parts),
+      experimental_attachments: parsedFiles.map((file: any) => ({
+        name: file.name,
+        contentType: file.contentType,
+        url: awsConfigured ? getFileUrlSigned(file.url) : file.url,
+      })),
+    };
+  });
 
   return mappedMessages;
 }
