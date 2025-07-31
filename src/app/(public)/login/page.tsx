@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 
 export default async function Login() {
   const translations = await getTranslations();
+
   return (
     <main className="m-auto">
       <AuthCard

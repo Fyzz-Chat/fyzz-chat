@@ -2,17 +2,40 @@ import { auth } from "@/auth";
 import CatalystBadge from "@/components/footer/catalyst-badge";
 import GitHub from "@/components/icons/github";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
+import { Suspense } from "react";
+
+async function HeaderItems() {
+  const session = await auth();
+
+  return (
+    <>
+      {session ? (
+        <Button asChild className="w-28">
+          <Link href="/chat">Dashboard</Link>
+        </Button>
+      ) : (
+        <>
+          <Button asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/register">Register</Link>
+          </Button>
+        </>
+      )}
+    </>
+  );
+}
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
   return (
     <div className="flex flex-col flex-1 mx-auto max-w-7xl w-full">
       <header className="flex w-full p-4 gap-4 justify-end items-center">
@@ -23,18 +46,9 @@ export default async function Layout({
           <Image src="/icon.svg" alt="Catalyst" width={30} height={30} />
           Fyzz.chat
         </Link>
-        {session ? (
-          <Link href="/chat">
-            <Button>Dashboard</Button>
-          </Link>
-        ) : (
-          <>
-            <Link href="/login">Login</Link>
-            <Link href="/register">
-              <Button>Register</Button>
-            </Link>
-          </>
-        )}
+        <Suspense fallback={<Skeleton className="h-10 w-28" />}>
+          <HeaderItems />
+        </Suspense>
       </header>
       {children}
       <footer className="flex w-full p-4 justify-between items-center">

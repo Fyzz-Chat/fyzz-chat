@@ -8,6 +8,7 @@ import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metad
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
 const LazyIntroDialog = dynamic(() => import("@/components/chat/intro-dialog"));
 const LazyAuthCard = dynamic(() => import("@/components/auth/auth-card"));
@@ -28,57 +29,77 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ChatPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+async function ChatWelcomeSectionComponent() {
   const translations = await getTranslations();
   const user = await getUserFromSessionPublic();
+
+  return (
+    <ChatWelcomeSection user={user} translations={translations.home}>
+      <LazyIntroDialog />
+    </ChatWelcomeSection>
+  );
+}
+
+async function AuthCardComponent({
+  searchParams,
+}: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const translations = await getTranslations();
   const { login, register } = await searchParams;
   const isLogin = login === "true";
   const isRegister = register === "true";
 
   return (
+    (isLogin || isRegister) && (
+      <div
+        className={cn(
+          "flex fixed items-center justify-center inset-0 backdrop-blur-sm z-20 animate-in fade-in slide-in-from-bottom-4 duration-500"
+        )}
+      >
+        <LazyAuthCard
+          title={isLogin ? translations.login.title : translations.register.title}
+          description={
+            isLogin ? translations.login.description : translations.register.description
+          }
+          ctaQuestion={
+            isLogin
+              ? translations.login.firstTime.title
+              : translations.register.alreadyHaveAccount.title
+          }
+          ctaText={
+            isLogin
+              ? translations.login.firstTime.link
+              : translations.register.alreadyHaveAccount.link
+          }
+          ctaLink={`/chat?${isLogin ? "register=true" : "login=true"}`}
+        >
+          {isLogin ? (
+            <LoginForm translations={translations.login} />
+          ) : (
+            <RegisterForm translations={translations.register} />
+          )}
+        </LazyAuthCard>
+      </div>
+    )
+  );
+}
+
+export default async function ChatPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  return (
     <div className="flex-1 flex items-center justify-center p-4">
       <ViewTransitionWrapper className="flex flex-1 items-center justify-center">
         <div className="max-w-2xl w-full space-y-4">
-          <ChatWelcomeSection user={user} translations={translations.home}>
-            <LazyIntroDialog />
-          </ChatWelcomeSection>
+          <Suspense fallback={null}>
+            <ChatWelcomeSectionComponent />
+          </Suspense>
         </div>
       </ViewTransitionWrapper>
-      {(isLogin || isRegister) && (
-        <div
-          className={cn(
-            "flex fixed items-center justify-center inset-0 backdrop-blur-sm z-20 animate-in fade-in slide-in-from-bottom-4 duration-500"
-          )}
-        >
-          <LazyAuthCard
-            title={isLogin ? translations.login.title : translations.register.title}
-            description={
-              isLogin ? translations.login.description : translations.register.description
-            }
-            ctaQuestion={
-              isLogin
-                ? translations.login.firstTime.title
-                : translations.register.alreadyHaveAccount.title
-            }
-            ctaText={
-              isLogin
-                ? translations.login.firstTime.link
-                : translations.register.alreadyHaveAccount.link
-            }
-            ctaLink={`/chat?${isLogin ? "register=true" : "login=true"}`}
-          >
-            {isLogin ? (
-              <LoginForm translations={translations.login} />
-            ) : (
-              <RegisterForm translations={translations.register} />
-            )}
-          </LazyAuthCard>
-        </div>
-      )}
+      <Suspense fallback={null}>
+        <AuthCardComponent searchParams={searchParams} />
+      </Suspense>
     </div>
   );
 }
