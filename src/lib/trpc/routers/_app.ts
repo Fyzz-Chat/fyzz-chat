@@ -1,21 +1,10 @@
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
 import { getUploadUrls } from "@/lib/services/uploads";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/lib/trpc/init";
 import { z } from "zod";
 
 export const appRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .query((opts) => {
-      return {
-        greeting: `hello ${opts.input.text}`,
-      };
-    }),
   messages: protectedProcedure
     .input(
       z.object({
