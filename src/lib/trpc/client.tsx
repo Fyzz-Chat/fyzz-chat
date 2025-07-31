@@ -61,3 +61,12 @@ export function TRPCReactProvider(
     </QueryClientProvider>
   );
 }
+
+export const standaloneTrpc = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      transformer: superjson,
+      url: getUrl(),
+    }),
+  ],
+});

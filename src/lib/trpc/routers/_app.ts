@@ -1,5 +1,6 @@
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
+import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 import { z } from "zod";
 
@@ -34,6 +35,13 @@ export const appRouter = createTRPCRouter({
       const { id } = opts.input;
       const conversation = await getConversation(id);
       return conversation;
+    }),
+  getUploadUrls: protectedProcedure
+    .input(z.object({ conversationId: z.string(), count: z.number() }))
+    .query(async (opts) => {
+      const { conversationId, count } = opts.input;
+      const urls = await getUploadUrls(opts.ctx.userId, conversationId, count);
+      return urls;
     }),
   infiniteConversations: protectedProcedure
     .input(

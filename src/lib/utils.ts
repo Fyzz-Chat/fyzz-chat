@@ -1,3 +1,4 @@
+import { standaloneTrpc } from "@/lib/trpc/client";
 import type { Attachment, Message } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
@@ -105,11 +106,10 @@ export async function uploadFiles(
     return fileList;
   }
 
-  const uploadResults = fileList
-    ? await fetch(
-        `/api/conversations/${conversationId}/upload?count=${fileList.length}`
-      ).then((res) => res.json())
-    : [];
+  const uploadResults = await standaloneTrpc.getUploadUrls.query({
+    conversationId,
+    count: fileList.length,
+  });
 
   const uploads = await Promise.all(
     Array.from(fileList).map(async (file, index) => {
