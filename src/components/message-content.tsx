@@ -248,7 +248,8 @@ const MemoizedMarkdownBlock = memo(
 function ReasoningPreview({
   reasoning,
   messageId,
-}: { reasoning: string; messageId?: string }) {
+  isLastPart,
+}: { reasoning: string; messageId?: string; isLastPart: boolean }) {
   const [displayedReasoning, setDisplayedReasoning] = useState("");
   const [expressionIndex, setExpressionIndex] = useState(0);
   const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
@@ -284,9 +285,12 @@ function ReasoningPreview({
   // Use streaming reasoning if available, otherwise use the static reasoning
   const currentReasoning = streamingReasoning || reasoning;
 
+  const isStreaming =
+    lastMessage?.id === messageId && status === "streaming" && isLastPart;
+
   // Rotate expressions every 2 seconds when streaming
   useEffect(() => {
-    if (lastMessage?.id !== messageId || status !== "streaming") {
+    if (lastMessage?.id !== messageId || status !== "streaming" || !isLastPart) {
       setExpressionIndex(0);
       setOutgoingIndex(null);
       return;
@@ -308,7 +312,7 @@ function ReasoningPreview({
       clearInterval(interval);
       if (animationTimeout) clearTimeout(animationTimeout);
     };
-  }, [lastMessage?.id, messageId, status, expressions.length]);
+  }, [lastMessage?.id, messageId, status, expressions.length, isLastPart]);
 
   useEffect(() => {
     if (currentReasoning !== displayedReasoning) {
@@ -316,12 +320,14 @@ function ReasoningPreview({
       if (currentReasoning.trim()) {
         setDisplayedReasoning(currentReasoning);
 
-        // Smooth scroll to bottom after content update
-        setTimeout(() => {
-          if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-          }
-        }, 50);
+        // Only scroll to bottom while streaming
+        if (isStreaming) {
+          setTimeout(() => {
+            if (scrollRef.current) {
+              scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            }
+          }, 50);
+        }
       }
 
       // Clear existing timeout
@@ -329,14 +335,13 @@ function ReasoningPreview({
         clearTimeout(timeoutRef.current);
       }
     }
-  }, [currentReasoning, displayedReasoning]);
+  }, [currentReasoning, displayedReasoning, isStreaming]);
 
   // If no reasoning, don't show anything
   if (!currentReasoning.trim()) {
     return null;
   }
 
-  const isStreaming = lastMessage?.id === messageId && status === "streaming";
   const currentText = isStreaming ? expressions[expressionIndex] : "Thought process";
 
   return (
@@ -487,7 +492,11 @@ export function MessageContent({ message }: { message: Message }) {
             return (
               <Sheet key={`${message.id}-reasoning-${index}`}>
                 <SheetTrigger className="mr-auto">
-                  <ReasoningPreview reasoning={part.reasoning} messageId={message.id} />
+                  <ReasoningPreview
+                    reasoning={part.reasoning}
+                    messageId={message.id}
+                    isLastPart={index === (message.parts?.length || 0) - 1}
+                  />
                 </SheetTrigger>
                 <SheetContent className="px-0">
                   <SheetHeader className="px-6">
