@@ -28,7 +28,6 @@ export async function getMessages(
         parts: true,
         files: true,
         createdAt: true,
-        updatedAt: true,
       },
       orderBy: {
         createdAt: "asc",
@@ -68,7 +67,6 @@ export async function getMessages(
       parts: true,
       files: true,
       createdAt: true,
-      updatedAt: true,
     },
     orderBy: {
       createdAt: "asc",

@@ -14,6 +14,7 @@ export type PartialMessage = Omit<
   | "promptTokens"
   | "completionTokens"
   | "conversationId"
+  | "updatedAt"
 >;
 
 export type ChatLayout = "wide" | "compact";
