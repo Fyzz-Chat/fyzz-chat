@@ -3,15 +3,19 @@
 
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import { type ReactNode, useState } from "react";
 import superjson from "superjson";
 import { makeQueryClient } from "./query-client";
+import { createIDBPersister } from "./query-persister";
 import type { AppRouter } from "./routers/_app";
 
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 let browserQueryClient: QueryClient;
+
+const persister = createIDBPersister("fyzz-chat-query-cache");
 
 function getQueryClient() {
   if (typeof window === "undefined") {
@@ -54,11 +58,11 @@ export function TRPCReactProvider(
     })
   );
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
       <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
         {props.children}
       </TRPCProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
 

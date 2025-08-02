@@ -54,9 +54,6 @@ export function useConversation(id: string, initialConversation?: any) {
     {
       enabled: !temporaryChat,
       initialData: initialConversation ? initialConversation : undefined,
-      refetchOnMount: !temporaryChat,
-      refetchOnWindowFocus: !temporaryChat,
-      refetchOnReconnect: !temporaryChat,
     }
   );
 
@@ -75,9 +72,6 @@ export function useMessages(
     {
       enabled: !temporaryChat,
       initialData: initialMessages ? initialMessages : undefined,
-      refetchOnMount: !temporaryChat,
-      refetchOnWindowFocus: !temporaryChat,
-      refetchOnReconnect: !temporaryChat,
     }
   );
 
