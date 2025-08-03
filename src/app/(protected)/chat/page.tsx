@@ -30,11 +30,10 @@ export const metadata: Metadata = {
 };
 
 async function ChatWelcomeSectionComponent() {
-  const translations = await getTranslations();
   const user = await getUserFromSessionPublic();
 
   return (
-    <ChatWelcomeSection user={user} translations={translations.home}>
+    <ChatWelcomeSection user={user}>
       <LazyIntroDialog />
     </ChatWelcomeSection>
   );
@@ -72,11 +71,7 @@ async function AuthCardComponent({
           }
           ctaLink={`/chat?${isLogin ? "register=true" : "login=true"}`}
         >
-          {isLogin ? (
-            <LoginForm translations={translations.login} />
-          ) : (
-            <RegisterForm translations={translations.register} />
-          )}
+          {isLogin ? <LoginForm /> : <RegisterForm />}
         </LazyAuthCard>
       </div>
     )

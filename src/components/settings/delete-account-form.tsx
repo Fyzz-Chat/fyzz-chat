@@ -3,10 +3,10 @@
 import { Button } from "@/components/ui/button";
 import useToast from "@/hooks/use-toast";
 import { deleteUser } from "@/lib/actions/users";
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { type FormState, initialState } from "@/lib/utils";
-import type { Translations } from "@/types/locale";
 import { signOut } from "next-auth/react";
-import { useActionState } from "react";
+import { use, useActionState } from "react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -20,9 +20,9 @@ import {
 } from "../ui/alert-dialog";
 import { Input } from "../ui/input";
 
-export default function DeleteAccountForm({
-  translations,
-}: { translations: Translations["settings"]["account"] }) {
+export default function DeleteAccountForm() {
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
   const [state, formAction] = useActionState(deleteUser, initialState);
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -48,26 +48,28 @@ export default function DeleteAccountForm({
 
   return (
     <div className="flex flex-col gap-2 p-4 border border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900 rounded-lg">
-      <h4 className="text-lg font-semibold">{translations.deleteCard.title}</h4>
-      <p className="text-sm">{translations.deleteCard.description}</p>
+      <h4 className="text-lg font-semibold">
+        {translations.settings.account.deleteCard.title}
+      </h4>
+      <p className="text-sm">{translations.settings.account.deleteCard.description}</p>
       <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogTrigger asChild>
           <Button type="button" variant="destructive" className="w-fit mt-2 self-end">
-            {translations.deleteButton}
+            {translations.settings.account.deleteButton}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader className="text-left">
             <AlertDialogTitle className="text-left">
-              {translations.dialog.title}
+              {translations.settings.account.dialog.title}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-left">
               <span className="text-red-600 dark:text-red-400 font-medium block">
-                {translations.dialog.descriptionRed}
+                {translations.settings.account.dialog.descriptionRed}
               </span>
               <span className="mt-4 block">
                 <span className="text-sm font-medium mb-2 block">
-                  {translations.dialog.description}
+                  {translations.settings.account.dialog.description}
                 </span>
                 <Input
                   value={confirmText}
@@ -79,11 +81,11 @@ export default function DeleteAccountForm({
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-row gap-2 justify-end items-center">
             <AlertDialogCancel className="mt-0">
-              {translations.dialog.cancelButton}
+              {translations.settings.account.dialog.cancelButton}
             </AlertDialogCancel>
             <form action={formAction}>
               <Button type="submit" variant="destructive" disabled={!isConfirmed}>
-                {translations.dialog.deleteButton}
+                {translations.settings.account.dialog.deleteButton}
               </Button>
             </form>
           </AlertDialogFooter>

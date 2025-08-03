@@ -10,11 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
-import type { Translations } from "@/types/locale";
+import { useTranslations } from "@/lib/contexts/translations-context";
+import { use } from "react";
 
-export function LayoutSelector({
-  translations,
-}: { translations: Translations["settings"]["display"]["layout"] }) {
+export function LayoutSelector() {
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
   const { layout, setLayout } = useChatLayout();
 
   return (
@@ -27,18 +28,20 @@ export function LayoutSelector({
             <IconViewportNarrow size={16} />
           )}
           <span>
-            {layout === "wide" ? translations.options.wide : translations.options.compact}
+            {layout === "wide"
+              ? translations.settings.display.layout.options.wide
+              : translations.settings.display.layout.options.compact}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setLayout("wide")} className="gap-2">
           <IconViewportWide size={16} />
-          <span>{translations.options.wide}</span>
+          <span>{translations.settings.display.layout.options.wide}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setLayout("compact")} className="gap-2">
           <IconViewportNarrow size={16} />
-          <span>{translations.options.compact}</span>
+          <span>{translations.settings.display.layout.options.compact}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

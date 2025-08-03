@@ -97,7 +97,6 @@ export default async function SettingsPage() {
                     <MemoryForm
                       memory={user?.memory ?? undefined}
                       memoryEnabled={user?.memoryEnabled ?? false}
-                      translations={translations.settings.memory}
                     />
                   </CardContent>
                 </ScrollArea>
@@ -112,10 +111,7 @@ export default async function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <PasswordForm
-                    hasPassword={hasPassword}
-                    translations={translations.settings.security}
-                  />
+                  <PasswordForm hasPassword={hasPassword} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -128,18 +124,15 @@ export default async function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <DeleteAccountForm translations={translations.settings.account} />
+                  <DeleteAccountForm />
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="display">
-              <DisplaySettingsTab translations={translations.settings.display} />
+              <DisplaySettingsTab />
             </TabsContent>
             <TabsContent value="mcp">
-              <McpTab
-                userMcpServers={user?.mcpServers}
-                translations={translations.settings.mcp}
-              />
+              <McpTab userMcpServers={user?.mcpServers} />
             </TabsContent>
           </Tabs>
         </div>

@@ -6,20 +6,20 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import useToast from "@/hooks/use-toast";
 import { updateUserMemory, updateUserMemoryEnabled } from "@/lib/actions/users";
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { initialState } from "@/lib/utils";
-import type { Translations } from "@/types/locale";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { use, useActionState, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function MemoryForm({
   memory,
   memoryEnabled,
-  translations,
 }: {
   memory?: string;
   memoryEnabled: boolean;
-  translations: Translations["settings"]["memory"];
 }) {
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
   const [state, formAction, isPending] = useActionState(updateUserMemory, initialState);
   const [content, setContent] = useState(memory ?? "");
   const [enabled, setEnabled] = useState(memoryEnabled);
@@ -35,11 +35,11 @@ export default function MemoryForm({
 
     updateUserMemoryEnabled(enabled).then((enabled: boolean) => {
       const title = enabled
-        ? translations.sonner.enabled.title
-        : translations.sonner.disabled.title;
+        ? translations.settings.memory.sonner.enabled.title
+        : translations.settings.memory.sonner.disabled.title;
       const description = enabled
-        ? translations.sonner.enabled.description
-        : translations.sonner.disabled.description;
+        ? translations.settings.memory.sonner.enabled.description
+        : translations.settings.memory.sonner.disabled.description;
 
       toast(title, {
         description,
@@ -49,17 +49,19 @@ export default function MemoryForm({
 
   return (
     <div className="flex flex-col gap-4 items-start">
-      <h4 className="text-sm font-medium">{translations.sectionTitle}</h4>
+      <h4 className="text-sm font-medium">{translations.settings.memory.sectionTitle}</h4>
       <div className="flex items-center gap-2">
         <Switch id="memory" checked={enabled} onCheckedChange={setEnabled} />
-        <Label htmlFor="memory">{translations.toggle.title}</Label>
+        <Label htmlFor="memory">{translations.settings.memory.toggle.title}</Label>
       </div>
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">{translations.toggle.description}</p>
+        <p className="text-sm text-muted-foreground">
+          {translations.settings.memory.toggle.description}
+        </p>
         <p className="text-sm text-muted-foreground">
           {enabled
-            ? translations.toggle.descriptionEnabled
-            : translations.toggle.descriptionDisabled}
+            ? translations.settings.memory.toggle.descriptionEnabled
+            : translations.settings.memory.toggle.descriptionDisabled}
         </p>
       </div>
       <form action={formAction} className="flex flex-col gap-4 w-full items-start">
@@ -72,7 +74,7 @@ export default function MemoryForm({
           className="resize-none"
         />
         <Button type="submit" className="px-5 self-end" disabled={!enabled || isPending}>
-          {translations.saveButton}
+          {translations.settings.memory.saveButton}
         </Button>
       </form>
     </div>

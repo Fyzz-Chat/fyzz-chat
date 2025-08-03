@@ -39,7 +39,7 @@ export default async function Register() {
         ctaText={translations.register.alreadyHaveAccount.link}
         ctaLink="/login"
       >
-        <RegisterForm translations={translations.register} />
+        <RegisterForm />
       </AuthCard>
     </main>
   );

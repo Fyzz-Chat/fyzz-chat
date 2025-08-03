@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { saveMcpServers } from "@/lib/actions/users";
-import type { Translations } from "@/types/locale";
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { MissingKeyError } from "@/types/mcp";
 import type { JsonValue } from "@prisma/client/runtime/library";
+import { use } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -24,10 +25,9 @@ const placeholderServers = `{
   }
 }`;
 
-export function McpTab({
-  userMcpServers,
-  translations,
-}: { userMcpServers?: JsonValue; translations: Translations["settings"]["mcp"] }) {
+export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
   const { register, handleSubmit } = useForm<{ mcpServers: string }>({
     defaultValues: {
       mcpServers: userMcpServers ? (userMcpServers as string) : "",
@@ -51,17 +51,17 @@ export function McpTab({
         throw new SyntaxError("Invalid JSON");
       }
 
-      toast.success(translations.success.title, {
-        description: translations.success.description,
+      toast.success(translations.settings.mcp.success.title, {
+        description: translations.settings.mcp.success.description,
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        toast.error(translations.error.title, {
-          description: translations.error.description,
+        toast.error(translations.settings.mcp.error.title, {
+          description: translations.settings.mcp.error.description,
         });
       } else if (error instanceof MissingKeyError) {
-        toast.error(translations.missingKey.title, {
-          description: translations.missingKey.description,
+        toast.error(translations.settings.mcp.missingKey.title, {
+          description: translations.settings.mcp.missingKey.description,
         });
       }
     }
@@ -70,8 +70,8 @@ export function McpTab({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{translations.title}</CardTitle>
-        <CardDescription>{translations.description}</CardDescription>
+        <CardTitle>{translations.settings.mcp.title}</CardTitle>
+        <CardDescription>{translations.settings.mcp.description}</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -84,7 +84,7 @@ export function McpTab({
             placeholder={placeholderServers}
           />
           <Button type="submit" className="px-5 self-end">
-            {translations.saveButton}
+            {translations.settings.mcp.saveButton}
           </Button>
         </form>
       </CardContent>
