@@ -6,6 +6,7 @@ import { Link, type LinkProps } from "react-router-dom";
 type FastLinkProps = LinkProps & {
   children: React.ReactNode;
   className?: string;
+  prefetchFunction?: () => void;
 };
 
 /**
@@ -15,7 +16,7 @@ type FastLinkProps = LinkProps & {
  * instead of the click event, while maintaining compatibility with touch devices.
  */
 export const FastLink = React.forwardRef<HTMLAnchorElement, FastLinkProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, prefetchFunction, ...props }, ref) => {
     const isTouchDevice = useCallback(() => {
       return "ontouchstart" in window || navigator.maxTouchPoints > 0;
     }, []);
@@ -41,12 +42,19 @@ export const FastLink = React.forwardRef<HTMLAnchorElement, FastLinkProps>(
       props.onClick?.(e);
     }
 
+    function handleMouseEnter() {
+      if (prefetchFunction) {
+        prefetchFunction();
+      }
+    }
+
     return (
       <Link
         ref={ref}
         {...props}
         onMouseDown={handleMouseDown}
         onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
         className={className}
       >
         {children}

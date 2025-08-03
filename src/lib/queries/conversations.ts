@@ -15,6 +15,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { Message, UIMessage } from "ai";
+import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
 
 export function useConversations(
@@ -58,6 +59,19 @@ export function useConversation(id: string, initialConversation?: any) {
   );
 
   return useQuery(myQuery);
+}
+
+export function usePrefetchConversation() {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useCallback(
+    (id: string) => {
+      queryClient.prefetchQuery(trpc.conversation.queryOptions({ id }));
+      queryClient.prefetchQuery(trpc.messages.queryOptions({ id }));
+    },
+    [queryClient, trpc]
+  );
 }
 
 export function useMessages(
