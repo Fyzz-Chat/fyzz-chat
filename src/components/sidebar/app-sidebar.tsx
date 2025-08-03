@@ -25,8 +25,8 @@ import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
 export async function AppSidebar({
-  translations,
-}: { translations: Translations["sidebar"] }) {
+  translationsPromise,
+}: { translationsPromise: Promise<Translations> }) {
   const user = await getUserFromSessionPublic();
   const initialConversationsData = user
     ? await caller.infiniteConversations({
@@ -47,7 +47,7 @@ export async function AppSidebar({
             <NewChatButton />
           </div>
           <div className="flex items-center">
-            <SearchField translations={translations} />
+            <SearchField translationsPromise={translationsPromise} />
           </div>
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
@@ -55,7 +55,7 @@ export async function AppSidebar({
           <ChatSidebar
             conversations={initialConversationsData}
             authorized={Boolean(user)}
-            translations={translations.separators}
+            translationsPromise={translationsPromise}
           />
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-sidebar to-transparent pointer-events-none z-10" />
         </SidebarContent>
@@ -81,8 +81,8 @@ export async function AppSidebar({
                 <DropdownMenuContent className="w-64 md:w-[15rem]">
                   <ProfileMenu
                     authorized={Boolean(user)}
-                    userEmail={user?.email || translations.menu.myAccount}
-                    translations={translations.menu}
+                    userEmail={user?.email}
+                    translationsPromise={translationsPromise}
                   />
                 </DropdownMenuContent>
               </DropdownMenu>

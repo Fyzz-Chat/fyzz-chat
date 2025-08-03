@@ -10,7 +10,7 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const translations = await getTranslations();
+  const translationsPromise = getTranslations();
   const cookieStore = await cookies();
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
@@ -18,7 +18,7 @@ export default async function Layout({
   return (
     <ChatLayoutProvider>
       <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar translations={translations.sidebar} />
+        <AppSidebar translationsPromise={translationsPromise} />
         <SidebarInset className="relative md:p-2 bg-sidebar overflow-auto">
           <SidebarTrigger className="absolute size-8 top-2 left-2 md:top-4 md:left-4 z-20 p-5 touch-manipulation" />
           {children}

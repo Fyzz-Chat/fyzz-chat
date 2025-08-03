@@ -3,7 +3,7 @@
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores/search-store";
 import type { Translations } from "@/types/locale";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 
 function useIsMac() {
@@ -17,7 +17,10 @@ function useIsMac() {
   return isMac;
 }
 
-export function SearchField({ translations }: { translations: Translations["sidebar"] }) {
+export function SearchField({
+  translationsPromise,
+}: { translationsPromise: Promise<Translations> }) {
+  const translations = use(translationsPromise);
   const [search, setSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const { setSearchQuery } = useSearchStore();
@@ -49,7 +52,7 @@ export function SearchField({ translations }: { translations: Translations["side
         ref={inputRef}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={translations.search}
+        placeholder={translations.sidebar.search}
       />
       <div
         className={cn(

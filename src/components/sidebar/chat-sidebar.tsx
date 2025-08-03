@@ -27,7 +27,7 @@ import type { PartialConversation } from "@/types/chat";
 import type { Translations } from "@/types/locale";
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { createElement, useState } from "react";
+import { createElement, use, useState } from "react";
 import type React from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -69,12 +69,13 @@ function groupConversationsByTime(conversations: PartialConversation[]) {
 export default function ChatSidebar({
   conversations,
   authorized,
-  translations,
+  translationsPromise,
 }: {
   conversations: { items: any; nextCursor: string | undefined };
   authorized: boolean;
-  translations: Translations["sidebar"]["separators"];
+  translationsPromise: Promise<Translations>;
 }) {
+  const translations = use(translationsPromise);
   const { searchQuery } = useSearchStore();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useConversations(
     conversations,
@@ -100,7 +101,7 @@ export default function ChatSidebar({
       {groupedConversations.today.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
-            {translations.today}
+            {translations.sidebar.separators.today}
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.today.map((chat: PartialConversation) => (
@@ -112,7 +113,7 @@ export default function ChatSidebar({
       {groupedConversations.yesterday.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
-            {translations.yesterday}
+            {translations.sidebar.separators.yesterday}
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.yesterday.map((chat: PartialConversation) => (
@@ -124,7 +125,7 @@ export default function ChatSidebar({
       {groupedConversations.lastWeek.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
-            {translations.lastWeek}
+            {translations.sidebar.separators.lastWeek}
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.lastWeek.map((chat: PartialConversation) => (
@@ -136,7 +137,7 @@ export default function ChatSidebar({
       {groupedConversations.older.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
-            {translations.older}
+            {translations.sidebar.separators.older}
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.older.map((chat: PartialConversation) => (
