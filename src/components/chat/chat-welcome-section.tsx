@@ -3,34 +3,29 @@
 import ExampleButton from "@/components/chat/example-button";
 import ModelSetter from "@/components/chat/model-setter";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import type { SessionUser } from "@/lib/dao/users";
 import { useModelStore } from "@/stores/model-store";
 import type { ReactNode } from "react";
 import { use, useEffect, useState } from "react";
 import IconSpy from "../icons/icon-spy";
 
-function getRandomWelcomeMessage(messages: string[], userName: string) {
+function getRandomWelcomeMessage(messages: string[]) {
   const randomIndex = Math.floor(Math.random() * messages.length);
-  return messages[randomIndex].replace("{name}", userName);
+  return messages[randomIndex];
 }
 
 export default function ChatWelcomeSection({
   children,
-  user,
 }: {
   children?: ReactNode;
-  user: SessionUser | null;
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
-  const [message, setMessage] = useState<string>(translations.home.welcome.messages[0]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (user) {
-      setMessage(getRandomWelcomeMessage(translations.home.welcome.messages, user.name));
-    }
-  }, [user]);
+    setMessage(getRandomWelcomeMessage(translations.home.welcome.messages));
+  }, [translations]);
 
   if (temporaryChat) {
     return (

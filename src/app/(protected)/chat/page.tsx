@@ -30,10 +30,8 @@ export const metadata: Metadata = {
 };
 
 async function ChatWelcomeSectionComponent() {
-  const user = await getUserFromSessionPublic();
-
   return (
-    <ChatWelcomeSection user={user}>
+    <ChatWelcomeSection>
       <LazyIntroDialog />
     </ChatWelcomeSection>
   );
