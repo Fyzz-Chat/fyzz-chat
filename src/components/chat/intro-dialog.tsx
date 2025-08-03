@@ -8,16 +8,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getTranslations } from "@/lib/backend/locale/dictionaries";
-import { countModels } from "@/lib/backend/providers";
+import { useTranslations } from "@/lib/contexts/translations-context";
+import { useTRPC } from "@/lib/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
+import { use } from "react";
 
-export default async function Examples() {
-  const translations = await getTranslations();
-  const numModels = countModels();
+export default function Examples() {
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
+  const trpc = useTRPC();
+  const { data: numModels } = useQuery(trpc.numModels.queryOptions());
   const title = translations.home.welcome.modal.title.replace(
     "{modelCount}",
-    numModels.toString()
+    numModels?.toString() ?? "0"
   );
 
   return (
