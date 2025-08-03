@@ -1,7 +1,6 @@
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
-import { useNavigation } from "@/hooks/v3/use-navigation";
 import { useParams } from "react-router-dom";
 
 export default function V3IdTempPage() {
