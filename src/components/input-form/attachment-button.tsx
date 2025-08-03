@@ -16,17 +16,18 @@ import {
 import { useModelStore } from "@/stores/model-store";
 import type { Translations } from "@/types/locale";
 import { Camera, Paperclip } from "lucide-react";
-import type { RefObject } from "react";
+import { type RefObject, use } from "react";
 
 export default function AttachmentButton({
   cameraInputRef,
   fileInputRef,
-  translations,
+  translationsPromise,
 }: {
   cameraInputRef: RefObject<HTMLInputElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  translations: Translations["input"]["attach"];
+  translationsPromise: Promise<Translations>;
 }) {
+  const translations = use(translationsPromise);
   const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
   const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
 
@@ -58,16 +59,16 @@ export default function AttachmentButton({
           <DropdownMenuContent align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
             <DropdownMenuItem onClick={handleCameraClick} className="flex lg:hidden">
               <Camera size={16} />
-              <span>{translations.camera}</span>
+              <span>{translations.input.attach.camera}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleFileClick}>
               <Paperclip size={16} />
-              <span>{translations.file}</span>
+              <span>{translations.input.attach.file}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <TooltipContent>
-          <p>{translations.tooltip}</p>
+          <p>{translations.input.attach.tooltip}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

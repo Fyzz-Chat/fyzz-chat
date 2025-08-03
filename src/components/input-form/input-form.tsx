@@ -29,8 +29,8 @@ const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
 export default function InputForm({
   className,
-  translations,
-}: { className?: string; translations: Translations["input"] }) {
+  translationsPromise,
+}: { className?: string; translationsPromise: Promise<Translations> }) {
   useTempChat();
   const router = useRouter();
   const pathname = usePathname();
@@ -126,18 +126,18 @@ export default function InputForm({
         <FileList />
         <InputTextarea
           handleSendMessage={handleSendMessage}
-          translations={translations}
+          translationsPromise={translationsPromise}
         />
         <CameraCaptureInput ref={cameraInputRef} />
         <FileUploadInput ref={fileInputRef} />
         <div className="flex items-center w-full gap-2">
           <div className="flex items-center gap-2 mr-auto">
-            <LazyModelMenu translations={translations.modelMenu} />
+            <LazyModelMenu translationsPromise={translationsPromise} />
           </div>
           <AttachmentButton
             cameraInputRef={cameraInputRef}
             fileInputRef={fileInputRef}
-            translations={translations.attach}
+            translationsPromise={translationsPromise}
           />
           <ActionButton />
         </div>

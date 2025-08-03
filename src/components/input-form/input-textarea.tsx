@@ -6,16 +6,17 @@ import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Translations } from "@/types/locale";
-import { type ClipboardEvent, type KeyboardEvent, useEffect } from "react";
+import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 export default function InputTextarea({
   handleSendMessage,
-  translations,
+  translationsPromise,
 }: {
   handleSendMessage: (e: KeyboardEvent<HTMLTextAreaElement>) => Promise<void>;
-  translations: Translations["input"];
+  translationsPromise: Promise<Translations>;
 }) {
+  const translations = use(translationsPromise);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const input = useInputStore((state) => state.input);
   const setInput = useInputStore((state) => state.setInput);
@@ -95,7 +96,9 @@ export default function InputTextarea({
     <TextareaAutosize
       id="message-input"
       placeholder={
-        isMobile ? translations.placeholder.mobile : translations.placeholder.desktop
+        isMobile
+          ? translations.input.placeholder.mobile
+          : translations.input.placeholder.desktop
       }
       value={input}
       onChange={(e) => setInput(e.target.value)}

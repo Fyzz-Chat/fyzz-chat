@@ -15,7 +15,7 @@ export default async function ChatLayout({
 }: {
   children: ReactNode;
 }) {
-  const translations = await getTranslations();
+  const translationsPromise = getTranslations();
   const providers = getProvidersPublic();
 
   return (
@@ -27,7 +27,7 @@ export default async function ChatLayout({
         <div className="absolute max-w-5xl mx-auto bottom-0 left-0 right-0">
           <div className="relative h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
           <ChatLayoutWrapper>
-            <InputForm translations={translations.input} />
+            <InputForm translationsPromise={translationsPromise} />
           </ChatLayoutWrapper>
         </div>
       </div>

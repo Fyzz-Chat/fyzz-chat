@@ -10,7 +10,7 @@ import { useModelStore } from "@/stores/model-store";
 import type { Translations } from "@/types/locale";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { ChevronDown } from "lucide-react";
-import { memo, useState } from "react";
+import { memo, use, useState } from "react";
 import React from "react";
 import { HoverPopover } from "./hover-popover";
 import { TemporaryChatSwitch } from "./temporary-chat-switch";
@@ -35,8 +35,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 
 function ModelMenu({
-  translations,
-}: { translations: Translations["input"]["modelMenu"] }) {
+  translationsPromise,
+}: { translationsPromise: Promise<Translations> }) {
   const [open, setOpen] = useState(false);
   const model = useModelStore((state) => state.model);
   const providers = useModelStore((state) => state.providers);
@@ -62,10 +62,10 @@ function ModelMenu({
             <StatusList
               setOpen={setOpen}
               providers={providers}
-              translations={translations}
+              translationsPromise={translationsPromise}
             />
             <Separator />
-            <TemporaryChatSwitch translations={translations} />
+            <TemporaryChatSwitch translationsPromise={translationsPromise} />
           </PopoverContent>
         </Popover>
       </>
@@ -95,10 +95,10 @@ function ModelMenu({
             <StatusList
               setOpen={setOpen}
               providers={providers}
-              translations={translations}
+              translationsPromise={translationsPromise}
             />
             <Separator />
-            <TemporaryChatSwitch translations={translations} />
+            <TemporaryChatSwitch translationsPromise={translationsPromise} />
           </div>
         </DrawerContent>
       </Drawer>
@@ -109,12 +109,13 @@ function ModelMenu({
 function StatusList({
   setOpen,
   providers,
-  translations,
+  translationsPromise,
 }: {
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
-  translations: Translations["input"]["modelMenu"];
+  translationsPromise: Promise<Translations>;
 }) {
+  const translations = use(translationsPromise);
   const stableId = useChatStore((state) => state.stableId);
 
   const model = useModelStore((state) => state.model);
@@ -134,10 +135,13 @@ function StatusList({
   return (
     <Command className="rounded-none md:rounded-md" defaultValue={model?.name || ""}>
       <CommandInput
-        placeholder={translations.placeholder.replace("{number}", modelCount.toString())}
+        placeholder={translations.input.modelMenu.placeholder.replace(
+          "{number}",
+          modelCount.toString()
+        )}
       />
       <CommandList>
-        <CommandEmpty>{translations.noResults}</CommandEmpty>
+        <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
         {providers.map((provider) => (
           <CommandGroup
             key={`${provider.id}-${provider.name}`}
