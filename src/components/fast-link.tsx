@@ -1,7 +1,7 @@
 "use client";
 
 import Link, { type LinkProps } from "next/link";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 type FastLinkProps = LinkProps & {
   children: React.ReactNode;
@@ -16,6 +16,7 @@ type FastLinkProps = LinkProps & {
  */
 export const FastLink = React.forwardRef<HTMLAnchorElement, FastLinkProps>(
   ({ className, children, ...props }, ref) => {
+    const [active, setActive] = useState(false);
     const isTouchDevice = useCallback(() => {
       return "ontouchstart" in window || navigator.maxTouchPoints > 0;
     }, []);
@@ -45,7 +46,9 @@ export const FastLink = React.forwardRef<HTMLAnchorElement, FastLinkProps>(
       <Link
         ref={ref}
         {...props}
+        prefetch={active ? null : false}
         onMouseDown={handleMouseDown}
+        onMouseEnter={() => setActive(true)}
         onClick={handleClick}
         className={className}
       >
