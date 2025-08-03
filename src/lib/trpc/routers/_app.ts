@@ -1,10 +1,12 @@
+import { getProvidersPublic } from "@/lib/backend/providers";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
 import { getUploadUrls } from "@/lib/services/uploads";
-import { createTRPCRouter, protectedProcedure } from "@/lib/trpc/init";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 import { z } from "zod";
 
 export const appRouter = createTRPCRouter({
+  providers: publicProcedure.query(() => getProvidersPublic()),
   messages: protectedProcedure
     .input(
       z.object({

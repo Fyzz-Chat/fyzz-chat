@@ -1,7 +1,6 @@
 import { ChatProvider } from "@/components/chat-provider";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import InputForm from "@/components/input-form/input-form";
-import { getProvidersPublic } from "@/lib/backend/providers";
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 
@@ -14,11 +13,9 @@ export default function ChatLayout({
 }: {
   children: ReactNode;
 }) {
-  const providers = getProvidersPublic();
-
   return (
     <ChatProvider>
-      <LazyModelStoreInitializer providers={providers} />
+      <LazyModelStoreInitializer />
       <div className="relative flex flex-1 flex-col pt-14 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
         <div className="w-full h-px border-b" />
         {children}

@@ -4,16 +4,14 @@ import { ChatProvider } from "@/components/chat-provider";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
 import InputForm from "@/components/input-form/input-form";
 import ClientRouter from "@/components/v2/client-router";
-import { getProvidersPublic } from "@/lib/backend/providers";
 import conf from "@/lib/config";
 
 export default function Layout() {
-  const providers = getProvidersPublic();
   const jwtConfigured = conf.jwtSecret !== "";
 
   return (
     <ChatProvider>
-      <ModelStoreInitializer providers={providers} />
+      <ModelStoreInitializer />
       <div className="relative flex flex-1 flex-col pt-14 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
         <div className="w-full h-px border-b" />
         {/* This is the react-router equivalent of passing children */}
