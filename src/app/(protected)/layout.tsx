@@ -1,7 +1,6 @@
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { cookies } from "next/headers";
 import type React from "react";
 
