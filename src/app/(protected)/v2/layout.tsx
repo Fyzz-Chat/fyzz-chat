@@ -7,7 +7,7 @@ import ClientRouter from "@/components/v2/client-router";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import conf from "@/lib/config";
 
-export default async function Layout() {
+export default function Layout() {
   const providers = getProvidersPublic();
   const jwtConfigured = conf.jwtSecret !== "";
 

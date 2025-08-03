@@ -76,7 +76,7 @@ async function AuthCardComponent({
   );
 }
 
-export default async function ChatPage({
+export default function ChatPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

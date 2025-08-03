@@ -9,7 +9,7 @@ const LazyModelStoreInitializer = dynamic(
   () => import("@/components/chat/model-store-initializer")
 );
 
-export default async function ChatLayout({
+export default function ChatLayout({
   children,
 }: {
   children: ReactNode;
