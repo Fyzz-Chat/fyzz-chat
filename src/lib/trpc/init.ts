@@ -1,14 +1,14 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import { cache } from "react";
 import superjson from "superjson";
-import { getUserIdFromSession } from "../dao/users";
+import { getUserFromSessionPublic } from "../dao/users";
 
 export const createTRPCContext = cache(async () => {
-  const userId = await getUserIdFromSession();
+  const user = await getUserFromSessionPublic();
   /**
    * @see: https://trpc.io/docs/server/context
    */
-  return { userId };
+  return { user };
 });
 
 type Context = Awaited<ReturnType<typeof createTRPCContext>>;
@@ -29,14 +29,14 @@ export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(function isAuthed(opts) {
-  if (!opts.ctx.userId) {
+  if (!opts.ctx.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
     });
   }
   return opts.next({
     ctx: {
-      userId: opts.ctx.userId,
+      user: opts.ctx.user,
     },
   });
 });

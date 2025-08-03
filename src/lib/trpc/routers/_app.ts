@@ -29,7 +29,7 @@ export const appRouter = createTRPCRouter({
     .input(z.object({ conversationId: z.string(), count: z.number() }))
     .query(async (opts) => {
       const { conversationId, count } = opts.input;
-      const urls = await getUploadUrls(opts.ctx.userId, conversationId, count);
+      const urls = await getUploadUrls(opts.ctx.user.id, conversationId, count);
       return urls;
     }),
   infiniteConversations: protectedProcedure
