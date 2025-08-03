@@ -22,15 +22,11 @@ import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
-import type { Translations } from "@/types/locale";
 import dynamic from "next/dynamic";
 
 const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
-export default function InputForm({
-  className,
-  translationsPromise,
-}: { className?: string; translationsPromise: Promise<Translations> }) {
+export default function InputForm({ className }: { className?: string }) {
   useTempChat();
   const router = useRouter();
   const pathname = usePathname();
@@ -124,21 +120,14 @@ export default function InputForm({
         )}
       >
         <FileList />
-        <InputTextarea
-          handleSendMessage={handleSendMessage}
-          translationsPromise={translationsPromise}
-        />
+        <InputTextarea handleSendMessage={handleSendMessage} />
         <CameraCaptureInput ref={cameraInputRef} />
         <FileUploadInput ref={fileInputRef} />
         <div className="flex items-center w-full gap-2">
           <div className="flex items-center gap-2 mr-auto">
-            <LazyModelMenu translationsPromise={translationsPromise} />
+            <LazyModelMenu />
           </div>
-          <AttachmentButton
-            cameraInputRef={cameraInputRef}
-            fileInputRef={fileInputRef}
-            translationsPromise={translationsPromise}
-          />
+          <AttachmentButton cameraInputRef={cameraInputRef} fileInputRef={fileInputRef} />
           <ActionButton />
         </div>
       </form>

@@ -18,13 +18,13 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { getProviderIcon, providerIcons } from "@/lib/providers";
 import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
-import type { Translations } from "@/types/locale";
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { createElement, use, useState } from "react";
@@ -69,12 +69,11 @@ function groupConversationsByTime(conversations: PartialConversation[]) {
 export default function ChatSidebar({
   conversations,
   authorized,
-  translationsPromise,
 }: {
   conversations: { items: any; nextCursor: string | undefined };
   authorized: boolean;
-  translationsPromise: Promise<Translations>;
 }) {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const { searchQuery } = useSearchStore();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useConversations(

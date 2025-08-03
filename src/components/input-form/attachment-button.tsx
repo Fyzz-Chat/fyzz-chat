@@ -13,20 +13,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { useModelStore } from "@/stores/model-store";
-import type { Translations } from "@/types/locale";
 import { Camera, Paperclip } from "lucide-react";
 import { type RefObject, use } from "react";
 
 export default function AttachmentButton({
   cameraInputRef,
   fileInputRef,
-  translationsPromise,
 }: {
   cameraInputRef: RefObject<HTMLInputElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  translationsPromise: Promise<Translations>;
 }) {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
   const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());

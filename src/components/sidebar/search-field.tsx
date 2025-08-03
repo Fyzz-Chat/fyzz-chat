@@ -1,8 +1,8 @@
 "use client";
 
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores/search-store";
-import type { Translations } from "@/types/locale";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 
@@ -17,9 +17,8 @@ function useIsMac() {
   return isMac;
 }
 
-export function SearchField({
-  translationsPromise,
-}: { translationsPromise: Promise<Translations> }) {
+export function SearchField() {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const [search, setSearch] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,7 +1,7 @@
 "use client";
 
 import { FastLink } from "@/components/fast-link";
-import type { Translations } from "@/types/locale";
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { ExternalLink, FileText, Settings } from "lucide-react";
 import { use } from "react";
 import {
@@ -15,12 +15,11 @@ import { SignOut } from "./signout-button";
 export default function ProfileMenu({
   authorized,
   userEmail,
-  translationsPromise,
 }: {
   authorized: boolean;
-  translationsPromise: Promise<Translations>;
   userEmail?: string;
 }) {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   return (
     <>

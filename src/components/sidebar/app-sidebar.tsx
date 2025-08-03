@@ -19,14 +19,11 @@ import {
 } from "@/components/ui/sidebar";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
-import type { Translations } from "@/types/locale";
 import Image from "next/image";
 import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
-export async function AppSidebar({
-  translationsPromise,
-}: { translationsPromise: Promise<Translations> }) {
+export async function AppSidebar() {
   const user = await getUserFromSessionPublic();
   const initialConversationsData = user
     ? await caller.infiniteConversations({
@@ -47,7 +44,7 @@ export async function AppSidebar({
             <NewChatButton />
           </div>
           <div className="flex items-center">
-            <SearchField translationsPromise={translationsPromise} />
+            <SearchField />
           </div>
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
@@ -55,7 +52,6 @@ export async function AppSidebar({
           <ChatSidebar
             conversations={initialConversationsData}
             authorized={Boolean(user)}
-            translationsPromise={translationsPromise}
           />
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-sidebar to-transparent pointer-events-none z-10" />
         </SidebarContent>
@@ -79,11 +75,7 @@ export async function AppSidebar({
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64 md:w-[15rem]">
-                  <ProfileMenu
-                    authorized={Boolean(user)}
-                    userEmail={user?.email}
-                    translationsPromise={translationsPromise}
-                  />
+                  <ProfileMenu authorized={Boolean(user)} userEmail={user?.email} />
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>

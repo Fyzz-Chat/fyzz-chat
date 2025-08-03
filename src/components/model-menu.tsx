@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { featureIcons, providerIcons } from "@/lib/providers";
 import { getProviderIcon } from "@/lib/providers";
@@ -7,7 +8,6 @@ import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
-import type { Translations } from "@/types/locale";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { ChevronDown } from "lucide-react";
 import { memo, use, useState } from "react";
@@ -34,9 +34,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 
-function ModelMenu({
-  translationsPromise,
-}: { translationsPromise: Promise<Translations> }) {
+function ModelMenu() {
   const [open, setOpen] = useState(false);
   const model = useModelStore((state) => state.model);
   const providers = useModelStore((state) => state.providers);
@@ -59,13 +57,9 @@ function ModelMenu({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0" align="start">
-            <StatusList
-              setOpen={setOpen}
-              providers={providers}
-              translationsPromise={translationsPromise}
-            />
+            <StatusList setOpen={setOpen} providers={providers} />
             <Separator />
-            <TemporaryChatSwitch translationsPromise={translationsPromise} />
+            <TemporaryChatSwitch />
           </PopoverContent>
         </Popover>
       </>
@@ -92,13 +86,9 @@ function ModelMenu({
             </DrawerDescription>
           </DrawerHeader>
           <div className="mt-4 border-t">
-            <StatusList
-              setOpen={setOpen}
-              providers={providers}
-              translationsPromise={translationsPromise}
-            />
+            <StatusList setOpen={setOpen} providers={providers} />
             <Separator />
-            <TemporaryChatSwitch translationsPromise={translationsPromise} />
+            <TemporaryChatSwitch />
           </div>
         </DrawerContent>
       </Drawer>
@@ -109,12 +99,11 @@ function ModelMenu({
 function StatusList({
   setOpen,
   providers,
-  translationsPromise,
 }: {
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
-  translationsPromise: Promise<Translations>;
 }) {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const stableId = useChatStore((state) => state.stableId);
 

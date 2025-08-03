@@ -1,21 +1,20 @@
 "use client";
 
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
-import type { Translations } from "@/types/locale";
 import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 
 export default function InputTextarea({
   handleSendMessage,
-  translationsPromise,
 }: {
   handleSendMessage: (e: KeyboardEvent<HTMLTextAreaElement>) => Promise<void>;
-  translationsPromise: Promise<Translations>;
 }) {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const isMobile = useMediaQuery("(max-width: 640px)");
   const input = useInputStore((state) => state.input);

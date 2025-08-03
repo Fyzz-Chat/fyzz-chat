@@ -1,16 +1,15 @@
 "use client";
 
+import { useTranslations } from "@/lib/contexts/translations-context";
 import { useModelStore } from "@/stores/model-store";
-import type { Translations } from "@/types/locale";
 import { MessageCircleDashed } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { use } from "react";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 
-export function TemporaryChatSwitch({
-  translationsPromise,
-}: { translationsPromise: Promise<Translations> }) {
+export function TemporaryChatSwitch() {
+  const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const pathname = usePathname();
   const temporaryChat = useModelStore((state) => state.temporaryChat);
