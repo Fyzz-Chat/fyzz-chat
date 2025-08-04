@@ -12,6 +12,7 @@ interface ModelStore {
   getModel: (modelId?: string) => PublicModel;
   isImageSupportEnabled: () => boolean;
   isPdfSupportEnabled: () => boolean;
+  setDefaultModel: () => void;
 }
 
 function getModelById(models: PublicModel[], modelId: string): PublicModel {
@@ -46,4 +47,8 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
   },
   getModel: (modelId?: string) =>
     getModelById(get().availableModels, modelId || get().model.id),
+  setDefaultModel: () => {
+    const { availableModels } = get();
+    set({ model: availableModels?.[0] || ({} as PublicModel) });
+  },
 }));

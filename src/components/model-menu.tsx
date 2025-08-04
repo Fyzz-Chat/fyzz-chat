@@ -10,7 +10,8 @@ import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { ChevronDown } from "lucide-react";
-import { memo, use, useState } from "react";
+import { usePathname } from "next/navigation";
+import { memo, use, useEffect, useState } from "react";
 import React from "react";
 import { HoverPopover } from "./hover-popover";
 import { TemporaryChatSwitch } from "./temporary-chat-switch";
@@ -35,11 +36,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 
 function ModelMenu() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const model = useModelStore((state) => state.model);
+  const setDefaultModel = useModelStore((state) => state.setDefaultModel);
   const providers = useModelStore((state) => state.providers);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const providerIcon = getProviderIcon(providers, model?.id);
+
+  useEffect(() => {
+    if (pathname === "/chat" || pathname === "/v3/chat") {
+      setDefaultModel();
+    }
+  }, [pathname]);
 
   if (isDesktop) {
     return (
