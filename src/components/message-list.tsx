@@ -11,6 +11,7 @@ import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { UIMessage } from "ai";
+import { Loader2 } from "lucide-react";
 
 const MemoizedMessageItem = memo(MessageItem);
 
@@ -43,7 +44,10 @@ export function MessagesList({
     id,
     initialConversation
   );
-  const { data: messages } = useMessages(id, initialMessages);
+  const { data: messages, isLoading: isMessagesLoading } = useMessages(
+    id,
+    initialMessages
+  );
   const showLoading = status === "submitted"; // || (messages?.length === 1 && status !== "streaming");
 
   useEffect(() => {
@@ -61,6 +65,14 @@ export function MessagesList({
       <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
   }, [messages?.messages]);
+
+  if (isMessagesLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center h-[calc(100svh-170px)] md:h-[calc(100svh-198px)]">
+        <Loader2 size={40} className="animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 px-4 sm:px-8 pt-8">
