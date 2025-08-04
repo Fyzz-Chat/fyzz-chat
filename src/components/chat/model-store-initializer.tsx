@@ -20,12 +20,10 @@ export default function ModelStoreInitializer({
     })
   );
   const setTemporaryChat = useModelStore((state) => state.setTemporaryChat);
-  const setAvailableModels = useModelStore((state) => state.setAvailableModels);
   const setProviders = useModelStore((state) => state.setProviders);
 
   useEffect(() => {
     if (data) {
-      setAvailableModels(data.flatMap((provider) => provider.models));
       setProviders(data);
     }
     setTemporaryChat(false);

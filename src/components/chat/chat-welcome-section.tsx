@@ -1,7 +1,6 @@
 "use client";
 
 import ExampleButton from "@/components/chat/example-button";
-import ModelSetter from "@/components/chat/model-setter";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useModelStore } from "@/stores/model-store";
 import type { ReactNode } from "react";
@@ -62,7 +61,6 @@ export default function ChatWelcomeSection({
           </li>
         ))}
       </ul>
-      <ModelSetter />
     </>
   );
 }

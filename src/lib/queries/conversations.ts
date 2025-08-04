@@ -4,6 +4,7 @@ import {
   saveConversationModel,
 } from "@/lib/actions/conversations";
 import { useTRPC } from "@/lib/trpc/client";
+import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
@@ -14,6 +15,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
 import type { Message, UIMessage } from "ai";
 import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
@@ -50,13 +52,15 @@ export function useConversation(id: string, initialConversation?: any) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
-  const myQuery = trpc.conversation.queryOptions(
-    { id },
-    {
-      enabled: !temporaryChat,
-      initialData: initialConversation ? initialConversation : undefined,
-    }
-  );
+  const options: inferReactQueryProcedureOptions<AppRouter>["conversation"] = {
+    enabled: !temporaryChat,
+  };
+
+  if (initialConversation) {
+    options.initialData = initialConversation;
+  }
+
+  const myQuery = trpc.conversation.queryOptions({ id }, options);
 
   return useQuery(myQuery);
 }
@@ -81,13 +85,14 @@ export function useMessages(
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
-  const myQuery = trpc.messages.queryOptions(
-    { id },
-    {
-      enabled: !temporaryChat,
-      initialData: initialMessages ? initialMessages : undefined,
-    }
-  );
+  const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
+    enabled: !temporaryChat,
+  };
+  if (initialMessages) {
+    options.initialData = initialMessages;
+  }
+
+  const myQuery = trpc.messages.queryOptions({ id }, options);
 
   return useQuery(myQuery);
 }

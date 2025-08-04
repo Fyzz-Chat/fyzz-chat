@@ -7,7 +7,6 @@ interface ModelStore {
   temporaryChat: boolean;
   setTemporaryChat: (temporaryChat: boolean) => void;
   availableModels: PublicModel[];
-  setAvailableModels: (availableModels: PublicModel[]) => void;
   providers: PublicProvider[];
   setProviders: (providers: PublicProvider[]) => void;
   getModel: (modelId?: string) => PublicModel;
@@ -24,11 +23,11 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
   temporaryChat: false,
   isImageSupportEnabled: () => {
     const { model } = get();
-    return model.features?.some((feature) => feature.name === "Images") || false;
+    return model?.features?.some((feature) => feature.name === "Images") || false;
   },
   isPdfSupportEnabled: () => {
     const { model } = get();
-    return model.features?.some((feature) => feature.name === "PDFs") || false;
+    return model?.features?.some((feature) => feature.name === "PDFs") || false;
   },
   setModel: (modelId: string) =>
     set((state) => ({
@@ -36,13 +35,15 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
     })),
   setTemporaryChat: (temporaryChat: boolean) => set({ temporaryChat }),
   availableModels: [],
-  setAvailableModels: (availableModels: PublicModel[]) =>
-    set(() => ({
+  providers: [],
+  setProviders: (providers: PublicProvider[]) => {
+    const availableModels = providers.flatMap((provider) => provider.models);
+    set({
+      providers,
       availableModels,
       model: availableModels[0],
-    })),
-  providers: [],
-  setProviders: (providers: PublicProvider[]) => set({ providers }),
+    });
+  },
   getModel: (modelId?: string) =>
     getModelById(get().availableModels, modelId || get().model.id),
 }));

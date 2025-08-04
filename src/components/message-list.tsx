@@ -39,18 +39,22 @@ export function MessagesList({
   const error = useChatStore((state) => state.error);
   const setModel = useModelStore((state) => state.setModel);
   const files = useFileStore((state) => state.files);
-  const { data: conversation } = useConversation(id, initialConversation);
+  const { data: conversation, isLoading: isConversationLoading } = useConversation(
+    id,
+    initialConversation
+  );
   const { data: messages } = useMessages(id, initialMessages);
   const showLoading = status === "submitted"; // || (messages?.length === 1 && status !== "streaming");
 
   useEffect(() => {
-    if (!conversation) {
+    if (!isConversationLoading && !conversation) {
       router.push("/chat");
+      return;
     }
     if (conversation?.model) {
       setModel(conversation.model);
     }
-  }, [conversation]);
+  }, [conversation, isConversationLoading]);
 
   const memoizedConversationMessages = useMemo(() => {
     return messages?.messages?.map((message: any) => (

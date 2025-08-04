@@ -1,3 +1,5 @@
+import "server-only";
+
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
