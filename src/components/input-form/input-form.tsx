@@ -5,7 +5,6 @@ import {
   useCreateConversation,
   useCreateConversationOptimistic,
 } from "@/lib/queries/conversations";
-import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, type KeyboardEvent, useEffect, useRef } from "react";
 
 import CameraCaptureInput from "@/components/input-form/camera-capture-input";
@@ -23,13 +22,14 @@ import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { PartialConversation } from "@/types/chat";
 import dynamic from "next/dynamic";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
 export default function InputForm({ className }: { className?: string }) {
   useTempChat();
-  const router = useRouter();
-  const pathname = usePathname();
+  const navigate = useNavigate();
+  const location = useLocation();
   const createConversation = useCreateConversation();
   const createConversationOptimistic = useCreateConversationOptimistic();
   const addMessage = useAddMessage();
@@ -54,7 +54,7 @@ export default function InputForm({ className }: { className?: string }) {
 
     if (status !== "ready") return;
 
-    if (pathname === "/chat") {
+    if (location.pathname === "/chat") {
       const optimisticConversation: PartialConversation = {
         id: stableId,
         title: "New Chat",
@@ -70,7 +70,7 @@ export default function InputForm({ className }: { className?: string }) {
       }
 
       const url = temporaryChat ? `/chat/${stableId}/temp` : `/chat/${stableId}`;
-      router.push(url);
+      navigate(url);
     }
 
     const attachments = await uploadFiles(stableId, files);

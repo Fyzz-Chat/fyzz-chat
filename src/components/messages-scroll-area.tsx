@@ -6,8 +6,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessages } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import { useParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function MessagesScrollArea({
   children,

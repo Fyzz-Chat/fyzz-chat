@@ -25,8 +25,8 @@ export default function ClientRouter({
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/v3" element={children}>
-          <Route path="chat" element={<ChatLayout />}>
+        <Route path="chat" element={children}>
+          <Route element={<ChatLayout />}>
             <Route path=":id" element={<V3IdPage jwtConfigured={jwtConfigured} />} />
             <Route path=":id/temp" element={<V3IdTempPage />} />
             <Route path="" element={<V3Page />} />

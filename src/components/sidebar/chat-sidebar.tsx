@@ -1,6 +1,5 @@
 "use client";
 
-import { FastLink } from "@/components/fast-link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +17,8 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { FastLink } from "@/components/v3/fast-link";
+import { useParams } from "@/components/v4/client-router";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { getProviderIcon, providerIcons } from "@/lib/providers";
 import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
@@ -26,10 +27,10 @@ import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import { createElement, use, useState } from "react";
 import type React from "react";
 import { useInView } from "react-intersection-observer";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 function groupConversationsByTime(conversations: PartialConversation[]) {
@@ -179,7 +180,7 @@ function ConversationLink({
   const currentId = id as string;
 
   const deleteConversation = useDeleteConversation();
-  const router = useRouter();
+  const navigate = useNavigate();
   const providers = useModelStore((state) => state.providers);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -192,7 +193,7 @@ function ConversationLink({
         conversationId: chat.id,
       });
       if (currentId === chat.id) {
-        router.push("/chat");
+        navigate("/chat");
       }
       setIsModalOpen(false);
     } catch (_) {
@@ -218,8 +219,7 @@ function ConversationLink({
   return (
     <div className="group/chat relative">
       <FastLink
-        href={`/chat/${chat.id}`}
-        prefetch
+        to={`/chat/${chat.id}`}
         className={cn(
           "flex w-full flex-col items-start gap-1 rounded-lg p-3 text-left text-sm transition-colors",
           currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"

@@ -9,8 +9,8 @@ import { useModelStore } from "@/stores/model-store";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Message } from "ai";
-import { useParams } from "next/navigation";
 import React, { type ReactNode, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 /**

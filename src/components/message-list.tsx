@@ -1,7 +1,6 @@
 "use client";
 
 import { useConversation, useMessages } from "@/lib/queries/conversations";
-import { useRouter } from "next/navigation";
 import { memo, useEffect, useMemo } from "react";
 import LastMessage from "./last-message";
 import { MessageItem } from "./message-item";
@@ -12,6 +11,7 @@ import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { UIMessage } from "ai";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const MemoizedMessageItem = memo(MessageItem);
 
@@ -35,7 +35,7 @@ export function MessagesList({
   initialMessages?: { messages: UIMessage[]; hasMore: boolean };
   id: string;
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const status = useChatStore((state) => state.status);
   const error = useChatStore((state) => state.error);
   const setModel = useModelStore((state) => state.setModel);
@@ -52,7 +52,7 @@ export function MessagesList({
 
   useEffect(() => {
     if (!isConversationLoading && !conversation) {
-      router.push("/chat");
+      navigate("/chat");
       return;
     }
     if (conversation?.model) {

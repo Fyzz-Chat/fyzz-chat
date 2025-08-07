@@ -1,18 +1,18 @@
 "use client";
 
 import { LogIn } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { SidebarMenuButton, useSidebar } from "../ui/sidebar";
 
 export function SignIn({ buttonText }: { buttonText: string }) {
-  const router = useRouter();
   const { isMobile, setOpenMobile } = useSidebar();
+  const navigate = useNavigate();
 
   const handleClick = () => {
     if (isMobile) {
       setOpenMobile(false);
     }
-    router.push("/chat?login=true");
+    navigate("/chat?login=true");
   };
 
   return (

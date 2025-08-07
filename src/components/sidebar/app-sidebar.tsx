@@ -16,10 +16,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { FastLink } from "@/components/v3/fast-link";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
 export async function AppSidebar({ children }: { children: ReactNode }) {
@@ -29,7 +29,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
       <Sidebar className="border-none">
         <SidebarHeader className="flex-col gap-4 py-4 pl-4 pr-4 md:pr-2">
           <div className="flex justify-between items-center w-full">
-            <FastLink href="/chat" className="flex items-center justify-start gap-2">
+            <FastLink to="/chat" className="flex items-center justify-start gap-2">
               <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
               <p className="text-md font-bold">Fyzz.chat</p>
             </FastLink>
