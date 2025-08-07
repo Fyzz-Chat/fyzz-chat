@@ -212,6 +212,13 @@ const providers: Provider[] = [
     icon: "openai",
     models: [
       {
+        id: "gpt-4o-mini",
+        name: "GPT-4o mini",
+        features: [images],
+        provider: wrappedModel(azure),
+        tools: true,
+      },
+      {
         id: "gpt-5",
         name: "GPT-5",
         features: [images, reasoning],
@@ -230,13 +237,6 @@ const providers: Provider[] = [
         name: "GPT-5 nano",
         features: [images, reasoning],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
-        tools: true,
-      },
-      {
-        id: "gpt-4o-mini",
-        name: "GPT-4o mini",
-        features: [images],
-        provider: wrappedModel(azure),
         tools: true,
       },
       {
@@ -282,6 +282,13 @@ const providers: Provider[] = [
     icon: "openai",
     models: [
       {
+        id: "gpt-4o-mini",
+        name: "GPT-4o mini",
+        features: [images],
+        provider: wrappedModel(openai),
+        tools: true,
+      },
+      {
         id: "gpt-5",
         name: "GPT-5",
         features: [images, reasoning],
@@ -299,13 +306,6 @@ const providers: Provider[] = [
         id: "gpt-5-nano",
         name: "GPT-5 nano",
         features: [images, reasoning],
-        provider: wrappedModel(openai),
-        tools: true,
-      },
-      {
-        id: "gpt-4o-mini",
-        name: "GPT-4o mini",
-        features: [images],
         provider: wrappedModel(openai),
         tools: true,
       },

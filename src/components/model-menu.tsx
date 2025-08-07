@@ -45,7 +45,7 @@ function ModelMenu() {
   const providerIcon = getProviderIcon(providers, model?.id);
 
   useEffect(() => {
-    if (pathname === "/chat" || pathname === "/v3/chat") {
+    if (pathname === "/chat" || pathname === "/chat") {
       setDefaultModel();
     }
   }, [pathname]);
