@@ -2,8 +2,8 @@
 
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
+import { useParams } from "@/components/v4/client-router";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
-import { useParams } from "next/navigation";
 
 export default function V4IdTempPage() {
   const { id } = useParams();
