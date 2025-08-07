@@ -1,3 +1,4 @@
+import { FastLink } from "@/components/fast-link";
 import DeleteAccountForm from "@/components/settings/delete-account-form";
 import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
 import { McpTab } from "@/components/settings/mcp-tab";
@@ -16,7 +17,15 @@ import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import { Brain, Monitor, Puzzle, Shield, User } from "lucide-react";
+import {
+  ArrowBigLeftDashIcon,
+  ArrowLeft,
+  Brain,
+  Monitor,
+  Puzzle,
+  Shield,
+  User,
+} from "lucide-react";
 
 export default async function SettingsPage() {
   const translations = await getTranslations();
@@ -35,8 +44,15 @@ export default async function SettingsPage() {
   const hasPassword = Boolean(user?.password);
 
   return (
-    <div className="relative flex flex-1 flex-col items-center justify-start pt-16 px-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
-      <ViewTransitionWrapper className="flex flex-1 w-full md:overflow-y-auto">
+    <div className="flex flex-1 flex-col items-center justify-start p-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
+      <ViewTransitionWrapper className="relative flex items-center pt-10 justify-center flex-1 w-full md:overflow-y-auto">
+        <FastLink
+          href="/chat"
+          className="absolute top-0 left-0 flex items-center justify-start gap-2"
+        >
+          <ArrowLeft size={20} />
+          <p className="text-sm text-muted-foreground">Back to chat</p>
+        </FastLink>
         <div className="flex flex-col gap-4 w-full max-w-xl mx-auto">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold">{translations.settings.title}</h1>
