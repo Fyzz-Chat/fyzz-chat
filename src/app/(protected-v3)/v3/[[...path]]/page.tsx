@@ -9,7 +9,7 @@ import { caller } from "@/lib/trpc/server";
 import { cookies } from "next/headers";
 import { Outlet } from "react-router-dom";
 
-export default async function Layout() {
+export default async function CatchAll() {
   const cookieStore = await cookies();
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
