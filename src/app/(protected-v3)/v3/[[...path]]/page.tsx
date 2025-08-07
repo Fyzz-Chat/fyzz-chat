@@ -2,7 +2,7 @@ import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import ChatSidebar from "@/components/sidebar/chat-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import ClientRouter from "@/components/v2/client-router";
+import ClientRouter from "@/components/v3/client-router";
 import conf from "@/lib/config";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";

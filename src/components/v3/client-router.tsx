@@ -1,7 +1,5 @@
 "use client";
 
-import V2IdPage from "@/components/v2/v2-id-page";
-import V2Page from "@/components/v2/v2-page";
 import ChatLayout from "@/components/v3/chat-layout";
 import V3IdPage from "@/components/v3/v3-id-page";
 import V3IdTempPage from "@/components/v3/v3-id-temp-page";
@@ -27,8 +25,6 @@ export default function ClientRouter({
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/v2/:id" element={<V2IdPage jwtConfigured={jwtConfigured} />} />
-        <Route path="/v2" element={<V2Page />} />
         <Route path="/v3" element={children}>
           <Route path="chat" element={<ChatLayout />}>
             <Route path=":id" element={<V3IdPage jwtConfigured={jwtConfigured} />} />
