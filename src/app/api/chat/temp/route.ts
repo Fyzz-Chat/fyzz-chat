@@ -1,5 +1,5 @@
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
-import { getModel } from "@/lib/backend/providers";
+import { getModel, getTemperature } from "@/lib/backend/providers";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     messages: filteredMessages,
     maxSteps: 5,
     system: systemPrompt,
-    temperature: modelId === "o4-mini" ? 1 : undefined,
+    temperature: getTemperature(modelId),
     experimental_transform: smoothStream({
       delayInMs: 10,
     }),

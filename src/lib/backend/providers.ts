@@ -83,6 +83,19 @@ export function getOpenaiProviderOptions(modelId: string) {
   };
 }
 
+export function getTemperature(modelId: string) {
+  if (
+    modelId === "o4-mini" ||
+    modelId === "gpt-5" ||
+    modelId === "gpt-5-mini" ||
+    modelId === "gpt-5-nano"
+  ) {
+    return 1;
+  }
+
+  return undefined;
+}
+
 function isThinkingModel(modelId: string, providerId: string) {
   const model = filterProviders()
     .filter((provider) => provider.id === providerId)
@@ -199,6 +212,27 @@ const providers: Provider[] = [
     icon: "openai",
     models: [
       {
+        id: "gpt-5",
+        name: "GPT-5",
+        features: [images, reasoning],
+        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        tools: true,
+      },
+      {
+        id: "gpt-5-mini",
+        name: "GPT-5 mini",
+        features: [images, reasoning],
+        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        tools: true,
+      },
+      {
+        id: "gpt-5-nano",
+        name: "GPT-5 nano",
+        features: [images, reasoning],
+        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        tools: true,
+      },
+      {
         id: "gpt-4o-mini",
         name: "GPT-4o mini",
         features: [images],
@@ -247,6 +281,27 @@ const providers: Provider[] = [
     name: "OpenAI",
     icon: "openai",
     models: [
+      {
+        id: "gpt-5",
+        name: "GPT-5",
+        features: [images, reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+      },
+      {
+        id: "gpt-5-mini",
+        name: "GPT-5 mini",
+        features: [images, reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+      },
+      {
+        id: "gpt-5-nano",
+        name: "GPT-5 nano",
+        features: [images, reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+      },
       {
         id: "gpt-4o-mini",
         name: "GPT-4o mini",

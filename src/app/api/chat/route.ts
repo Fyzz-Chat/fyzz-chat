@@ -6,6 +6,7 @@ import {
   getAnthropicProviderOptions,
   getModel,
   getOpenaiProviderOptions,
+  getTemperature,
   openaiConfigured,
 } from "@/lib/backend/providers";
 import { generateImageTool } from "@/lib/backend/tools/generate-image";
@@ -136,7 +137,7 @@ export async function POST(req: NextRequest) {
     messages: filteredMessages,
     system: extendedSystemPrompt,
     maxSteps: 3,
-    temperature: modelId === "o4-mini" ? 1 : undefined,
+    temperature: getTemperature(modelId),
     experimental_transform: smoothStream({
       delayInMs: 10,
     }),
