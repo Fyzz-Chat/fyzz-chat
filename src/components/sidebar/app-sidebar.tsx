@@ -1,4 +1,3 @@
-import ChatSidebar from "@/components/sidebar/chat-sidebar";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
@@ -18,20 +17,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
-import { caller } from "@/lib/trpc/server";
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { FastLink } from "../fast-link";
 import { SwipeDetector } from "./swipe-detector";
 
-export async function AppSidebar() {
+export async function AppSidebar({ children }: { children: ReactNode }) {
   const user = await getUserFromSessionPublic();
-  const initialConversationsData = user
-    ? await caller.infiniteConversations({
-        limit: 15,
-        search: "",
-      })
-    : { items: [], nextCursor: undefined };
-
   return (
     <>
       <Sidebar className="border-none">
@@ -49,10 +41,7 @@ export async function AppSidebar() {
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-sidebar to-transparent pointer-events-none z-10" />
-          <ChatSidebar
-            conversations={initialConversationsData}
-            authorized={Boolean(user)}
-          />
+          {children}
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-sidebar to-transparent pointer-events-none z-10" />
         </SidebarContent>
         <SidebarFooter className="pl-4 py-4 pr-4 md:pr-2">

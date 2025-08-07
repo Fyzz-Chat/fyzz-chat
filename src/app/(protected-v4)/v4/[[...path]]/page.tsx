@@ -2,18 +2,23 @@ import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import ChatSidebar from "@/components/sidebar/chat-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import ClientRouter from "@/components/v2/client-router";
-import conf from "@/lib/config";
+import ChatLayout from "@/components/v4/chat-layout";
+import { ClientRouter } from "@/components/v4/client-router";
+import V4Routes from "@/components/v4/routes";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
 import { cookies } from "next/headers";
-import { Outlet } from "react-router-dom";
 
-export default async function Layout() {
+export default async function CatchAll({
+  params,
+}: {
+  params: Promise<{ path: string[] }>;
+}) {
+  const { path } = await params;
+
   const cookieStore = await cookies();
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
-  const jwtConfigured = conf.jwtSecret !== "";
   const user = await getUserFromSessionPublic();
   const initialConversationsData = user
     ? await caller.infiniteConversations({
@@ -23,8 +28,8 @@ export default async function Layout() {
     : { items: [], nextCursor: undefined };
 
   return (
-    <ClientRouter jwtConfigured={jwtConfigured}>
-      <ChatLayoutProvider>
+    <ChatLayoutProvider>
+      <ClientRouter initialPath={`/v4/${path?.join("/") || ""}`}>
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSidebar>
             <ChatSidebar
@@ -34,10 +39,12 @@ export default async function Layout() {
           </AppSidebar>
           <SidebarInset className="relative md:p-2 bg-sidebar overflow-auto">
             <SidebarTrigger className="absolute size-8 top-2 left-2 md:top-4 md:left-4 z-20 p-5 touch-manipulation" />
-            <Outlet />
+            <ChatLayout>
+              <V4Routes />
+            </ChatLayout>
           </SidebarInset>
         </SidebarProvider>
-      </ChatLayoutProvider>
-    </ClientRouter>
+      </ClientRouter>
+    </ChatLayoutProvider>
   );
 }
