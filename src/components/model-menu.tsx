@@ -45,7 +45,7 @@ function ModelMenu() {
   const providerIcon = getProviderIcon(providers, model?.id);
 
   useEffect(() => {
-    if (pathname === "/chat" || pathname === "/chat") {
+    if (pathname === "/chat") {
       setDefaultModel();
     }
   }, [pathname]);
@@ -61,7 +61,15 @@ function ModelMenu() {
               className="md:flex items-center gap-2"
               disabled={!model}
             >
-              <span>{model?.name || "Set an API key first"}</span>
+              {model?.name ? (
+                <span>{model?.name}</span>
+              ) : (
+                <div className="flex space-x-1 justify-center items-center">
+                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce"></div>
+                </div>
+              )}
               <ChevronDown size={16} />
             </Button>
           </PopoverTrigger>
