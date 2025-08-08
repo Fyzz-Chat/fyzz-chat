@@ -18,7 +18,6 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { FastLink } from "@/components/v3/fast-link";
-import { useParams } from "@/components/v4/client-router";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { getProviderIcon, providerIcons } from "@/lib/providers";
 import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
@@ -30,7 +29,7 @@ import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { createElement, use, useState } from "react";
 import type React from "react";
 import { useInView } from "react-intersection-observer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 function groupConversationsByTime(conversations: PartialConversation[]) {
