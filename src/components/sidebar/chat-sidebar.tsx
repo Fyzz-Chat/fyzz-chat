@@ -20,7 +20,11 @@ import {
 import { FastLink } from "@/components/v3/fast-link";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { getProviderIcon, providerIcons } from "@/lib/providers";
-import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
+import {
+  useConversations,
+  useDeleteConversation,
+  usePrefetchConversation,
+} from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
@@ -184,6 +188,7 @@ function ConversationLink({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const providerIcon = getProviderIcon(providers, chat.model);
+  const prefetchConversation = usePrefetchConversation();
 
   const handleDelete = async () => {
     try {
@@ -219,6 +224,7 @@ function ConversationLink({
     <div className="group/chat relative">
       <FastLink
         to={`/chat/${chat.id}`}
+        prefetchFunction={() => prefetchConversation(chat.id)}
         className={cn(
           "flex w-full flex-col items-start gap-1 rounded-lg p-3 text-left text-sm transition-colors",
           currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
