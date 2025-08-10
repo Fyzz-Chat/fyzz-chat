@@ -1,3 +1,4 @@
+import AuthPopup from "@/components/auth/auth-popup";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import ChatSidebar from "@/components/sidebar/chat-sidebar";
@@ -9,7 +10,11 @@ import { caller } from "@/lib/trpc/server";
 import { cookies } from "next/headers";
 import { Outlet } from "react-router-dom";
 
-export default async function CatchAll() {
+export default async function CatchAll({
+  searchParams: searchParamsPromise,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const cookieStore = await cookies();
   const sidebarState = cookieStore.get("sidebar:state");
   const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
@@ -34,6 +39,7 @@ export default async function CatchAll() {
           </AppSidebar>
           <SidebarInset className="relative md:p-2 bg-sidebar overflow-auto">
             <SidebarTrigger className="absolute size-8 top-2 left-2 md:top-4 md:left-4 z-20 p-5 touch-manipulation" />
+            <AuthPopup searchParams={searchParamsPromise} />
             <Outlet />
           </SidebarInset>
         </SidebarProvider>
