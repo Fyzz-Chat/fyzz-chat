@@ -452,7 +452,16 @@ export function MessageContent({ message }: { message: Message }) {
           data-role="user"
           style={{ wordBreak: "break-word" }}
         >
-          <p className="leading-7">{message.content}</p>
+          {message.parts?.map((part, index) => {
+            if (part.type === "text") {
+              return (
+                <p key={`${message.id}-text-${index}`} className="leading-7">
+                  {part.text}
+                </p>
+              );
+            }
+            return null;
+          })}
         </div>
       </div>
     );

@@ -67,7 +67,7 @@ model Conversation {
 
 model Message {
   id               String       @id @default(uuid())
-  content          String
+  content          String?
   role             String
   reasoning        String?
   signature        String?

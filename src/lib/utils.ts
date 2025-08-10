@@ -161,3 +161,12 @@ export function fileToBase64(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+
+export function getMessageContent(message: Message) {
+  return (
+    message.parts
+      ?.filter((part) => part.type === "text")
+      .map((part) => part.text)
+      .join("\n") || ""
+  );
+}

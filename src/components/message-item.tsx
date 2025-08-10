@@ -1,5 +1,5 @@
 import { useRegenerateMessage } from "@/lib/queries/conversations";
-import { cn } from "@/lib/utils";
+import { cn, getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Message } from "ai";
@@ -20,7 +20,7 @@ export function MessageItem({
   const getModel = useModelStore((state) => state.getModel);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [content, setContent] = useState(message.content);
+  const [content, setContent] = useState(getMessageContent(message));
   const [inProgress, setInProgress] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -70,12 +70,12 @@ export function MessageItem({
 
   function handleCancelEdit() {
     setIsEditing(false);
-    setContent(message.content);
+    setContent(getMessageContent(message));
   }
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(message.content);
+      await navigator.clipboard.writeText(content);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 1500);
     } catch (err) {

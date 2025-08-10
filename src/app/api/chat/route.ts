@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 
   let messages = existingMessages;
 
-  if (message.content) {
+  if (hasTextPart(message)) {
     await appendMessageToConversation(textMessage, id);
 
     messages = appendClientMessage({
@@ -229,4 +229,8 @@ function addSourcesToMessage(message: Message, sources: any) {
       source,
     });
   });
+}
+
+function hasTextPart(message: Message) {
+  return message.parts?.some((part) => part.type === "text" && part.text);
 }

@@ -222,6 +222,7 @@ export function mapMessages(messages: PartialMessage[]): UIMessage[] {
 
     return {
       ...messageWithoutFiles,
+      content: messageWithoutFiles.content || "",
       role: messageWithoutFiles.role as "system" | "user" | "assistant" | "data",
       parts: filterParts(parts),
       experimental_attachments: parsedFiles.map((file: any) => ({
