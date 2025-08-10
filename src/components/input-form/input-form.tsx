@@ -83,6 +83,12 @@ export default function InputForm({ className }: { className?: string }) {
         id: messageId,
         content: input,
         role: "user",
+        parts: [
+          {
+            type: "text",
+            text: input,
+          },
+        ],
         experimental_attachments: isFileList(files)
           ? Array.from(files).map((file) =>
               fileToAttachment(file, URL.createObjectURL(file))
