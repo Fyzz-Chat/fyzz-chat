@@ -16,7 +16,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
-import type { Message, UIMessage } from "ai";
+import type { Message } from "ai";
 import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
 
@@ -48,17 +48,13 @@ export function useConversations(
   return useInfiniteQuery(myQuery);
 }
 
-export function useConversation(id: string, initialConversation?: any) {
+export function useConversation(id: string) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
   const options: inferReactQueryProcedureOptions<AppRouter>["conversation"] = {
     enabled: !temporaryChat,
   };
-
-  if (initialConversation) {
-    options.initialData = initialConversation;
-  }
 
   const myQuery = trpc.conversation.queryOptions({ id }, options);
 
@@ -78,19 +74,13 @@ export function usePrefetchConversation() {
   );
 }
 
-export function useMessages(
-  id: string,
-  initialMessages?: { messages: UIMessage[]; hasMore: boolean }
-) {
+export function useMessages(id: string) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
   const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
     enabled: !temporaryChat,
   };
-  if (initialMessages) {
-    options.initialData = initialMessages;
-  }
 
   const myQuery = trpc.messages.queryOptions({ id }, options);
 

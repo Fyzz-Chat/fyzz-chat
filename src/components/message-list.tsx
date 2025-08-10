@@ -27,12 +27,8 @@ function getErrorMessage(error: { message: string }) {
 }
 
 export function MessagesList({
-  initialConversation,
-  initialMessages,
   id,
 }: {
-  initialConversation?: any;
-  initialMessages?: { messages: UIMessage[]; hasMore: boolean };
   id: string;
 }) {
   const navigate = useNavigate();
@@ -40,25 +36,24 @@ export function MessagesList({
   const error = useChatStore((state) => state.error);
   const setModel = useModelStore((state) => state.setModel);
   const files = useFileStore((state) => state.files);
-  const { data: conversation, isLoading: isConversationLoading } = useConversation(
-    id,
-    initialConversation
-  );
-  const { data: messages, isLoading: isMessagesLoading } = useMessages(
-    id,
-    initialMessages
-  );
+  const { data: conversation, status: conversationStatus } = useConversation(id);
+  const { data: messages, isLoading: isMessagesLoading } = useMessages(id);
   const showLoading = status === "submitted"; // || (messages?.length === 1 && status !== "streaming");
 
   useEffect(() => {
-    if (!isConversationLoading && !conversation) {
+    if (conversationStatus === "error") {
       navigate("/chat");
       return;
     }
-    if (conversation?.model) {
+    if (conversationStatus !== "success") return;
+    if (!conversation) {
+      navigate("/chat");
+      return;
+    }
+    if (conversation.model) {
       setModel(conversation.model);
     }
-  }, [conversation, isConversationLoading]);
+  }, [conversationStatus, conversation, navigate, setModel]);
 
   const memoizedConversationMessages = useMemo(() => {
     return messages?.messages?.map((message: any) => (
