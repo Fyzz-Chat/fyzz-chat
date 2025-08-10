@@ -16,7 +16,12 @@ import type { AzureOpenAIProvider } from "@ai-sdk/azure";
 import { createAzure } from "@ai-sdk/azure";
 import { type FireworksProvider, fireworks } from "@ai-sdk/fireworks";
 import { google } from "@ai-sdk/google";
-import { type OpenAIProvider, openai } from "@ai-sdk/openai";
+import {
+  type OpenAIProvider,
+  type OpenAIProviderSettings,
+  type OpenAIResponsesProviderOptions,
+  openai,
+} from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
 import { wrapLanguageModel } from "ai";
@@ -77,9 +82,14 @@ export function getAnthropicProviderOptions(modelId: string): AnthropicProviderO
   };
 }
 
-export function getOpenaiProviderOptions(modelId: string) {
+export function getOpenaiProviderOptions(
+  modelId: string
+): OpenAIResponsesProviderOptions {
+  const provider = azureConfigured ? "azure" : openaiConfiguredAzureNot ? "openai" : "";
+
   return {
-    reasoningEffort: isThinkingModel(modelId, "openai") ? "low" : null,
+    reasoningEffort: isThinkingModel(modelId, provider) ? "low" : undefined,
+    reasoningSummary: isThinkingModel(modelId, provider) ? "detailed" : undefined,
   };
 }
 
