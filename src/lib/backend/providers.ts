@@ -271,7 +271,7 @@ const providers: Provider[] = [
         id: "o3",
         name: "o3",
         features: [images, reasoning],
-        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        provider: wrappedModel(azure),
         tools: true,
       },
     ],
