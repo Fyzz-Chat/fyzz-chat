@@ -1,16 +1,16 @@
 "use client";
 
 import { FastLink } from "@/components/fast-link";
-import { useTranslations } from "@/lib/contexts/translations-context";
-import { ExternalLink, FileText, Settings } from "lucide-react";
-import { use } from "react";
+import { SignIn } from "@/components/sidebar/signin-button";
+import { SignOut } from "@/components/sidebar/signout-button";
 import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "../ui/dropdown-menu";
-import { SignIn } from "./signin-button";
-import { SignOut } from "./signout-button";
+} from "@/components/ui/dropdown-menu";
+import { useTranslations } from "@/lib/contexts/translations-context";
+import { ExternalLink, FileText, Settings } from "lucide-react";
+import { use } from "react";
 
 export default function ProfileMenu({
   authorized,
