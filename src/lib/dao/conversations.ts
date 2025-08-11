@@ -3,8 +3,8 @@ import "server-only";
 import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
+import { tryParseJson } from "@/lib/utils";
 import type { PartialMessage } from "@/types/chat";
-import type { JsonArray } from "@prisma/client/runtime/library";
 import type { UIMessage } from "ai";
 import { logger } from "../logger";
 
@@ -139,7 +139,7 @@ export async function appendMessageToConversation(
     return createdMessage;
   });
 
-  return mapMessages([newMessage]);
+  return mapMessages(userId, conversationId, [newMessage]);
 }
 
 export async function lockConversation(conversationId: string): Promise<boolean> {
@@ -214,7 +214,11 @@ export async function isConversationLocked(conversationId: string): Promise<bool
   return !!conversation;
 }
 
-export function mapMessages(messages: PartialMessage[]): UIMessage[] {
+export function mapMessages(
+  userId: number,
+  conversationId: string,
+  messages: PartialMessage[]
+): UIMessage[] {
   const mappedMessages = messages.map((message) => {
     const { files, ...messageWithoutFiles } = message;
     const parts = safeParse(messageWithoutFiles.parts, []);
@@ -224,7 +228,7 @@ export function mapMessages(messages: PartialMessage[]): UIMessage[] {
       ...messageWithoutFiles,
       content: messageWithoutFiles.content || "",
       role: messageWithoutFiles.role as "system" | "user" | "assistant" | "data",
-      parts: filterParts(parts),
+      parts: filterParts(userId, conversationId, parts),
       experimental_attachments: parsedFiles.map((file: any) => ({
         name: file.name,
         contentType: file.contentType,
@@ -236,19 +240,19 @@ export function mapMessages(messages: PartialMessage[]): UIMessage[] {
   return mappedMessages;
 }
 
-function filterParts(parts: UIMessage["parts"]) {
+function filterParts(userId: number, conversationId: string, parts: UIMessage["parts"]) {
   return parts
     .filter((part) => {
       if (part.type === "step-start") {
         return false;
-      }
-      if (part.type === "tool-invocation") {
+      } else if (part.type === "tool-invocation") {
         return (
           part.toolInvocation.toolName === "memory" ||
           part.toolInvocation.toolName === "generateImage"
         );
+      } else {
+        return true;
       }
-      return true;
     })
     .map((part) => {
       if (
@@ -266,8 +270,24 @@ function filterParts(parts: UIMessage["parts"]) {
             },
           },
         };
+      } else if (part.type === "file") {
+        const [data, type] = tryParseJson(part.data);
+        const key = `${userId}/${conversationId}`;
+        const formattedData =
+          type === "text"
+            ? data
+            : JSON.stringify({
+                url: getFileUrlSigned(`${key}/${data.url}`),
+                name: data.name,
+              });
+
+        return {
+          ...part,
+          data: formattedData,
+        };
+      } else {
+        return part;
       }
-      return part;
     });
 }
 

@@ -170,3 +170,11 @@ export function getMessageContent(message: Message) {
       .join("\n") || ""
   );
 }
+
+export function tryParseJson(data: string): [any, "json" | "text"] {
+  try {
+    return [JSON.parse(data), "json"];
+  } catch (_) {
+    return [data, "text"];
+  }
+}

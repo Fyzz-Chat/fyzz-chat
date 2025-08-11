@@ -2,13 +2,13 @@
 
 import { useAddMessage } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
-import { filterMessagesUpToAnchor } from "@/lib/utils";
+import { filterMessagesUpToAnchor, isFileList } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Message } from "ai";
+import type { Message, UIMessage } from "ai";
 import React, { type ReactNode, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -61,8 +61,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     api: temporaryChat ? "/api/chat/temp" : "/api/chat",
     id: stableId,
     experimental_prepareRequestBody: ({ messages, id }) => {
+      const lastMessage = messages[messages.length - 1];
+
+      if (!isFileList(files) && files?.length && files.length > 0) {
+        const parts: UIMessage["parts"] = [];
+        Array.from(files).forEach((file) => {
+          parts.push({
+            type: "file",
+            data: JSON.stringify({ url: file.url, name: file.name }),
+            mimeType: file.contentType as string,
+          });
+        });
+        lastMessage.parts.unshift(...parts);
+      }
       return {
-        message: messages[messages.length - 1],
+        message: lastMessage,
         messages: temporaryChat ? messages : null,
         id,
         model: model.id,

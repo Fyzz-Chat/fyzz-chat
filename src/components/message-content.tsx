@@ -2,14 +2,10 @@
 
 // xonokai, tomorrow, twilight, prism
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
+import ImageFilePart from "@/components/message/parts/image-file-part";
+import PdfFilePart from "@/components/message/parts/pdf-file-part";
+import TextPart from "@/components/message/parts/text-part";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -19,12 +15,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+import { cn, tryParseJson } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import type { Message } from "ai";
-import { Check, Copy, FileText, Maximize2 } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -390,79 +386,53 @@ export function MessageContent({ message }: { message: Message }) {
   if (message.role === "user") {
     return (
       <div className="flex flex-col gap-2 items-end w-full">
-        {message.experimental_attachments?.map((attachment, index) => {
-          if (attachment.contentType?.startsWith("image/")) {
-            return (
-              <Dialog key={`${message.id}-attachment-${index}`}>
-                <DialogTrigger asChild>
-                  <div className="group/image relative w-full max-w-md cursor-pointer">
-                    <div className="relative overflow-hidden rounded-lg">
-                      <img
-                        src={attachment.url}
-                        alt={attachment.name || "User uploaded image"}
-                        className="w-full h-auto object-contain group-hover/image:brightness-50 transition-all duration-200"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-200">
-                        <Maximize2 className="size-5 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="w-fit h-fit max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background rounded-lg">
-                  <DialogHeader className="sr-only">
-                    <DialogTitle>{attachment.name || "User uploaded image"}</DialogTitle>
-                    <DialogDescription>
-                      Full size view of the uploaded image
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="relative">
-                    <img
-                      src={attachment.url}
-                      alt={attachment.name || "User uploaded image"}
-                      className="w-auto h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-                    />
-                    {attachment.name && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                        <p className="text-white text-sm font-medium">
-                          {attachment.name}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            );
-          }
-
-          if (attachment.contentType?.startsWith("application/pdf")) {
-            return (
-              <div
-                key={`${message.id}-attachment-${index}`}
-                className="flex items-center justify-center size-48 border rounded-lg"
-              >
-                <FileText size={24} />
-              </div>
-            );
-          }
-
-          return null;
-        })}
-        <div
-          className="rounded-lg p-4 border whitespace-pre-wrap break-words bg-card text-card-foreground w-fit"
-          data-role="user"
-          style={{ wordBreak: "break-word" }}
-        >
-          {message.parts?.map((part, index) => {
-            if (part.type === "text") {
+        {/* TODO: Remove this once the file parts are fully supported in v5 */}
+        {!message.parts?.some((part) => part.type === "file") &&
+          message.experimental_attachments?.map((attachment, index) => {
+            if (attachment.contentType?.startsWith("image/")) {
               return (
-                <p key={`${message.id}-text-${index}`} className="leading-7">
-                  {part.text}
-                </p>
+                <ImageFilePart
+                  key={`${message.id}-attachment-${index}`}
+                  url={attachment.url}
+                  name={attachment.name}
+                />
               );
             }
+
+            if (attachment.contentType?.startsWith("application/pdf")) {
+              return <PdfFilePart key={`${message.id}-attachment-${index}`} />;
+            }
+
             return null;
           })}
-        </div>
+        {/* NOTE: Everything is a part in v5 */}
+        {message.parts?.map((part, index) => {
+          if (part.type === "file") {
+            if (part.mimeType?.startsWith("image/")) {
+              const [data, type] = tryParseJson(part.data);
+              const name = type === "json" ? data.name : data;
+              const url = type === "json" ? data.url : data;
+
+              return (
+                <ImageFilePart
+                  key={`${message.id}-attachment-${index}`}
+                  url={url}
+                  name={name}
+                />
+              );
+            }
+
+            if (part.mimeType?.startsWith("application/pdf")) {
+              return <PdfFilePart key={`${message.id}-attachment-${index}`} />;
+            }
+
+            return null;
+          } else if (part.type === "text") {
+            return <TextPart key={`${message.id}-text-${index}`}>{part.text}</TextPart>;
+          } else {
+            return null;
+          }
+        })}
       </div>
     );
   }

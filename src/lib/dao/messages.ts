@@ -35,7 +35,7 @@ export async function getMessages(
     });
 
     return {
-      messages: mapMessages(messages),
+      messages: mapMessages(userId, conversationId, messages),
       hasMore: false,
     };
   }
@@ -78,7 +78,7 @@ export async function getMessages(
   const hasMore = skip > 0;
 
   return {
-    messages: mapMessages(messages),
+    messages: mapMessages(userId, conversationId, messages),
     hasMore,
   };
 }

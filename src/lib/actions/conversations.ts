@@ -36,7 +36,7 @@ export async function saveConversation(conversation: PartialConversation) {
 
   return {
     ...newConversation,
-    messages: mapMessages(newConversation.messages),
+    messages: mapMessages(userId, newConversation.id, newConversation.messages),
   };
 }
 
