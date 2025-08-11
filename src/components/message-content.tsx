@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn, tryParseJson } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import type { Message } from "ai";
+import type { UIMessage } from "ai";
 import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useRef, useState } from "react";
@@ -382,7 +382,7 @@ function ReasoningPreview({
   );
 }
 
-export function MessageContent({ message }: { message: Message }) {
+export function MessageContent({ message }: { message: UIMessage }) {
   if (message.role === "user") {
     return (
       <div className="flex flex-col gap-2 items-end w-full">

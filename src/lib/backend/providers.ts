@@ -24,8 +24,7 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
-import { wrapLanguageModel } from "ai";
-import { extractReasoningMiddleware } from "ai";
+import { extractReasoningMiddleware, wrapLanguageModel } from "ai";
 
 const azureConfigured =
   process.env.AZURE_API_KEY !== undefined &&

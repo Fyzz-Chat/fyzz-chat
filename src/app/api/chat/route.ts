@@ -24,8 +24,8 @@ import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp"
 import { caller } from "@/lib/trpc/server";
 import {
   type Attachment,
-  type Message,
   type Tool,
+  type UIMessage,
   appendClientMessage,
   appendResponseMessages,
   smoothStream,
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     caller.messages({ id }),
   ]);
 
-  let existingMessages: Message[] = conversationMessages.messages;
+  let existingMessages: UIMessage[] = conversationMessages.messages;
 
   const { experimental_attachments, ...textMessage } = message;
 
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     messages = appendClientMessage({
       messages: existingMessages,
       message,
-    });
+    }) as UIMessage[];
   } else if (existingMessages.length === 0) {
     await unlockConversation(id);
     throw new Error("Cannot send an empty message to a new conversation.");
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
         const updatedMessages = appendResponseMessages({
           messages,
           responseMessages: response.messages,
-        });
+        }) as UIMessage[];
 
         if (existingConversation?.title === "New Chat") {
           await updateConversationTitle(id, updatedMessages);
@@ -222,7 +222,7 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
   return false;
 }
 
-function addSourcesToMessage(message: Message, sources: any) {
+function addSourcesToMessage(message: UIMessage, sources: any) {
   sources.forEach((source: any) => {
     message.parts?.push({
       type: "source",
@@ -231,6 +231,6 @@ function addSourcesToMessage(message: Message, sources: any) {
   });
 }
 
-function hasTextPart(message: Message) {
+function hasTextPart(message: UIMessage) {
   return message.parts?.some((part) => part.type === "text" && part.text);
 }

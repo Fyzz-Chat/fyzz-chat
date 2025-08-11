@@ -16,7 +16,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
-import type { Message } from "ai";
+import type { UIMessage } from "ai";
 import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
 
@@ -161,7 +161,7 @@ export function useAddMessage() {
       message,
       conversationId,
     }: {
-      message: Message & { model?: string };
+      message: UIMessage & { model?: string };
       conversationId: string;
     }) => {
       // Optimistically update the cache

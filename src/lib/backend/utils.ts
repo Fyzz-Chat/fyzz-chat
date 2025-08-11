@@ -1,15 +1,15 @@
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
-import type { Attachment, Message } from "ai";
+import type { Attachment, UIMessage } from "ai";
 
-export function filterMessages(messages: Message[], modelId: string) {
+export function filterMessages(messages: UIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
   const imageSupport =
     model?.features?.some((feature) => feature.name === "Images") || false;
   const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
   const anthropicModel = model?.id.startsWith("claude") || false;
 
-  return messages.map((message: Message) => ({
+  return messages.map((message: UIMessage) => ({
     ...message,
     experimental_attachments: filterUnsupportedAttachments(
       message.experimental_attachments || [],

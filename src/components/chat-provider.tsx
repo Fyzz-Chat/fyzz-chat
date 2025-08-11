@@ -87,7 +87,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     generateId: () => nextMessageId.current,
     onFinish: async (message: Message) => {
       await addMessage.mutateAsync({
-        message,
+        message: message as UIMessage,
         conversationId: stableId,
       });
       const conversation = queryClient.getQueryData<{
@@ -134,7 +134,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       },
       deleteMessagesAfter: (messageId: string, newContent?: string) => {
         setMessages((old: Message[]) =>
-          filterMessagesUpToAnchor(old, messageId, newContent)
+          filterMessagesUpToAnchor(old as UIMessage[], messageId, newContent)
         );
       },
     });

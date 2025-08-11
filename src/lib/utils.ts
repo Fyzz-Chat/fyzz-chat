@@ -1,5 +1,5 @@
 import { standaloneTrpc } from "@/lib/trpc/client";
-import type { Attachment, Message } from "ai";
+import type { Attachment, UIMessage } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -47,11 +47,11 @@ export function ensure(condition: any, message: string): asserts condition {
 }
 
 export function filterMessagesUpToAnchor(
-  old: Message[],
+  old: UIMessage[],
   messageId: string,
   newContent?: string
-): Message[] {
-  const anchorMessage = old.find((m: Message) => m.id === messageId);
+): UIMessage[] {
+  const anchorMessage = old.find((m: UIMessage) => m.id === messageId);
   if (!anchorMessage) {
     return old;
   }
@@ -60,13 +60,13 @@ export function filterMessagesUpToAnchor(
 
   // Keep messages older than the anchor message and the anchor itself if it's a user message
   return old
-    .filter((m: Message) => {
+    .filter((m: UIMessage) => {
       const messageDate = new Date(m.createdAt as Date);
       const isBefore = messageDate < anchorMessageDate;
       const isAnchorAndUserMessage = isUserMessage && m.id === messageId;
       return isBefore || isAnchorAndUserMessage;
     })
-    .map((m: Message) => {
+    .map((m: UIMessage) => {
       if (m.id === messageId) {
         return {
           ...m,
@@ -162,7 +162,7 @@ export function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function getMessageContent(message: Message) {
+export function getMessageContent(message: UIMessage) {
   return (
     message.parts
       ?.filter((part) => part.type === "text")
