@@ -9,7 +9,6 @@ import { LoadingDots } from "./ui/loading-dots";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
-import type { UIMessage } from "ai";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

@@ -2,7 +2,7 @@ import { useRegenerateMessage } from "@/lib/queries/conversations";
 import { cn, getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
-import type { Message } from "ai";
+import type { UIMessage } from "ai";
 import { Check, Copy, Edit, Loader2, RefreshCw, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 export function MessageItem({
   message,
   conversationId,
-}: { message: Message & { model?: string }; conversationId: string }) {
+}: { message: UIMessage & { model?: string }; conversationId: string }) {
   const regenerateMessage = useRegenerateMessage();
 
   const temporaryChat = useModelStore((state) => state.temporaryChat);

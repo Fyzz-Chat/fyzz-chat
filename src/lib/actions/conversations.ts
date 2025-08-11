@@ -9,7 +9,7 @@ import prisma from "@/lib/prisma/prisma";
 import type { PartialConversation } from "@/types/chat";
 import { openai } from "@ai-sdk/openai";
 import type { JsonValue } from "@prisma/client/runtime/library";
-import { type Message, generateText } from "ai";
+import { type UIMessage, generateText } from "ai";
 import jwt from "jsonwebtoken";
 
 import conf from "@/lib/config";
@@ -53,7 +53,7 @@ async function saveConversationTitle(conversationId: string, title: string) {
 
 export async function updateConversationTitle(
   conversationId: string,
-  messages: Message[]
+  messages: UIMessage[]
 ) {
   const { text } = await generateText({
     model: openai("gpt-4o-mini"),

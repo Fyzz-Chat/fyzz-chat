@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn, tryParseJson } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import type { Message } from "ai";
+import type { UIMessage } from "ai";
 import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useRef, useState } from "react";
@@ -382,11 +382,11 @@ function ReasoningPreview({
   );
 }
 
-export function MessageContent({ message }: { message: Message }) {
+export function MessageContent({ message }: { message: UIMessage }) {
   if (message.role === "user") {
     return (
       <div className="flex flex-col gap-2 items-end w-full">
-        {/* TODO: Remove this once the file parts are fully supported in v5 */}
+        {/* NOTE: Keep this here for backwards compatibility until experimental_attachments are migrated to parts */}
         {!message.parts?.some((part) => part.type === "file") &&
           message.experimental_attachments?.map((attachment, index) => {
             if (attachment.contentType?.startsWith("image/")) {
