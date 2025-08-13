@@ -2,14 +2,16 @@ import "server-only";
 
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import type { Message, UIMessage } from "ai";
+import type { CustomUIMessage } from "@/types/chat";
+import type { UIMessage } from "ai";
+import { getMessageContent } from "../utils";
 import { mapMessages } from "./conversations";
 
 export async function getMessages(
   conversationId: string,
   page?: number,
   limit?: number
-): Promise<{ messages: UIMessage[]; hasMore: boolean }> {
+): Promise<{ messages: CustomUIMessage[]; hasMore: boolean }> {
   const userId = await getUserIdFromSession();
 
   if (page === undefined || limit === undefined) {
@@ -84,7 +86,7 @@ export async function getMessages(
 }
 
 export async function saveMessage(
-  message: Message,
+  message: UIMessage,
   conversationId: string,
   model: string,
   promptTokens: number,
@@ -92,15 +94,12 @@ export async function saveMessage(
 ) {
   const userId = await getUserIdFromSession();
 
-  const { experimental_attachments, ...messageWithoutAttachments } = message;
-
   return prisma.$transaction(async (tx) => {
     const newMessage = await tx.message.create({
       data: {
-        ...messageWithoutAttachments,
-        files: JSON.stringify(experimental_attachments),
+        ...message,
+        content: getMessageContent(message),
         parts: JSON.stringify(message.parts),
-        toolInvocations: JSON.stringify(message.toolInvocations),
         conversationId,
         model,
         promptTokens,

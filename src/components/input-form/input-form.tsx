@@ -15,7 +15,7 @@ import ActionButton from "@/components/input-form/action-button";
 import AttachmentButton from "@/components/input-form/attachment-button";
 import InputTextarea from "@/components/input-form/input-textarea";
 import useTempChat from "@/hooks/use-temp-chat";
-import { cn, fileToAttachment, isFileList, uploadFiles } from "@/lib/utils";
+import { cn, isFileList, uploadFiles } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
@@ -74,8 +74,8 @@ export default function InputForm({ className }: { className?: string }) {
       navigate(url);
     }
 
-    const attachments = await uploadFiles(stableId, files);
-    setFiles(attachments);
+    const fileUIParts = await uploadFiles(stableId, files);
+    setFiles(fileUIParts);
 
     const { setChatInput } = useChatStore.getState();
     const messageId = setChatInput(input);
@@ -86,16 +86,18 @@ export default function InputForm({ className }: { className?: string }) {
       for (const file of Array.from(files)) {
         parts.push({
           type: "file",
-          data: JSON.stringify({ url: URL.createObjectURL(file), name: file.name }),
-          mimeType: file.type,
+          mediaType: file.type,
+          filename: file.name,
+          url: URL.createObjectURL(file),
         });
       }
     } else {
-      for (const attachment of attachments) {
+      for (const fileUIPart of fileUIParts) {
         parts.push({
           type: "file",
-          data: JSON.stringify({ url: attachment, name: attachment.name }),
-          mimeType: attachment.contentType as string,
+          mediaType: fileUIPart.mediaType,
+          filename: fileUIPart.filename,
+          url: fileUIPart.url,
         });
       }
     }
@@ -108,14 +110,8 @@ export default function InputForm({ className }: { className?: string }) {
     await addMessage.mutateAsync({
       message: {
         id: messageId,
-        content: input,
         role: "user",
         parts: parts,
-        experimental_attachments: isFileList(files)
-          ? Array.from(files).map((file) =>
-              fileToAttachment(file, URL.createObjectURL(file))
-            )
-          : attachments,
         model: model.id,
       },
       conversationId: stableId,

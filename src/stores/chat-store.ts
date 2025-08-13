@@ -16,7 +16,7 @@ interface ChatStore {
   setChatInput: (input: string) => string;
   deleteMessagesAfter: (messageId: string, newContent?: string) => void;
   stop: () => void;
-  reload: () => void;
+  regenerate: () => void;
   emptySubmit: () => void;
   setBrowse: (browse: boolean) => void;
   setStableId: (id: string) => void;
@@ -38,7 +38,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   },
   deleteMessagesAfter: () => console.warn("ChatProvider not yet connected"),
   stop: () => console.warn("ChatProvider not yet connected"),
-  reload: () => console.warn("ChatProvider not yet connected"),
+  regenerate: () => console.warn("ChatProvider not yet connected"),
   emptySubmit: () => console.warn("ChatProvider not yet connected"),
 
   // State setters that can be used anywhere

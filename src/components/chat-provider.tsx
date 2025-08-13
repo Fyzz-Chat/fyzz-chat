@@ -6,10 +6,11 @@ import { filterMessagesUpToAnchor, isFileList } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
+import type { CustomUIMessage } from "@/types/chat";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Message, UIMessage } from "ai";
-import React, { type ReactNode, useEffect, useRef } from "react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+import React, { type ReactNode, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
@@ -33,6 +34,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const stableId = useChatStore((state) => state.stableId);
   const browse = useChatStore((state) => state.browse);
   const setStableId = useChatStore((state) => state.setStableId);
+  const [input, setInput] = useState("");
 
   const nextMessageId = useRef<string>(uuidv4());
   const sentRef = useRef(false);
@@ -46,61 +48,33 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [params.id, setStableId]);
 
-  // This is the only place `useChat` is called.
-  const {
-    messages,
-    status,
-    input,
-    setInput,
-    handleSubmit,
-    error,
-    stop,
-    reload,
-    setMessages,
-  } = useChat({
+  const transport = new DefaultChatTransport({
     api: temporaryChat ? "/api/chat/temp" : "/api/chat",
-    id: stableId,
-    experimental_prepareRequestBody: ({ messages, id }) => {
-      const lastMessage = messages[messages.length - 1];
-
-      if (!isFileList(files) && files?.length && files.length > 0) {
-        const parts: UIMessage["parts"] = [];
-        Array.from(files).forEach((file) => {
-          parts.push({
-            type: "file",
-            data: JSON.stringify({ url: file.url, name: file.name }),
-            mimeType: file.contentType as string,
-          });
-        });
-        lastMessage.parts.unshift(...parts);
-      }
-      return {
-        message: lastMessage,
-        messages: temporaryChat ? messages : null,
-        id,
-        model: model.id,
-        temporaryChat,
-        browse,
-      };
-    },
-    sendExtraMessageFields: true,
-    generateId: () => nextMessageId.current,
-    onFinish: async (message: Message) => {
-      await addMessage.mutateAsync({
-        message: message as UIMessage,
-        conversationId: stableId,
-      });
-      const conversation = queryClient.getQueryData<{
-        id: string;
-        model: string;
-        title: string;
-      }>(trpc.conversation.queryKey({ id: stableId }));
-
-      if (conversation?.title === "New Chat") {
-        queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
-      }
-    },
   });
+
+  // This is the only place `useChat` is called.
+  const { messages, status, error, stop, regenerate, setMessages, sendMessage } = useChat(
+    {
+      transport,
+      id: stableId,
+      generateId: () => nextMessageId.current,
+      onFinish: async ({ message }: { message: UIMessage }) => {
+        await addMessage.mutateAsync({
+          message: message as UIMessage,
+          conversationId: stableId,
+        });
+        const conversation = queryClient.getQueryData<{
+          id: string;
+          model: string;
+          title: string;
+        }>(trpc.conversation.queryKey({ id: stableId }));
+
+        if (conversation?.title === "New Chat") {
+          queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
+        }
+      },
+    }
+  );
 
   // Effect to sync state FROM `useChat` hook TO the Zustand store
   useEffect(() => {
@@ -120,40 +94,60 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     // This connects the live functions from the hook to our store's actions
     useChatStore.setState({
       stop,
-      reload,
+      regenerate,
       setChatInput: (newInput: string) => {
         nextMessageId.current = uuidv4();
         setInput(newInput);
         return nextMessageId.current;
       },
       emptySubmit: () => {
-        handleSubmit(new Event("submit"), {
-          allowEmptySubmit: true,
-        });
+        sendMessage();
         setFiles(undefined);
       },
       deleteMessagesAfter: (messageId: string, newContent?: string) => {
-        setMessages((old: Message[]) =>
-          filterMessagesUpToAnchor(old as UIMessage[], messageId, newContent)
+        setMessages((old: UIMessage[]) =>
+          filterMessagesUpToAnchor(old as CustomUIMessage[], messageId, newContent)
         );
       },
     });
-  }, [stop, reload, setInput, handleSubmit, setFiles, setMessages]);
+  }, [stop, regenerate, setInput, sendMessage, setFiles, setMessages]);
 
   // Effect to handle automatic submission on input change
   useEffect(() => {
     if (status === "ready" && input && stableId && !sentRef.current) {
       sentRef.current = true;
-      handleSubmit(new Event("submit"), {
-        experimental_attachments: files,
-      });
+      sendMessage(
+        {
+          text: input,
+          files,
+        },
+        {
+          body: {
+            id: stableId,
+            model: model.id,
+            temporaryChat,
+            browse,
+          },
+        }
+      );
       setFiles(undefined);
+      setInput("");
     }
 
     if (!input) {
       sentRef.current = false;
     }
-  }, [status, input, stableId, handleSubmit, files, setFiles]);
+  }, [
+    status,
+    input,
+    stableId,
+    sendMessage,
+    files,
+    setFiles,
+    model,
+    browse,
+    temporaryChat,
+  ]);
 
   return <>{children}</>;
 }

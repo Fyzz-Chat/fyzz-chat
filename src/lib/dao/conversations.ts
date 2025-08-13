@@ -3,8 +3,8 @@ import "server-only";
 import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import { tryParseJson } from "@/lib/utils";
-import type { PartialMessage } from "@/types/chat";
+import { getMessageContent, tryParseJson } from "@/lib/utils";
+import type { CustomUIMessage, PartialMessage } from "@/types/chat";
 import type { UIMessage } from "ai";
 import { logger } from "../logger";
 
@@ -114,13 +114,14 @@ export async function getConversationsByCursor(
 export async function appendMessageToConversation(
   message: UIMessage,
   conversationId: string
-) {
+): Promise<CustomUIMessage[]> {
   const userId = await getUserIdFromSession();
 
   const newMessage = await prisma.$transaction(async (tx) => {
     const createdMessage = await tx.message.create({
       data: {
         ...message,
+        content: getMessageContent(message),
         parts: JSON.stringify(message.parts),
         toolInvocations: undefined,
         conversationId,
@@ -165,7 +166,7 @@ export async function lockConversation(conversationId: string): Promise<boolean>
       });
 
       if (!conversation) {
-        throw new Error("Could not acquire lock");
+        return false;
       }
 
       await tx.conversation.update({
@@ -218,22 +219,20 @@ export function mapMessages(
   userId: number,
   conversationId: string,
   messages: PartialMessage[]
-): UIMessage[] {
-  const mappedMessages = messages.map((message) => {
+): CustomUIMessage[] {
+  const mappedMessages = messages.map((message: PartialMessage) => {
     const { files, ...messageWithoutFiles } = message;
     const parts = safeParse(messageWithoutFiles.parts, []);
-    const parsedFiles = safeParse(files, []);
 
     return {
       ...messageWithoutFiles,
       content: messageWithoutFiles.content || "",
-      role: messageWithoutFiles.role as "system" | "user" | "assistant" | "data",
+      role: messageWithoutFiles.role as "system" | "user" | "assistant",
       parts: filterParts(userId, conversationId, parts),
-      experimental_attachments: parsedFiles.map((file: any) => ({
-        name: file.name,
-        contentType: file.contentType,
-        url: awsConfigured ? getFileUrlSigned(file.url) : file.url,
-      })),
+      metadata: {
+        createdAt: message.createdAt,
+        content: message.content,
+      },
     };
   });
 
@@ -245,45 +244,27 @@ function filterParts(userId: number, conversationId: string, parts: UIMessage["p
     .filter((part) => {
       if (part.type === "step-start") {
         return false;
-      } else if (part.type === "tool-invocation") {
-        return (
-          part.toolInvocation.toolName === "memory" ||
-          part.toolInvocation.toolName === "generateImage"
-        );
+      } else if (part.type.startsWith("tool-")) {
+        return part.type === "tool-memory" || part.type === "tool-generateImage";
       } else {
         return true;
       }
     })
     .map((part) => {
-      if (
-        part.type === "tool-invocation" &&
-        part.toolInvocation.toolName === "generateImage" &&
-        part.toolInvocation.state === "result"
-      ) {
+      if (part.type === "tool-generateImage" && part.state === "output-available") {
         return {
           ...part,
-          toolInvocation: {
-            ...part.toolInvocation,
-            result: {
-              ...part.toolInvocation.result,
-              image: getFileUrlSigned(part.toolInvocation.result.url),
-            },
+          output: {
+            ...(part.output as any),
+            image: getFileUrlSigned((part.output as any).url),
           },
         };
       } else if (part.type === "file") {
-        const [data, type] = tryParseJson(part.data);
         const key = `${userId}/${conversationId}`;
-        const formattedData =
-          type === "text"
-            ? data
-            : JSON.stringify({
-                url: getFileUrlSigned(`${key}/${data.url}`),
-                name: data.name,
-              });
 
         return {
           ...part,
-          data: formattedData,
+          url: getFileUrlSigned(`${key}/${part.url}`),
         };
       } else {
         return part;

@@ -27,7 +27,7 @@ Use this tool when needed but don't mention it in the conversation.
 
 export const memoryTool = tool({
   description: toolDescription,
-  parameters: z.object({
+  inputSchema: z.object({
     info: z.string().describe("The information to store"),
   }),
   execute: async ({ info }) => {

@@ -1,10 +1,10 @@
 import { isFileList } from "@/lib/utils";
-import type { Attachment } from "ai";
+import type { FileUIPart } from "ai";
 import { create } from "zustand";
 
 interface FileStore {
-  files: Attachment[] | FileList | undefined;
-  setFiles: (files: Attachment[] | FileList | undefined) => void;
+  files: FileUIPart[] | FileList | undefined;
+  setFiles: (files: FileUIPart[] | FileList | undefined) => void;
 }
 
 const scaleImageToMaxSize = async (file: File, maxSizeKB = 3000): Promise<Blob> => {

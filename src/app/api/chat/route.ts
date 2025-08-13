@@ -1,5 +1,5 @@
 import { updateConversationTitle } from "@/lib/actions/conversations";
-import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
+import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import {
@@ -23,12 +23,11 @@ import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import {
-  type Attachment,
   type Tool,
   type UIMessage,
-  appendClientMessage,
-  appendResponseMessages,
+  convertToModelMessages,
   smoothStream,
+  stepCountIs,
   streamText,
 } from "ai";
 import type { NextRequest } from "next/server";
@@ -41,7 +40,8 @@ export async function POST(req: NextRequest) {
   const user = await getUserFromSession();
   logDuration(start, "User fetched");
 
-  const { id, message, model: modelId, browse } = await req.json();
+  const { id, messages, model: modelId, browse } = await req.json();
+  const newMessage = messages[messages.length - 1];
   const { model, supportsTools } = getModel(modelId, browse);
 
   if (!model) {
@@ -55,57 +55,23 @@ export async function POST(req: NextRequest) {
 
   let existingMessages: UIMessage[] = conversationMessages.messages;
 
-  const { experimental_attachments, ...textMessage } = message;
-
   const lock = await acquireConversationLock(id);
 
   if (!lock) {
     return new Response("conversation_locked", { status: 400 });
   }
 
-  if (experimental_attachments) {
-    try {
-      if (awsConfigured) {
-        const key = `${user.id}/${id}`;
-        // Files saved in the database must be the keys
-        textMessage.files = experimental_attachments.map((attachment: Attachment) => ({
-          ...attachment,
-          url: `${key}/${attachment.url}`,
-        }));
+  if (hasTextPart(newMessage)) {
+    await appendMessageToConversation(newMessage, id);
 
-        // Files sent to the model must be the signed URLs
-        message.experimental_attachments = experimental_attachments.map(
-          (attachment: Attachment) => ({
-            ...attachment,
-            url: getFileUrlSigned(`${key}/${attachment.url}`),
-          })
-        );
-      } else {
-        // If AWS is not configured, we simply save the files in the database
-        textMessage.files = experimental_attachments;
-      }
-    } catch (error) {
-      logger.error(error);
-      await unlockConversation(id);
-      return new Response("file_too_large", { status: 400 });
-    }
-  }
-
-  let messages = existingMessages;
-
-  if (hasTextPart(message)) {
-    await appendMessageToConversation(textMessage, id);
-
-    messages = appendClientMessage({
-      messages: existingMessages,
-      message,
-    }) as UIMessage[];
+    const mappedMessage = mapFileParts(newMessage, user.id, id);
+    existingMessages = [...existingMessages, mappedMessage];
   } else if (existingMessages.length === 0) {
     await unlockConversation(id);
     throw new Error("Cannot send an empty message to a new conversation.");
   }
 
-  const filteredMessages = filterMessages(messages, modelId);
+  const filteredMessages = filterMessages(existingMessages, modelId);
 
   const tools: { [key: string]: Tool } = {};
 
@@ -134,59 +100,19 @@ export async function POST(req: NextRequest) {
 
   const result = streamText({
     model,
-    messages: filteredMessages,
+    messages: convertToModelMessages(filteredMessages),
     system: extendedSystemPrompt,
-    maxSteps: 3,
+    stopWhen: stepCountIs(5),
     temperature: getTemperature(modelId),
     experimental_transform: smoothStream({
       delayInMs: 10,
     }),
     tools,
-    experimental_generateMessageId: () => uuidv4(),
     providerOptions: {
       anthropic: getAnthropicProviderOptions(modelId),
       openai: getOpenaiProviderOptions(modelId),
     },
     abortSignal: req.signal,
-    onFinish: async ({ response }) => {
-      try {
-        const updatedMessages = appendResponseMessages({
-          messages,
-          responseMessages: response.messages,
-        }) as UIMessage[];
-
-        if (existingConversation?.title === "New Chat") {
-          await updateConversationTitle(id, updatedMessages);
-        }
-
-        const lastMessage = updatedMessages[updatedMessages.length - 1];
-        const lastUserMessage = updatedMessages[updatedMessages.length - 2];
-
-        if (!lastUserMessage || lastUserMessage.role !== "user") {
-          logger.error({
-            message: "Invalid message order detected before saving.",
-            description:
-              "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
-            conversationId: id,
-            lastUserMessageRole: lastUserMessage?.role,
-            lastMessageRole: lastMessage?.role,
-            historyLength: updatedMessages.length,
-          });
-        }
-
-        const sources = await result.sources;
-        addSourcesToMessage(lastMessage, sources);
-
-        const usage = await result.usage;
-        logger.debug(JSON.stringify(usage));
-
-        await saveTokenUsage(lastUserMessage.id, usage.promptTokens || 0, 0);
-        await saveMessage(lastMessage, id, modelId, 0, usage.completionTokens || 0);
-      } finally {
-        await unlockConversation(id);
-        await closeMcpClients(mcpClients);
-      }
-    },
     onError: async (error: any) => {
       logger.error(error.error.message);
       await unlockConversation(id);
@@ -204,10 +130,46 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return result.toDataStreamResponse({
+  return result.toUIMessageStreamResponse({
     sendReasoning: true,
     sendSources: true,
-    getErrorMessage: (error: any) => JSON.stringify(error),
+    originalMessages: existingMessages,
+    onError: (error: any) => JSON.stringify(error),
+    generateMessageId: () => uuidv4(),
+    onFinish: async ({ messages, responseMessage }) => {
+      try {
+        if (existingConversation?.title === "New Chat") {
+          await updateConversationTitle(id, messages);
+        }
+
+        const lastMessage = responseMessage;
+        const lastUserMessage = messages[messages.length - 2];
+
+        if (!lastUserMessage || lastUserMessage.role !== "user") {
+          logger.error({
+            message: "Invalid message order detected before saving.",
+            description:
+              "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
+            conversationId: id,
+            lastUserMessageRole: lastUserMessage?.role,
+            lastMessageRole: lastMessage?.role,
+            historyLength: messages.length,
+          });
+        }
+
+        const sources = await result.sources;
+        addSourcesToMessage(lastMessage, sources);
+
+        const usage = await result.usage;
+        logger.debug(JSON.stringify(usage));
+
+        await saveTokenUsage(lastUserMessage.id, usage.inputTokens || 0, 0);
+        await saveMessage(lastMessage, id, modelId, 0, usage.outputTokens || 0);
+      } finally {
+        await unlockConversation(id);
+        await closeMcpClients(mcpClients);
+      }
+    },
   });
 }
 
@@ -219,18 +181,35 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
     }
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
+  logger.error("Failed to acquire conversation lock");
   return false;
 }
 
 function addSourcesToMessage(message: UIMessage, sources: any) {
   sources.forEach((source: any) => {
     message.parts?.push({
-      type: "source",
-      source,
+      type: "source-url",
+      url: source.url,
+      sourceId: source.id,
     });
   });
 }
 
 function hasTextPart(message: UIMessage) {
   return message.parts?.some((part) => part.type === "text" && part.text);
+}
+
+function mapFileParts(message: UIMessage, userId: number, conversationId: string) {
+  return {
+    ...message,
+    parts: message.parts?.map((part: UIMessage["parts"][number]) => {
+      if (part.type === "file") {
+        return {
+          ...part,
+          url: getFileUrlSigned(`${userId}/${conversationId}/${part.url}`),
+        };
+      }
+      return part;
+    }),
+  };
 }

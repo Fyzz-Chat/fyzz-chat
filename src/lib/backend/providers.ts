@@ -144,9 +144,7 @@ function filterProviders(): Provider[] {
   });
 }
 
-const azure = createAzure({
-  apiVersion: "2024-12-01-preview",
-});
+const azure = createAzure();
 
 // const azure41 = createAzure({
 //   apiVersion: "2024-12-01-preview",
@@ -154,8 +152,8 @@ const azure = createAzure({
 //   resourceName: process.env.AZURE_GPT41_RESOURCE_NAME,
 // });
 
-function wrappedGoogle(model: string, browse: boolean) {
-  return google(model, { useSearchGrounding: browse });
+function wrappedGoogle(model: string, _browse: boolean) {
+  return google(model); //, { useSearchGrounding: browse });
 }
 
 function wrappedModel(

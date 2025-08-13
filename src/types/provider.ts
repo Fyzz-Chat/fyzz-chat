@@ -1,4 +1,4 @@
-import type { LanguageModelV1 } from "ai";
+import type { LanguageModel } from "ai";
 
 export type Feature = {
   name: string;
@@ -12,7 +12,7 @@ export type Model = {
   name: string;
   features?: Feature[];
   free?: boolean;
-  provider: (model: string, browse: boolean) => LanguageModelV1;
+  provider: (model: string, browse: boolean) => LanguageModel;
   tools: boolean;
 };
 

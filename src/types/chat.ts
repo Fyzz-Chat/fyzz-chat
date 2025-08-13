@@ -1,8 +1,18 @@
 import type { Conversation, Message } from "@/lib/prisma/client";
 import type { UIMessage } from "ai";
+import { z } from "zod";
+
+const metadataSchema = z.object({
+  content: z.string().nullable(),
+  createdAt: z.date(),
+});
+
+type CustomMetadata = z.infer<typeof metadataSchema>;
+
+export type CustomUIMessage = UIMessage<CustomMetadata>;
 
 export type PartialConversation = Omit<
-  Conversation & { messages: UIMessage[] },
+  Conversation & { messages: (CustomUIMessage & { content: string })[] },
   "userId" | "createdAt" | "updatedAt" | "locked"
 >;
 

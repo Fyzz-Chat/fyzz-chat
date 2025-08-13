@@ -1,21 +1,16 @@
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
-import type { Attachment, UIMessage } from "ai";
+import type { UIMessage } from "ai";
 
 export function filterMessages(messages: UIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
-  const imageSupport =
-    model?.features?.some((feature) => feature.name === "Images") || false;
-  const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
+  // const imageSupport =
+  //   model?.features?.some((feature) => feature.name === "Images") || false;
+  // const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
   const anthropicModel = model?.id.startsWith("claude") || false;
 
   return messages.map((message: UIMessage) => ({
     ...message,
-    experimental_attachments: filterUnsupportedAttachments(
-      message.experimental_attachments || [],
-      imageSupport,
-      pdfSupport
-    ),
     // For Anthropic models only: Remove text-type reasoning parts that lack a signature.
     // All other cases are allowed:
     // - Any part for non-Anthropic models
@@ -25,8 +20,8 @@ export function filterMessages(messages: UIMessage[], modelId: string) {
       if (
         anthropicModel &&
         part.type === "reasoning" &&
-        part.details[0].type === "text" &&
-        !part.details[0].signature
+        part.providerMetadata?.details?.type === "text" &&
+        !part.providerMetadata?.details?.signature
       ) {
         return false;
       }
@@ -35,17 +30,17 @@ export function filterMessages(messages: UIMessage[], modelId: string) {
   }));
 }
 
-function filterUnsupportedAttachments(
-  attachments: Attachment[],
-  imageSupport: boolean,
-  pdfSupport: boolean
-) {
-  return attachments.filter((attachment) => {
-    if (imageSupport && attachment.contentType?.startsWith("image/")) return true;
-    if (pdfSupport && attachment.contentType?.startsWith("application/pdf")) return true;
-    return false;
-  });
-}
+// function filterUnsupportedAttachments(
+//   attachments: Attachment[],
+//   imageSupport: boolean,
+//   pdfSupport: boolean
+// ) {
+//   return attachments.filter((attachment) => {
+//     if (imageSupport && attachment.contentType?.startsWith("image/")) return true;
+//     if (pdfSupport && attachment.contentType?.startsWith("application/pdf")) return true;
+//     return false;
+//   });
+// }
 
 export function logDuration(start: number, message: string) {
   const after = performance.now();

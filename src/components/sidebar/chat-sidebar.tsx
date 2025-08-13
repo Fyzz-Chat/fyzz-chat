@@ -25,7 +25,7 @@ import {
   useDeleteConversation,
   usePrefetchConversation,
 } from "@/lib/queries/conversations";
-import { cn } from "@/lib/utils";
+import { cn, getMessageContent } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
@@ -249,7 +249,7 @@ function ConversationLink({
               currentId === chat.id && "text-accent-foreground"
             )}
           >
-            {chat.messages[chat.messages.length - 1]?.content}
+            {getMessageContent(chat.messages[chat.messages.length - 1])}
           </p>
         )}
       </FastLink>

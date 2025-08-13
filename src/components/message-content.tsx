@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn, tryParseJson } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import type { UIMessage } from "ai";
+import type { SourceUrlUIPart, UIMessage } from "ai";
 import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useRef, useState } from "react";
@@ -275,7 +275,7 @@ function ReasoningPreview({
   const streamingReasoning =
     lastMessage && lastMessage.id === messageId && status === "streaming"
       ? (lastMessage.parts?.find((part) => part.type === "reasoning") as any)
-          ?.reasoning || ""
+          ?.reasoningText || ""
       : "";
 
   // Use streaming reasoning if available, otherwise use the static reasoning
@@ -386,32 +386,12 @@ export function MessageContent({ message }: { message: UIMessage }) {
   if (message.role === "user") {
     return (
       <div className="flex flex-col gap-2 items-end w-full">
-        {/* NOTE: Keep this here for backwards compatibility until experimental_attachments are migrated to parts */}
-        {!message.parts?.some((part) => part.type === "file") &&
-          message.experimental_attachments?.map((attachment, index) => {
-            if (attachment.contentType?.startsWith("image/")) {
-              return (
-                <ImageFilePart
-                  key={`${message.id}-attachment-${index}`}
-                  url={attachment.url}
-                  name={attachment.name}
-                />
-              );
-            }
-
-            if (attachment.contentType?.startsWith("application/pdf")) {
-              return <PdfFilePart key={`${message.id}-attachment-${index}`} />;
-            }
-
-            return null;
-          })}
         {/* NOTE: Everything is a part in v5 */}
         {message.parts?.map((part, index) => {
           if (part.type === "file") {
-            if (part.mimeType?.startsWith("image/")) {
-              const [data, type] = tryParseJson(part.data);
-              const name = type === "json" ? data.name : data;
-              const url = type === "json" ? data.url : data;
+            if (part.mediaType?.startsWith("image/")) {
+              const name = part.filename;
+              const url = part.url;
 
               return (
                 <ImageFilePart
@@ -422,7 +402,7 @@ export function MessageContent({ message }: { message: UIMessage }) {
               );
             }
 
-            if (part.mimeType?.startsWith("application/pdf")) {
+            if (part.mediaType?.startsWith("application/pdf")) {
               return <PdfFilePart key={`${message.id}-attachment-${index}`} />;
             }
 
@@ -457,10 +437,7 @@ export function MessageContent({ message }: { message: UIMessage }) {
               </div>
             );
           }
-          if (
-            part.type === "tool-invocation" &&
-            part.toolInvocation.toolName === "memory"
-          ) {
+          if (part.type === "tool-memory") {
             return (
               <div key={`${message.id}-tool-result-${index}`}>
                 <p className="text-sm text-muted-foreground leading-6">Memory updated</p>
@@ -472,7 +449,7 @@ export function MessageContent({ message }: { message: UIMessage }) {
               <Sheet key={`${message.id}-reasoning-${index}`}>
                 <SheetTrigger className="mr-auto">
                   <ReasoningPreview
-                    reasoning={part.reasoning}
+                    reasoning={part.text}
                     messageId={message.id}
                     isLastPart={index === (message.parts?.length || 0) - 1}
                   />
@@ -488,7 +465,7 @@ export function MessageContent({ message }: { message: UIMessage }) {
                     <div className="absolute top-4 left-0 right-0 w-full h-4 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
                     <ScrollArea className="h-full px-6">
                       <p className="text-sm text-muted-foreground pt-2 pb-4 leading-6">
-                        {part.reasoning}
+                        {part.text}
                       </p>
                     </ScrollArea>
                     <div className="absolute bottom-6 left-0 right-0 w-full h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
@@ -497,11 +474,7 @@ export function MessageContent({ message }: { message: UIMessage }) {
               </Sheet>
             );
           }
-          if (
-            part.type === "tool-invocation" &&
-            part.toolInvocation.toolName === "generateImage" &&
-            part.toolInvocation.state === "result"
-          ) {
+          if (part.type === "tool-generateImage" && part.state === "output-available") {
             return (
               <div
                 key={`${message.id}-tool-result-${index}`}
@@ -510,27 +483,27 @@ export function MessageContent({ message }: { message: UIMessage }) {
                 <img
                   className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
                   key={`${message.id}-tool-result-${index}`}
-                  src={part.toolInvocation.result.image}
-                  alt={part.toolInvocation.result.name}
+                  src={(part.output as any).image}
+                  alt={(part.output as any).name}
                 />
               </div>
             );
           }
         })}
-        {message.parts?.some((part) => part.type === "source") && (
+        {message.parts?.some((part) => part.type === "source-url") && (
           <div className="flex flex-col gap-2">
             {message.parts
-              ?.filter((part) => part.type === "source")
+              ?.filter((part) => part.type === "source-url")
               .map((part, index) => {
-                const sourcePart = part as any; // Type assertion for dynamic source parts
+                const sourcePart = part as SourceUrlUIPart;
                 return (
                   <a
-                    key={`source-${sourcePart.source.id}`}
-                    href={sourcePart.source.url}
+                    key={`source-${sourcePart.sourceId}`}
+                    href={sourcePart.url}
                     target="_blank"
                     className="text-blue-400 hover:underline"
                   >
-                    [{index + 1}] {sourcePart.source.url}
+                    [{index + 1}] {sourcePart.url}
                   </a>
                 );
               })}

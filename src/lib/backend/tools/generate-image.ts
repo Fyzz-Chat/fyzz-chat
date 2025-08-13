@@ -2,7 +2,6 @@ import { generatePresignedUploadUrl, getFileUrlSigned } from "@/lib/aws/s3";
 import { logDuration } from "@/lib/backend/utils";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import { fileToAttachment } from "@/lib/utils";
 import { openai } from "@ai-sdk/openai";
 import { type Tool, experimental_generateImage, tool } from "ai";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +12,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
 
   return tool({
     description: "Generate an image based on a prompt",
-    parameters: z.object({
+    inputSchema: z.object({
       prompt: z.string().describe("The prompt to generate the image from"),
     }),
     execute: async ({ prompt }) => {
@@ -37,7 +36,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
         method: "PUT",
         body: buffer,
         headers: {
-          "Content-Type": image.mimeType,
+          "Content-Type": image.mediaType,
         },
       });
 
@@ -51,7 +50,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
 
       logDuration(start, "Image generated");
 
-      return { image: signedUrl, url: key, name: prompt, contentType: image.mimeType };
+      return { image: signedUrl, url: key, name: prompt, contentType: image.mediaType };
     },
   });
 }

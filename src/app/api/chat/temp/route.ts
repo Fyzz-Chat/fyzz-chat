@@ -3,7 +3,7 @@ import { getModel, getTemperature } from "@/lib/backend/providers";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import { smoothStream, streamText } from "ai";
+import { convertToModelMessages, smoothStream, stepCountIs, streamText } from "ai";
 import type { NextRequest } from "next/server";
 
 export const maxDuration = 55;
@@ -21,11 +21,12 @@ export async function POST(req: NextRequest) {
   }
 
   const filteredMessages = filterMessages(messages, modelId);
+  const modelMessages = convertToModelMessages(filteredMessages);
 
   const result = streamText({
     model,
-    messages: filteredMessages,
-    maxSteps: 5,
+    messages: modelMessages,
+    stopWhen: stepCountIs(5),
     system: systemPrompt,
     temperature: getTemperature(modelId),
     experimental_transform: smoothStream({
@@ -41,9 +42,9 @@ export async function POST(req: NextRequest) {
 
   result.consumeStream();
 
-  return result.toDataStreamResponse({
+  return result.toUIMessageStreamResponse({
     sendReasoning: true,
     sendSources: true,
-    getErrorMessage: (error: any) => error.data.error.code,
+    onError: (error: any) => error.data.error.code,
   });
 }

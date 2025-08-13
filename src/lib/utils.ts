@@ -1,5 +1,6 @@
 import { standaloneTrpc } from "@/lib/trpc/client";
-import type { Attachment, UIMessage } from "ai";
+import type { CustomUIMessage } from "@/types/chat";
+import type { FileUIPart, TextUIPart, UIMessage } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -47,30 +48,31 @@ export function ensure(condition: any, message: string): asserts condition {
 }
 
 export function filterMessagesUpToAnchor(
-  old: UIMessage[],
+  old: CustomUIMessage[],
   messageId: string,
   newContent?: string
-): UIMessage[] {
-  const anchorMessage = old.find((m: UIMessage) => m.id === messageId);
+): CustomUIMessage[] {
+  const anchorMessage = old.find((m: CustomUIMessage) => m.id === messageId);
+
   if (!anchorMessage) {
     return old;
   }
-  const anchorMessageDate = new Date(anchorMessage.createdAt as Date);
+  const anchorMessageDate = new Date(anchorMessage.metadata?.createdAt as Date);
   const isUserMessage = anchorMessage.role === "user";
 
   // Keep messages older than the anchor message and the anchor itself if it's a user message
   return old
-    .filter((m: UIMessage) => {
-      const messageDate = new Date(m.createdAt as Date);
+    .filter((m: CustomUIMessage) => {
+      const messageDate = new Date(m.metadata?.createdAt as Date);
       const isBefore = messageDate < anchorMessageDate;
       const isAnchorAndUserMessage = isUserMessage && m.id === messageId;
       return isBefore || isAnchorAndUserMessage;
     })
-    .map((m: UIMessage) => {
+    .map((m: CustomUIMessage) => {
       if (m.id === messageId) {
         return {
           ...m,
-          content: newContent ?? m.content,
+          content: newContent ?? m.metadata?.content,
           parts: newContent
             ? [
                 {
@@ -96,8 +98,8 @@ export function isFileList(value: any): value is FileList {
 
 export async function uploadFiles(
   conversationId: string,
-  fileList?: Attachment[] | FileList
-): Promise<Attachment[]> {
+  fileList?: FileList | FileUIPart[]
+): Promise<FileUIPart[]> {
   if (!fileList) {
     return [];
   }
@@ -119,7 +121,7 @@ export async function uploadFiles(
 
       if (!url) {
         const base64 = await fileToBase64(file);
-        return fileToAttachment(file, base64);
+        return fileToFileUIPart(file, base64);
       }
 
       const response = await fetch(url, {
@@ -136,17 +138,18 @@ export async function uploadFiles(
 
       console.debug(`File ${index + 1} of ${fileList.length} uploaded successfully.`);
 
-      return fileToAttachment(file, key);
+      return fileToFileUIPart(file, key);
     })
   );
 
   return uploads;
 }
 
-export function fileToAttachment(file: File, key: string): Attachment {
+export function fileToFileUIPart(file: File, key: string): FileUIPart {
   return {
-    name: file.name,
-    contentType: file.type,
+    type: "file",
+    mediaType: file.type,
+    filename: file.name,
     url: key,
   };
 }
@@ -162,10 +165,14 @@ export function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function getMessageContent(message: UIMessage) {
+export function getMessageContent(message: UIMessage & { content?: string }): string {
+  if (message.content) {
+    return message.content;
+  }
+
   return (
     message.parts
-      ?.filter((part) => part.type === "text")
+      ?.filter((part): part is TextUIPart => part.type === "text")
       .map((part) => part.text)
       .join("\n") || ""
   );
