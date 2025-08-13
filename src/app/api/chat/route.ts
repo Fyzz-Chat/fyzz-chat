@@ -4,6 +4,7 @@ import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import {
   getAnthropicProviderOptions,
+  getGoogleProviderOptions,
   getModel,
   getOpenaiProviderOptions,
   getTemperature,
@@ -111,6 +112,7 @@ export async function POST(req: NextRequest) {
     providerOptions: {
       anthropic: getAnthropicProviderOptions(modelId),
       openai: getOpenaiProviderOptions(modelId),
+      google: getGoogleProviderOptions(modelId),
     },
     abortSignal: req.signal,
     onError: async (error: any) => {

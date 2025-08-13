@@ -92,6 +92,21 @@ export function getOpenaiProviderOptions(
   };
 }
 
+export function getGoogleProviderOptions(modelId: string): {
+  thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
+} {
+  const thinkingModel = isThinkingModel(modelId, "google");
+
+  return thinkingModel
+    ? {
+        thinkingConfig: {
+          thinkingBudget: 8192,
+          includeThoughts: true,
+        },
+      }
+    : {};
+}
+
 export function getTemperature(modelId: string) {
   if (
     modelId === "o4-mini" ||
