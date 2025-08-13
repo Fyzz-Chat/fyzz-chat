@@ -3,7 +3,6 @@ import "server-only";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import type { CustomUIMessage } from "@/types/chat";
-import type { UIMessage } from "ai";
 import { getMessageContent } from "../utils";
 import { mapMessages } from "./conversations";
 
@@ -86,7 +85,7 @@ export async function getMessages(
 }
 
 export async function saveMessage(
-  message: UIMessage,
+  message: CustomUIMessage,
   conversationId: string,
   model: string,
   promptTokens: number,

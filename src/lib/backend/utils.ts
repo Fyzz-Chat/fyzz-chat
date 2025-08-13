@@ -1,15 +1,15 @@
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
-import type { UIMessage } from "ai";
+import type { CustomUIMessage } from "@/types/chat";
 
-export function filterMessages(messages: UIMessage[], modelId: string) {
+export function filterMessages(messages: CustomUIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
   // const imageSupport =
   //   model?.features?.some((feature) => feature.name === "Images") || false;
   // const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
   const anthropicModel = model?.id.startsWith("claude") || false;
 
-  return messages.map((message: UIMessage) => ({
+  return messages.map((message: CustomUIMessage) => ({
     ...message,
     // For Anthropic models only: Remove text-type reasoning parts that lack a signature.
     // All other cases are allowed:

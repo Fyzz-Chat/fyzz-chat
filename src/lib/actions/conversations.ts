@@ -6,10 +6,10 @@ import { awsConfigured, deleteFile } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
-import type { PartialConversation } from "@/types/chat";
+import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 import { openai } from "@ai-sdk/openai";
 import type { JsonValue } from "@prisma/client/runtime/library";
-import { type UIMessage, convertToModelMessages, generateText } from "ai";
+import { convertToModelMessages, generateText } from "ai";
 import jwt from "jsonwebtoken";
 
 import conf from "@/lib/config";
@@ -53,7 +53,7 @@ async function saveConversationTitle(conversationId: string, title: string) {
 
 export async function updateConversationTitle(
   conversationId: string,
-  messages: UIMessage[]
+  messages: CustomUIMessage[]
 ) {
   const { text } = await generateText({
     model: openai("gpt-4o-mini"),

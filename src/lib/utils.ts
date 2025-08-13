@@ -1,6 +1,6 @@
 import { standaloneTrpc } from "@/lib/trpc/client";
 import type { CustomUIMessage } from "@/types/chat";
-import type { FileUIPart, TextUIPart, UIMessage } from "ai";
+import type { FileUIPart, TextUIPart } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -165,9 +165,9 @@ export function fileToBase64(file: File): Promise<string> {
   });
 }
 
-export function getMessageContent(message: UIMessage & { content?: string }): string {
-  if (message.content) {
-    return message.content;
+export function getMessageContent(message: CustomUIMessage): string {
+  if (message.metadata?.content) {
+    return message.metadata.content;
   }
 
   return (

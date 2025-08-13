@@ -5,7 +5,6 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent, tryParseJson } from "@/lib/utils";
 import type { CustomUIMessage, PartialMessage } from "@/types/chat";
-import type { UIMessage } from "ai";
 import { logger } from "../logger";
 
 export async function getConversation(id: string) {
@@ -112,7 +111,7 @@ export async function getConversationsByCursor(
 }
 
 export async function appendMessageToConversation(
-  message: UIMessage,
+  message: CustomUIMessage,
   conversationId: string
 ): Promise<CustomUIMessage[]> {
   const userId = await getUserIdFromSession();
@@ -226,7 +225,6 @@ export function mapMessages(
 
     return {
       ...messageWithoutFiles,
-      content: messageWithoutFiles.content || "",
       role: messageWithoutFiles.role as "system" | "user" | "assistant",
       parts: filterParts(userId, conversationId, parts),
       metadata: {
@@ -239,7 +237,11 @@ export function mapMessages(
   return mappedMessages;
 }
 
-function filterParts(userId: number, conversationId: string, parts: UIMessage["parts"]) {
+function filterParts(
+  userId: number,
+  conversationId: string,
+  parts: CustomUIMessage["parts"]
+) {
   return parts
     .filter((part) => {
       if (part.type === "step-start") {

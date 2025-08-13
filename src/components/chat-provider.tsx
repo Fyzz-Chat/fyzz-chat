@@ -9,7 +9,7 @@ import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { DefaultChatTransport, type UIMessage } from "ai";
+import { DefaultChatTransport } from "ai";
 import React, { type ReactNode, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -58,7 +58,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       transport,
       id: stableId,
       generateId: () => nextMessageId.current,
-      onFinish: async ({ message }: { message: UIMessage }) => {
+      onFinish: async ({ message }: { message: CustomUIMessage }) => {
         await addMessage.mutateAsync({
           message: {
             ...message,
@@ -119,7 +119,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setFiles(undefined);
       },
       deleteMessagesAfter: (messageId: string, newContent?: string) => {
-        setMessages((old: UIMessage[]) =>
+        setMessages((old: CustomUIMessage[]) =>
           filterMessagesUpToAnchor(old as CustomUIMessage[], messageId, newContent)
         );
       },

@@ -22,9 +22,9 @@ import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
+import type { CustomUIMessage } from "@/types/chat";
 import {
   type Tool,
-  type UIMessage,
   convertToModelMessages,
   smoothStream,
   stepCountIs,
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   logDuration(start, "User fetched");
 
   const { id, messages, model: modelId, browse } = await req.json();
-  const newMessage = messages?.[messages.length - 1];
+  const newMessage: CustomUIMessage = messages?.[messages.length - 1];
   const { model, supportsTools } = getModel(modelId, browse);
 
   if (!model) {
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     caller.messages({ id }),
   ]);
 
-  let existingMessages: UIMessage[] = conversationMessages.messages;
+  let existingMessages: CustomUIMessage[] = conversationMessages.messages;
 
   const lock = await acquireConversationLock(id);
 
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
           await updateConversationTitle(id, messages);
         }
 
-        const lastMessage = responseMessage;
+        const lastMessage = responseMessage as CustomUIMessage;
         const lastUserMessage = messages[messages.length - 2];
 
         if (!lastUserMessage || lastUserMessage.role !== "user") {
@@ -185,7 +185,7 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
   return false;
 }
 
-function addSourcesToMessage(message: UIMessage, sources: any) {
+function addSourcesToMessage(message: CustomUIMessage, sources: any) {
   sources.forEach((source: any) => {
     message.parts?.push({
       type: "source-url",
@@ -195,14 +195,18 @@ function addSourcesToMessage(message: UIMessage, sources: any) {
   });
 }
 
-function hasTextPart(message: UIMessage) {
+function hasTextPart(message: CustomUIMessage) {
   return message.parts?.some((part) => part.type === "text" && part.text);
 }
 
-function mapFileParts(message: UIMessage, userId: number, conversationId: string) {
+function mapFileParts(
+  message: CustomUIMessage,
+  userId: number,
+  conversationId: string
+): CustomUIMessage {
   return {
     ...message,
-    parts: message.parts?.map((part: UIMessage["parts"][number]) => {
+    parts: message.parts?.map((part: CustomUIMessage["parts"][number]) => {
       if (part.type === "file") {
         return {
           ...part,

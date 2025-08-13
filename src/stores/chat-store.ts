@@ -1,11 +1,11 @@
-import type { UIMessage } from "ai";
+import type { CustomUIMessage } from "@/types/chat";
 import { create } from "zustand";
 
 type ChatStatus = "submitted" | "streaming" | "ready" | "error";
 
 interface ChatStore {
   // State
-  lastMessage: UIMessage | null;
+  lastMessage: CustomUIMessage | null;
   status: ChatStatus;
   error?: Error;
   input: string;

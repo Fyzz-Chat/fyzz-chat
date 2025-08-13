@@ -16,7 +16,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
-import type { UIMessage } from "ai";
 import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
 

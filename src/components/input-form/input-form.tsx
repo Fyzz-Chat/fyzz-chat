@@ -20,8 +20,7 @@ import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
-import type { PartialConversation } from "@/types/chat";
-import type { UIMessage } from "ai";
+import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 import dynamic from "next/dynamic";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -80,7 +79,7 @@ export default function InputForm({ className }: { className?: string }) {
     const { setChatInput } = useChatStore.getState();
     const messageId = setChatInput(input);
 
-    const parts: UIMessage["parts"] = [];
+    const parts: CustomUIMessage["parts"] = [];
 
     if (isFileList(files)) {
       for (const file of Array.from(files)) {
