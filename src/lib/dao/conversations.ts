@@ -105,7 +105,15 @@ export async function getConversationsByCursor(
   }
 
   return {
-    items,
+    items: items.map((item) => ({
+      ...item,
+      messages: item.messages.map((message) => ({
+        ...message,
+        metadata: {
+          content: message.content,
+        },
+      })),
+    })),
     nextCursor,
   };
 }
