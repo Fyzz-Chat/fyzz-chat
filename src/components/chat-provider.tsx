@@ -2,7 +2,7 @@
 
 import { useAddMessage } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
-import { filterMessagesUpToAnchor, isFileList } from "@/lib/utils";
+import { filterMessagesUpToAnchor, getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
@@ -60,7 +60,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       generateId: () => nextMessageId.current,
       onFinish: async ({ message }: { message: UIMessage }) => {
         await addMessage.mutateAsync({
-          message: message as UIMessage,
+          message: {
+            ...message,
+            metadata: {
+              content: getMessageContent(message),
+              createdAt: new Date(),
+            },
+          },
           conversationId: stableId,
         });
         const conversation = queryClient.getQueryData<{
@@ -101,7 +107,15 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         return nextMessageId.current;
       },
       emptySubmit: () => {
-        sendMessage();
+        setMessages((_old) => []);
+        sendMessage(undefined, {
+          body: {
+            id: stableId,
+            model: model.id,
+            temporaryChat,
+            browse,
+          },
+        });
         setFiles(undefined);
       },
       deleteMessagesAfter: (messageId: string, newContent?: string) => {
@@ -110,7 +124,18 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         );
       },
     });
-  }, [stop, regenerate, setInput, sendMessage, setFiles, setMessages]);
+  }, [
+    stop,
+    regenerate,
+    setInput,
+    sendMessage,
+    setFiles,
+    setMessages,
+    stableId,
+    model,
+    browse,
+    temporaryChat,
+  ]);
 
   // Effect to handle automatic submission on input change
   useEffect(() => {

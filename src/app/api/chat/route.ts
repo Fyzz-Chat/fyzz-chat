@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   logDuration(start, "User fetched");
 
   const { id, messages, model: modelId, browse } = await req.json();
-  const newMessage = messages[messages.length - 1];
+  const newMessage = messages?.[messages.length - 1];
   const { model, supportsTools } = getModel(modelId, browse);
 
   if (!model) {
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     return new Response("conversation_locked", { status: 400 });
   }
 
-  if (hasTextPart(newMessage)) {
+  if (newMessage && hasTextPart(newMessage)) {
     await appendMessageToConversation(newMessage, id);
 
     const mappedMessage = mapFileParts(newMessage, user.id, id);

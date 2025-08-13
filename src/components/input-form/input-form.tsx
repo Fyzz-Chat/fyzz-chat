@@ -113,6 +113,10 @@ export default function InputForm({ className }: { className?: string }) {
         role: "user",
         parts: parts,
         model: model.id,
+        metadata: {
+          content: input,
+          createdAt: new Date(),
+        },
       },
       conversationId: stableId,
     });

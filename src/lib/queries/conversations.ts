@@ -7,7 +7,7 @@ import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
-import type { PartialConversation } from "@/types/chat";
+import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -161,7 +161,7 @@ export function useAddMessage() {
       message,
       conversationId,
     }: {
-      message: UIMessage & { model?: string };
+      message: CustomUIMessage & { model?: string };
       conversationId: string;
     }) => {
       // Optimistically update the cache
