@@ -25,6 +25,7 @@ import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp"
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
 import {
+  type experimental_MCPClient as McpClient,
   type Tool,
   convertToModelMessages,
   smoothStream,
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
   const user = await getUserFromSession();
   logDuration(start, "User fetched");
 
-  const { id, messages, model: modelId, browse } = await req.json();
+  const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages?.[messages.length - 1];
   const { model, supportsTools } = getModel(modelId, browse);
 
@@ -74,17 +75,28 @@ export async function POST(req: NextRequest) {
 
   const filteredMessages = filterMessages(existingMessages, modelId);
 
-  const { tools, mcpClients } = await getTools(user, id, supportsTools);
+  let tools: { [key: string]: Tool } = {};
+  let mcpClients: McpClient[] = [];
+
+  if (supportsTools && !temporaryChat) {
+    const toolsResult = await getTools(user, id);
+    tools = toolsResult.tools;
+    mcpClients = toolsResult.mcpClients;
+  }
 
   let memoryPrompt = "";
 
-  if (user.memoryEnabled) {
+  if (user.memoryEnabled && !temporaryChat) {
     memoryPrompt = await getMemoryPrompt();
   }
 
   const extendedSystemPrompt = `${systemPrompt}${memoryPrompt}`;
 
   async function endConversation() {
+    if (temporaryChat) {
+      return;
+    }
+
     await unlockConversation(id);
     await closeMcpClients(mcpClients);
   }
@@ -131,6 +143,10 @@ export async function POST(req: NextRequest) {
     onError: (error: any) => JSON.stringify(error),
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage }) => {
+      if (temporaryChat) {
+        return;
+      }
+
       try {
         if (existingConversation?.title === "New Chat") {
           updateConversationTitle(id, messages);
@@ -180,14 +196,9 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
 
 async function getTools(
   user: SessionUser,
-  conversationId: string,
-  supportsTools: boolean
-): Promise<{ tools: { [key: string]: Tool }; mcpClients: any[] }> {
+  conversationId: string
+): Promise<{ tools: { [key: string]: Tool }; mcpClients: McpClient[] }> {
   const tools: { [key: string]: Tool } = {};
-
-  if (!supportsTools) {
-    return { tools, mcpClients: [] };
-  }
 
   if (openaiConfigured) {
     tools.generateImage = await generateImageTool(conversationId);

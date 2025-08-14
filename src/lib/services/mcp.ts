@@ -5,8 +5,9 @@ import {
   createStdioMcpClient,
 } from "@/lib/backend/tools/mcp-clients";
 import { logDuration } from "@/lib/backend/utils";
+import type { experimental_MCPClient as McpClient } from "ai";
 
-export async function getMcpClients() {
+export async function getMcpClients(): Promise<McpClient[]> {
   const beforeFetch = performance.now();
 
   const response = await getMcpServers();
@@ -16,7 +17,7 @@ export async function getMcpClients() {
   }
 
   const servers = JSON.parse(response as string).mcpServers;
-  const clientPromises: Promise<any>[] = [];
+  const clientPromises: Promise<McpClient>[] = [];
 
   for (const serverKey of Object.keys(servers)) {
     const server = servers[serverKey];
@@ -48,7 +49,7 @@ export async function getMcpClients() {
   return clients;
 }
 
-export async function getMcpTools(clients: any[]) {
+export async function getMcpTools(clients: McpClient[]) {
   const toolsPromises = clients?.map(async (client) => {
     const clientTools = await client.tools();
     return { ...clientTools };
@@ -58,6 +59,6 @@ export async function getMcpTools(clients: any[]) {
   return Object.assign({}, ...toolsArray);
 }
 
-export async function closeMcpClients(clients: any[]) {
+export async function closeMcpClients(clients: McpClient[]) {
   await Promise.all(clients.map((client) => client.close()));
 }
