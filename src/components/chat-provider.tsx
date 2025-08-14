@@ -22,9 +22,7 @@ import { v4 as uuidv4 } from "uuid";
  */
 export function ChatProvider({ children }: { children: ReactNode }) {
   const params = useParams();
-  const queryClient = useQueryClient();
   const addMessage = useAddMessage();
-  const trpc = useTRPC();
 
   // Get state and actions using granular selectors to prevent infinite loops
   const model = useModelStore((state) => state.model);
@@ -69,15 +67,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           },
           conversationId: stableId,
         });
-        const conversation = queryClient.getQueryData<{
-          id: string;
-          model: string;
-          title: string;
-        }>(trpc.conversation.queryKey({ id: stableId }));
-
-        if (conversation?.title === "New Chat") {
-          queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
-        }
       },
     }
   );
@@ -85,10 +74,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   // Effect to sync state FROM `useChat` hook TO the Zustand store
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
-    const isStreaming = status === "streaming" && lastMessage?.role === "assistant";
 
     useChatStore.setState({
-      lastMessage: isStreaming ? lastMessage : null,
+      lastMessage,
       status,
       error,
       input,
@@ -155,6 +143,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           },
         }
       );
+      setMessages((_old) => []);
       setFiles(undefined);
       setInput("");
     }
@@ -174,5 +163,5 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     temporaryChat,
   ]);
 
-  return <>{children}</>;
+  return children;
 }

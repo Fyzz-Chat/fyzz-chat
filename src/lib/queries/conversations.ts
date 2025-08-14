@@ -197,7 +197,6 @@ export function useAddMessage() {
                   ? {
                       ...conv,
                       messages: [...(conv.messages || []), optimisticMessage],
-                      lastMessageAt: optimisticMessage.createdAt,
                     }
                   : conv
               ),

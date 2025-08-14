@@ -115,6 +115,11 @@ export async function POST(req: NextRequest) {
       google: getGoogleProviderOptions(modelId),
     },
     abortSignal: req.signal,
+    onAbort: async () => {
+      logger.info("Stream aborted");
+      await unlockConversation(id);
+      await closeMcpClients(mcpClients);
+    },
     onError: async (error: any) => {
       logger.error(error.error.message);
       await unlockConversation(id);
@@ -141,7 +146,7 @@ export async function POST(req: NextRequest) {
     onFinish: async ({ messages, responseMessage }) => {
       try {
         if (existingConversation?.title === "New Chat") {
-          await updateConversationTitle(id, messages);
+          updateConversationTitle(id, messages);
         }
 
         const lastMessage = responseMessage as CustomUIMessage;

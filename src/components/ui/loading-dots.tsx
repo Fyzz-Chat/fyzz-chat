@@ -8,7 +8,7 @@ export function LoadingDots({ className }: LoadingDotsProps) {
   return (
     <div
       className={cn(
-        "flex space-x-1 bg-muted rounded-lg p-4 w-fit h-14 items-center justify-center",
+        "flex space-x-1 bg-muted rounded-lg p-4 w-fit h-[60px] items-center justify-center",
         className
       )}
     >

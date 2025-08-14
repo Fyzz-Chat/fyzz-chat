@@ -1,5 +1,6 @@
 "use client";
 
+import { useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import { memo, useMemo } from "react";
@@ -9,11 +10,11 @@ const MemoizedMessageItem = memo(MessageItem);
 
 export default function LastMessage({ conversationId }: { conversationId: string }) {
   const lastMessage = useChatStore((state) => state.lastMessage);
-  const status = useChatStore((state) => state.status);
   const model = useModelStore((state) => state.model);
+  const { data: messages, status } = useMessages(conversationId);
 
   const memoizedLastMessage = useMemo(() => {
-    if (lastMessage && status !== "ready") {
+    if (lastMessage) {
       return (
         <MemoizedMessageItem
           message={{ ...lastMessage, model: model.name }}
@@ -22,7 +23,14 @@ export default function LastMessage({ conversationId }: { conversationId: string
       );
     }
     return null;
-  }, [lastMessage, status]);
+  }, [lastMessage]);
+
+  if (
+    status === "success" &&
+    messages?.messages[messages.messages.length - 1].id === lastMessage?.id
+  ) {
+    return null;
+  }
 
   return memoizedLastMessage;
 }

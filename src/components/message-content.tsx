@@ -420,7 +420,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
 
   if (message.role === "assistant") {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 min-h-6">
         {message.parts?.map((part, index) => {
           if (part.type === "text") {
             const blocks = parseMarkdownIntoBlocks(part.text);
