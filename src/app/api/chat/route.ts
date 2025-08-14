@@ -99,6 +99,11 @@ export async function POST(req: NextRequest) {
     Object.assign(tools, mcpTools);
   }
 
+  async function endConversation() {
+    await unlockConversation(id);
+    await closeMcpClients(mcpClients);
+  }
+
   const result = streamText({
     model,
     messages: convertToModelMessages(filteredMessages),
@@ -117,13 +122,11 @@ export async function POST(req: NextRequest) {
     abortSignal: req.signal,
     onAbort: async () => {
       logger.info("Stream aborted");
-      await unlockConversation(id);
-      await closeMcpClients(mcpClients);
+      await endConversation();
     },
     onError: async (error: any) => {
       logger.error(error.error.message);
-      await unlockConversation(id);
-      await closeMcpClients(mcpClients);
+      await endConversation();
     },
   });
 
@@ -132,8 +135,7 @@ export async function POST(req: NextRequest) {
   result.consumeStream({
     onError: async (error: any) => {
       logger.error(error.message);
-      await unlockConversation(id);
-      await closeMcpClients(mcpClients);
+      await endConversation();
     },
   });
 
@@ -173,8 +175,7 @@ export async function POST(req: NextRequest) {
         await saveTokenUsage(lastUserMessage.id, usage.inputTokens || 0, 0);
         await saveMessage(lastMessage, id, modelId, 0, usage.outputTokens || 0);
       } finally {
-        await unlockConversation(id);
-        await closeMcpClients(mcpClients);
+        await endConversation();
       }
     },
   });
