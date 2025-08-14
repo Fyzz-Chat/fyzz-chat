@@ -27,7 +27,7 @@ export default function LastMessage({ conversationId }: { conversationId: string
 
   if (
     status === "success" &&
-    messages?.messages[messages.messages.length - 1].id === lastMessage?.id
+    messages?.messages[messages.messages.length - 1]?.id === lastMessage?.id
   ) {
     return null;
   }

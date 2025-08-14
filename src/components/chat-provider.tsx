@@ -45,15 +45,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setStableId(uuidv4());
     }
   }, [params.id, setStableId]);
-
-  const transport = new DefaultChatTransport({
-    api: temporaryChat ? "/api/chat/temp" : "/api/chat",
-  });
-
   // This is the only place `useChat` is called.
   const { messages, status, error, stop, regenerate, setMessages, sendMessage } = useChat(
     {
-      transport,
       id: stableId,
       generateId: () => nextMessageId.current,
       onFinish: async ({ message }: { message: CustomUIMessage }) => {
@@ -143,7 +137,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           },
         }
       );
-      setMessages((_old) => []);
+
+      if (!temporaryChat) {
+        setMessages((_old) => []);
+      }
       setFiles(undefined);
       setInput("");
     }

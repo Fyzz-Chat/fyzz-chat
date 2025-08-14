@@ -50,27 +50,41 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid model", { status: 400 });
   }
 
-  const [existingConversation, conversationMessages] = await Promise.all([
-    caller.conversation({ id }),
-    caller.messages({ id }),
-  ]);
+  let existingConversation: any;
+  let existingMessages: CustomUIMessage[] = [];
 
-  let existingMessages: CustomUIMessage[] = conversationMessages.messages;
+  if (temporaryChat) {
+    existingMessages = (messages || []).map((message: CustomUIMessage) =>
+      mapFileParts(message, user.id, id)
+    );
 
-  const lock = await acquireConversationLock(id);
+    if (existingMessages.length === 0) {
+      throw new Error("Cannot send an empty message to a new conversation.");
+    }
+  } else {
+    const [conversation, conversationMessages] = await Promise.all([
+      caller.conversation({ id }),
+      caller.messages({ id }),
+    ]);
 
-  if (!lock) {
-    return new Response("conversation_locked", { status: 400 });
-  }
+    existingConversation = conversation;
+    existingMessages = conversationMessages.messages;
 
-  if (newMessage && hasTextPart(newMessage)) {
-    await appendMessageToConversation(newMessage, id);
+    const lock = await acquireConversationLock(id);
 
-    const mappedMessage = mapFileParts(newMessage, user.id, id);
-    existingMessages = [...existingMessages, mappedMessage];
-  } else if (existingMessages.length === 0) {
-    await unlockConversation(id);
-    throw new Error("Cannot send an empty message to a new conversation.");
+    if (!lock) {
+      return new Response("conversation_locked", { status: 400 });
+    }
+
+    if (newMessage && hasTextPart(newMessage)) {
+      await appendMessageToConversation(newMessage, id);
+
+      const mappedMessage = mapFileParts(newMessage, user.id, id);
+      existingMessages = [...existingMessages, mappedMessage];
+    } else if (existingMessages.length === 0) {
+      await unlockConversation(id);
+      throw new Error("Cannot send an empty message to a new conversation.");
+    }
   }
 
   const filteredMessages = filterMessages(existingMessages, modelId);
