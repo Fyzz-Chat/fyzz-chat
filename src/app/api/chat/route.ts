@@ -19,7 +19,7 @@ import {
   unlockConversation,
 } from "@/lib/dao/conversations";
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
-import { getUserFromSession } from "@/lib/dao/users";
+import { type SessionUser, getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
@@ -74,30 +74,15 @@ export async function POST(req: NextRequest) {
 
   const filteredMessages = filterMessages(existingMessages, modelId);
 
-  const tools: { [key: string]: Tool } = {};
-
-  if (openaiConfigured) {
-    tools.generateImage = await generateImageTool(id);
-  }
+  const { tools, mcpClients } = await getTools(user, id, supportsTools);
 
   let memoryPrompt = "";
 
   if (user.memoryEnabled) {
     memoryPrompt = await getMemoryPrompt();
-
-    if (supportsTools) {
-      tools.memory = memoryTool;
-    }
   }
 
   const extendedSystemPrompt = `${systemPrompt}${memoryPrompt}`;
-
-  const mcpClients = await getMcpClients();
-
-  if (mcpClients && supportsTools) {
-    const mcpTools = await getMcpTools(mcpClients);
-    Object.assign(tools, mcpTools);
-  }
 
   async function endConversation() {
     await unlockConversation(id);
@@ -191,6 +176,35 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
   }
   logger.error("Failed to acquire conversation lock");
   return false;
+}
+
+async function getTools(
+  user: SessionUser,
+  conversationId: string,
+  supportsTools: boolean
+): Promise<{ tools: { [key: string]: Tool }; mcpClients: any[] }> {
+  const tools: { [key: string]: Tool } = {};
+
+  if (!supportsTools) {
+    return { tools, mcpClients: [] };
+  }
+
+  if (openaiConfigured) {
+    tools.generateImage = await generateImageTool(conversationId);
+  }
+
+  if (user.memoryEnabled) {
+    tools.memory = memoryTool;
+  }
+
+  const mcpClients = await getMcpClients();
+
+  if (mcpClients) {
+    const mcpTools = await getMcpTools(mcpClients);
+    Object.assign(tools, mcpTools);
+  }
+
+  return { tools, mcpClients };
 }
 
 function addSourcesToMessage(message: CustomUIMessage, sources: any) {
