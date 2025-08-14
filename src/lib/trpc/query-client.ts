@@ -11,7 +11,9 @@ export function makeQueryClient() {
       dehydrate: {
         serializeData: superjson.serialize,
         shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) && query.state.status !== "pending",
+          defaultShouldDehydrateQuery(query) &&
+          query.state.status !== "pending" &&
+          query.meta?.persist !== false,
       },
       hydrate: {
         deserializeData: superjson.deserialize,

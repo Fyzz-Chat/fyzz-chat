@@ -53,6 +53,9 @@ export function useConversation(id: string) {
 
   const options: inferReactQueryProcedureOptions<AppRouter>["conversation"] = {
     enabled: !temporaryChat,
+    meta: {
+      persist: !temporaryChat,
+    },
   };
 
   const myQuery = trpc.conversation.queryOptions({ id }, options);
@@ -79,6 +82,9 @@ export function useMessages(id: string) {
 
   const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
     enabled: !temporaryChat,
+    meta: {
+      persist: !temporaryChat,
+    },
   };
 
   const myQuery = trpc.messages.queryOptions({ id }, options);
