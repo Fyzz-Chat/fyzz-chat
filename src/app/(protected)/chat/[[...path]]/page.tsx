@@ -1,3 +1,5 @@
+import "katex/dist/katex.min.css";
+
 import AuthPopup from "@/components/auth/auth-popup";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
