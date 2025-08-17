@@ -37,7 +37,8 @@ export function MessagesList({
   const files = useFileStore((state) => state.files);
   const { data: conversation, status: conversationStatus } = useConversation(id);
   const { data: messages, isLoading: isMessagesLoading } = useMessages(id);
-  const showLoading = status === "submitted"; // || (messages?.length === 1 && status !== "streaming");
+  const lastMessage = messages?.messages[messages.messages.length - 1];
+  const showLoading = status === "submitted" && lastMessage?.role === "user";
 
   useEffect(() => {
     if (conversationStatus === "error") {
