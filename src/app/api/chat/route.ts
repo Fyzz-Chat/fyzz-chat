@@ -28,6 +28,7 @@ import {
   type experimental_MCPClient as McpClient,
   type Tool,
   convertToModelMessages,
+  hasToolCall,
   smoothStream,
   stepCountIs,
   streamText,
@@ -119,7 +120,7 @@ export async function POST(req: NextRequest) {
     model,
     messages: convertToModelMessages(filteredMessages),
     system: extendedSystemPrompt,
-    stopWhen: stepCountIs(5),
+    stopWhen: [stepCountIs(5), hasToolCall("generateImage")],
     temperature: getTemperature(modelId),
     experimental_transform: smoothStream({
       delayInMs: 10,
