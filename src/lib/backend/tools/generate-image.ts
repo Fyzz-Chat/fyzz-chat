@@ -36,7 +36,10 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
               quality: "medium",
             },
           ],
+          // previous_response_id: previousResponseId,
         });
+
+        logger.debug(`Image response ID: [${imageResponse.id}]`);
 
         const imageData = imageResponse.output
           .filter((output) => output.type === "image_generation_call")
