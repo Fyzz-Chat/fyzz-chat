@@ -10,8 +10,6 @@ import { z } from "zod";
 
 const USE_OPENAI_IMAGE_GENERATION = false;
 
-const client = new OpenAI();
-
 export async function generateImageTool(conversationId: string): Promise<Tool> {
   const userId = await getUserIdFromSession();
 
@@ -27,6 +25,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
       let mediaType = "image/png";
 
       if (USE_OPENAI_IMAGE_GENERATION) {
+        const client = new OpenAI();
         const imageResponse = await client.responses.create({
           model: "gpt-5-mini",
           input: prompt,
