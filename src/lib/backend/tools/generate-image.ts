@@ -4,8 +4,13 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { openai } from "@ai-sdk/openai";
 import { type Tool, experimental_generateImage, tool } from "ai";
+import { OpenAI } from "openai";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
+
+const USE_OPENAI_IMAGE_GENERATION = false;
+
+const client = new OpenAI();
 
 export async function generateImageTool(conversationId: string): Promise<Tool> {
   const userId = await getUserIdFromSession();
@@ -18,25 +23,50 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
     execute: async ({ prompt }) => {
       const start = performance.now();
 
-      const { image } = await experimental_generateImage({
-        model: openai.image("gpt-image-1"),
-        prompt,
-        providerOptions: {
-          openai: {
-            quality: "medium",
+      let imageBase64: string;
+      let mediaType = "image/png";
+
+      if (USE_OPENAI_IMAGE_GENERATION) {
+        const imageResponse = await client.responses.create({
+          model: "gpt-5-mini",
+          input: prompt,
+          tools: [
+            {
+              type: "image_generation",
+              quality: "medium",
+            },
+          ],
+        });
+
+        const imageData = imageResponse.output
+          .filter((output) => output.type === "image_generation_call")
+          .map((output) => (output as any).result);
+
+        imageBase64 = imageData[0];
+      } else {
+        const { image } = await experimental_generateImage({
+          model: openai.image("gpt-image-1"),
+          prompt,
+          providerOptions: {
+            openai: {
+              quality: "medium",
+            },
           },
-        },
-      });
+        });
+
+        imageBase64 = image.base64;
+        mediaType = image.mediaType;
+      }
 
       const key = `${userId}/${conversationId}/${uuidv4()}`;
       const url = await generatePresignedUploadUrl(key);
-      const buffer = Buffer.from(image.base64, "base64");
+      const buffer = Buffer.from(imageBase64, "base64");
 
       const response = await fetch(url, {
         method: "PUT",
         body: buffer,
         headers: {
-          "Content-Type": image.mediaType,
+          "Content-Type": mediaType,
         },
       });
 
@@ -50,7 +80,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
 
       logDuration(start, "Image generated");
 
-      return { image: signedUrl, url: key, name: prompt, contentType: image.mediaType };
+      return { image: signedUrl, url: key, name: prompt, contentType: mediaType };
     },
   });
 }
