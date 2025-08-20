@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getUserIdFromSession } from "@/lib/dao/users";
+import type { InputJsonValue } from "@/lib/prisma/client/runtime/library";
 import prisma from "@/lib/prisma/prisma";
 import type { CustomUIMessage } from "@/types/chat";
 import { getMessageContent } from "../utils";
@@ -98,7 +99,7 @@ export async function saveMessage(
       data: {
         ...message,
         content: getMessageContent(message),
-        parts: JSON.stringify(message.parts),
+        parts: message.parts as InputJsonValue,
         conversationId,
         model,
         promptTokens,

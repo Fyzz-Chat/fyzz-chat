@@ -59,12 +59,12 @@ export async function deleteMessageChainAfter(
       },
       data: {
         content: newContent,
-        parts: JSON.stringify([
+        parts: [
           {
             type: "text",
             text: newContent,
           },
-        ]),
+        ],
       },
     });
   }

@@ -1,9 +1,10 @@
 import "server-only";
 
-import { awsConfigured, getFileUrlSigned } from "@/lib/aws/s3";
+import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
+import type { InputJsonValue } from "@/lib/prisma/client/runtime/library";
 import prisma from "@/lib/prisma/prisma";
-import { getMessageContent, tryParseJson } from "@/lib/utils";
+import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage, PartialMessage } from "@/types/chat";
 import { logger } from "../logger";
 
@@ -129,7 +130,7 @@ export async function appendMessageToConversation(
       data: {
         ...message,
         content: getMessageContent(message),
-        parts: JSON.stringify(message.parts),
+        parts: message.parts as InputJsonValue,
         toolInvocations: undefined,
         conversationId,
       },
