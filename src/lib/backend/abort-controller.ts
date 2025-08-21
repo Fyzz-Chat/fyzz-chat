@@ -9,22 +9,20 @@ export class CompositeAbortController {
 
     // Forward abort from request signal
     if (reqSignal && !reqSignal.aborted) {
-      reqSignal.addEventListener("abort", () => {
-        this.cancelAbort();
-        this.controller.abort(reqSignal.reason);
-      });
+      reqSignal.addEventListener(
+        "abort",
+        () => {
+          this.cancelAbort();
+          this.controller.abort(normalizeAbortReason(reqSignal.reason));
+        },
+        { once: true }
+      );
     }
 
     // If request signal is already aborted, abort immediately
     if (reqSignal?.aborted) {
-      this.controller.abort(reqSignal.reason);
+      this.controller.abort(normalizeAbortReason(reqSignal.reason));
     }
-  }
-
-  // Programmatic abort method
-  abort(reason?: any): void {
-    this.cancelAbort();
-    this.controller.abort({ message: reason || "Aborted" });
   }
 
   // Auto-abort after specified seconds
@@ -34,7 +32,8 @@ export class CompositeAbortController {
     this.cancelAbort(); // Cancel any existing timeout
 
     this.timeoutId = setTimeout(() => {
-      this.controller.abort({ message: reason || `Timeout after ${seconds} seconds` });
+      const msg = reason || `Timeout after ${seconds} seconds`;
+      this.controller.abort(normalizeAbortReason(msg));
       this.timeoutId = null;
     }, seconds * 1000);
   }
@@ -51,4 +50,23 @@ export class CompositeAbortController {
   get aborted(): boolean {
     return this.signal.aborted;
   }
+}
+
+function normalizeAbortReason(reason?: any): any {
+  return new Error(reason || "Aborted");
+
+  // If already an AbortError/DOMException, keep it
+  // if (reason instanceof Error && reason.name === "AbortError") return reason;
+  // // Prefer DOMException when available for web compatibility
+  // const message = typeof reason === "string" ? reason : "Aborted";
+  // try {
+  //   // DOMException may not exist in some Node runtimes
+  //   // eslint-disable-next-line no-new
+  //   const domEx = new (globalThis as any).DOMException(message, "AbortError");
+  //   return domEx;
+  // } catch {
+  //   const err = new Error(message);
+  //   (err as any).name = "AbortError";
+  //   return err;
+  // }
 }
