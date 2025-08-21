@@ -37,9 +37,7 @@ import {
 import type { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
-const MAX_DURATION = 55;
-
-export const maxDuration = MAX_DURATION;
+export const maxDuration = 55;
 
 export async function POST(req: NextRequest) {
   const start = performance.now();
@@ -111,7 +109,7 @@ export async function POST(req: NextRequest) {
   const extendedSystemPrompt = `${systemPrompt}${memoryPrompt}`;
 
   const abortController = new CompositeAbortController(req.signal);
-  abortController.abortIn(MAX_DURATION - 5);
+  abortController.abortIn(maxDuration - 5);
 
   async function endConversation() {
     if (temporaryChat) {
