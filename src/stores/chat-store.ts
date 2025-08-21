@@ -14,9 +14,8 @@ interface ChatStore {
 
   // Actions - These will be connected by the ChatProvider component
   setChatInput: (input: string) => string;
-  deleteMessagesAfter: (messageId: string, newContent?: string) => void;
   stop: () => void;
-  regenerate: () => void;
+  regenerate: (messageId: string) => void;
   emptySubmit: () => void;
   setBrowse: (browse: boolean) => void;
   setStableId: (id: string) => void;
@@ -36,7 +35,6 @@ export const useChatStore = create<ChatStore>((set) => ({
     console.warn("ChatProvider not yet connected");
     return "";
   },
-  deleteMessagesAfter: () => console.warn("ChatProvider not yet connected"),
   stop: () => console.warn("ChatProvider not yet connected"),
   regenerate: () => console.warn("ChatProvider not yet connected"),
   emptySubmit: () => console.warn("ChatProvider not yet connected"),

@@ -82,7 +82,17 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     // This connects the live functions from the hook to our store's actions
     useChatStore.setState({
       stop,
-      regenerate,
+      regenerate: (messageId: string) => {
+        regenerate({
+          messageId,
+          body: {
+            id: stableId,
+            model: model.id,
+            temporaryChat,
+            browse,
+          },
+        });
+      },
       setChatInput: (newInput: string) => {
         nextMessageId.current = uuidv4();
         setInput(newInput);
@@ -99,11 +109,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           },
         });
         setFiles(undefined);
-      },
-      deleteMessagesAfter: (messageId: string, newContent?: string) => {
-        setMessages((old: CustomUIMessage[]) =>
-          filterMessagesUpToAnchor(old as CustomUIMessage[], messageId, newContent)
-        );
       },
     });
   }, [

@@ -33,9 +33,8 @@ export function MessageItem({
     });
 
     if (temporaryChat) {
-      const { deleteMessagesAfter, regenerate } = useChatStore.getState();
-      deleteMessagesAfter(message.id);
-      regenerate();
+      const { regenerate } = useChatStore.getState();
+      regenerate(message.id);
     } else {
       const { emptySubmit } = useChatStore.getState();
       emptySubmit();
@@ -58,9 +57,8 @@ export function MessageItem({
     setIsEditing(false);
 
     if (temporaryChat) {
-      const { deleteMessagesAfter, regenerate } = useChatStore.getState();
-      deleteMessagesAfter(message.id, content);
-      regenerate();
+      const { regenerate } = useChatStore.getState();
+      regenerate(message.id);
     } else {
       const { emptySubmit } = useChatStore.getState();
       emptySubmit();
