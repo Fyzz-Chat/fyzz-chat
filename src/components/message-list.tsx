@@ -72,6 +72,7 @@ export function MessagesList({
   return (
     <div className="flex flex-col gap-4 px-4 sm:px-8 pt-8">
       {memoizedConversationMessages}
+      <LastMessage conversationId={id} />
       {error && (
         <div className="flex flex-col gap-1">
           <div className="text-destructive p-4 border border-destructive rounded-lg">
@@ -80,7 +81,6 @@ export function MessagesList({
           <span className="h-8" />
         </div>
       )}
-      <LastMessage conversationId={id} />
       {showLoading && <LoadingDots className="text-muted-foreground" />}
       <div id="messages-end" className="h-4" />
       {files && files.length > 0 && <div className="h-[54px] w-1" />}

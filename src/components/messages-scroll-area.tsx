@@ -25,6 +25,7 @@ export default function MessagesScrollArea({
   const { data: messages } = useMessages(conversationId);
   // Also listen to streaming message for real-time updates
   const lastMessage = useChatStore((state) => state.lastMessage);
+  const error = useChatStore((state) => state.error);
   const [positionChecked, setPositionChecked] = useState(false);
 
   const scrollToBottom = () => {
@@ -47,7 +48,7 @@ export default function MessagesScrollArea({
     if (autoScroll) {
       scrollToBottom();
     }
-  }, [messages?.messages, lastMessage, autoScroll]);
+  }, [messages?.messages, lastMessage, autoScroll, error]);
 
   const isUserAtBottom = useCallback(() => {
     const viewport = viewportRef.current;
