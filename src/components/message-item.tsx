@@ -57,7 +57,8 @@ export function MessageItem({
     setIsEditing(false);
 
     if (temporaryChat) {
-      const { regenerate } = useChatStore.getState();
+      const { editMessage, regenerate } = useChatStore.getState();
+      editMessage(message.id, content);
       regenerate(message.id);
     } else {
       const { emptySubmit } = useChatStore.getState();

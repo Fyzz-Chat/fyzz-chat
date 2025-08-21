@@ -14,6 +14,7 @@ interface ChatStore {
 
   // Actions - These will be connected by the ChatProvider component
   setChatInput: (input: string) => string;
+  editMessage: (messageId: string, content: string) => void;
   stop: () => void;
   regenerate: (messageId: string) => void;
   emptySubmit: () => void;
@@ -35,6 +36,7 @@ export const useChatStore = create<ChatStore>((set) => ({
     console.warn("ChatProvider not yet connected");
     return "";
   },
+  editMessage: () => console.warn("ChatProvider not yet connected"),
   stop: () => console.warn("ChatProvider not yet connected"),
   regenerate: () => console.warn("ChatProvider not yet connected"),
   emptySubmit: () => console.warn("ChatProvider not yet connected"),

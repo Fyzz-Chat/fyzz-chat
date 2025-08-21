@@ -110,6 +110,20 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         });
         setFiles(undefined);
       },
+      editMessage: (messageId: string, content: string) => {
+        setMessages((old: CustomUIMessage[]) =>
+          old.map((message) =>
+            message.id === messageId
+              ? {
+                  ...message,
+                  parts: message.parts.map((part) =>
+                    part.type === "text" ? { ...part, text: content } : part
+                  ),
+                }
+              : message
+          )
+        );
+      },
     });
   }, [
     stop,
