@@ -4,9 +4,9 @@ import type { CustomUIMessage } from "@/types/chat";
 
 export function filterMessages(messages: CustomUIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
-  // const imageSupport =
-  //   model?.features?.some((feature) => feature.name === "Images") || false;
-  // const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
+  const imageSupport =
+    model?.features?.some((feature) => feature.name === "Images") || false;
+  const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
   const anthropicModel = model?.id.startsWith("claude") || false;
 
   return messages.map((message: CustomUIMessage) => ({
@@ -25,22 +25,23 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
       ) {
         return false;
       }
+
+      if (!imageSupport && part.type === "file" && part.mediaType?.startsWith("image/")) {
+        return false;
+      }
+
+      if (
+        !pdfSupport &&
+        part.type === "file" &&
+        part.mediaType?.startsWith("application/pdf")
+      ) {
+        return false;
+      }
+
       return true;
     }),
   }));
 }
-
-// function filterUnsupportedAttachments(
-//   attachments: Attachment[],
-//   imageSupport: boolean,
-//   pdfSupport: boolean
-// ) {
-//   return attachments.filter((attachment) => {
-//     if (imageSupport && attachment.contentType?.startsWith("image/")) return true;
-//     if (pdfSupport && attachment.contentType?.startsWith("application/pdf")) return true;
-//     return false;
-//   });
-// }
 
 export function logDuration(start: number, message: string) {
   const after = performance.now();
