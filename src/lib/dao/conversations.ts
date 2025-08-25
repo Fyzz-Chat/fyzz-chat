@@ -324,13 +324,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
     },
   });
 
-  return {
-    ...conversation,
-    messages: conversation?.messages.map((message: any) => ({
-      ...message,
-      parts: JSON.parse(message.parts as string),
-    })),
-  };
+  return conversation;
 }
 
 /**
