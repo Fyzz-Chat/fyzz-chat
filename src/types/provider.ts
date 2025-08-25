@@ -7,6 +7,14 @@ export type Feature = {
   color: string;
 };
 
+export type ImageType = "image/png" | "image/jpeg" | "image/jpg" | "image/webp";
+export const imageTypes: ImageType[] = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+];
+
 export type Model = {
   id: string;
   name: string;
@@ -14,6 +22,7 @@ export type Model = {
   free?: boolean;
   provider: (model: string, browse: boolean) => LanguageModel;
   tools: boolean;
+  extensions: (ImageType | string)[];
 };
 
 export type PublicModel = Omit<Model, "provider">;

@@ -1,11 +1,11 @@
 import "server-only";
 
-import type {
-  Feature,
-  Model,
-  Provider,
-  PublicModel,
-  PublicProvider,
+import {
+  type Feature,
+  type Provider,
+  type PublicModel,
+  type PublicProvider,
+  imageTypes,
 } from "@/types/provider";
 import {
   type AnthropicProvider,
@@ -18,7 +18,6 @@ import { type FireworksProvider, fireworks } from "@ai-sdk/fireworks";
 import { google } from "@ai-sdk/google";
 import {
   type OpenAIProvider,
-  type OpenAIProviderSettings,
   type OpenAIResponsesProviderOptions,
   openai,
 } from "@ai-sdk/openai";
@@ -239,6 +238,7 @@ const providers: Provider[] = [
         features: [images],
         provider: wrappedModel(azure),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-5",
@@ -246,6 +246,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-5-mini",
@@ -253,6 +254,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-5-nano",
@@ -260,6 +262,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-4.1",
@@ -267,6 +270,7 @@ const providers: Provider[] = [
         features: [images, coding],
         provider: wrappedModel(azure),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-4.1-mini",
@@ -274,6 +278,7 @@ const providers: Provider[] = [
         features: [images, coding],
         provider: wrappedModel(azure),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "o3-mini",
@@ -281,6 +286,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(azure),
         tools: true,
+        extensions: [],
       },
       {
         id: "o4-mini",
@@ -288,6 +294,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(azure),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "o3",
@@ -295,6 +302,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(azure),
         tools: true,
+        extensions: imageTypes,
       },
     ],
   },
@@ -309,6 +317,7 @@ const providers: Provider[] = [
         features: [images],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-5",
@@ -316,6 +325,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-5-mini",
@@ -323,6 +333,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-5-nano",
@@ -330,6 +341,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-4.1",
@@ -337,6 +349,7 @@ const providers: Provider[] = [
         features: [images, coding],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "gpt-4.1-mini",
@@ -344,6 +357,7 @@ const providers: Provider[] = [
         features: [images, coding],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "o3-mini",
@@ -351,6 +365,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: [],
       },
       {
         id: "o4-mini",
@@ -358,6 +373,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "o3",
@@ -365,6 +381,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        extensions: imageTypes,
       },
     ],
   },
@@ -379,6 +396,7 @@ const providers: Provider[] = [
         features: [images, pdf],
         provider: wrappedModel(anthropic),
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "claude-3-5-haiku-20241022",
@@ -386,6 +404,7 @@ const providers: Provider[] = [
         features: [images, pdf],
         provider: wrappedModel(anthropic),
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "claude-3-7-sonnet-20250219",
@@ -393,6 +412,7 @@ const providers: Provider[] = [
         features: [images, pdf, reasoning],
         provider: wrappedModel(anthropic),
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "claude-sonnet-4-20250514",
@@ -400,6 +420,7 @@ const providers: Provider[] = [
         features: [images, pdf, reasoning],
         provider: wrappedModel(anthropic),
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
     ],
   },
@@ -414,6 +435,7 @@ const providers: Provider[] = [
         features: [images, pdf],
         provider: wrappedGoogle,
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gemini-2.0-flash",
@@ -421,6 +443,7 @@ const providers: Provider[] = [
         features: [images, pdf, search],
         provider: wrappedGoogle,
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gemini-2.5-flash",
@@ -428,6 +451,7 @@ const providers: Provider[] = [
         features: [images, pdf, search],
         provider: wrappedGoogle,
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gemini-2.5-pro",
@@ -435,6 +459,7 @@ const providers: Provider[] = [
         features: [images, pdf, reasoning],
         provider: wrappedGoogle,
         tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
     ],
   },
@@ -449,6 +474,7 @@ const providers: Provider[] = [
         features: [images, reasoning],
         provider: wrappedModel(xai),
         tools: true,
+        extensions: imageTypes,
       },
       {
         id: "grok-3-mini-beta",
@@ -456,12 +482,14 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(xai),
         tools: true,
+        extensions: [],
       },
       {
         id: "grok-3-beta",
         name: "Grok 3",
         provider: wrappedModel(xai),
         tools: true,
+        extensions: [],
       },
     ],
   },
@@ -473,22 +501,25 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/llama4-scout-instruct-basic",
         name: "Llama 4 Scout",
-        features: [images],
+        features: [],
         provider: wrappedModel(fireworks),
         tools: true,
+        extensions: [],
       },
       {
         id: "accounts/fireworks/models/llama4-maverick-instruct-basic",
         name: "Llama 4 Maverick",
-        features: [images],
+        features: [],
         provider: wrappedModel(fireworks),
         tools: true,
+        extensions: [],
       },
       {
         id: "accounts/fireworks/models/llama-v3p1-405b-instruct",
         name: "Llama 3.1 405B",
         provider: wrappedModel(fireworks),
         tools: true,
+        extensions: [],
       },
     ],
   },
@@ -502,6 +533,7 @@ const providers: Provider[] = [
         name: "DeepSeek V3",
         provider: wrappedModel(fireworks),
         tools: true,
+        extensions: [],
       },
       {
         id: "accounts/fireworks/models/deepseek-r1",
@@ -509,6 +541,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: reasoningFireworks,
         tools: false,
+        extensions: [],
       },
     ],
   },
@@ -523,6 +556,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(perplexity),
         tools: false,
+        extensions: [],
       },
       {
         id: "sonar-pro",
@@ -530,6 +564,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(perplexity),
         tools: false,
+        extensions: [],
       },
     ],
   },

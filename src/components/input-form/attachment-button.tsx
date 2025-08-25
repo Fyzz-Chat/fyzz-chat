@@ -27,8 +27,7 @@ export default function AttachmentButton({
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
-  const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
+  const extensions = useModelStore((state) => state.model.extensions);
 
   function handleCameraClick() {
     cameraInputRef.current?.click();
@@ -49,7 +48,7 @@ export default function AttachmentButton({
                 size="icon"
                 variant="ghost"
                 className="shrink-0 size-9 p-5"
-                disabled={!imageSupport && !pdfSupport}
+                disabled={!extensions?.length}
               >
                 <Paperclip size={16} />
               </Button>

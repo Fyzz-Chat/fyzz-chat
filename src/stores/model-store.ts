@@ -24,11 +24,15 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
   temporaryChat: false,
   isImageSupportEnabled: () => {
     const { model } = get();
-    return model?.features?.some((feature) => feature.name === "Images") || false;
+    return (
+      model?.extensions?.some((extension) => extension.startsWith("image/")) || false
+    );
   },
   isPdfSupportEnabled: () => {
     const { model } = get();
-    return model?.features?.some((feature) => feature.name === "PDFs") || false;
+    return (
+      model?.extensions?.some((extension) => extension === "application/pdf") || false
+    );
   },
   setModel: (modelId: string) =>
     set((state) => ({
