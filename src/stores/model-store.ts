@@ -10,8 +10,6 @@ interface ModelStore {
   providers: PublicProvider[];
   setProviders: (providers: PublicProvider[]) => void;
   getModel: (modelId?: string) => PublicModel;
-  isImageSupportEnabled: () => boolean;
-  isPdfSupportEnabled: () => boolean;
   setDefaultModel: () => void;
 }
 
@@ -22,18 +20,6 @@ function getModelById(models: PublicModel[], modelId: string): PublicModel {
 export const useModelStore = create<ModelStore>()((set, get) => ({
   model: {} as PublicModel,
   temporaryChat: false,
-  isImageSupportEnabled: () => {
-    const { model } = get();
-    return (
-      model?.extensions?.some((extension) => extension.startsWith("image/")) || false
-    );
-  },
-  isPdfSupportEnabled: () => {
-    const { model } = get();
-    return (
-      model?.extensions?.some((extension) => extension === "application/pdf") || false
-    );
-  },
   setModel: (modelId: string) =>
     set((state) => ({
       model: getModelById(state.availableModels, modelId),

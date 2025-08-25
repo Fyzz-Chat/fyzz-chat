@@ -4,9 +4,12 @@ import type { CustomUIMessage } from "@/types/chat";
 
 export function filterMessages(messages: CustomUIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
-  const imageSupport =
-    model?.features?.some((feature) => feature.name === "Images") || false;
-  const pdfSupport = model?.features?.some((feature) => feature.name === "PDFs") || false;
+  const imageSupport = model?.extensions?.some((extension) =>
+    extension.startsWith("image/")
+  );
+  const pdfSupport = model?.extensions?.some(
+    (extension) => extension === "application/pdf"
+  );
   const anthropicModel = model?.id.startsWith("claude") || false;
 
   return messages.map((message: CustomUIMessage) => ({

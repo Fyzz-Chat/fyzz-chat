@@ -21,8 +21,7 @@ export default function InputTextarea({
   const setInput = useInputStore((state) => state.setInput);
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
-  const imageSupport = useModelStore((state) => state.isImageSupportEnabled());
-  const pdfSupport = useModelStore((state) => state.isPdfSupportEnabled());
+  const extensions = useModelStore((state) => state.model.extensions);
 
   async function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey && !isMobile) {
@@ -48,39 +47,16 @@ export default function InputTextarea({
         });
       }
 
-      const imageItems = Array.from(clipboardItems).filter(
-        (item) =>
-          item.type === "image/png" ||
-          item.type === "image/jpeg" ||
-          item.type === "image/jpg" ||
-          item.type === "image/webp"
-      );
-
-      if (imageItems.length > 0 && imageSupport) {
-        imageItems.forEach((imageItem) => {
-          const file = imageItem.getAsFile();
+      Array.from(clipboardItems).forEach((item) => {
+        if (extensions?.includes(item.type)) {
+          const file = item.getAsFile();
           if (file) {
             newFiles.items.add(file);
           }
-        });
+        }
+      });
 
-        setFiles(newFiles.files);
-      }
-
-      const pdfItems = Array.from(clipboardItems).filter(
-        (item) => item.type === "application/pdf"
-      );
-
-      if (pdfItems.length > 0 && pdfSupport) {
-        pdfItems.forEach((pdfItem) => {
-          const file = pdfItem.getAsFile();
-          if (file) {
-            newFiles.items.add(file);
-          }
-        });
-
-        setFiles(newFiles.files);
-      }
+      setFiles(newFiles.files);
     }
   }
 
