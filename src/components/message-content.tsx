@@ -432,31 +432,33 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
     return (
       <div className="flex flex-col gap-4 min-h-6">
         {message.parts?.map((part, index) => {
-          if (part.type === "text") {
-            const blocks = parseMarkdownIntoBlocks(part.text);
-            return (
-              <div key={`${message.id}-block-${index}`} className="flex flex-col gap-1">
-                {blocks.map((block, index) => (
-                  <div
-                    key={`${message.id}-block-${index}`}
-                    className="break-words"
-                    style={{ wordBreak: "break-word" }}
-                  >
-                    <MemoizedMarkdownBlock content={block} />
-                  </div>
-                ))}
-              </div>
-            );
-          }
-          if (part.type === "tool-memory") {
-            return (
-              <Tool key={`${message.id}-tool-${index}`}>
-                <ToolHeader type="tool-memory" state={part.state} />
-                <ToolContent>
-                  <ToolInput input={part.input} />
-                </ToolContent>
-              </Tool>
-            );
+          switch (part.type) {
+            case "text": {
+              const blocks = parseMarkdownIntoBlocks(part.text);
+              return (
+                <div key={`${message.id}-block-${index}`} className="flex flex-col gap-1">
+                  {blocks.map((block, index) => (
+                    <div
+                      key={`${message.id}-block-${index}`}
+                      className="break-words"
+                      style={{ wordBreak: "break-word" }}
+                    >
+                      <MemoizedMarkdownBlock content={block} />
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+            case "tool-memory": {
+              return (
+                <Tool key={`${message.id}-tool-${index}`}>
+                  <ToolHeader type="tool-memory" state={part.state} />
+                  <ToolContent>
+                    <ToolInput input={part.input} />
+                  </ToolContent>
+                </Tool>
+              );
+            }
           }
           if (part.type === "reasoning") {
             return (
