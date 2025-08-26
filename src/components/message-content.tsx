@@ -22,10 +22,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn, tryParseJson } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import type { CustomUIMessage } from "@/types/chat";
-import type { SourceUrlUIPart } from "ai";
+import type { ToolUIPart } from "ai";
 import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useRef, useState } from "react";
@@ -451,8 +451,21 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
             }
             case "tool-memory": {
               return (
-                <Tool key={`${message.id}-tool-${index}`}>
+                <Tool key={`${message.id}-tool-memory-${index}`}>
                   <ToolHeader type="tool-memory" state={part.state} />
+                  <ToolContent>
+                    <ToolInput input={part.input} />
+                  </ToolContent>
+                </Tool>
+              );
+            }
+            case "dynamic-tool": {
+              return (
+                <Tool key={`${message.id}-${part.toolName}-${index}`}>
+                  <ToolHeader
+                    type={part.toolName as ToolUIPart["type"]}
+                    state={part.state}
+                  />
                   <ToolContent>
                     <ToolInput input={part.input} />
                   </ToolContent>
