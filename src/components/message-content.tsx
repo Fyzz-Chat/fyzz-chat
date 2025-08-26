@@ -35,6 +35,7 @@ import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+// import { Response } from "@/components/ai-elements/response";
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
   const tokens = marked.lexer(markdown);
@@ -436,16 +437,22 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
             case "text": {
               const blocks = parseMarkdownIntoBlocks(part.text);
               return (
-                <div key={`${message.id}-block-${index}`} className="flex flex-col gap-1">
-                  {blocks.map((block, index) => (
-                    <div
-                      key={`${message.id}-block-${index}`}
-                      className="break-words"
-                      style={{ wordBreak: "break-word" }}
-                    >
-                      <MemoizedMarkdownBlock content={block} />
-                    </div>
-                  ))}
+                <div key={`${message.id}-text-${index}`}>
+                  {/* <Response key={`${message.id}-text-new-${index}`}>{part.text}</Response> */}
+                  <div
+                    key={`${message.id}-block-${index}`}
+                    className="flex flex-col gap-1"
+                  >
+                    {blocks.map((block, index) => (
+                      <div
+                        key={`${message.id}-block-${index}`}
+                        className="break-words"
+                        style={{ wordBreak: "break-word" }}
+                      >
+                        <MemoizedMarkdownBlock content={block} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             }
