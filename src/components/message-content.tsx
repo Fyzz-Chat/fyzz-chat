@@ -41,6 +41,7 @@ import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { Reasoning, ReasoningContent, ReasoningTrigger } from "./ai-elements/reasoning";
 // import { Response } from "@/components/ai-elements/response";
 
 type GenerateImageToolInput = {
@@ -277,148 +278,9 @@ const MemoizedMarkdownBlock = memo(
   }
 );
 
-function ReasoningPreview({
-  reasoning,
-  messageId,
-  isLastPart,
-}: { reasoning: string; messageId?: string; isLastPart: boolean }) {
-  const [displayedReasoning, setDisplayedReasoning] = useState("");
-  const [expressionIndex, setExpressionIndex] = useState(0);
-  const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const expressions = [
-    "Thinking",
-    "Analyzing",
-    "Gathering sources",
-    "Collecting information",
-    "Reasoning",
-    "Concluding",
-    "Scheming",
-    "Plotting",
-    "Brewing ideas",
-    "Consulting the digital oracle",
-    "Waking up the circuits",
-    "Herding electrons",
-  ];
-
-  // Check for streaming reasoning from the chat store
-  const lastMessage = useChatStore((state) => state.lastMessage);
+export function MessageContent({ message }: { message: CustomUIMessage }) {
   const status = useChatStore((state) => state.status);
 
-  // Get streaming reasoning if this is the current message being streamed
-  const streamingReasoning =
-    lastMessage && lastMessage.id === messageId && status === "streaming"
-      ? (lastMessage.parts?.find((part) => part.type === "reasoning") as any)
-          ?.reasoningText || ""
-      : "";
-
-  // Use streaming reasoning if available, otherwise use the static reasoning
-  const currentReasoning = streamingReasoning || reasoning;
-
-  const isStreaming =
-    lastMessage?.id === messageId && status === "streaming" && isLastPart;
-
-  // Rotate expressions every 2 seconds when streaming
-  useEffect(() => {
-    if (lastMessage?.id !== messageId || status !== "streaming" || !isLastPart) {
-      setExpressionIndex(0);
-      setOutgoingIndex(null);
-      return;
-    }
-
-    let animationTimeout: NodeJS.Timeout;
-    const interval = setInterval(() => {
-      setExpressionIndex((prevIndex) => {
-        setOutgoingIndex(prevIndex);
-        return (prevIndex + 1) % expressions.length;
-      });
-
-      animationTimeout = setTimeout(() => {
-        setOutgoingIndex(null);
-      }, 300); // Animation duration
-    }, 1500);
-
-    return () => {
-      clearInterval(interval);
-      if (animationTimeout) clearTimeout(animationTimeout);
-    };
-  }, [lastMessage?.id, messageId, status, expressions.length, isLastPart]);
-
-  useEffect(() => {
-    if (currentReasoning !== displayedReasoning) {
-      // Only show content when there's actual reasoning
-      if (currentReasoning.trim()) {
-        setDisplayedReasoning(currentReasoning);
-
-        // Only scroll to bottom while streaming
-        if (isStreaming) {
-          setTimeout(() => {
-            if (scrollRef.current) {
-              scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-            }
-          }, 50);
-        }
-      }
-
-      // Clear existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    }
-  }, [currentReasoning, displayedReasoning, isStreaming]);
-
-  // If no reasoning, don't show anything
-  if (!currentReasoning.trim()) {
-    return null;
-  }
-
-  const currentText = isStreaming ? expressions[expressionIndex] : "Thought process";
-
-  return (
-    <div className="relative flex flex-col items-start text-muted-foreground gap-2 text-xs w-full max-w-xs">
-      {/* Animated expression */}
-      <div className="relative text-start h-4 w-full">
-        {outgoingIndex !== null && isStreaming && (
-          <p className="animate-slide-up-out absolute inset-0">
-            {expressions[outgoingIndex]}
-          </p>
-        )}
-        <p
-          key={currentText}
-          className={cn(
-            "absolute inset-0",
-            outgoingIndex !== null ? "animate-slide-in-from-bottom" : ""
-          )}
-        >
-          {currentText}
-        </p>
-      </div>
-
-      {/* Preview window with blurred borders */}
-      <div className="relative h-16 overflow-hidden rounded-md border border-border/50 bg-muted/20">
-        {/* Top blur gradient */}
-        <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none" />
-
-        {/* Bottom blur gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
-
-        {/* Scrolling text content */}
-        <div
-          ref={scrollRef}
-          className="px-3 py-2 h-full overflow-y-auto scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-        >
-          <div className="text-xs text-muted-foreground leading-relaxed text-left">
-            {displayedReasoning}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function MessageContent({ message }: { message: CustomUIMessage }) {
   if (message.role === "user") {
     return (
       <div className="flex flex-col gap-2 items-end w-full">
@@ -524,36 +386,17 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 </Tool>
               );
             }
-          }
-          if (part.type === "reasoning") {
-            return (
-              <Sheet key={`${message.id}-reasoning-${index}`}>
-                <SheetTrigger className="mr-auto">
-                  <ReasoningPreview
-                    reasoning={part.text}
-                    messageId={message.id}
-                    isLastPart={index === (message.parts?.length || 0) - 1}
-                  />
-                </SheetTrigger>
-                <SheetContent className="px-0">
-                  <SheetHeader className="px-6">
-                    <SheetTitle>Reasoning</SheetTitle>
-                    <SheetDescription className="sr-only">
-                      Thought process of the model
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="relative h-full pt-4 pb-6">
-                    <div className="absolute top-4 left-0 right-0 w-full h-4 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
-                    <ScrollArea className="h-full px-6">
-                      <p className="text-sm text-muted-foreground pt-2 pb-4 leading-6">
-                        {part.text}
-                      </p>
-                    </ScrollArea>
-                    <div className="absolute bottom-6 left-0 right-0 w-full h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            );
+            case "reasoning": {
+              return (
+                <Reasoning
+                  key={`${message.id}-reasoning-${index}`}
+                  isStreaming={status === "streaming"}
+                >
+                  <ReasoningTrigger />
+                  <ReasoningContent>{part.text}</ReasoningContent>
+                </Reasoning>
+              );
+            }
           }
         })}
         {message.parts?.some((part) => part.type === "source-url") && (
