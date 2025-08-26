@@ -9,7 +9,13 @@ import {
   SourcesContent,
   SourcesTrigger,
 } from "@/components/ai-elements/source";
-import { Tool, ToolContent, ToolHeader, ToolInput } from "@/components/ai-elements/tool";
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import PdfFilePart from "@/components/message/parts/pdf-file-part";
 import TextPart from "@/components/message/parts/text-part";
@@ -36,6 +42,24 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 // import { Response } from "@/components/ai-elements/response";
+
+type GenerateImageToolInput = {
+  prompt: string;
+};
+
+type GenerateImageToolOutput = {
+  image: string;
+  url: string;
+  name: string;
+  contentType: string;
+};
+
+type GenerateImageToolUIPart = ToolUIPart<{
+  generateImage: {
+    input: GenerateImageToolInput;
+    output: GenerateImageToolOutput;
+  };
+}>;
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
   const tokens = marked.lexer(markdown);
@@ -479,6 +503,27 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 </Tool>
               );
             }
+            case "tool-generateImage": {
+              const imageTool = part as GenerateImageToolUIPart;
+              return (
+                <Tool defaultOpen key={`${message.id}-tool-generateImage-${index}`}>
+                  <ToolHeader type="tool-generateImage" state={part.state} />
+                  <ToolContent>
+                    <ToolInput input={imageTool.input} />
+                    <ToolOutput
+                      output={
+                        <img
+                          className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
+                          src={imageTool.output?.image}
+                          alt={imageTool.output?.name}
+                        />
+                      }
+                      errorText={imageTool.errorText}
+                    />
+                  </ToolContent>
+                </Tool>
+              );
+            }
           }
           if (part.type === "reasoning") {
             return (
@@ -508,21 +553,6 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                   </div>
                 </SheetContent>
               </Sheet>
-            );
-          }
-          if (part.type === "tool-generateImage" && part.state === "output-available") {
-            return (
-              <div
-                key={`${message.id}-tool-result-${index}`}
-                className="flex flex-col gap-2"
-              >
-                <img
-                  className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
-                  key={`${message.id}-tool-result-${index}`}
-                  src={(part.output as any).image}
-                  alt={(part.output as any).name}
-                />
-              </div>
             );
           }
         })}
