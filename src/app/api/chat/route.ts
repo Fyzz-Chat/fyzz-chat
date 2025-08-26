@@ -187,9 +187,6 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        const sources = await result.sources;
-        addSourcesToMessage(lastMessage, sources);
-
         const usage = await result.usage;
         logger.debug(JSON.stringify(usage));
 
@@ -236,16 +233,6 @@ async function getTools(
   }
 
   return { tools, mcpClients };
-}
-
-function addSourcesToMessage(message: CustomUIMessage, sources: any) {
-  sources.forEach((source: any) => {
-    message.parts?.push({
-      type: "source-url",
-      url: source.url,
-      sourceId: source.id,
-    });
-  });
 }
 
 function hasTextPart(message: CustomUIMessage) {

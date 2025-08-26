@@ -3,6 +3,12 @@
 // xonokai, tomorrow, twilight, prism
 import { Button } from "@/components/ui/button";
 
+import {
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
+} from "@/components/ai-elements/source";
 import { Tool, ToolContent, ToolHeader, ToolInput } from "@/components/ai-elements/tool";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import PdfFilePart from "@/components/message/parts/pdf-file-part";
@@ -499,23 +505,27 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
           }
         })}
         {message.parts?.some((part) => part.type === "source-url") && (
-          <div className="flex flex-col gap-2">
-            {message.parts
-              ?.filter((part) => part.type === "source-url")
-              .map((part, index) => {
-                const sourcePart = part as SourceUrlUIPart;
-                return (
-                  <a
-                    key={`source-${sourcePart.sourceId}`}
-                    href={sourcePart.url}
-                    target="_blank"
-                    className="text-blue-400 hover:underline"
-                  >
-                    [{index + 1}] {sourcePart.url}
-                  </a>
-                );
-              })}
-          </div>
+          <Sources defaultOpen>
+            <SourcesTrigger
+              count={
+                message.parts?.filter((part) => part.type === "source-url").length || 0
+              }
+            />
+            {message.parts.map((part, i) => {
+              switch (part.type) {
+                case "source-url":
+                  return (
+                    <SourcesContent key={`${message.id}-${i}`}>
+                      <Source
+                        key={`${message.id}-${i}`}
+                        href={part.url}
+                        title={part.url}
+                      />
+                    </SourcesContent>
+                  );
+              }
+            })}
+          </Sources>
         )}
       </div>
     );
