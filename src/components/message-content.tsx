@@ -3,6 +3,7 @@
 // xonokai, tomorrow, twilight, prism
 import { Button } from "@/components/ui/button";
 
+import { Tool, ToolContent, ToolHeader, ToolInput } from "@/components/ai-elements/tool";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import PdfFilePart from "@/components/message/parts/pdf-file-part";
 import TextPart from "@/components/message/parts/text-part";
@@ -443,9 +444,12 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
           }
           if (part.type === "tool-memory") {
             return (
-              <div key={`${message.id}-tool-result-${index}`}>
-                <p className="text-sm text-muted-foreground leading-6">Memory updated</p>
-              </div>
+              <Tool key={`${message.id}-tool-${index}`}>
+                <ToolHeader type="tool-memory" state={part.state} />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                </ToolContent>
+              </Tool>
             );
           }
           if (part.type === "reasoning") {
