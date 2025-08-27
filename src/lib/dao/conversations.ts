@@ -270,7 +270,7 @@ function filterParts(
             image: getFileUrlSigned((part.output as any).url),
           },
         };
-      } else if (part.type === "file") {
+      } else if (part.type === "file" && !part.url.startsWith("data:")) {
         const key = `${userId}/${conversationId}`;
 
         return {

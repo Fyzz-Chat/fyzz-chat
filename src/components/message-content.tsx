@@ -397,6 +397,15 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 </Reasoning>
               );
             }
+            case "file": {
+              return (
+                <img
+                  key={`${message.id}-file-${index}`}
+                  src={part.url}
+                  className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
+                />
+              );
+            }
           }
         })}
         {message.parts?.some((part) => part.type === "source-url") && (
