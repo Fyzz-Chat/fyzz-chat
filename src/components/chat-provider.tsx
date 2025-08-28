@@ -1,16 +1,13 @@
 "use client";
 
 import { useAddMessage } from "@/lib/queries/conversations";
-import { useTRPC } from "@/lib/trpc/client";
-import { filterMessagesUpToAnchor, getMessageContent } from "@/lib/utils";
+import { getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { useChat } from "@ai-sdk/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { DefaultChatTransport } from "ai";
-import React, { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
