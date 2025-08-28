@@ -112,6 +112,8 @@ export async function POST(req: NextRequest) {
   const abortController = new CompositeAbortController(req.signal);
   abortController.abortIn(maxDuration - 5);
 
+  const reasoning = createReasoningTimer();
+
   async function endConversation() {
     if (temporaryChat) {
       return;
@@ -142,6 +144,11 @@ export async function POST(req: NextRequest) {
       logger.info("Stream aborted");
       await endConversation();
     },
+    onChunk: async ({ chunk }) => {
+      if (chunk.type === "reasoning-delta") {
+        reasoning.onDelta(chunk.id);
+      }
+    },
     onError: async (error: any) => {
       logger.error(error.error.message);
       await endConversation();
@@ -161,9 +168,27 @@ export async function POST(req: NextRequest) {
     sendReasoning: true,
     sendSources: true,
     originalMessages: existingMessages,
+    messageMetadata: ({ part }) => {
+      if (part.type === "start") {
+        return {
+          content: "",
+          createdAt: new Date(),
+          reasoningDurations: [],
+        };
+      }
+
+      if (part.type === "finish") {
+        return {
+          content: "",
+          createdAt: new Date(),
+          reasoningDurations: reasoning.finish(),
+        };
+      }
+    },
     onError: (error: any) => JSON.stringify(error),
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage }) => {
+      const reasoningDurations = reasoning.finish();
       if (temporaryChat) {
         return;
       }
@@ -196,7 +221,14 @@ export async function POST(req: NextRequest) {
         const messageWithFiles = lastMessage;
 
         await saveTokenUsage(lastUserMessage.id, usage.inputTokens || 0, 0);
-        await saveMessage(messageWithFiles, id, modelId, 0, usage.outputTokens || 0);
+        await saveMessage(
+          messageWithFiles,
+          reasoningDurations,
+          id,
+          modelId,
+          0,
+          usage.outputTokens || 0
+        );
       } finally {
         await endConversation();
       }
@@ -304,4 +336,39 @@ async function _uploadMedia(
   );
 
   return { ...message, parts };
+}
+
+function createReasoningTimer() {
+  let currentId: string | null = null;
+  let startMs = 0;
+  const durations: { id: string; ms: number }[] = [];
+
+  function onDelta(id?: string) {
+    if (!id) return;
+    if (currentId === null) {
+      currentId = id;
+      startMs = performance.now();
+      return;
+    }
+    if (id !== currentId) {
+      const elapsed = Math.round(performance.now() - startMs);
+      durations.push({ id: currentId, ms: elapsed });
+      logger.debug(`Reasoning step ${currentId} took ${elapsed}ms`);
+      currentId = id;
+      startMs = performance.now();
+    }
+  }
+
+  function finish() {
+    if (currentId !== null) {
+      const elapsed = Math.round(performance.now() - startMs);
+      durations.push({ id: currentId, ms: elapsed });
+      logger.debug(`Reasoning step ${currentId} took ${elapsed}ms`);
+      logger.debug(`Reasoning durations: ${JSON.stringify(durations)}`);
+      currentId = null;
+    }
+    return durations;
+  }
+
+  return { onDelta, finish, durations };
 }
