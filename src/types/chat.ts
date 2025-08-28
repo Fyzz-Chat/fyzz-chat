@@ -5,7 +5,7 @@ import { z } from "zod";
 const metadataSchema = z.object({
   content: z.string().nullable(),
   createdAt: z.date(),
-  reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).optional(),
+  reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).nullable(),
 });
 
 type CustomMetadata = z.infer<typeof metadataSchema>;

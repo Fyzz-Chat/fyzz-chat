@@ -239,6 +239,7 @@ export function mapMessages(
       metadata: {
         createdAt: message.createdAt,
         content: message.content,
+        reasoningDurations: message.reasoningDurations as { id: string; ms: number }[],
       },
     };
   });

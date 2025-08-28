@@ -115,6 +115,7 @@ export default function InputForm({ className }: { className?: string }) {
         metadata: {
           content: input,
           createdAt: new Date(),
+          reasoningDurations: [],
         },
       },
       conversationId: stableId,

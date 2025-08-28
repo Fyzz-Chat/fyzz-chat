@@ -17,7 +17,6 @@ type ReasoningContextValue = {
   isStreaming: boolean;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  duration: number;
 };
 
 const ReasoningContext = createContext<ReasoningContextValue | null>(null);
@@ -57,10 +56,6 @@ export const Reasoning = memo(
       defaultProp: defaultOpen,
       onChange: onOpenChange,
     });
-    const [duration, setDuration] = useControllableState({
-      prop: durationProp,
-      defaultProp: 0,
-    });
 
     const [hasAutoClosedRef, setHasAutoClosedRef] = useState(false);
     const [startTime, setStartTime] = useState<number | null>(null);
@@ -72,10 +67,9 @@ export const Reasoning = memo(
           setStartTime(Date.now());
         }
       } else if (startTime !== null) {
-        setDuration(Math.round((Date.now() - startTime) / MS_IN_S));
         setStartTime(null);
       }
-    }, [isStreaming, startTime, setDuration]);
+    }, [isStreaming, startTime]);
 
     // Auto-open when streaming starts, auto-close when streaming ends (once only)
     useEffect(() => {
@@ -95,7 +89,7 @@ export const Reasoning = memo(
     };
 
     return (
-      <ReasoningContext.Provider value={{ isStreaming, isOpen, setIsOpen, duration }}>
+      <ReasoningContext.Provider value={{ isStreaming, isOpen, setIsOpen }}>
         <Collapsible
           className={cn("not-prose", className)}
           onOpenChange={handleOpenChange}
@@ -109,11 +103,13 @@ export const Reasoning = memo(
   }
 );
 
-export type ReasoningTriggerProps = ComponentProps<typeof CollapsibleTrigger>;
+export type ReasoningTriggerProps = ComponentProps<typeof CollapsibleTrigger> & {
+  duration?: number;
+};
 
 export const ReasoningTrigger = memo(
-  ({ className, children, ...props }: ReasoningTriggerProps) => {
-    const { isStreaming, isOpen, duration: _duration } = useReasoning();
+  ({ className, children, duration, ...props }: ReasoningTriggerProps) => {
+    const { isStreaming, isOpen } = useReasoning();
 
     return (
       <CollapsibleTrigger
@@ -123,11 +119,10 @@ export const ReasoningTrigger = memo(
         {children ?? (
           <>
             <BrainIcon className="size-4" />
-            {isStreaming /*|| duration === 0*/ ? (
+            {isStreaming || duration === 0 ? (
               <p>Thinking...</p>
             ) : (
-              // <p>Thought for {duration} seconds</p>
-              <p>Thought process</p>
+              <p>Thought for {(duration ? duration / MS_IN_S : 0).toFixed(1)} seconds</p>
             )}
             <ChevronDownIcon
               className={cn(

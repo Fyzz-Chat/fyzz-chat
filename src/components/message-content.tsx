@@ -330,6 +330,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
   }
 
   if (message.role === "assistant") {
+    let reasoningIndex = 0;
     return (
       <div className="flex flex-col gap-4 min-h-6">
         {message.parts?.map((part, index) => {
@@ -392,7 +393,11 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                   key={`${message.id}-reasoning-${index}`}
                   isStreaming={status === "streaming"}
                 >
-                  <ReasoningTrigger />
+                  <ReasoningTrigger
+                    duration={
+                      message.metadata?.reasoningDurations?.[reasoningIndex++]?.ms
+                    }
+                  />
                   <ReasoningContent>{part.text}</ReasoningContent>
                 </Reasoning>
               );

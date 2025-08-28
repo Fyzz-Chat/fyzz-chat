@@ -49,13 +49,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       generateId: () => nextMessageId.current,
       onFinish: async ({ message }: { message: CustomUIMessage }) => {
         await addMessage.mutateAsync({
-          message: {
-            ...message,
-            metadata: {
-              content: getMessageContent(message),
-              createdAt: new Date(),
-            },
-          },
+          message,
           conversationId: stableId,
         });
       },
