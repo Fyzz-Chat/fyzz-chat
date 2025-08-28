@@ -34,7 +34,7 @@ import type { CustomUIMessage } from "@/types/chat";
 import type { ToolUIPart } from "ai";
 import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -278,6 +278,20 @@ const MemoizedMarkdownBlock = memo(
   }
 );
 
+const MemoizedMarkdown = memo(({ content, id }: { content: string; id: string }) => {
+  const blocks = useMemo(() => parseMarkdownIntoBlocks(content), [content]);
+
+  return blocks.map((block, index) => (
+    <div
+      key={`${id}-block-${index}`}
+      className="break-words"
+      style={{ wordBreak: "break-word" }}
+    >
+      <MemoizedMarkdownBlock content={block} />
+    </div>
+  ));
+});
+
 export function MessageContent({ message }: { message: CustomUIMessage }) {
   const status = useChatStore((state) => state.status);
 
@@ -321,24 +335,10 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
         {message.parts?.map((part, index) => {
           switch (part.type) {
             case "text": {
-              const blocks = parseMarkdownIntoBlocks(part.text);
               return (
                 <div key={`${message.id}-text-${index}`}>
                   {/* <Response key={`${message.id}-text-new-${index}`}>{part.text}</Response> */}
-                  <div
-                    key={`${message.id}-block-${index}`}
-                    className="flex flex-col gap-1"
-                  >
-                    {blocks.map((block, index) => (
-                      <div
-                        key={`${message.id}-block-${index}`}
-                        className="break-words"
-                        style={{ wordBreak: "break-word" }}
-                      >
-                        <MemoizedMarkdownBlock content={block} />
-                      </div>
-                    ))}
-                  </div>
+                  <MemoizedMarkdown content={part.text} id={message.id} />
                 </div>
               );
             }
