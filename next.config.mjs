@@ -44,6 +44,9 @@ const withMillionLint = (nextConfig) => {
     return MillionLint.next({
       enabled: true,
       rsc: true,
+      filter: {
+        include: "**/components/*.{mtsx,mjsx,tsx,jsx}",
+      },
     })(nextConfig);
   } else {
     return nextConfig;
