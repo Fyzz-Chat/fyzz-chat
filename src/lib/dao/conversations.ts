@@ -237,8 +237,9 @@ export function mapMessages(
       role: messageWithoutFiles.role as "system" | "user" | "assistant",
       parts: filterParts(userId, conversationId, parts),
       metadata: {
-        createdAt: message.createdAt,
+        model: message.model,
         content: message.content,
+        createdAt: message.createdAt,
         reasoningDurations: message.reasoningDurations as { id: string; ms: number }[],
       },
     };

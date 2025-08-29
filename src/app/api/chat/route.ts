@@ -171,6 +171,7 @@ export async function POST(req: NextRequest) {
     messageMetadata: ({ part }) => {
       if (part.type === "start") {
         return {
+          model: modelId,
           content: "",
           createdAt: new Date(),
           reasoningDurations: [],
@@ -179,6 +180,7 @@ export async function POST(req: NextRequest) {
 
       if (part.type === "finish") {
         return {
+          model: modelId,
           content: "",
           createdAt: new Date(),
           reasoningDurations: reasoning.finish(),

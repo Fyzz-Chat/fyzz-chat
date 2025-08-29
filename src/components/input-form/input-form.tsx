@@ -113,6 +113,7 @@ export default function InputForm({ className }: { className?: string }) {
         parts: parts,
         model: model.id,
         metadata: {
+          model: model.id,
           content: input,
           createdAt: new Date(),
           reasoningDurations: [],

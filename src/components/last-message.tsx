@@ -7,7 +7,6 @@ import { MessageItem } from "./message-item";
 
 export default function LastMessage({ conversationId }: { conversationId: string }) {
   const lastMessage = useChatStore((state) => state.lastMessage);
-  const model = useModelStore((state) => state.model);
   const { data: messages, status: messagesStatus } = useMessages(conversationId);
 
   if (
@@ -21,10 +20,5 @@ export default function LastMessage({ conversationId }: { conversationId: string
     return null;
   }
 
-  return (
-    <MessageItem
-      message={{ ...lastMessage, model: model.name }}
-      conversationId={conversationId}
-    />
-  );
+  return <MessageItem message={lastMessage} conversationId={conversationId} />;
 }

@@ -3,6 +3,7 @@ import type { UIMessage } from "ai";
 import { z } from "zod";
 
 const metadataSchema = z.object({
+  model: z.string().nullable(),
   content: z.string().nullable(),
   createdAt: z.date(),
   reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).nullable(),
