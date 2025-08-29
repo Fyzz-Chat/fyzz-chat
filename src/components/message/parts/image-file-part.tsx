@@ -31,7 +31,7 @@ export default function ImageFilePart({
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-fit h-fit max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background rounded-lg gap-0 [&>button]:hidden">
+      <DialogContent className="w-fit max-w-[95vw] p-0 overflow-hidden bg-background rounded-lg gap-0 [&>button]:hidden">
         <DialogHeader className="flex flex-row items-center justify-end h-12 px-4 gap-2 space-y-0">
           <DialogTitle className="sr-only">{name}</DialogTitle>
           <DialogDescription className="sr-only">Image preview</DialogDescription>
@@ -49,7 +49,9 @@ export default function ImageFilePart({
             <X size={20} />
           </DialogClose>
         </DialogHeader>
-        <img src={url} alt={name} className="max-h-[75vh] object-contain w-full" />
+        <div className="flex items-center justify-center">
+          <img src={url} alt={name} className="max-h-[75vh] object-contain" />
+        </div>
         {name && (
           <DialogFooter className="flex flex-row items-center justify-between h-24 p-4 gap-4">
             <p className="text-white text-sm font-medium text-pretty truncate">{name}</p>
