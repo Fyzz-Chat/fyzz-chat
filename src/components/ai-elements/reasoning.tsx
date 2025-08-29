@@ -118,9 +118,18 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            <BrainIcon className="size-4" />
+            <BrainIcon
+              className={cn(
+                "size-4",
+                isStreaming || duration === 0
+                  ? "text-primary animate-pulse drop-shadow-[0_0_3px_hsl(var(--ring))]"
+                  : ""
+              )}
+            />
             {isStreaming || duration === 0 ? (
-              <p>Thinking...</p>
+              <p className="text-primary animate-pulse drop-shadow-[0_0_3px_hsl(var(--ring))]">
+                Thinking...
+              </p>
             ) : (
               <p>Thought for {(duration ? duration / MS_IN_S : 0).toFixed(1)} seconds</p>
             )}
