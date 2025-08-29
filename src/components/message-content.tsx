@@ -366,27 +366,11 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                     <ToolInput input={imageTool.input} />
                     <ToolOutput
                       output={
-                        <div className="relative w-full sm:w-[60%]">
-                          <Button
-                            size="icon"
-                            variant="link"
-                            className="absolute top-2 right-2"
-                            asChild
-                          >
-                            <a
-                              href={imageTool.output?.image}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Download className="size-4" />
-                            </a>
-                          </Button>
-                          <img
-                            className="w-full h-auto object-contain rounded-lg"
-                            src={imageTool.output?.image}
-                            alt={imageTool.output?.name}
-                          />
-                        </div>
+                        <ImageFilePart
+                          key={`${message.id}-file-${index}`}
+                          url={imageTool.output?.image || ""}
+                          name={imageTool.output?.name}
+                        />
                       }
                       errorText={imageTool.errorText}
                     />
@@ -411,10 +395,10 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
             }
             case "file": {
               return (
-                <img
+                <ImageFilePart
                   key={`${message.id}-file-${index}`}
-                  src={part.url}
-                  className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
+                  url={part.url}
+                  name={part.filename}
                 />
               );
             }

@@ -1,14 +1,20 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Maximize2 } from "lucide-react";
+import { Download, Maximize2, X } from "lucide-react";
 
-export default function ImageFilePart({ url, name }: { url: string; name?: string }) {
+export default function ImageFilePart({
+  url,
+  name = "",
+}: { url: string; name?: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -16,7 +22,7 @@ export default function ImageFilePart({ url, name }: { url: string; name?: strin
           <div className="relative overflow-hidden rounded-lg">
             <img
               src={url}
-              alt={name || "User uploaded image"}
+              alt={name}
               className="w-full h-auto object-contain group-hover/image:brightness-50 transition-all duration-200"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-200">
@@ -25,23 +31,30 @@ export default function ImageFilePart({ url, name }: { url: string; name?: strin
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-fit h-fit max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background rounded-lg">
-        <DialogHeader className="sr-only">
-          <DialogTitle>{name || "User uploaded image"}</DialogTitle>
-          <DialogDescription>Full size view of the uploaded image</DialogDescription>
+      <DialogContent className="w-fit h-fit max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background rounded-lg gap-0 [&>button]:hidden">
+        <DialogHeader className="flex flex-row items-center justify-end h-12 px-4 gap-2 space-y-0">
+          <DialogTitle className="sr-only">{name}</DialogTitle>
+          <DialogDescription className="sr-only">Image preview</DialogDescription>
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="hover:bg-transparent hover:text-foreground"
+          >
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              <Download size={20} />
+            </a>
+          </Button>
+          <DialogClose>
+            <X size={20} />
+          </DialogClose>
         </DialogHeader>
-        <div className="relative">
-          <img
-            src={url}
-            alt={name || "User uploaded image"}
-            className="w-auto h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-          />
-          {name && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-              <p className="text-white text-sm font-medium">{name}</p>
-            </div>
-          )}
-        </div>
+        <img src={url} alt={name} className="max-h-[75vh] object-contain w-full" />
+        {name && (
+          <DialogFooter className="flex flex-row items-center justify-between h-24 p-4 gap-4">
+            <p className="text-white text-sm font-medium text-pretty truncate">{name}</p>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
