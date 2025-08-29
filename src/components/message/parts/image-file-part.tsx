@@ -48,7 +48,7 @@ export default function ImageFilePart({
             asChild
             className="hover:bg-transparent hover:text-foreground"
           >
-            <a href={url} target="_blank" rel="noopener noreferrer">
+            <a href={url} download={name || "image"} rel="noopener noreferrer">
               <Download size={20} />
             </a>
           </Button>
