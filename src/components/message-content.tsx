@@ -301,6 +301,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                   key={`${message.id}-attachment-${index}`}
                   url={url}
                   name={name}
+                  mediaType={part.mediaType}
                 />
               );
             }
@@ -370,6 +371,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                           key={`${message.id}-file-${index}`}
                           url={imageTool.output?.image || ""}
                           name={imageTool.output?.name}
+                          mediaType={imageTool.output?.contentType}
                         />
                       }
                       errorText={imageTool.errorText}
@@ -399,6 +401,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                   key={`${message.id}-file-${index}`}
                   url={part.url}
                   name={part.filename}
+                  mediaType={part.mediaType}
                 />
               );
             }

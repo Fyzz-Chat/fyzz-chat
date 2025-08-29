@@ -14,7 +14,14 @@ import { Download, Maximize2, X } from "lucide-react";
 export default function ImageFilePart({
   url,
   name = "",
-}: { url: string; name?: string }) {
+  mediaType = "image/png",
+}: { url: string; name?: string; mediaType?: string }) {
+  const isBase64Image = url.startsWith("data:image");
+
+  if (isBase64Image) {
+    url = base64ToDownloadableUrl(url, mediaType);
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -60,4 +67,20 @@ export default function ImageFilePart({
       </DialogContent>
     </Dialog>
   );
+}
+
+function base64ToDownloadableUrl(base64: string, mediaType: string) {
+  const base64Data = base64.split(",")[1];
+
+  const binaryString = window.atob(base64Data);
+
+  const bytes = new Uint8Array(binaryString.length);
+
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  const blob = new Blob([bytes], { type: mediaType });
+
+  return URL.createObjectURL(blob);
 }
