@@ -8,7 +8,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { BrainIcon, ChevronDownIcon } from "lucide-react";
+import { BrainIcon, ChevronDownIcon, Cog } from "lucide-react";
 import type { ComponentProps } from "react";
 import { createContext, memo, useContext, useEffect, useRef, useState } from "react";
 import { Response } from "./response";
@@ -118,24 +118,34 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            <BrainIcon
-              className={cn(
-                "size-4",
-                isStreaming || duration === 0
-                  ? "text-primary animate-pulse drop-shadow-[0_0_3px_hsl(var(--ring))]"
-                  : ""
-              )}
-            />
             {isStreaming || duration === 0 ? (
-              <p className="text-primary animate-pulse drop-shadow-[0_0_3px_hsl(var(--ring))]">
-                Thinking...
-              </p>
+              <div className="flex items-center gap-4">
+                <div className="relative animate-pulse text-primary drop-shadow-[0_0_3px_hsl(var(--ring))]">
+                  <Cog
+                    size={12}
+                    className="-mt-1 animate-[spin_2s_linear_infinite_reverse]"
+                  />
+                  <Cog
+                    size={16}
+                    className="ml-2 -mt-1 absolute animate-[spin_2s_linear_infinite]"
+                  />
+                </div>
+                <p className="text-primary animate-pulse drop-shadow-[0_0_3px_hsl(var(--ring))]">
+                  Thinking...
+                </p>
+              </div>
             ) : (
-              <p>Thought for {(duration ? duration / MS_IN_S : 0).toFixed(1)} seconds</p>
+              <div className="flex items-center gap-2">
+                <BrainIcon size={16} />
+                <p>
+                  Thought for {(duration ? duration / MS_IN_S : 0).toFixed(1)} seconds
+                </p>
+              </div>
             )}
             <ChevronDownIcon
               className={cn(
                 "size-4 text-muted-foreground transition-transform",
+                isStreaming || duration === 0 ? "animate-pulse text-primary" : "",
                 isOpen ? "rotate-180" : "rotate-0"
               )}
             />
