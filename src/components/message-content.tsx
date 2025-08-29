@@ -20,19 +20,10 @@ import ImageFilePart from "@/components/message/parts/image-file-part";
 import PdfFilePart from "@/components/message/parts/pdf-file-part";
 import TextPart from "@/components/message/parts/text-part";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import type { CustomUIMessage } from "@/types/chat";
 import type { ToolUIPart } from "ai";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Download } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -375,11 +366,27 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                     <ToolInput input={imageTool.input} />
                     <ToolOutput
                       output={
-                        <img
-                          className="w-full sm:w-[60%] h-auto object-contain rounded-lg"
-                          src={imageTool.output?.image}
-                          alt={imageTool.output?.name}
-                        />
+                        <div className="relative w-full sm:w-[60%]">
+                          <Button
+                            size="icon"
+                            variant="link"
+                            className="absolute top-2 right-2"
+                            asChild
+                          >
+                            <a
+                              href={imageTool.output?.image}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Download className="size-4" />
+                            </a>
+                          </Button>
+                          <img
+                            className="w-full h-auto object-contain rounded-lg"
+                            src={imageTool.output?.image}
+                            alt={imageTool.output?.name}
+                          />
+                        </div>
                       }
                       errorText={imageTool.errorText}
                     />
