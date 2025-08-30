@@ -118,7 +118,7 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            {isStreaming || duration === 0 ? (
+            {isStreaming && !duration ? (
               <div className="flex items-center gap-4">
                 <div className="relative animate-pulse text-primary drop-shadow-[0_0_3px_hsl(var(--ring))]">
                   <Cog
@@ -145,7 +145,7 @@ export const ReasoningTrigger = memo(
             <ChevronDownIcon
               className={cn(
                 "size-4 text-muted-foreground transition-transform",
-                isStreaming || duration === 0 ? "animate-pulse text-primary" : "",
+                isStreaming && !duration ? "animate-pulse text-primary" : "",
                 isOpen ? "rotate-180" : "rotate-0"
               )}
             />
