@@ -53,20 +53,17 @@ export class CompositeAbortController {
 }
 
 function normalizeAbortReason(reason?: any): any {
-  return new Error(reason || "Aborted");
-
   // If already an AbortError/DOMException, keep it
-  // if (reason instanceof Error && reason.name === "AbortError") return reason;
-  // // Prefer DOMException when available for web compatibility
-  // const message = typeof reason === "string" ? reason : "Aborted";
-  // try {
-  //   // DOMException may not exist in some Node runtimes
-  //   // eslint-disable-next-line no-new
-  //   const domEx = new (globalThis as any).DOMException(message, "AbortError");
-  //   return domEx;
-  // } catch {
-  //   const err = new Error(message);
-  //   (err as any).name = "AbortError";
-  //   return err;
-  // }
+  if (reason instanceof Error && reason.name === "AbortError") return reason;
+  // Prefer DOMException when available for web compatibility
+  const message = typeof reason === "string" ? reason : "Aborted";
+  try {
+    // DOMException may not exist in some Node runtimes
+    const domEx = new (globalThis as any).DOMException(message, "AbortError");
+    return domEx;
+  } catch {
+    const err = new Error(message);
+    (err as any).name = "AbortError";
+    return err;
+  }
 }

@@ -27,6 +27,7 @@ import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
 import {
   type FileUIPart,
+  type LanguageModelUsage,
   type experimental_MCPClient as McpClient,
   type Tool,
   convertToModelMessages,
@@ -189,7 +190,7 @@ export async function POST(req: NextRequest) {
     },
     onError: (error: any) => JSON.stringify(error),
     generateMessageId: () => uuidv4(),
-    onFinish: async ({ messages, responseMessage }) => {
+    onFinish: async ({ messages, responseMessage, isAborted }) => {
       const reasoningDurations = reasoning.finish();
       if (temporaryChat) {
         return;
@@ -215,21 +216,26 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        const usage = await result.usage;
-        logger.debug(JSON.stringify(usage));
+        let usage: LanguageModelUsage | undefined;
+
+        if (!isAborted) {
+          usage = await result.usage;
+          logger.debug(JSON.stringify(usage));
+        }
+
+        await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
 
         // const messageWithFiles = await uploadMedia(user.id, id, lastMessage);
         // File data URLs are not supported yet in Gemini Image Gen models
         const messageWithFiles = lastMessage;
 
-        await saveTokenUsage(lastUserMessage.id, usage.inputTokens || 0, 0);
         await saveMessage(
           messageWithFiles,
           reasoningDurations,
           id,
           modelId,
           0,
-          usage.outputTokens || 0
+          usage?.outputTokens || 0
         );
       } finally {
         await endConversation();
