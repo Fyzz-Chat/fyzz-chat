@@ -29,6 +29,9 @@ export async function getMcpClients(): Promise<McpClient[]> {
 
   for (const serverKey of Object.keys(servers)) {
     const server = servers[serverKey];
+    if (server?.enabled === false) {
+      continue;
+    }
     const serverUrl = server.url as string | undefined;
     const command = server.command as string | undefined;
     const args = server.args as string[] | undefined;

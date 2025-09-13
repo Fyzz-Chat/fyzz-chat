@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { saveMcpServers } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { MissingKeyError } from "@/types/mcp";
@@ -19,7 +20,7 @@ import { use, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-type ServerItem = { name: string; url: string };
+type ServerItem = { name: string; url: string; enabled: boolean };
 
 export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
   const translationsPromise = useTranslations();
@@ -35,6 +36,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
       return Object.keys(entries).map((key) => ({
         name: key,
         url: entries[key]?.url ?? "",
+        enabled: entries[key]?.enabled !== false,
       }));
     } catch {
       return [];
@@ -44,14 +46,14 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
   const [servers, setServers] = useState<ServerItem[]>(initialServers);
 
   function addServer() {
-    setServers((prev) => [...prev, { name: "", url: "" }]);
+    setServers((prev) => [...prev, { name: "", url: "", enabled: true }]);
   }
 
   function removeServer(index: number) {
     setServers((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function updateServer(index: number, key: keyof ServerItem, value: string) {
+  function updateServer(index: number, key: keyof ServerItem, value: string | boolean) {
     setServers((prev) =>
       prev.map((item, i) => (i === index ? { ...item, [key]: value } : item))
     );
@@ -61,9 +63,12 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
     try {
       const valid = servers.filter((s) => s.name.trim() && s.url.trim());
       const payload = {
-        mcpServers: valid.reduce<Record<string, { url: string }>>(
-          (acc, { name, url }) => {
-            acc[name.trim()] = { url: url.trim() };
+        mcpServers: valid.reduce<Record<string, { url: string; enabled?: boolean }>>(
+          (acc, { name, url, enabled }) => {
+            acc[name.trim()] = {
+              url: url.trim(),
+              ...(enabled === false ? { enabled } : {}),
+            };
             return acc;
           },
           {}
@@ -111,7 +116,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
             {servers.map((server, index) => (
               <div
                 key={index}
-                className="grid w-full grid-cols-1 gap-2 sm:grid-cols-[1fr_minmax(0,2fr)_auto] sm:gap-3"
+                className="grid w-full grid-cols-1 gap-2 sm:grid-cols-[1fr_minmax(0,2fr)_auto_auto] sm:gap-3"
               >
                 <div className="flex flex-col gap-1">
                   <Label htmlFor={`server-name-${index}`}>Name</Label>
@@ -131,6 +136,20 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
                     onChange={(e) => updateServer(index, "url", e.target.value)}
                     placeholder="https://example.com/mcp"
                   />
+                </div>
+                <div className="flex items-end gap-2">
+                  <div className="flex flex-col gap-1 h-full">
+                    <Label htmlFor={`server-enabled-${index}`}>Enabled</Label>
+                    <div className="flex items-center justify-center flex-1">
+                      <Switch
+                        id={`server-enabled-${index}`}
+                        checked={server.enabled}
+                        onCheckedChange={(checked) =>
+                          updateServer(index, "enabled", checked)
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex items-end sm:pl-2">
                   <Button
