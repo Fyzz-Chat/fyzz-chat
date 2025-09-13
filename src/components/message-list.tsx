@@ -21,6 +21,8 @@ function getErrorMessage(error: { message: string }) {
     return "Uh oh! That was a huge file. Try something smaller than 4MB next time.";
   } else if (error.message === "conversation_locked") {
     return "Woah, slow down! We are still in the middle of saving your previous message.";
+  } else if (error.message === "mcp_clients_init_error") {
+    return "One or more MCP servers failed to initialize. Please try again.";
   }
   return "Something went wrong.";
 }

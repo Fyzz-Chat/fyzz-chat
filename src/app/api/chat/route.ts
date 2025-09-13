@@ -22,7 +22,12 @@ import {
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { type SessionUser, getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import { closeMcpClients, getMcpClients, getMcpTools } from "@/lib/services/mcp";
+import {
+  McpClientInitError,
+  closeMcpClients,
+  getMcpClients,
+  getMcpTools,
+} from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
 import {
@@ -36,7 +41,7 @@ import {
   stepCountIs,
   streamText,
 } from "ai";
-import type { NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
 export const maxDuration = 55;
@@ -97,9 +102,17 @@ export async function POST(req: NextRequest) {
   let mcpClients: McpClient[] = [];
 
   if (supportsTools && !temporaryChat) {
-    const toolsResult = await getTools(user, id);
-    tools = toolsResult.tools;
-    mcpClients = toolsResult.mcpClients;
+    try {
+      const toolsResult = await getTools(user, id);
+      tools = toolsResult.tools;
+      mcpClients = toolsResult.mcpClients;
+    } catch (error: any) {
+      logger.error(error);
+
+      if (error instanceof McpClientInitError) {
+        return new NextResponse(error.cause as string, { status: 502 });
+      }
+    }
   }
 
   let memoryPrompt = "";
