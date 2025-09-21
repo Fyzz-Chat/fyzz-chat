@@ -345,6 +345,16 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 </Tool>
               );
             }
+            case "tool-readUrl": {
+              return (
+                <Tool key={`${message.id}-tool-readUrl-${index}`}>
+                  <ToolHeader type="tool-readUrl" state={part.state} />
+                  <ToolContent>
+                    <ToolInput input={part.input} />
+                  </ToolContent>
+                </Tool>
+              );
+            }
             case "dynamic-tool": {
               return (
                 <Tool key={`${message.id}-${part.toolName}-${index}`}>

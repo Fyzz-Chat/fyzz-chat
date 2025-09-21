@@ -13,6 +13,7 @@ import {
 } from "@/lib/backend/providers";
 import { generateImageTool } from "@/lib/backend/tools/generate-image";
 import { memoryTool } from "@/lib/backend/tools/memory";
+import { readUrlTool } from "@/lib/backend/tools/read-url";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
@@ -282,6 +283,8 @@ async function getTools(
   if (user.memoryEnabled) {
     tools.memory = memoryTool;
   }
+
+  tools.readUrl = readUrlTool;
 
   const mcpClients = await getMcpClients();
 
