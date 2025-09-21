@@ -286,7 +286,8 @@ async function getTools(
   }
 
   tools.readUrl = readUrlTool;
-  tools.readYoutube = readYoutubeTool;
+  // Not working in production yet
+  // tools.readYoutube = readYoutubeTool;
 
   const mcpClients = await getMcpClients();
 
