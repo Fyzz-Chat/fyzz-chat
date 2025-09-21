@@ -33,6 +33,8 @@
     "@aws-sdk/cloudfront-signer": "3.775.0",
     "@aws-sdk/s3-request-presigner": "3.830.0",
     "@formatjs/intl-localematcher": "0.6.1",
+    "@langchain/community": "0.3.56",
+    "@langchain/core": "0.3.77",
     "@modelcontextprotocol/sdk": "1.12.1",
     "@prisma/client": "6.6.0",
     "@radix-ui/react-alert-dialog": "1.1.10",
@@ -97,6 +99,7 @@
     "vaul": "1.1.2",
     "winston": "3.17.0",
     "winston-transport": "4.9.0",
+    "youtubei.js": "15.1.1",
     "zod": "4.0.4",
     "zustand": "5.0.5"
   },

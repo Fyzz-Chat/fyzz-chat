@@ -14,6 +14,7 @@ import {
 import { generateImageTool } from "@/lib/backend/tools/generate-image";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
+import { readYoutubeTool } from "@/lib/backend/tools/read-youtube";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
@@ -285,6 +286,7 @@ async function getTools(
   }
 
   tools.readUrl = readUrlTool;
+  tools.readYoutube = readYoutubeTool;
 
   const mcpClients = await getMcpClients();
 

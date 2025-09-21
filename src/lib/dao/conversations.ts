@@ -258,7 +258,12 @@ function filterParts(
       if (part.type === "step-start") {
         return false;
       } else if (part.type.startsWith("tool-")) {
-        return part.type === "tool-memory" || part.type === "tool-generateImage";
+        return (
+          part.type === "tool-memory" ||
+          part.type === "tool-generateImage" ||
+          part.type === "tool-readUrl" ||
+          part.type === "tool-readYoutube"
+        );
       } else {
         return true;
       }
