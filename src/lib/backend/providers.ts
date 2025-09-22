@@ -106,6 +106,20 @@ export function getGoogleProviderOptions(modelId: string): {
     : {};
 }
 
+export function getProviderTools(modelId: string) {
+  const isOpenAIModel = providers.some(
+    (provider) =>
+      (provider.id === "openai" || provider.id === "azure") &&
+      provider.models.some((model) => model.id === modelId)
+  );
+  if (isOpenAIModel) {
+    return {
+      // code_interpreter: openai.tools.codeInterpreter(),
+      web_search: openai.tools.webSearch(),
+    };
+  }
+}
+
 export function getTemperature(modelId: string) {
   if (
     modelId === "o4-mini" ||

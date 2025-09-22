@@ -8,13 +8,13 @@ import {
   getGoogleProviderOptions,
   getModel,
   getOpenaiProviderOptions,
+  getProviderTools,
   getTemperature,
   openaiConfigured,
 } from "@/lib/backend/providers";
 import { generateImageTool } from "@/lib/backend/tools/generate-image";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
-import { readYoutubeTool } from "@/lib/backend/tools/read-youtube";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
 
   if (supportsTools && !temporaryChat) {
     try {
-      const toolsResult = await getTools(user, id);
+      const toolsResult = await getTools(user, id, modelId);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
     } catch (error: any) {
@@ -273,7 +273,8 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
 
 async function getTools(
   user: SessionUser,
-  conversationId: string
+  conversationId: string,
+  modelId: string
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: McpClient[] }> {
   const tools: { [key: string]: Tool } = {};
 
@@ -288,6 +289,9 @@ async function getTools(
   tools.readUrl = readUrlTool;
   // Not working in production yet
   // tools.readYoutube = readYoutubeTool;
+
+  const providerTools = getProviderTools(modelId);
+  Object.assign(tools, providerTools);
 
   const mcpClients = await getMcpClients();
 
