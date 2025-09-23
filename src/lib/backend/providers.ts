@@ -129,19 +129,6 @@ export function getProviderTools(modelId: string) {
   }
 }
 
-export function getTemperature(modelId: string) {
-  if (
-    modelId === "o4-mini" ||
-    modelId === "gpt-5" ||
-    modelId === "gpt-5-mini" ||
-    modelId === "gpt-5-nano"
-  ) {
-    return 1;
-  }
-
-  return undefined;
-}
-
 function isThinkingModel(modelId: string, providerId: string) {
   const model = filterProviders()
     .filter((provider) => provider.id === providerId)

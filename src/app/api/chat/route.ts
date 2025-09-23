@@ -9,7 +9,6 @@ import {
   getModel,
   getOpenaiProviderOptions,
   getProviderTools,
-  getTemperature,
   openaiConfigured,
 } from "@/lib/backend/providers";
 import { generateImageTool } from "@/lib/backend/tools/generate-image";
@@ -145,7 +144,6 @@ export async function POST(req: NextRequest) {
     messages: convertToModelMessages(filteredMessages),
     system: extendedSystemPrompt,
     stopWhen: [stepCountIs(5), hasToolCall("generateImage")],
-    temperature: getTemperature(modelId),
     experimental_transform: smoothStream({
       delayInMs: 10,
     }),
