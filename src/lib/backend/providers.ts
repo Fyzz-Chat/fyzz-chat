@@ -403,7 +403,7 @@ const providers: Provider[] = [
       {
         id: "claude-3-5-haiku-20241022",
         name: "Claude 3.5 Haiku",
-        features: [images, pdf],
+        features: [images, pdf, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -411,7 +411,7 @@ const providers: Provider[] = [
       {
         id: "claude-3-7-sonnet-20250219",
         name: "Claude 3.7 Sonnet",
-        features: [images, pdf, reasoning],
+        features: [images, pdf, reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -419,7 +419,7 @@ const providers: Provider[] = [
       {
         id: "claude-sonnet-4-20250514",
         name: "Claude Sonnet 4",
-        features: [images, pdf, reasoning],
+        features: [images, pdf, reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
