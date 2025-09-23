@@ -1,5 +1,6 @@
 import "server-only";
 
+import { codeInterpreterTool } from "@/lib/backend/tools/code-interpreter";
 import {
   type Feature,
   type Provider,
@@ -114,7 +115,7 @@ export function getProviderTools(modelId: string) {
   );
   if (isOpenAIModel) {
     return {
-      // code_interpreter: openai.tools.codeInterpreter(),
+      code_interpreter: codeInterpreterTool(modelId),
       web_search: openai.tools.webSearch(),
     };
   }
@@ -257,7 +258,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5",
         name: "GPT-5",
-        features: [images, reasoning],
+        features: [images, reasoning, search, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
         extensions: imageTypes,
@@ -265,7 +266,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-mini",
         name: "GPT-5 mini",
-        features: [images, reasoning],
+        features: [images, reasoning, search, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
         extensions: imageTypes,
@@ -273,7 +274,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-nano",
         name: "GPT-5 nano",
-        features: [images, reasoning],
+        features: [images, reasoning, search, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
         extensions: imageTypes,
@@ -281,7 +282,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1",
         name: "GPT-4.1",
-        features: [images, coding],
+        features: [images],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -289,7 +290,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
-        features: [images, coding],
+        features: [images],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -336,7 +337,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5",
         name: "GPT-5",
-        features: [images, reasoning],
+        features: [images, reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -344,7 +345,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-mini",
         name: "GPT-5 mini",
-        features: [images, reasoning],
+        features: [images, reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -352,7 +353,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-nano",
         name: "GPT-5 nano",
-        features: [images, reasoning],
+        features: [images, reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -360,7 +361,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1",
         name: "GPT-4.1",
-        features: [images, coding],
+        features: [images],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -368,7 +369,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
-        features: [images, coding],
+        features: [images],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,

@@ -367,6 +367,20 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 </Tool>
               );
             }
+            case "tool-code_interpreter": {
+              return (
+                <Tool key={`${message.id}-tool-code_interpreter-${index}`}>
+                  <ToolHeader type="tool-code_interpreter" state={part.state} />
+                  <ToolContent>
+                    <ToolInput input={part.input} />
+                    <ToolOutput
+                      output={part.output as string}
+                      errorText={part.errorText}
+                    />
+                  </ToolContent>
+                </Tool>
+              );
+            }
             case "dynamic-tool": {
               return (
                 <Tool key={`${message.id}-${part.toolName}-${index}`}>
