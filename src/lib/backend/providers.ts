@@ -113,10 +113,18 @@ export function getProviderTools(modelId: string) {
       (provider.id === "openai" || provider.id === "azure") &&
       provider.models.some((model) => model.id === modelId)
   );
+  const isAnthropicModel = providers.some(
+    (provider) =>
+      provider.id === "anthropic" && provider.models.some((model) => model.id === modelId)
+  );
   if (isOpenAIModel) {
     return {
       code_interpreter: codeInterpreterTool(modelId),
       web_search: openai.tools.webSearch(),
+    };
+  } else if (isAnthropicModel) {
+    return {
+      web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
     };
   }
 }
@@ -405,14 +413,6 @@ const providers: Provider[] = [
     name: "Anthropic",
     icon: "anthropic",
     models: [
-      {
-        id: "claude-3-5-sonnet-20240620",
-        name: "Claude 3.5 Sonnet",
-        features: [images, pdf],
-        provider: wrappedModel(anthropic),
-        tools: true,
-        extensions: [...imageTypes, "application/pdf"],
-      },
       {
         id: "claude-3-5-haiku-20241022",
         name: "Claude 3.5 Haiku",
