@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
 
   if (supportsTools && !temporaryChat) {
     try {
-      const toolsResult = await getTools(user, id, modelId);
+      const toolsResult = await getTools(user, id, modelId, browse);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
     } catch (error: any) {
@@ -272,7 +272,8 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
 async function getTools(
   user: SessionUser,
   conversationId: string,
-  modelId: string
+  modelId: string,
+  search: boolean
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: McpClient[] }> {
   const tools: { [key: string]: Tool } = {};
 
@@ -288,7 +289,7 @@ async function getTools(
   // Not working in production yet
   // tools.readYoutube = readYoutubeTool;
 
-  const providerTools = getProviderTools(modelId);
+  const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);
 
   const mcpClients = await getMcpClients();

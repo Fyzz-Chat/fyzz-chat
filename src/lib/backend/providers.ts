@@ -24,7 +24,7 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
-import { extractReasoningMiddleware, wrapLanguageModel } from "ai";
+import { type Tool, extractReasoningMiddleware, wrapLanguageModel } from "ai";
 
 const azureConfigured =
   process.env.AZURE_API_KEY !== undefined &&
@@ -107,7 +107,7 @@ export function getGoogleProviderOptions(modelId: string): {
     : {};
 }
 
-export function getProviderTools(modelId: string) {
+export function getProviderTools(modelId: string, search: boolean) {
   const isOpenAIModel = providers.some(
     (provider) =>
       (provider.id === "openai" || provider.id === "azure") &&
@@ -117,16 +117,22 @@ export function getProviderTools(modelId: string) {
     (provider) =>
       provider.id === "anthropic" && provider.models.some((model) => model.id === modelId)
   );
+
+  const tools: { [key: string]: Tool } = {};
+
   if (isOpenAIModel) {
-    return {
-      code_interpreter: codeInterpreterTool(modelId),
-      web_search: openai.tools.webSearch(),
-    };
+    tools.code_interpreter = codeInterpreterTool(modelId);
+
+    if (search) {
+      tools.web_search = openai.tools.webSearch();
+    }
   } else if (isAnthropicModel) {
-    return {
-      web_search: anthropic.tools.webSearch_20250305({ maxUses: 5 }),
-    };
+    if (search) {
+      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 }) as Tool;
+    }
   }
+
+  return tools;
 }
 
 function isThinkingModel(modelId: string, providerId: string) {

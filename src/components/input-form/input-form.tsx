@@ -14,6 +14,7 @@ import FileUploadInput from "@/components/input-form/file-upload-input";
 import ActionButton from "@/components/input-form/action-button";
 import AttachmentButton from "@/components/input-form/attachment-button";
 import InputTextarea from "@/components/input-form/input-textarea";
+import SearchMenu from "@/components/input-form/search-menu";
 import useTempChat from "@/hooks/use-temp-chat";
 import { cn, isFileList, uploadFiles } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
@@ -155,6 +156,7 @@ export default function InputForm({ className }: { className?: string }) {
         <div className="flex items-center w-full gap-2">
           <div className="flex items-center gap-2 mr-auto">
             <LazyModelMenu />
+            <SearchMenu />
           </div>
           <AttachmentButton cameraInputRef={cameraInputRef} fileInputRef={fileInputRef} />
           <ActionButton />
