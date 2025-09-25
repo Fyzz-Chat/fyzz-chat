@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
-import { Globe } from "lucide-react";
+import { Ban, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function SearchMenu() {
@@ -42,10 +42,34 @@ export default function SearchMenu() {
       <DropdownMenuContent>
         <DropdownMenuLabel>Search type</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={search} onValueChange={handleChange}>
-          <DropdownMenuRadioItem value="none">None</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="web">Web</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
+        <DropdownMenuItem onClick={() => handleChange("none")}>
+          <div
+            className={cn("flex gap-2 items-start", search === "none" && "text-primary")}
+          >
+            <div className="flex pt-0.5">
+              <Ban size={16} />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p>None</p>
+              <p className="text-xs text-muted-foreground">Default model behavior</p>
+            </div>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleChange("web")}>
+          <div
+            className={cn("flex gap-2 items-start", search === "web" && "text-primary")}
+          >
+            <div className="flex pt-0.5">
+              <Globe size={16} />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p>Web</p>
+              <p className="text-xs text-muted-foreground">
+                Search the web for information
+              </p>
+            </div>
+          </div>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
