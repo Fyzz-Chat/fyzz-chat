@@ -117,6 +117,10 @@ export function getProviderTools(modelId: string, search: boolean) {
     (provider) =>
       provider.id === "anthropic" && provider.models.some((model) => model.id === modelId)
   );
+  const isGoogleModel = providers.some(
+    (provider) =>
+      provider.id === "google" && provider.models.some((model) => model.id === modelId)
+  );
 
   const tools: { [key: string]: Tool } = {};
 
@@ -129,6 +133,10 @@ export function getProviderTools(modelId: string, search: boolean) {
   } else if (isAnthropicModel) {
     if (search) {
       tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 }) as Tool;
+    }
+  } else if (isGoogleModel) {
+    if (search) {
+      tools.google_search = google.tools.googleSearch({}) as Tool;
     }
   }
 
@@ -472,7 +480,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
-        features: [images, pdf, reasoning],
+        features: [images, pdf, reasoning, search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
