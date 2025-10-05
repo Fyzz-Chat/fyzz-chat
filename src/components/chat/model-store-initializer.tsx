@@ -15,8 +15,9 @@ export default function ModelStoreInitializer({
   const { data } = useQuery(
     trpc.providers.queryOptions(undefined, {
       initialData: providers,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: true,
     })
   );
   const setTemporaryChat = useModelStore((state) => state.setTemporaryChat);

@@ -20,7 +20,13 @@ export default function Examples() {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const trpc = useTRPC();
-  const { data: numModels } = useQuery(trpc.numModels.queryOptions());
+  const { data: numModels } = useQuery(
+    trpc.numModels.queryOptions(undefined, {
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: true,
+    })
+  );
   const title = translations.home.welcome.modal.title.replace(
     "{modelCount}",
     numModels?.toString() ?? "0"

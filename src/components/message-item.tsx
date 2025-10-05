@@ -18,7 +18,7 @@ export function MessageItem({
 
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const model = useModelStore((state) =>
-    state.getModel(message.metadata?.model || state.model.id)
+    state.getModel(message.metadata?.model || state.model?.id)
   );
 
   const [isEditing, setIsEditing] = useState(false);

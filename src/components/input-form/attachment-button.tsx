@@ -27,7 +27,7 @@ export default function AttachmentButton({
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const extensions = useModelStore((state) => state.model.extensions);
+  const extensions = useModelStore((state) => state.model?.extensions);
 
   function handleCameraClick() {
     cameraInputRef.current?.click();

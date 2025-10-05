@@ -21,7 +21,7 @@ export default function InputTextarea({
   const setInput = useInputStore((state) => state.setInput);
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
-  const extensions = useModelStore((state) => state.model.extensions);
+  const extensions = useModelStore((state) => state.model?.extensions);
 
   async function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey && !isMobile) {

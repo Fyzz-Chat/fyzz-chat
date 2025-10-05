@@ -36,7 +36,7 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
     });
   },
   getModel: (modelId?: string) =>
-    getModelById(get().availableModels, modelId || get().model.id),
+    getModelById(get().availableModels, modelId || get().model?.id),
   setDefaultModel: () => {
     const { availableModels } = get();
     set({ model: availableModels?.[0] || ({} as PublicModel) });

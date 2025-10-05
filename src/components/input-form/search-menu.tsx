@@ -17,8 +17,8 @@ import { useEffect, useState } from "react";
 
 export default function SearchMenu() {
   const model = useModelStore((state) => state.model);
-  const searchSupport = model.features?.some((feature) => feature.name === "Search");
-  const isSonar = model.id === "sonar" || model.id === "sonar-pro";
+  const searchSupport = model?.features?.some((feature) => feature.name === "Search");
+  const isSonar = model?.id === "sonar" || model?.id === "sonar-pro";
   const [search, setSearch] = useState(isSonar ? "web" : "none");
   const { setBrowse } = useChatStore();
 
