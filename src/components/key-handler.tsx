@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function KeyHandler({
   keyString,
@@ -11,7 +12,18 @@ export function KeyHandler({
 }) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === keyString) {
+      // Check if the user is currently typing in an input field
+      const target = e.target as HTMLElement;
+      const isTyping =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.contentEditable === "true" ||
+        target.closest('[contenteditable="true"]');
+
+      // Only trigger handler if not typing and key matches
+      if (!isTyping && e.key === keyString) {
+        e.preventDefault();
+        e.stopPropagation();
         handler();
       }
     };
@@ -21,4 +33,15 @@ export function KeyHandler({
   }, [keyString, handler]);
 
   return null;
+}
+
+export function HomeHandler() {
+  const navigate = useNavigate();
+
+  function handler() {
+    navigate("/chat");
+    document.getElementById("message-input")?.focus();
+  }
+
+  return <KeyHandler keyString="n" handler={handler} />;
 }

@@ -66,24 +66,26 @@ export default function MessagesScrollArea({
   };
 
   return (
-    <ScrollArea
-      className={cn("", className)}
-      viewportRef={viewportRef}
-      handleScroll={handleScroll}
-    >
-      <ChatLayoutWrapper>{children}</ChatLayoutWrapper>
-      <ChatLayoutWrapper className="absolute bottom-0 left-0 right-0">
-        <div className="flex absolute bottom-6 w-full">
-          <KeyHandler keyString="Space" handler={scrollToBottom} />
-          <ScrollToBottomButton
-            onClick={scrollToBottom}
-            className={cn(
-              "mx-auto z-50",
-              !positionChecked || isUserAtBottom() ? "scale-0" : "scale-100"
-            )}
-          />
-        </div>
-      </ChatLayoutWrapper>
-    </ScrollArea>
+    <>
+      <KeyHandler keyString=" " handler={scrollToBottom} />
+      <ScrollArea
+        className={cn("", className)}
+        viewportRef={viewportRef}
+        handleScroll={handleScroll}
+      >
+        <ChatLayoutWrapper>{children}</ChatLayoutWrapper>
+        <ChatLayoutWrapper className="absolute bottom-0 left-0 right-0">
+          <div className="flex absolute bottom-6 w-full">
+            <ScrollToBottomButton
+              onClick={scrollToBottom}
+              className={cn(
+                "mx-auto z-50",
+                !positionChecked || isUserAtBottom() ? "scale-0" : "scale-100"
+              )}
+            />
+          </div>
+        </ChatLayoutWrapper>
+      </ScrollArea>
+    </>
   );
 }
