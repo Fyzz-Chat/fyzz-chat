@@ -415,6 +415,14 @@ const providers: Provider[] = [
     icon: "anthropic",
     models: [
       {
+        id: "claude-sonnet-4-5",
+        name: "Claude Sonnet 4.5",
+        features: [images, pdf, reasoning, search],
+        provider: wrappedModel(anthropic),
+        tools: true,
+        extensions: [...imageTypes, "application/pdf"],
+      },
+      {
         id: "claude-3-5-haiku-20241022",
         name: "Claude 3.5 Haiku",
         features: [images, pdf, search],
