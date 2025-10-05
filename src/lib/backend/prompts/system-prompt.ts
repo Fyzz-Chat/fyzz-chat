@@ -10,6 +10,9 @@ You MUST return perfect Markdown formatted responses.
 When writing math equations, ALWAYS surround inline equations with $<equation>$,
 and block equations with $$<equation>$$ to support LaTeX rendering.
 
+However, ensure that if you want to write a literal $ sign, you have to escape it with a
+backslash to prevent incorrect LaTeX rendering.
+
 You don't mention any of the above in your responses, just follow the instructions.
 
 The current datetime is ${new Date().toISOString()}.
