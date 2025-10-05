@@ -208,7 +208,7 @@ function wrappedModel(
   };
 }
 
-const reasoningFireworks = (model: string, _browse: boolean) => {
+const _reasoningFireworks = (model: string, _browse: boolean) => {
   return wrapLanguageModel({
     model: fireworks(model),
     middleware: extractReasoningMiddleware({ tagName: "think" }),
@@ -553,18 +553,17 @@ const providers: Provider[] = [
     icon: "deepseek",
     models: [
       {
-        id: "accounts/fireworks/models/deepseek-v3",
-        name: "DeepSeek V3",
+        id: "accounts/fireworks/models/deepseek-v3p1",
+        name: "DeepSeek V3.1",
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
       },
       {
-        id: "accounts/fireworks/models/deepseek-r1",
-        name: "DeepSeek R1",
-        features: [reasoning],
-        provider: reasoningFireworks,
-        tools: false,
+        id: "accounts/fireworks/models/deepseek-v3p1-terminus",
+        name: "DeepSeek V3.1 Terminus",
+        provider: wrappedModel(fireworks),
+        tools: true,
         extensions: [],
       },
     ],
