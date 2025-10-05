@@ -37,7 +37,7 @@ export default function manifest(): ManifestWithExtensions {
       "One platform for GPT, Perplexity, Gemini, and more. Chat, speak with PDFs, and analyze images.",
 
     // The URL that loads when your app is launched
-    start_url: "/",
+    start_url: "/chat",
 
     // How the app should be displayed - standalone removes browser UI
     // Other options include: fullscreen, minimal-ui, browser
