@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
 import { cn } from "@/lib/utils";
-import { ArrowDown } from "lucide-react";
+import { useEffect } from "react";
 
 export function ScrollToBottomButton({
   onClick,
@@ -11,14 +12,27 @@ export function ScrollToBottomButton({
   onClick: () => void;
   className?: string;
 }) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Space") {
+        onClick();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClick]);
+
   return (
     <Button
       variant="outline"
-      size="icon"
-      className={cn("size-9 transition-transform duration-200 delay-100", className)}
+      className={cn(
+        "text-xs px-2.5 py-1.5 h-fit rounded-full transition-transform duration-200 delay-100",
+        className
+      )}
       onClick={onClick}
     >
-      <ArrowDown size={18} />
+      Click here or press <Kbd>Space</Kbd> to scroll to bottom
     </Button>
   );
 }

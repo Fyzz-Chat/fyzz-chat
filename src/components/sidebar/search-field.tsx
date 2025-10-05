@@ -1,5 +1,6 @@
 "use client";
 
+import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores/search-store";
@@ -55,11 +56,11 @@ export function SearchField() {
       />
       <div
         className={cn(
-          "hidden md:flex items-center justify-center absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none px-1 py-0.5 rounded-[4px] bg-muted border",
+          "hidden md:flex items-center justify-center absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none rounded-[4px] bg-muted border",
           isMac === undefined && "opacity-0"
         )}
       >
-        <span className="text-xs">{isMac ? "⌘+K" : "Ctrl+K"}</span>
+        <span className="text-xs">{isMac ? <Kbd>⌘ + K</Kbd> : <Kbd>Ctrl + K</Kbd>}</span>
       </div>
     </div>
   );

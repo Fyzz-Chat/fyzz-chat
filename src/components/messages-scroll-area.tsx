@@ -72,13 +72,15 @@ export default function MessagesScrollArea({
     >
       <ChatLayoutWrapper>{children}</ChatLayoutWrapper>
       <ChatLayoutWrapper className="absolute bottom-0 left-0 right-0">
-        <ScrollToBottomButton
-          onClick={scrollToBottom}
-          className={cn(
-            "absolute bottom-6 right-4 z-50",
-            !positionChecked || isUserAtBottom() ? "scale-0" : "scale-100"
-          )}
-        />
+        <div className="flex absolute bottom-6 w-full">
+          <ScrollToBottomButton
+            onClick={scrollToBottom}
+            className={cn(
+              "mx-auto z-50",
+              !positionChecked || isUserAtBottom() ? "scale-0" : "scale-100"
+            )}
+          />
+        </div>
       </ChatLayoutWrapper>
     </ScrollArea>
   );
