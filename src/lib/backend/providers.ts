@@ -270,7 +270,7 @@ const providers: Provider[] = [
         features: [images, reasoning, search, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
-        extensions: imageTypes,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-5-mini",
@@ -278,7 +278,7 @@ const providers: Provider[] = [
         features: [images, reasoning, search, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
-        extensions: imageTypes,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-5-nano",
@@ -286,7 +286,7 @@ const providers: Provider[] = [
         features: [images, reasoning, search, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when application approved
         tools: true,
-        extensions: imageTypes,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-4.1",
@@ -349,7 +349,7 @@ const providers: Provider[] = [
         features: [images, reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: imageTypes,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-5-mini",
@@ -357,7 +357,7 @@ const providers: Provider[] = [
         features: [images, reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: imageTypes,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-5-nano",
@@ -365,7 +365,7 @@ const providers: Provider[] = [
         features: [images, reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: imageTypes,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-4.1",
