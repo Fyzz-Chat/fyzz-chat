@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { generateText, hasToolCall, tool } from "ai";
+import { type Tool, generateText, hasToolCall, tool } from "ai";
 import z from "zod";
 import { logDuration } from "../utils";
 
@@ -17,7 +17,7 @@ export function codeInterpreterTool(modelId: string) {
         model: openai(modelId),
         prompt: `Execute the following Python code: ${code}`,
         tools: {
-          code_interpreter: openai.tools.codeInterpreter(),
+          code_interpreter: openai.tools.codeInterpreter() as Tool,
         },
         toolChoice: "required",
         stopWhen: [hasToolCall("code_interpreter")],

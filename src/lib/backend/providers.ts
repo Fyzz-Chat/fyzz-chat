@@ -128,7 +128,7 @@ export function getProviderTools(modelId: string, search: boolean) {
     tools.code_interpreter = codeInterpreterTool(modelId);
 
     if (search) {
-      tools.web_search = openai.tools.webSearch();
+      tools.web_search = openai.tools.webSearch() as Tool;
     }
   } else if (isAnthropicModel) {
     if (search) {
