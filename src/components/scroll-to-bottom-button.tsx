@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 export function ScrollToBottomButton({
   onClick,
@@ -12,17 +11,6 @@ export function ScrollToBottomButton({
   onClick: () => void;
   className?: string;
 }) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Space") {
-        onClick();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClick]);
-
   return (
     <Button
       variant="outline"

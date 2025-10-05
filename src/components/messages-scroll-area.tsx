@@ -1,6 +1,7 @@
 "use client";
 
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
+import { KeyHandler } from "@/components/key-handler";
 import { ScrollToBottomButton } from "@/components/scroll-to-bottom-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessages } from "@/lib/queries/conversations";
@@ -73,6 +74,7 @@ export default function MessagesScrollArea({
       <ChatLayoutWrapper>{children}</ChatLayoutWrapper>
       <ChatLayoutWrapper className="absolute bottom-0 left-0 right-0">
         <div className="flex absolute bottom-6 w-full">
+          <KeyHandler keyString="Space" handler={scrollToBottom} />
           <ScrollToBottomButton
             onClick={scrollToBottom}
             className={cn(
