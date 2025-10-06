@@ -265,10 +265,18 @@ const providers: Provider[] = [
         extensions: imageTypes,
       },
       {
+        id: "gpt-5-codex",
+        name: "GPT-5 Codex",
+        features: [reasoning, coding],
+        provider: wrappedModel(openai), // TODO: Change to azure when available
+        tools: true,
+        extensions: imageTypes,
+      },
+      {
         id: "gpt-5",
         name: "GPT-5",
         features: [images, reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
@@ -276,7 +284,7 @@ const providers: Provider[] = [
         id: "gpt-5-mini",
         name: "GPT-5 mini",
         features: [images, reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
@@ -284,7 +292,7 @@ const providers: Provider[] = [
         id: "gpt-5-nano",
         name: "GPT-5 nano",
         features: [images, reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when application approved
+        provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
@@ -339,6 +347,14 @@ const providers: Provider[] = [
         id: "gpt-4o-mini",
         name: "GPT-4o mini",
         features: [images],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: imageTypes,
+      },
+      {
+        id: "gpt-5-codex",
+        name: "GPT-5 Codex",
+        features: [reasoning, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
