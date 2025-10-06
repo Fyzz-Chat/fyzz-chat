@@ -39,6 +39,6 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
     getModelById(get().availableModels, modelId || get().model?.id),
   setDefaultModel: (modelId?: string) => {
     const { availableModels } = get();
-    set({ model: getModelById(availableModels, modelId || availableModels[0].id) });
+    set({ model: getModelById(availableModels, modelId || availableModels[0]?.id) });
   },
 }));
