@@ -48,12 +48,13 @@ export default function MemoryForm({
 
   useEffect(() => {
     if (selectedModel && selectedModel !== defaultModel) {
-      updateDefaultModel(selectedModel);
-      toast.success(translations.settings.memory.defaultModel.sonner.title, {
-        description: translations.settings.memory.defaultModel.sonner.description,
+      updateDefaultModel(selectedModel).then(() => {
+        toast.success(translations.settings.memory.defaultModel.sonner.title, {
+          description: translations.settings.memory.defaultModel.sonner.description,
+        });
       });
     }
-  }, [selectedModel]);
+  }, [selectedModel, defaultModel]);
 
   useEffect(() => {
     if (isFirstRender.current) {
