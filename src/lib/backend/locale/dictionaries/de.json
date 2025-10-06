@@ -93,7 +93,11 @@
       "defaultModel": {
         "title": "Standardmodell",
         "description": "Wähle ein Standardmodell, das für neue Unterhaltungen verwendet wird.",
-        "placeholder": "Wähle ein Modell"
+        "placeholder": "Wähle ein Modell",
+        "sonner": {
+          "title": "Standardmodell aktualisiert.",
+          "description": "Das ausgewählte Modell wird für neue Unterhaltungen verwendet."
+        }
       },
       "toggle": {
         "title": "Memorie aktivieren",

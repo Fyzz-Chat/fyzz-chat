@@ -5,7 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import useToast from "@/hooks/use-toast";
-import { updateUserMemory, updateUserMemoryEnabled } from "@/lib/actions/users";
+import {
+  updateDefaultModel,
+  updateUserMemory,
+  updateUserMemoryEnabled,
+} from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { initialState } from "@/lib/utils";
 import type { PublicProvider } from "@/types/provider";
@@ -37,10 +41,19 @@ export default function MemoryForm({
   const [state, formAction, isPending] = useActionState(updateUserMemory, initialState);
   const [content, setContent] = useState(memory ?? "");
   const [enabled, setEnabled] = useState(memoryEnabled);
-  const [selectedModel, setSelectedModel] = useState(defaultModel ?? "");
+  const [selectedModel, setSelectedModel] = useState<string | undefined>(defaultModel);
   const isFirstRender = useRef(true);
 
   useToast(state);
+
+  useEffect(() => {
+    if (selectedModel && selectedModel !== defaultModel) {
+      updateDefaultModel(selectedModel);
+      toast.success(translations.settings.memory.defaultModel.sonner.title, {
+        description: translations.settings.memory.defaultModel.sonner.description,
+      });
+    }
+  }, [selectedModel]);
 
   useEffect(() => {
     if (isFirstRender.current) {

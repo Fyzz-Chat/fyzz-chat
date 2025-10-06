@@ -189,6 +189,17 @@ export async function updateUserMemoryEnabled(memoryEnabled: boolean): Promise<b
   return memoryEnabled;
 }
 
+export async function updateDefaultModel(defaultModel: string): Promise<string> {
+  const userId = await getUserIdFromSession();
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { defaultModel },
+  });
+
+  return defaultModel;
+}
+
 export async function updateUserMemory(
   _prevState: any,
   formData: FormData

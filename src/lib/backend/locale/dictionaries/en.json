@@ -93,7 +93,11 @@
       "defaultModel": {
         "title": "Default Model",
         "description": "Choose a default model that will be used for new conversations.",
-        "placeholder": "Select a model"
+        "placeholder": "Select a model",
+        "sonner": {
+          "title": "Default model updated.",
+          "description": "The selected model will be used for new conversations."
+        }
       },
       "toggle": {
         "title": "Enable Memory",

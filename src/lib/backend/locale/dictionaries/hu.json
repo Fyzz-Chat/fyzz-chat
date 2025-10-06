@@ -92,7 +92,11 @@
       "defaultModel": {
         "title": "Alapértelmezett modell",
         "description": "Válassz egy alapértelmezett modellt, amelyet az új beszélgetéseid során használni fogunk.",
-        "placeholder": "Válassz egy modellt"
+        "placeholder": "Válassz egy modellt",
+        "sonner": {
+          "title": "Alapértelmezett modell frissítve.",
+          "description": "Új beszélgetéseid során a kiválasztott modellt használjuk."
+        }
       },
       "sectionTitle": "Emlékek",
       "toggle": {
