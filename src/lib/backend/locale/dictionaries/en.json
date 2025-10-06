@@ -90,6 +90,11 @@
       "title": "Memory Settings",
       "description": "Control how the application remembers your interactions.",
       "sectionTitle": "Memory",
+      "defaultModel": {
+        "title": "Default Model",
+        "description": "Choose a default model that will be used for new conversations.",
+        "placeholder": "Select a model"
+      },
       "toggle": {
         "title": "Enable Memory",
         "description": "If memory is enabled, the model will store information about you and will use it to improve the quality of its responses.",

@@ -90,6 +90,11 @@
       "title": "Memorie Einstellungen",
       "description": "Steuere, wie die Anwendung deine Interaktionen speichert.",
       "sectionTitle": "Memorie",
+      "defaultModel": {
+        "title": "Standardmodell",
+        "description": "Wähle ein Standardmodell, das für neue Unterhaltungen verwendet wird.",
+        "placeholder": "Wähle ein Modell"
+      },
       "toggle": {
         "title": "Memorie aktivieren",
         "description": "Wenn die Memorie aktiviert ist, speichert das Modell Informationen über dich und verwendet sie, um die Qualität seiner Antworten zu verbessern.",

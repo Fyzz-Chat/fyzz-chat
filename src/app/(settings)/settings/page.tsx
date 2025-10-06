@@ -15,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
+import { getProvidersPublic } from "@/lib/backend/providers";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import {
@@ -39,9 +40,11 @@ export default async function SettingsPage() {
       memory: true,
       memoryEnabled: true,
       mcpServers: true,
+      defaultModel: true,
     },
   });
   const hasPassword = Boolean(user?.password);
+  const providers = getProvidersPublic();
 
   return (
     <div className="flex flex-1 flex-col items-center justify-start p-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
@@ -111,8 +114,10 @@ export default async function SettingsPage() {
                   </CardHeader>
                   <CardContent>
                     <MemoryForm
+                      defaultModel={user?.defaultModel ?? undefined}
                       memory={user?.memory ?? undefined}
                       memoryEnabled={user?.memoryEnabled ?? false}
+                      providers={providers}
                     />
                   </CardContent>
                 </ScrollArea>

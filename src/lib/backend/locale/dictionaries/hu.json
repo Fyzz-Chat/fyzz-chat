@@ -89,6 +89,11 @@
       "tabTitle": "Emlékek",
       "title": "Emlékek beállításai",
       "description": "Beállíthatod, hogy mit jegyezzünk meg a beszélgetéseidből.",
+      "defaultModel": {
+        "title": "Alapértelmezett modell",
+        "description": "Válassz egy alapértelmezett modellt, amelyet az új beszélgetéseid során használni fogunk.",
+        "placeholder": "Válassz egy modellt"
+      },
       "sectionTitle": "Emlékek",
       "toggle": {
         "title": "Emlékek engedélyezése",
