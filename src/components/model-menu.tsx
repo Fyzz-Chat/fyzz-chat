@@ -5,10 +5,12 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { featureIcons, providerIcons } from "@/lib/providers";
 import { getProviderIcon } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
+import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { memo, use, useEffect, useState } from "react";
@@ -38,6 +40,15 @@ import { Separator } from "./ui/separator";
 function ModelMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const trpc = useTRPC();
+  const { data: defaultModel, isLoading } = useQuery(
+    trpc.defaultModel.queryOptions(undefined, {
+      staleTime: 0,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: true,
+    })
+  );
   const model = useModelStore((state) => state.model);
   const setDefaultModel = useModelStore((state) => state.setDefaultModel);
   const providers = useModelStore((state) => state.providers);
@@ -45,10 +56,10 @@ function ModelMenu() {
   const providerIcon = getProviderIcon(providers, model?.id);
 
   useEffect(() => {
-    if (pathname === "/chat") {
-      setDefaultModel();
+    if (pathname === "/chat" && !isLoading) {
+      setDefaultModel(defaultModel || undefined);
     }
-  }, [pathname]);
+  }, [pathname, defaultModel, isLoading]);
 
   if (isDesktop) {
     return (

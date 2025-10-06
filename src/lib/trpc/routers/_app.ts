@@ -10,6 +10,9 @@ import { z } from "zod";
 export const appRouter = createTRPCRouter({
   providers: publicProcedure.query(() => getProvidersPublic()),
   numModels: publicProcedure.query(() => countModels()),
+  defaultModel: protectedProcedure.query(async (opts) => {
+    return opts.ctx.user.defaultModel;
+  }),
   messages: protectedProcedure
     .input(
       z.object({
