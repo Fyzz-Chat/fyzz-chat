@@ -92,6 +92,10 @@
         "description": "Új beszélgetés"
       },
       {
+        "keys": ["m"],
+        "description": "Modell menü megnyitása"
+      },
+      {
         "keys": ["Ctrl + K", "Cmd + K"],
         "description": "Ugrás a keresőmezőhöz"
       },

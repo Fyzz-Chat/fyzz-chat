@@ -92,6 +92,10 @@
         "description": "Neue Unterhaltung"
       },
       {
+        "keys": ["m"],
+        "description": "Modellmenü öffnen"
+      },
+      {
         "keys": ["Enter"],
         "description": "Zum Eingabefeld fokussieren"
       },

@@ -1,5 +1,6 @@
 "use client";
 
+import { KeyHandler } from "@/components/key-handler";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { featureIcons, providerIcons } from "@/lib/providers";
@@ -8,6 +9,7 @@ import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
+import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { useQuery } from "@tanstack/react-query";
@@ -39,7 +41,8 @@ import { Separator } from "./ui/separator";
 
 function ModelMenu() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const setModelMenuOpen = useModelMenuStore((state) => state.setModelMenuOpen);
+  const modelMenuOpen = useModelMenuStore((state) => state.modelMenuOpen);
   const trpc = useTRPC();
   const { data: defaultModel, isLoading } = useQuery(
     trpc.defaultModel.queryOptions(undefined, {
@@ -64,7 +67,8 @@ function ModelMenu() {
   if (isDesktop) {
     return (
       <>
-        <Popover open={open} onOpenChange={setOpen}>
+        <KeyHandler keyString="m" handler={() => setModelMenuOpen(true)} />
+        <Popover open={modelMenuOpen} onOpenChange={setModelMenuOpen}>
           <PopoverTrigger asChild className="hidden md:flex">
             <Button
               variant="secondary"
@@ -85,7 +89,7 @@ function ModelMenu() {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0" align="start">
-            <StatusList setOpen={setOpen} providers={providers} />
+            <StatusList setOpen={setModelMenuOpen} providers={providers} />
             <Separator />
             <TemporaryChatSwitch />
           </PopoverContent>
@@ -96,7 +100,8 @@ function ModelMenu() {
 
   return (
     <>
-      <Drawer open={open} onOpenChange={setOpen}>
+      <KeyHandler keyString="m" handler={() => setModelMenuOpen(true)} />
+      <Drawer open={modelMenuOpen} onOpenChange={setModelMenuOpen}>
         <DrawerTrigger asChild className="md:hidden">
           <Button variant="outline" size="icon" className="size-9">
             {providerIcon &&
@@ -114,7 +119,7 @@ function ModelMenu() {
             </DrawerDescription>
           </DrawerHeader>
           <div className="mt-4 border-t">
-            <StatusList setOpen={setOpen} providers={providers} />
+            <StatusList setOpen={setModelMenuOpen} providers={providers} />
             <Separator />
             <TemporaryChatSwitch />
           </div>

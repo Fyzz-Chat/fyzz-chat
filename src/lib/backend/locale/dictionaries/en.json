@@ -92,6 +92,10 @@
         "description": "New conversation"
       },
       {
+        "keys": ["m"],
+        "description": "Open model menu"
+      },
+      {
         "keys": ["Enter"],
         "description": "Focus on input field"
       },
