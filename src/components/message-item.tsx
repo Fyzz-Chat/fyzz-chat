@@ -95,7 +95,7 @@ export function MessageItem({
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setIsEditing(false);
+        handleCancelEdit();
       }
     };
     window.addEventListener("keydown", handleEscape);
