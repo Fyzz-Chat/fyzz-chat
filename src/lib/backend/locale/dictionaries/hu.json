@@ -83,6 +83,32 @@
       "file": "Fájl feltöltése"
     }
   },
+  "help": {
+    "title": "Súgó",
+    "description": "Használj billentyűkombinációkat a gyorsabb navigációhoz.",
+    "shortcuts": [
+      {
+        "keys": ["n"],
+        "description": "Új beszélgetés"
+      },
+      {
+        "keys": ["Ctrl + K", "Cmd + K"],
+        "description": "Ugrás a keresőmezőhöz"
+      },
+      {
+        "keys": ["Enter"],
+        "description": "Fókuszálás a beviteli mezőre"
+      },
+      {
+        "keys": ["Esc"],
+        "description": "Fókuszálás elvétele az aktuális beviteli mezőről"
+      },
+      {
+        "keys": ["?"],
+        "description": "Súgó megnyitása"
+      }
+    ]
+  },
   "settings": {
     "title": "Beállítások",
     "description": "Fiókbeállítások és preferenciák.",

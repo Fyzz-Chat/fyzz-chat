@@ -6,9 +6,11 @@ import { useNavigate } from "react-router-dom";
 export function KeyHandler({
   keyString,
   handler,
+  dependencies = [],
 }: {
   keyString: string;
   handler: () => void;
+  dependencies?: unknown[];
 }) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,7 +32,7 @@ export function KeyHandler({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [keyString, handler]);
+  }, [keyString, handler, ...dependencies]);
 
   return null;
 }
@@ -57,7 +59,7 @@ export function EscapeHandler() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        document.getElementById("message-input")?.blur();
+        (e.target as HTMLElement).blur();
       }
     };
     document.addEventListener("keydown", handleKeyDown);

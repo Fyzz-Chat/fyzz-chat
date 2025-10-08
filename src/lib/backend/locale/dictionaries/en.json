@@ -83,6 +83,32 @@
       "file": "Upload files"
     }
   },
+  "help": {
+    "title": "Help",
+    "description": "Use keyboard shortcuts for faster navigation.",
+    "shortcuts": [
+      {
+        "keys": ["n"],
+        "description": "New conversation"
+      },
+      {
+        "keys": ["Enter"],
+        "description": "Focus on input field"
+      },
+      {
+        "keys": ["Esc"],
+        "description": "Remove focus from current input field"
+      },
+      {
+        "keys": ["Ctrl + K", "Cmd + K"],
+        "description": "Jump to search field"
+      },
+      {
+        "keys": ["?"],
+        "description": "Open help"
+      }
+    ]
+  },
   "settings": {
     "title": "Settings",
     "description": "Manage your account settings and preferences.",

@@ -83,6 +83,32 @@
       "file": "Dateien hochladen"
     }
   },
+  "help": {
+    "title": "Hilfe",
+    "description": "Verwende Tastenkombinationen für schnellere Navigation.",
+    "shortcuts": [
+      {
+        "keys": ["n"],
+        "description": "Neue Unterhaltung"
+      },
+      {
+        "keys": ["Enter"],
+        "description": "Zum Eingabefeld fokussieren"
+      },
+      {
+        "keys": ["Esc"],
+        "description": "Fokus vom aktuellen Eingabefeld entfernen"
+      },
+      {
+        "keys": ["Ctrl + K", "Cmd + K"],
+        "description": "Zum Suchfeld springen"
+      },
+      {
+        "keys": ["?"],
+        "description": "Hilfe öffnen"
+      }
+    ]
+  },
   "settings": {
     "title": "Einstellungen",
     "description": "Verwalte deine Kontoeinstellungen und Präferenzen.",
