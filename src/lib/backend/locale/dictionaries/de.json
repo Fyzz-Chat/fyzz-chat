@@ -9,8 +9,9 @@
     },
     "menu": {
       "myAccount": "Mein Konto",
-      "privacyPolicy": "Datenschutz",
+      "help": "Hilfe",
       "settings": "Einstellungen",
+      "privacyPolicy": "Datenschutz",
       "signOut": "Abmelden",
       "signIn": "Anmelden"
     }

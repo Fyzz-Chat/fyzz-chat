@@ -9,8 +9,9 @@
     },
     "menu": {
       "myAccount": "Fiókom",
-      "privacyPolicy": "Adatvédelem",
+      "help": "Súgó",
       "settings": "Beállítások",
+      "privacyPolicy": "Adatvédelem",
       "signOut": "Kijelentkezés",
       "signIn": "Bejelentkezés"
     }

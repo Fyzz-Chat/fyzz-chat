@@ -9,8 +9,9 @@
     },
     "menu": {
       "myAccount": "My Account",
-      "privacyPolicy": "Privacy Policy",
+      "help": "Help",
       "settings": "Settings",
+      "privacyPolicy": "Privacy Policy",
       "signOut": "Sign Out",
       "signIn": "Sign In"
     }
