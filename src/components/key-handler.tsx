@@ -45,3 +45,24 @@ export function HomeHandler() {
 
   return <KeyHandler keyString="n" handler={handler} />;
 }
+
+export function EnterHandler() {
+  function handler() {
+    document.getElementById("message-input")?.focus();
+  }
+  return <KeyHandler keyString="Enter" handler={handler} />;
+}
+
+export function EscapeHandler() {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        document.getElementById("message-input")?.blur();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  return null;
+}
