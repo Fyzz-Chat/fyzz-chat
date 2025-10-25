@@ -499,7 +499,7 @@ const providers: Provider[] = [
         features: [images, pdf, search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, "application/pdf", "video/mp4"],
       },
       {
         id: "gemini-2.5-pro",
@@ -507,7 +507,7 @@ const providers: Provider[] = [
         features: [images, pdf, reasoning, search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, "application/pdf", "video/mp4"],
       },
     ],
   },
