@@ -9,6 +9,7 @@ const LazyXAI = dynamic(() => import("@/components/icons/xai"));
 const LazyMeta = dynamic(() => import("@/components/icons/meta"));
 const LazyOpenAI = dynamic(() => import("@/components/icons/openai"));
 const LazyPerplexity = dynamic(() => import("@/components/icons/perplexity"));
+const LazyQwen = dynamic(() => import("@/components/icons/qwen"));
 
 export const featureIcons = {
   brain: Brain,
@@ -26,6 +27,7 @@ export const providerIcons = {
   meta: LazyMeta,
   deepseek: LazyDeepSeek,
   perplexity: LazyPerplexity,
+  qwen: LazyQwen,
 };
 
 export function getProviderIcon(providers: PublicProvider[], modelId: string | null) {

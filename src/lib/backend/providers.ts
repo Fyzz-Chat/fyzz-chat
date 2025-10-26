@@ -542,7 +542,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "meta",
     name: "Meta",
     icon: "meta",
     models: [
@@ -572,7 +572,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "deepseek",
     name: "DeepSeek",
     icon: "deepseek",
     models: [
@@ -586,6 +586,20 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/deepseek-v3p1-terminus",
         name: "DeepSeek V3.1 Terminus",
+        provider: wrappedModel(fireworks),
+        tools: true,
+        extensions: [],
+      },
+    ],
+  },
+  {
+    id: "qwen",
+    name: "Qwen",
+    icon: "qwen",
+    models: [
+      {
+        id: "fireworks/qwen3-coder-480b-a35b-instruct",
+        name: "Qwen 3 Coder 480B",
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
