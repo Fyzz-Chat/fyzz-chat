@@ -542,7 +542,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "meta",
+    id: "fireworks",
     name: "Meta",
     icon: "meta",
     models: [
@@ -572,7 +572,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "deepseek",
+    id: "fireworks",
     name: "DeepSeek",
     icon: "deepseek",
     models: [
@@ -593,7 +593,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "qwen",
+    id: "fireworks",
     name: "Qwen",
     icon: "qwen",
     models: [
