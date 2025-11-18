@@ -32,6 +32,11 @@ export default function StatusNotification() {
                 Claude
               </Badge>
             )}
+            {!status.perplexity && (
+              <Badge variant="destructive" className="flex justify-center">
+                Perplexity
+              </Badge>
+            )}
           </div>
         </CardContent>
       </Card>
