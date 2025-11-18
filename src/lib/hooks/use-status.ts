@@ -4,26 +4,31 @@ import { useEffect, useState } from "react";
 
 interface Status {
   openai: boolean;
+  claude: boolean;
   all: boolean;
 }
 
 export function useStatus() {
   const [status, setStatus] = useState<Status>({
     openai: true,
+    claude: true,
     all: true,
   });
 
   useEffect(() => {
-    isOpenAIHealthy().then((openai) => {
-      setStatus({ ...status, openai, all: openai && status.all });
+    isHealthy("openai").then((openai) => {
+      setStatus((prev) => ({ ...prev, openai, all: openai && prev.all }));
+    });
+    isHealthy("claude").then((claude) => {
+      setStatus((prev) => ({ ...prev, claude, all: claude && prev.all }));
     });
   }, []);
 
   return status;
 }
 
-export async function isOpenAIHealthy() {
-  const response = await fetch("https://status.openai.com/api/v2/summary.json");
+export async function isHealthy(service: "openai" | "claude") {
+  const response = await fetch(`https://status.${service}.com/api/v2/summary.json`);
 
   if (!response.ok) {
     return false;

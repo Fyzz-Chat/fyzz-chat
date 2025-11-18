@@ -22,9 +22,16 @@ export default function StatusNotification() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <Badge variant="destructive" className="flex justify-center">
-              OpenAI
-            </Badge>
+            {!status.openai && (
+              <Badge variant="destructive" className="flex justify-center">
+                OpenAI
+              </Badge>
+            )}
+            {!status.claude && (
+              <Badge variant="destructive" className="flex justify-center">
+                Claude
+              </Badge>
+            )}
           </div>
         </CardContent>
       </Card>
