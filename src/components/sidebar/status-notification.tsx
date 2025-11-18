@@ -8,10 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useStatus } from "@/lib/hooks/use-status";
+import { useTRPC } from "@/lib/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 
 export default function StatusNotification() {
-  const status = useStatus();
+  const trpc = useTRPC();
+  const { data: status } = useQuery(
+    trpc.status.queryOptions(undefined, { refetchOnMount: true })
+  );
+
+  if (!status) return null;
 
   return (
     !status.all && (
@@ -35,6 +41,11 @@ export default function StatusNotification() {
             {!status.perplexity && (
               <Badge variant="destructive" className="flex justify-center">
                 Perplexity
+              </Badge>
+            )}
+            {!status.fireworks && (
+              <Badge variant="destructive" className="flex justify-center">
+                Fireworks
               </Badge>
             )}
           </div>

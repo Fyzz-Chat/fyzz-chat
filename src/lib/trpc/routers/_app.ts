@@ -1,6 +1,7 @@
 import "server-only";
 
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
+import { status } from "@/lib/backend/status";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
 import { getUploadUrls } from "@/lib/services/uploads";
@@ -8,6 +9,7 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trp
 import { z } from "zod";
 
 export const appRouter = createTRPCRouter({
+  status: publicProcedure.query(() => status()),
   providers: publicProcedure.query(() => getProvidersPublic()),
   numModels: publicProcedure.query(() => countModels()),
   defaultModel: protectedProcedure.query(async (opts) => {
