@@ -1,6 +1,7 @@
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
+import StatusNotification from "@/components/sidebar/status-notification";
 import { SwipeDetector } from "@/components/sidebar/swipe-detector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -38,6 +39,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
           <div className="flex items-center">
             <SearchField />
           </div>
+          <StatusNotification />
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-sidebar to-transparent pointer-events-none z-10" />
