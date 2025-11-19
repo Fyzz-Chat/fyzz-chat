@@ -265,6 +265,22 @@ const providers: Provider[] = [
         extensions: imageTypes,
       },
       {
+        id: "gpt-5.1-codex",
+        name: "GPT-5.1 Codex",
+        features: [reasoning, coding],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: imageTypes,
+      },
+      {
+        id: "gpt-5.1",
+        name: "GPT-5.1",
+        features: [images, reasoning, search, coding],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: [...imageTypes, "application/pdf"],
+      },
+      {
         id: "gpt-5-codex",
         name: "GPT-5 Codex",
         features: [reasoning, coding],
@@ -276,7 +292,7 @@ const providers: Provider[] = [
         id: "gpt-5",
         name: "GPT-5",
         features: [images, reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
+        provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
@@ -284,7 +300,7 @@ const providers: Provider[] = [
         id: "gpt-5-mini",
         name: "GPT-5 mini",
         features: [images, reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
+        provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
@@ -292,7 +308,7 @@ const providers: Provider[] = [
         id: "gpt-5-nano",
         name: "GPT-5 nano",
         features: [images, reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
+        provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
@@ -350,6 +366,22 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+      },
+      {
+        id: "gpt-5.1-codex",
+        name: "GPT-5.1 Codex",
+        features: [reasoning, coding],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: imageTypes,
+      },
+      {
+        id: "gpt-5.1",
+        name: "GPT-5.1",
+        features: [images, reasoning, search, coding],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: [...imageTypes, "application/pdf"],
       },
       {
         id: "gpt-5-codex",
@@ -469,6 +501,14 @@ const providers: Provider[] = [
     name: "Google",
     icon: "google",
     models: [
+      {
+        id: "gemini-3-pro-preview",
+        name: "Gemini 3 Pro",
+        features: [images, pdf],
+        provider: wrappedGoogle,
+        tools: true,
+        extensions: [...imageTypes, "application/pdf"],
+      },
       {
         id: "gemini-2.0-flash-lite",
         name: "Gemini 2.0 Flash Lite",
