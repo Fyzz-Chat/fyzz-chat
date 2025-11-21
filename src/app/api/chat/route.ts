@@ -1,5 +1,5 @@
 import { updateConversationTitle } from "@/lib/actions/conversations";
-import { generatePresignedUploadUrl, getFileUrlSigned } from "@/lib/aws/s3";
+import { getFileUrlSigned } from "@/lib/aws/s3";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
@@ -32,7 +32,6 @@ import {
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
 import {
-  type FileUIPart,
   type LanguageModelUsage,
   type experimental_MCPClient as McpClient,
   type Tool,
@@ -323,49 +322,6 @@ function mapFileParts(
       return part;
     }),
   };
-}
-
-async function _uploadMedia(
-  userId: number,
-  conversationId: string,
-  message: CustomUIMessage
-): Promise<CustomUIMessage> {
-  if (!message.parts) {
-    return message;
-  }
-
-  const parts = await Promise.all(
-    message.parts.map(async (part) => {
-      if (part.type !== "file") {
-        return part;
-      }
-
-      const file = part as FileUIPart;
-      const fileId = uuidv4();
-
-      const key = `${userId}/${conversationId}/${fileId}`;
-      const url = await generatePresignedUploadUrl(key);
-      const buffer = Buffer.from(file.url.split(",")[1], "base64");
-
-      const response = await fetch(url, {
-        method: "PUT",
-        body: buffer,
-        headers: {
-          "Content-Type": file.mediaType,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload generated image");
-      }
-
-      logger.debug("Generated image uploaded successfully");
-
-      return { ...part, url: fileId };
-    })
-  );
-
-  return { ...message, parts };
 }
 
 function createReasoningTimer() {
