@@ -6,15 +6,7 @@ import { ensure } from "../utils";
 
 let client: S3Client | null = null;
 
-export const awsConfigured =
-  process.env.AWS_ACCESS_KEY_ID !== undefined &&
-  process.env.AWS_SECRET_ACCESS_KEY !== undefined &&
-  conf.awsRegion !== "" &&
-  conf.awsUploadsBucket !== "" &&
-  conf.awsCloudfrontKeyPairId !== "" &&
-  conf.awsCloudfrontPrivateKey !== "";
-
-if (awsConfigured) {
+if (conf.awsConfigured) {
   client = new S3Client({
     region: conf.awsRegion,
   });
@@ -52,7 +44,7 @@ export async function deleteFile(key: string) {
 }
 
 export function getFileUrlSigned(key: string) {
-  ensure(awsConfigured, "AWS is not configured");
+  ensure(conf.awsConfigured, "AWS is not configured");
 
   const cloudfrontDistributionDomain = `https://${conf.awsUploadsBucket}`;
   const url = `${cloudfrontDistributionDomain}/${key}`;

@@ -2,7 +2,7 @@
 
 import "server-only";
 
-import { awsConfigured, deleteFile } from "@/lib/aws/s3";
+import { deleteFile } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -96,7 +96,7 @@ export async function deleteConversation(conversationId: string) {
     },
   });
 
-  if (awsConfigured) {
+  if (conf.awsConfigured) {
     const attachments =
       conversation?.messages
         .flatMap((message) =>
