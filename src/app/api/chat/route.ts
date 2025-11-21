@@ -9,9 +9,7 @@ import {
   getModel,
   getOpenaiProviderOptions,
   getProviderTools,
-  openaiConfigured,
 } from "@/lib/backend/providers";
-import { generateImageTool } from "@/lib/backend/tools/generate-image";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
 import { filterMessages, logDuration } from "@/lib/backend/utils";
@@ -103,7 +101,7 @@ export async function POST(req: NextRequest) {
 
   if (supportsTools && !temporaryChat) {
     try {
-      const toolsResult = await getTools(user, id, modelId, browse);
+      const toolsResult = await getTools(user, modelId, browse);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
     } catch (error: any) {
@@ -270,15 +268,14 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
 
 async function getTools(
   user: SessionUser,
-  conversationId: string,
   modelId: string,
   search: boolean
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: McpClient[] }> {
   const tools: { [key: string]: Tool } = {};
 
-  if (openaiConfigured) {
-    tools.generateImage = await generateImageTool(conversationId);
-  }
+  // if (openaiConfigured) {
+  //   tools.generateImage = await generateImageTool(conversationId);
+  // }
 
   if (user.memoryEnabled) {
     tools.memory = memoryTool;

@@ -44,8 +44,10 @@ export function getFileUrlSigned(key: string) {
 export async function generatePresignedUploadUrl(
   key: string,
   expiresInSeconds = 60 * 10
-): Promise<string> {
-  ensure(client, "AWS is not configured");
+): Promise<string | null> {
+  if (!client) {
+    return null;
+  }
 
   const command = new PutObjectCommand({
     Bucket: conf.awsUploadsBucket,

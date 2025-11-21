@@ -63,26 +63,29 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
       const key = `${userId}/${conversationId}/${uuidv4()}`;
       const url = await generatePresignedUploadUrl(key);
       const buffer = Buffer.from(imageBase64, "base64");
+      let image = buffer.toString("base64");
 
-      const response = await fetch(url, {
-        method: "PUT",
-        body: buffer,
-        headers: {
-          "Content-Type": mediaType,
-        },
-      });
+      if (url) {
+        const response = await fetch(url, {
+          method: "PUT",
+          body: buffer,
+          headers: {
+            "Content-Type": mediaType,
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload generated image");
+        if (!response.ok) {
+          throw new Error("Failed to upload generated image");
+        }
+
+        logger.debug("Generated image uploaded successfully");
+
+        image = getFileUrlSigned(key);
       }
-
-      logger.debug("Generated image uploaded successfully");
-
-      const signedUrl = getFileUrlSigned(key);
 
       logDuration(start, "Image generated");
 
-      return { image: signedUrl, url: key, name: prompt, contentType: mediaType };
+      return { image, url: key, name: prompt, contentType: mediaType };
     },
   });
 }
