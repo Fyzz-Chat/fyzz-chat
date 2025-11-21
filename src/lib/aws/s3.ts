@@ -1,8 +1,8 @@
 import conf from "@/lib/config";
+import { ensure } from "@/lib/utils";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import { getSignedUrl as presignUrl } from "@aws-sdk/s3-request-presigner";
-import { ensure } from "../utils";
 
 let client: S3Client | null = null;
 
@@ -12,26 +12,10 @@ if (conf.awsConfigured) {
   });
 }
 
-export async function uploadFile(file: File, key: string) {
-  ensure(client, "AWS is not configured");
-
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-
-  const command = new PutObjectCommand({
-    Bucket: conf.awsUploadsBucket,
-    Key: key,
-    Body: buffer,
-    ContentType: file.type,
-  });
-
-  const response = await client.send(command);
-
-  return response;
-}
-
 export async function deleteFile(key: string) {
-  ensure(client, "AWS is not configured");
+  if (!client) {
+    return;
+  }
 
   const command = new DeleteObjectCommand({
     Bucket: conf.awsUploadsBucket,

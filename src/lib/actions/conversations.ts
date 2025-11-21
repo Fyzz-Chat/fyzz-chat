@@ -96,20 +96,16 @@ export async function deleteConversation(conversationId: string) {
     },
   });
 
-  if (conf.awsConfigured) {
-    const attachments =
-      conversation?.messages
-        .flatMap((message) =>
-          (message.files as JsonValue[])?.map((file: any) => file?.url)
-        )
-        .filter((url) => !!url) || [];
+  const attachments =
+    conversation?.messages
+      .flatMap((message) => (message.files as JsonValue[])?.map((file: any) => file?.url))
+      .filter((url) => !!url) || [];
 
-    await Promise.all(
-      attachments.map(async (attachment) => {
-        await deleteFile(attachment);
-      })
-    );
-  }
+  await Promise.all(
+    attachments.map(async (attachment) => {
+      await deleteFile(attachment);
+    })
+  );
 
   await prisma.conversation.delete({ where: { id: conversationId, userId } });
 }
