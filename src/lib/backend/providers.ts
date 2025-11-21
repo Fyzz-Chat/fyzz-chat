@@ -238,7 +238,7 @@ const coding: Feature = {
 
 const images: Feature = {
   name: "Images",
-  description: "Supports images",
+  description: "Can generate images",
   icon: "image",
   color: "text-orange-500",
 };
@@ -259,7 +259,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4o-mini",
         name: "GPT-4o mini",
-        features: [images],
+        features: [],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -275,7 +275,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.1",
         name: "GPT-5.1",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -291,7 +291,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5",
         name: "GPT-5",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -299,7 +299,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-mini",
         name: "GPT-5 mini",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -307,7 +307,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-nano",
         name: "GPT-5 nano",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -315,7 +315,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1",
         name: "GPT-4.1",
-        features: [images],
+        features: [],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -323,7 +323,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
-        features: [images],
+        features: [],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -339,7 +339,7 @@ const providers: Provider[] = [
       {
         id: "o4-mini",
         name: "o4-mini",
-        features: [images, reasoning],
+        features: [reasoning],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -347,7 +347,7 @@ const providers: Provider[] = [
       {
         id: "o3",
         name: "o3",
-        features: [images, reasoning],
+        features: [reasoning],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -362,7 +362,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4o-mini",
         name: "GPT-4o mini",
-        features: [images],
+        features: [],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -378,7 +378,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.1",
         name: "GPT-5.1",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -394,7 +394,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5",
         name: "GPT-5",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -402,7 +402,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-mini",
         name: "GPT-5 mini",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -410,7 +410,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-nano",
         name: "GPT-5 nano",
-        features: [images, reasoning, search, coding],
+        features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -418,7 +418,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1",
         name: "GPT-4.1",
-        features: [images],
+        features: [],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -426,7 +426,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
-        features: [images],
+        features: [],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -442,7 +442,7 @@ const providers: Provider[] = [
       {
         id: "o4-mini",
         name: "o4-mini",
-        features: [images, reasoning],
+        features: [reasoning],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -450,7 +450,7 @@ const providers: Provider[] = [
       {
         id: "o3",
         name: "o3",
-        features: [images, reasoning],
+        features: [reasoning],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -465,7 +465,7 @@ const providers: Provider[] = [
       {
         id: "claude-sonnet-4-5",
         name: "Claude Sonnet 4.5",
-        features: [images, pdf, reasoning, search],
+        features: [pdf, reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -473,7 +473,7 @@ const providers: Provider[] = [
       {
         id: "claude-sonnet-4-20250514",
         name: "Claude Sonnet 4",
-        features: [images, pdf, reasoning, search],
+        features: [pdf, reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -481,7 +481,7 @@ const providers: Provider[] = [
       {
         id: "claude-3-7-sonnet-20250219",
         name: "Claude 3.7 Sonnet",
-        features: [images, pdf, reasoning, search],
+        features: [pdf, reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -489,7 +489,7 @@ const providers: Provider[] = [
       {
         id: "claude-3-5-haiku-20241022",
         name: "Claude 3.5 Haiku",
-        features: [images, pdf, search],
+        features: [pdf, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -504,7 +504,7 @@ const providers: Provider[] = [
       {
         id: "gemini-3-pro-preview",
         name: "Gemini 3 Pro",
-        features: [images, pdf],
+        features: [pdf],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -512,7 +512,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.0-flash-lite",
         name: "Gemini 2.0 Flash Lite",
-        features: [images, pdf],
+        features: [pdf],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -520,7 +520,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.0-flash",
         name: "Gemini 2.0 Flash",
-        features: [images, pdf, search],
+        features: [pdf, search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -544,7 +544,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
-        features: [images, pdf, search],
+        features: [pdf, search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
@@ -552,7 +552,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
-        features: [images, pdf, reasoning, search],
+        features: [pdf, reasoning, search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
@@ -567,7 +567,7 @@ const providers: Provider[] = [
       {
         id: "grok-4-0709",
         name: "Grok 4",
-        features: [images, reasoning],
+        features: [reasoning],
         provider: wrappedModel(xai),
         tools: true,
         extensions: imageTypes,
