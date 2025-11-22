@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.2.0...v0.2.1) (2025-11-22)
+
+
+### Bug Fixes
+
+* **files:** make it possible to upload files with aws configured ([55a0a2e](https://github.com/Fyzz-Chat/fyzz-chat/commit/55a0a2e514b06b2a74efb376df31205559235d41))
+
 # [0.2.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.1.0...v0.2.0) (2025-11-22)
 
 
