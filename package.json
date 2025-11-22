@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "million-dev": "MILLION_LINT=true next dev",
-    "analyze": "ANALYZE=true next build",
+    "analyze": "ANALYZE=true next build --webpack",
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --noEmit",
@@ -115,7 +115,7 @@
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
     "@million/lint": "1.0.14",
-    "@next/bundle-analyzer": "15.5.6",
+    "@next/bundle-analyzer": "16.0.3",
     "@types/jsonwebtoken": "9.0.10",
     "@types/negotiator": "0.6.4",
     "@types/node": "24.10.1",
