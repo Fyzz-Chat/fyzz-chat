@@ -27,6 +27,8 @@ jobs:
   release:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.tag.outputs.release_tag }}
     permissions:
       contents: write
       issues: write
@@ -47,18 +49,21 @@ jobs:
 
       - name: Run semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: semantic-release
+    
+      - name: Capture release tag
+        id: tag
+        run: |
+          git fetch --tags
+          echo "release_tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
 
   build:
     needs: release
-    permissions: write-all
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - authority: "localhost:3000"
-            image: "fyzz-chat/fyzz-chat"
 
     steps:
       - name: Checkout code
@@ -71,7 +76,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push ${{ matrix.image }} image
+      - name: Build and push fyzz-chat/fyzz-chat image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -79,9 +84,11 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ matrix.image }}:latest
+          tags: |
+            ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:latest
+            ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:${{ needs.release.outputs.release_tag }}
           build-args: |
-            AUTHORITY=${{ matrix.authority }}
+            AUTHORITY=localhost:3000
 
   deploy:
     needs: build
