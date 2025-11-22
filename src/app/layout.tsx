@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 import conf from "@/lib/config";
 import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import type React from "react";
-import { Toaster } from "sonner";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -58,7 +58,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-          <Toaster />
+          <Toaster position="top-right" />
         </Providers>
       </body>
     </html>

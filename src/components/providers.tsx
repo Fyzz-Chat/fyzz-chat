@@ -1,3 +1,4 @@
+import { VersionChecker } from "@/components/version-checker";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { TranslationsProvider } from "@/lib/contexts/translations-context";
 import { TRPCReactProvider } from "@/lib/trpc/client";
@@ -11,6 +12,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <TranslationsProvider translationsPromise={translationsPromise}>
       <TRPCReactProvider>
         <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
+          <VersionChecker />
           {children}
         </ThemeProvider>
       </TRPCReactProvider>

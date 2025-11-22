@@ -4,9 +4,6 @@ import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { NextResponse } from "next/server";
 
-const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
-const APP_VERSION = packageJson.version;
-
 const CONNECTION_QUERY = `
 SELECT 
   client_addr as ip,
@@ -40,6 +37,11 @@ async function checkDatabase() {
 
 export async function GET() {
   const startTime = performance.now();
+
+  const packageJson = JSON.parse(
+    readFileSync(join(process.cwd(), "package.json"), "utf8")
+  );
+  const APP_VERSION = packageJson.version;
 
   try {
     const dbCheck = await checkDatabase();
