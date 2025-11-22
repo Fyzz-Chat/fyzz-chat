@@ -16,7 +16,7 @@ export default async function AuthPopup({
     (isLogin || isRegister) && (
       <div
         className={cn(
-          "flex fixed items-center justify-center inset-0 backdrop-blur-sm z-20 animate-in fade-in slide-in-from-bottom-4 duration-500"
+          "flex fixed items-center justify-center inset-0 backdrop-blur-xs z-20 animate-in fade-in slide-in-from-bottom-4 duration-500"
         )}
       >
         <AuthCard

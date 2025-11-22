@@ -175,18 +175,18 @@ export const ReasoningContent = memo(
       <CollapsibleContent
         className={cn(
           "mt-4 text-sm",
-          "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-muted-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
+          "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-muted-foreground outline-hidden data-[state=closed]:animate-out data-[state=open]:animate-in",
           className
         )}
         {...props}
       >
-        <div className="relative h-6 -mb-6 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
+        <div className="relative h-6 -mb-6 bg-linear-to-b from-background to-transparent pointer-events-none z-10" />
         <ScrollArea viewportRef={viewportRef}>
           <div className="max-h-56">
             <Response className="grid gap-2 py-3">{children}</Response>
           </div>
         </ScrollArea>
-        <div className="relative h-6 -mt-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
+        <div className="relative h-6 -mt-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
       </CollapsibleContent>
     );
   }

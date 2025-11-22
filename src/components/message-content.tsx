@@ -72,7 +72,7 @@ const MemoizedSyntaxHighlighter = memo(
         style={tomorrow}
         language={language}
         PreTag="div"
-        className="rounded-md border !bg-sidebar/90 p-4 !text-sm"
+        className="rounded-md border bg-sidebar/90! p-4 text-sm!"
         customStyle={{
           margin: 0,
           borderRadius: "0.375rem",
@@ -173,7 +173,7 @@ const CodeBlock = memo(
             {children.replace(/\n$/, "")}
           </MemoizedSyntaxHighlighter>
         ) : (
-          <div className="bg-sidebar/90 p-4 rounded-md border !text-sm text-sidebar-foreground overflow-auto">
+          <div className="bg-sidebar/90 p-4 rounded-md border text-sm! text-sidebar-foreground overflow-auto">
             <code
               style={{
                 fontSize: "14px !important",
@@ -275,7 +275,7 @@ const MemoizedMarkdown = memo(({ content, id }: { content: string; id: string })
   return blocks.map((block, index) => (
     <div
       key={`${id}-block-${index}`}
-      className="break-words"
+      className="wrap-break-word"
       style={{ wordBreak: "break-word" }}
     >
       <MemoizedMarkdownBlock content={block} />

@@ -29,7 +29,7 @@ export default function ChatWelcomeSection({
   if (temporaryChat) {
     return (
       <div className="flex items-start mx-auto flex-col gap-4 py-6 px-6 lg:px-14 bg-muted/30 border border-muted rounded-lg w-fit">
-        <div className="flex-shrink-0 text-muted-foreground gap-2 flex flex-col justify-center items-center w-full ">
+        <div className="shrink-0 text-muted-foreground gap-2 flex flex-col justify-center items-center w-full ">
           <IconSpy size={50} />
           <h3 className="text-3xl font-bold text-muted-foreground mb-5">
             {translations.home.incognito.title}

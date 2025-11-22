@@ -73,7 +73,7 @@ export default function RegisterForm() {
           className="text-primary hover:underline inline-flex items-center relative"
         >
           <span>{translations.register.privacyPolicy.link}</span>
-          <ExternalLink size={10} className="ml-1 relative top-[-1px]" />
+          <ExternalLink size={10} className="ml-1 relative -top-px" />
         </a>
       </div>
       <PendingSubmitButton

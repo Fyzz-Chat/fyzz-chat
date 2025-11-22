@@ -10,7 +10,7 @@ export const Response = memo(
   ({ className, ...props }: ResponseProps) => (
     <Streamdown
       className={cn(
-        "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>div>div]:bg-sidebar/90 [&_.shiki]:!bg-transparent",
+        "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>div>div]:bg-sidebar/90 [&_.shiki]:bg-transparent!",
         className
       )}
       {...props}

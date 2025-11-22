@@ -42,9 +42,9 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
           <StatusNotification />
         </SidebarHeader>
         <SidebarContent className="relative pl-2 pr-2 md:pr-0">
-          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-sidebar to-transparent pointer-events-none z-10" />
+          <div className="absolute top-0 left-0 right-0 h-4 bg-linear-to-b from-sidebar to-transparent pointer-events-none z-10" />
           {children}
-          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-sidebar to-transparent pointer-events-none z-10" />
+          <div className="absolute bottom-0 left-0 right-0 h-4 bg-linear-to-t from-sidebar to-transparent pointer-events-none z-10" />
         </SidebarContent>
         <SidebarFooter className="pl-4 py-4 pr-4 md:pr-2">
           <SidebarMenu>
@@ -65,7 +65,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
                     <p>{user?.name || "Anonymous"}</p>
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-64 md:w-[15rem]">
+                <DropdownMenuContent className="w-64 md:w-60">
                   <ProfileMenu authorized={Boolean(user)} userEmail={user?.email} />
                 </DropdownMenuContent>
               </DropdownMenu>

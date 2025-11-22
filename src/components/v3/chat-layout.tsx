@@ -18,7 +18,7 @@ export default function ChatLayout() {
         <div className="w-full h-px border-b" />
         <Outlet />
         <div className="absolute max-w-5xl mx-auto bottom-0 left-0 right-0">
-          <div className="relative h-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
+          <div className="relative h-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
           <ChatLayoutWrapper>
             <InputForm />
           </ChatLayoutWrapper>

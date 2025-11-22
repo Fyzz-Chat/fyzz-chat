@@ -65,7 +65,7 @@ export default function ProfileMenu({
           <FileText className="shrink-0" />
           <span className="relative">
             {translations.sidebar.menu.privacyPolicy}
-            <ExternalLink className="absolute -top-0 -right-4 !w-3 !h-3" />
+            <ExternalLink className="absolute top-0 -right-4 w-3! h-3!" />
           </span>
         </a>
       </DropdownMenuItem>

@@ -59,7 +59,7 @@ export default async function SharePage({
 
   return (
     <>
-      <div className="relative h-6 -mb-6 bg-gradient-to-b from-background to-transparent pointer-events-none z-10" />
+      <div className="relative h-6 -mb-6 bg-linear-to-b from-background to-transparent pointer-events-none z-10" />
       <ScrollArea className="h-[calc(100svh-72px-62px)] px-4 mx-4">
         <div className="flex flex-1 flex-col gap-8 max-w-5xl w-full mx-auto my-6">
           {conversation.messages.map((message: any) => (
@@ -78,7 +78,7 @@ export default async function SharePage({
         </div>
       </ScrollArea>
       <ScrollToBottom />
-      <div className="relative h-6 -mt-6 bg-gradient-to-t from-background to-transparent pointer-events-none z-10" />
+      <div className="relative h-6 -mt-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
     </>
   );
 }

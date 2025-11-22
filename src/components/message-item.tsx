@@ -119,7 +119,7 @@ export function MessageItem({
             id="edit-message"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none border rounded-lg p-[18px]"
+            className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 resize-none border rounded-lg p-[18px]"
           />
         </div>
       ) : (
