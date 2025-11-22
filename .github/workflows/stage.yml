@@ -20,12 +20,36 @@ jobs:
 
       - name: Install dependencies
         run: bun install
-      
+
       - name: Lint project
         run: bun run lint-check && bun run type-check
 
-  build:
+  release:
     needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun.js
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install semantic-release globally
+        run: bun install -g semantic-release @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: semantic-release
+
+  build:
+    needs: release
     permissions:
       contents: read
       packages: write
@@ -58,5 +82,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Coolify
-        run: | 
+        run: |
           curl --request GET '${{ secrets.COOLIFY_TEST_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
