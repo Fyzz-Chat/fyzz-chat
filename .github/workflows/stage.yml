@@ -37,11 +37,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Bun.js
-        uses: oven-sh/setup-bun@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
       - name: Install semantic-release globally
-        run: bun install -g semantic-release @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator
+        run: npm install -g semantic-release @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator
 
       - name: Run semantic-release
         env:
