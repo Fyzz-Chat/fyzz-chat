@@ -5,7 +5,7 @@ import "server-only";
 import { InvalidLoginError, hashPassword, signIn, verifyPassword } from "@/auth";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import type { FormState } from "@/lib/utils";
-import type { JsonValue } from "@prisma/client/runtime/library";
+import type { JsonValue } from "@prisma/client/runtime/client";
 import { revalidatePath } from "next/cache";
 import { getUserIdFromSession } from "../dao/users";
 import prisma from "../prisma/prisma";

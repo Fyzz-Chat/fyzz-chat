@@ -36,7 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 .env
-src/lib/prisma/client
+src/lib/prisma/generated
 
 
 # copilot instructions

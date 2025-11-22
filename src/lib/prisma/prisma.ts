@@ -1,7 +1,11 @@
-import { PrismaClient } from "@/lib/prisma/client";
+import { PrismaClient } from "@/lib/prisma/generated/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+  });
+  return new PrismaClient({ adapter });
 };
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: This is recommended by Prisma

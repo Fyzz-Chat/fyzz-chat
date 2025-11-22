@@ -2,11 +2,11 @@ import "server-only";
 
 import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
-import type { InputJsonValue } from "@/lib/prisma/client/runtime/library";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage, PartialMessage } from "@/types/chat";
-import { logger } from "../logger";
+import type { InputJsonValue } from "@prisma/client/runtime/client";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { readNotifications } from "@/lib/actions/notifications";
-import type { Notification } from "@/lib/prisma/client";
+import type { Notification } from "@/lib/prisma/generated/client";
 
 export default function MarkAllAsReadButton({
   notifications,

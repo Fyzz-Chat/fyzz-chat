@@ -1,4 +1,4 @@
-import type { Conversation, Message } from "@/lib/prisma/client";
+import type { Conversation, Message } from "@/lib/prisma/generated/client";
 import type { UIMessage } from "ai";
 import { z } from "zod";
 

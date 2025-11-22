@@ -8,7 +8,7 @@ import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 import { openai } from "@ai-sdk/openai";
-import type { JsonValue } from "@prisma/client/runtime/library";
+import type { JsonValue } from "@prisma/client/runtime/client";
 import { convertToModelMessages, generateText } from "ai";
 import jwt from "jsonwebtoken";
 

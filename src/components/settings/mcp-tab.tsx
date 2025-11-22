@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { saveMcpServers } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { MissingKeyError } from "@/types/mcp";
-import type { JsonValue } from "@prisma/client/runtime/library";
+import type { JsonValue } from "@prisma/client/runtime/client";
 import { Plus, Trash2 } from "lucide-react";
 import { use, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
