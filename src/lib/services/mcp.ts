@@ -5,7 +5,7 @@ import {
   createStdioMcpClient,
 } from "@/lib/backend/tools/mcp-clients";
 import { logDuration } from "@/lib/backend/utils";
-import type { experimental_MCPClient as McpClient } from "ai";
+import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
 
 export class McpClientInitError extends Error {
   constructor() {

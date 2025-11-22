@@ -1,6 +1,6 @@
+import { experimental_createMCPClient as createMCPClient } from "@ai-sdk/mcp";
+import { Experimental_StdioMCPTransport as StdioMCPTransport } from "@ai-sdk/mcp/mcp-stdio";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { experimental_createMCPClient as createMCPClient } from "ai";
-import { Experimental_StdioMCPTransport as StdioMCPTransport } from "ai/mcp-stdio";
 
 export async function createHttpMcpClient(serverUrl: string) {
   const url = new URL(serverUrl);

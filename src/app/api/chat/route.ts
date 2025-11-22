@@ -29,9 +29,9 @@ import {
 } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
+import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
 import {
   type LanguageModelUsage,
-  type experimental_MCPClient as McpClient,
   type Tool,
   convertToModelMessages,
   hasToolCall,

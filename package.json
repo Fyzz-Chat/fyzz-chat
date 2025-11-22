@@ -10,8 +10,12 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "lint-staged": "lint-staged",
-    "lint-check": "biome lint --write ./src",
-    "format": "biome format --write ./src",
+    "format": "biome format ./src",
+    "format-write": "biome format --write ./src",
+    "lint": "biome lint ./src",
+    "lint-write": "biome lint --write ./src",
+    "check": "biome check ./src",
+    "check-write": "biome check --write ./src",
     "prepare": "husky",
     "postinstall": "prisma generate",
     "migrate": "prisma migrate dev",
@@ -19,7 +23,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "biome check --write --no-errors-on-unmatched ./src"
+      "bun run check"
     ]
   },
   "dependencies": {
@@ -27,6 +31,7 @@
     "@ai-sdk/azure": "2.0.73",
     "@ai-sdk/fireworks": "1.0.28",
     "@ai-sdk/google": "2.0.40",
+    "@ai-sdk/mcp": "0.0.8",
     "@ai-sdk/openai": "2.0.71",
     "@ai-sdk/perplexity": "2.0.20",
     "@ai-sdk/react": "2.0.99",
@@ -64,7 +69,7 @@
     "@trpc/react-query": "11.7.1",
     "@trpc/server": "11.7.1",
     "@trpc/tanstack-react-query": "11.7.1",
-    "ai": "5.0.48",
+    "ai": "5.0.99",
     "bcryptjs": "3.0.3",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
