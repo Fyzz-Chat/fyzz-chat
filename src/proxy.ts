@@ -19,7 +19,7 @@ function getLocale(request: NextRequest) {
   return match(languages, locales, defaultLocale);
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const cookie = request.cookies.get("locale");
   const storedLocale = cookie?.value as Locale;
   const pathnameHasLocale = locales.some((locale) => locale === storedLocale);
