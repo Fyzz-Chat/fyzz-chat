@@ -7,6 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  DATABASE_URL: ""
 
 jobs:
   test:
