@@ -108,6 +108,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@commitlint/cli": "20.1.0",
+    "@commitlint/config-conventional": "20.0.0",
     "@million/lint": "1.0.14",
     "@next/bundle-analyzer": "15.3.1",
     "@types/jsonwebtoken": "9.0.9",
