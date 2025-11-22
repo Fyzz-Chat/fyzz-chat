@@ -313,7 +313,7 @@ function mapFileParts(
       if (part.type === "file") {
         return {
           ...part,
-          url: getFileUrlSigned(`${userId}/${conversationId}/${part.url}`),
+          url: getFileUrlSigned(`${userId}/${conversationId}`, part.url),
         };
       }
       return part;

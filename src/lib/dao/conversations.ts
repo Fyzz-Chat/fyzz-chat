@@ -275,7 +275,10 @@ function filterParts(
           ...part,
           output: {
             ...(part.output as any),
-            image: getFileUrlSigned((part.output as any).url),
+            image: getFileUrlSigned(
+              `${userId}/${conversationId}`,
+              (part.output as any).url
+            ),
           },
         };
       } else if (part.type === "file" && !part.url.startsWith("data:")) {
@@ -283,7 +286,7 @@ function filterParts(
 
         return {
           ...part,
-          url: getFileUrlSigned(`${key}/${part.url}`),
+          url: getFileUrlSigned(key, part.url),
         };
       } else {
         return part;

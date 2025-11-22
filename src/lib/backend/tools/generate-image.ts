@@ -60,7 +60,9 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
         mediaType = image.mediaType;
       }
 
-      const key = `${userId}/${conversationId}/${uuidv4()}`;
+      const prefix = `${userId}/${conversationId}`;
+      const fileUrl = uuidv4();
+      const key = `${prefix}/${fileUrl}`;
       const url = await generatePresignedUploadUrl(key);
       const buffer = Buffer.from(imageBase64, "base64");
       let image = buffer.toString("base64");
@@ -80,7 +82,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
 
         logger.debug("Generated image uploaded successfully");
 
-        image = getFileUrlSigned(key);
+        image = getFileUrlSigned(prefix, fileUrl);
       }
 
       logDuration(start, "Image generated");

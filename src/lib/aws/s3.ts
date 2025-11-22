@@ -27,11 +27,13 @@ export async function deleteFile(key: string) {
   return response;
 }
 
-export function getFileUrlSigned(key: string) {
-  ensure(conf.awsConfigured, "AWS is not configured");
+export function getFileUrlSigned(prefix: string, fileUrl: string) {
+  if (!conf.awsConfigured || fileUrl.startsWith("data:")) {
+    return fileUrl;
+  }
 
   const cloudfrontDistributionDomain = `https://${conf.awsUploadsBucket}`;
-  const url = `${cloudfrontDistributionDomain}/${key}`;
+  const url = `${cloudfrontDistributionDomain}/${prefix}/${fileUrl}`;
   const privateKey = conf.awsCloudfrontPrivateKey?.replace(/\|/g, "\n");
   const keyPairId = conf.awsCloudfrontKeyPairId;
   const dateLessThan = new Date(Date.now() + 60 * 60 * 1000);
