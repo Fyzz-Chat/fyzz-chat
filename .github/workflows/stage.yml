@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  DATABASE_URL: ""
+  DATABASE_URL: ${{ secrets.DATABASE_URL_STAGE }}
 
 jobs:
   test:
