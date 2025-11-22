@@ -18,7 +18,9 @@
     "db-push": "prisma db push"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["biome check --write --no-errors-on-unmatched ./src"]
+    "*.{ts,tsx}": [
+      "biome check --write --no-errors-on-unmatched ./src"
+    ]
   },
   "dependencies": {
     "@ai-sdk/anthropic": "2.0.17",
