@@ -22,7 +22,7 @@ jobs:
         run: bun install
 
       - name: Lint project
-        run: bun run lint-check && bun run type-check
+        run: bun run check && bun run type-check
 
   release:
     needs: test
