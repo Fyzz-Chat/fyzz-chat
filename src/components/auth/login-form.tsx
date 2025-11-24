@@ -52,20 +52,30 @@ export default function LoginForm() {
           autoFocus
         />
       </Label>
-      <Label htmlFor="password" className="space-y-1">
-        <span>{translations.login.password}</span>
-        <Input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="****************"
-          required
-        />
-      </Label>
+      <div className="flex flex-col gap-1">
+        <Label htmlFor="password" className="space-y-1">
+          <span>{translations.login.password}</span>
+          <Input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="****************"
+            required
+          />
+        </Label>
+        <div className="text-xs text-muted-foreground text-right">
+          <a
+            href="/reset-password/request"
+            className="text-primary hover:underline inline-flex items-center relative"
+          >
+            <span>Forgot password?</span>
+          </a>
+        </div>
+      </div>
       <PendingSubmitButton
         isPending={isPending}
         text={translations.login.signIn}
-        className="mt-[18px]"
+        className="mt-2"
       />
     </form>
   );

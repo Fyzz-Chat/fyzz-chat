@@ -3,6 +3,7 @@
 import "server-only";
 
 import { auth } from "@/auth";
+import conf from "@/lib/config";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -29,6 +30,27 @@ export async function setUserPassword(password: string): Promise<FormState> {
 
     return {
       message: "Failed to set password",
+      description: "Something went wrong. Please try again.",
+      success: false,
+    };
+  }
+}
+
+export async function requestPasswordReset(email: string): Promise<FormState> {
+  try {
+    const response = await auth.api.requestPasswordReset({
+      body: { email, redirectTo: `${conf.scheme}://${conf.authority}/reset-password` },
+    });
+
+    return {
+      message: "Password reset email sent",
+      description: response.message,
+      success: true,
+    };
+  } catch (e) {
+    logger.error(e);
+    return {
+      message: "Failed to request password reset",
       description: "Something went wrong. Please try again.",
       success: false,
     };
