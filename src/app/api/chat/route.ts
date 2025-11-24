@@ -304,7 +304,7 @@ function hasTextPart(message: CustomUIMessage) {
 
 function mapFileParts(
   message: CustomUIMessage,
-  userId: number,
+  userId: string,
   conversationId: string
 ): CustomUIMessage {
   return {

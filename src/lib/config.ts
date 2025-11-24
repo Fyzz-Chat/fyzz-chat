@@ -38,10 +38,10 @@ const envVars = {
   host: `${process.env.SCHEME || "https"}://${process.env.AUTHORITY}`,
 
   // Auth
-  githubId: process.env.AUTH_GITHUB_ID,
-  githubSecret: process.env.AUTH_GITHUB_SECRET,
-  googleId: process.env.AUTH_GOOGLE_ID,
-  googleSecret: process.env.AUTH_GOOGLE_SECRET,
+  githubId: process.env.GITHUB_CLIENT_ID,
+  githubSecret: process.env.GITHUB_CLIENT_SECRET,
+  googleId: process.env.GOOGLE_CLIENT_ID,
+  googleSecret: process.env.GOOGLE_CLIENT_SECRET,
 
   // AWS
   awsRegion: process.env.AWS_REGION,

@@ -2,38 +2,51 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import useToast from "@/hooks/use-toast";
-import { registerUser } from "@/lib/actions/users";
+import { signUp } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import publicConf from "@/lib/public-config";
-import { type FormState, initialState } from "@/lib/utils";
-import { useInputStore } from "@/stores/input-store";
 import { ExternalLink } from "lucide-react";
-import { use, useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { type FormEvent, use, useTransition } from "react";
+import { toast } from "sonner";
 import PendingSubmitButton from "./pending-submit-button";
 
 export default function RegisterForm() {
+  const [isPending, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const [state, formAction, isPending] = useActionState(registerUser, initialState);
-  const input = useInputStore((state) => state.input);
+  const router = useRouter();
 
-  const toastCallback = (state: FormState) => {
-    if (state.success) {
-      localStorage.setItem("fyzz-auth-method", "password");
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-      if (input) {
-        localStorage.setItem("fyzz-input-content", input);
-      }
-
-      window.location.href = publicConf.redirectPath;
-    }
-  };
-
-  useToast(state, toastCallback);
+    startTransition(async () => {
+      await signUp.email(
+        {
+          name,
+          email,
+          password,
+          callbackURL: publicConf.redirectPath,
+        },
+        {
+          onSuccess: () => {
+            localStorage.setItem("fyzz-auth-method", "password");
+            router.push("/chat");
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
+        }
+      );
+    });
+  }
 
   return (
-    <form className="flex flex-col gap-4" action={formAction}>
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
       <Label htmlFor="name" className="space-y-1">
         <span>{translations.register.name.label}</span>
         <Input

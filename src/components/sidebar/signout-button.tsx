@@ -1,17 +1,25 @@
 "use client";
 
+import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { signOut } from "@/lib/auth-client";
 import { LoaderCircle, LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SidebarMenuButton } from "../ui/sidebar";
 
 export function SignOut({ buttonText }: { buttonText: string }) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
-      await signOut();
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/chat?login=true");
+          },
+        },
+      });
     } catch (_) {
       setIsLoading(false);
     }

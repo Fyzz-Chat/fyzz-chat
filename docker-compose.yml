@@ -15,6 +15,18 @@ services:
       - /usr/src/app/node_modules/
     command: bun run dev
 
+  prod:
+    image: prod
+    build:
+      context: ./
+      target: release
+    working_dir: /usr/src/app/
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://app_dev:dev_password@database:5432/dev
+    ports:
+      - 3000:3000
+
   database:
     image: postgres:16.4
     ports:

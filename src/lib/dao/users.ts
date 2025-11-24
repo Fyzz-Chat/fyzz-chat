@@ -2,10 +2,11 @@ import "server-only";
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma/prisma";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
-const unauthenticatedRedirect = "/chat?register=true";
+const unauthenticatedRedirect = "/chat?login=true";
 
 export async function getUserByEmail(email: string) {
   const user = await prisma.user.findUnique({
@@ -18,10 +19,10 @@ export async function getUserByEmail(email: string) {
 }
 
 export type SessionUser = {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  picture: string;
+  image: string | null;
   subscription: string;
   freeMessages: number;
   customerId: string | null;
@@ -29,18 +30,22 @@ export type SessionUser = {
   defaultModel: string | null;
 };
 
-export const getUserIdFromSession = cache(async (): Promise<number> => {
-  const session = await auth();
+export const getUserIdFromSession = cache(async (): Promise<string> => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   if (!session || !session.user || !session.user.id) {
     return redirect(unauthenticatedRedirect);
   }
 
-  return parseInt(session.user.id);
+  return session.user.id;
 });
 
 export const getUserFromSession = cache(async (): Promise<SessionUser> => {
-  const session = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   if (!session) {
     return redirect(unauthenticatedRedirect);
@@ -54,7 +59,7 @@ export const getUserFromSession = cache(async (): Promise<SessionUser> => {
       id: true,
       name: true,
       email: true,
-      picture: true,
+      image: true,
       subscription: true,
       freeMessages: true,
       customerId: true,
@@ -71,7 +76,9 @@ export const getUserFromSession = cache(async (): Promise<SessionUser> => {
 });
 
 export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | null> => {
-  const session = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   if (!session) {
     return null;
@@ -85,7 +92,7 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       id: true,
       name: true,
       email: true,
-      picture: true,
+      image: true,
       subscription: true,
       freeMessages: true,
       customerId: true,
@@ -96,24 +103,6 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
 
   return user;
 });
-
-export async function saveUser(profile: {
-  name: string;
-  email: string;
-  password?: string;
-  picture: string;
-}) {
-  const user = await prisma.user.create({
-    data: {
-      name: profile.name,
-      email: profile.email,
-      password: profile.password,
-      picture: profile.picture,
-    },
-  });
-
-  return user;
-}
 
 export async function getUserMemory(): Promise<string | null | undefined> {
   const userId = await getUserIdFromSession();

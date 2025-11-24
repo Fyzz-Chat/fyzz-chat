@@ -3,9 +3,10 @@
 import { Button } from "@/components/ui/button";
 import useToast from "@/hooks/use-toast";
 import { deleteUser } from "@/lib/actions/users";
+import { signOut } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { type FormState, initialState } from "@/lib/utils";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { use, useActionState } from "react";
 import { useState } from "react";
 import {
@@ -27,6 +28,7 @@ export default function DeleteAccountForm() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const isConfirmed = confirmText === "delete my account";
+  const router = useRouter();
 
   function handleOpenChange(open: boolean) {
     setOpen(open);
@@ -38,8 +40,9 @@ export default function DeleteAccountForm() {
   const successCallback = async (state: FormState) => {
     if (state.success) {
       setOpen(false);
-      setTimeout(() => {
-        signOut();
+      setTimeout(async () => {
+        await signOut();
+        router.push("/chat?login=true");
       }, 2000);
     }
   };

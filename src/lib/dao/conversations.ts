@@ -224,7 +224,7 @@ export async function isConversationLocked(conversationId: string): Promise<bool
 }
 
 export function mapMessages(
-  userId: number,
+  userId: string,
   conversationId: string,
   messages: PartialMessage[]
 ): CustomUIMessage[] {
@@ -249,7 +249,7 @@ export function mapMessages(
 }
 
 function filterParts(
-  userId: number,
+  userId: string,
   conversationId: string,
   parts: CustomUIMessage["parts"]
 ) {

@@ -3,10 +3,6 @@ import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config) => {
-    config.externals = [...config.externals, "bcrypt"];
-    return config;
-  },
   output: "standalone",
   images: {
     remotePatterns: [

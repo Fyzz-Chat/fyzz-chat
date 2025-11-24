@@ -18,15 +18,7 @@ import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import {
-  ArrowBigLeftDashIcon,
-  ArrowLeft,
-  Brain,
-  Monitor,
-  Puzzle,
-  Shield,
-  User,
-} from "lucide-react";
+import { ArrowLeft, Brain, Monitor, Puzzle, Shield, User } from "lucide-react";
 
 export default async function SettingsPage() {
   const translations = await getTranslations();
@@ -36,15 +28,19 @@ export default async function SettingsPage() {
       id: userId,
     },
     select: {
-      password: true,
       memory: true,
       memoryEnabled: true,
       mcpServers: true,
       defaultModel: true,
+      accounts: {
+        select: {
+          password: true,
+        },
+      },
     },
   });
-  const hasPassword = Boolean(user?.password);
   const providers = getProvidersPublic();
+  const hasPassword = user?.accounts?.some((account) => account.password);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-start p-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">

@@ -4,7 +4,12 @@ build:
 	docker compose build
 
 dev:
-	docker compose up -d
+	docker compose down prod
+	docker compose up -d app database
+
+prod:
+	docker compose down app
+	docker compose up -d prod database
 
 sh:
 	docker compose exec app /bin/bash
@@ -19,4 +24,4 @@ db:
 	docker compose exec database psql -U app_dev -d dev
 
 logs:
-	docker compose logs -f app
+	docker compose logs -f

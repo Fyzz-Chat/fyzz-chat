@@ -2,19 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import useToast from "@/hooks/use-toast";
-import {
-  updateDefaultModel,
-  updateUserMemory,
-  updateUserMemoryEnabled,
-} from "@/lib/actions/users";
-import { useTranslations } from "@/lib/contexts/translations-context";
-import { initialState } from "@/lib/utils";
-import type { PublicProvider } from "@/types/provider";
-import { use, useActionState, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -23,7 +10,19 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  updateDefaultModel,
+  updateUserMemory,
+  updateUserMemoryEnabled,
+} from "@/lib/actions/users";
+import { useTranslations } from "@/lib/contexts/translations-context";
+import type { PublicProvider } from "@/types/provider";
+import { use, useEffect, useRef, useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function MemoryForm({
   defaultModel,
@@ -36,15 +35,23 @@ export default function MemoryForm({
   memoryEnabled: boolean;
   providers: PublicProvider[];
 }) {
+  const [isPending, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const [state, formAction, isPending] = useActionState(updateUserMemory, initialState);
+  const { handleSubmit } = useForm<{ memory: string }>();
   const [content, setContent] = useState(memory ?? "");
   const [enabled, setEnabled] = useState(memoryEnabled);
   const [selectedModel, setSelectedModel] = useState<string | undefined>(defaultModel);
   const isFirstRender = useRef(true);
 
-  useToast(state);
+  async function onSubmit() {
+    startTransition(async () => {
+      const state = await updateUserMemory(content);
+      toast.success(state.message, {
+        description: state.description,
+      });
+    });
+  }
 
   useEffect(() => {
     if (selectedModel && selectedModel !== defaultModel) {
@@ -120,7 +127,10 @@ export default function MemoryForm({
             : translations.settings.memory.toggle.descriptionDisabled}
         </p>
       </div>
-      <form action={formAction} className="flex flex-col gap-4 w-full items-start">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4 w-full items-start"
+      >
         <Textarea
           name="memory"
           value={content}
