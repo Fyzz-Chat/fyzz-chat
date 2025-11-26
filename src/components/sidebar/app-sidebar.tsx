@@ -19,21 +19,25 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { FastLink } from "@/components/v3/fast-link";
+import { getVersion } from "@/lib/backend/utils";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
 export async function AppSidebar({ children }: { children: ReactNode }) {
   const user = await getUserFromSessionPublic();
+  const version = await getVersion();
+
   return (
     <>
       <Sidebar className="border-none">
         <SidebarHeader className="flex-col gap-4 py-4 pl-4 pr-4 md:pr-2">
-          <div className="flex justify-between items-center w-full">
+          <div className="flex justify-between items-center w-full gap-2">
             <FastLink to="/chat" className="flex items-center justify-start gap-2">
               <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
               <p className="text-md font-bold">Fyzz.chat</p>
             </FastLink>
+            <p className="text-xs text-muted-foreground mr-auto">{version}</p>
             <NewChatButton />
           </div>
           <div className="flex items-center">

@@ -1,5 +1,4 @@
-import { readFileSync } from "fs";
-import { join } from "path";
+import { getVersion } from "@/lib/backend/utils";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { NextResponse } from "next/server";
@@ -38,10 +37,7 @@ async function checkDatabase() {
 export async function GET() {
   const startTime = performance.now();
 
-  const packageJson = JSON.parse(
-    readFileSync(join(process.cwd(), "package.json"), "utf8")
-  );
-  const APP_VERSION = packageJson.version;
+  const app_version = getVersion();
 
   try {
     const dbCheck = await checkDatabase();
@@ -52,7 +48,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: dbCheck.status === "PASS" ? "OK" : "WARNING",
-        version: APP_VERSION,
+        version: app_version,
         timestamp: new Date().toISOString(),
         responseTime: `${responseTime.toFixed(2)}ms`,
         checks: {
@@ -74,7 +70,7 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "ERROR",
-        version: APP_VERSION,
+        version: app_version,
         timestamp: new Date().toISOString(),
         responseTime: `${responseTime.toFixed(2)}ms`,
         error: error.message,

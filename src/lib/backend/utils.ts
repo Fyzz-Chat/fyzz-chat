@@ -1,3 +1,5 @@
+import { readFileSync } from "fs";
+import { join } from "path";
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
 import type { CustomUIMessage } from "@/types/chat";
@@ -49,4 +51,12 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
 export function logDuration(start: number, message: string) {
   const after = performance.now();
   logger.debug(`${message}: ${(after - start).toFixed(2)}ms`);
+}
+
+export function getVersion() {
+  const packageJson = JSON.parse(
+    readFileSync(join(process.cwd(), "package.json"), "utf8")
+  );
+  const app_version = packageJson.version;
+  return app_version;
 }
