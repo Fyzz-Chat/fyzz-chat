@@ -44,6 +44,7 @@ FROM base AS release
 COPY --from=prerelease /usr/src/app/public ./public
 COPY --from=prerelease /usr/src/app/.next/standalone ./
 COPY --from=prerelease /usr/src/app/.next/static ./.next/static
+COPY --from=prerelease /usr/stc/app/prisma/ ./prisma/
 
 CMD ["bun", "run", "server.js"]
 
