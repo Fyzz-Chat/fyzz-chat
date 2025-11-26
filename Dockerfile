@@ -45,6 +45,7 @@ COPY --from=prerelease /usr/src/app/public ./public
 COPY --from=prerelease /usr/src/app/.next/standalone ./
 COPY --from=prerelease /usr/src/app/.next/static ./.next/static
 COPY --from=prerelease /usr/src/app/prisma/ ./prisma/
+COPY --from=prerelease /usr/src/app/prisma.config.ts ./prisma.config.ts
 
 CMD ["bun", "run", "server.js"]
 
