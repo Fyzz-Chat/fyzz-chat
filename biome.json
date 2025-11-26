@@ -12,7 +12,7 @@
   "files": {
     "ignoreUnknown": false,
     "ignore": ["src/lib/prisma/generated", ".next"],
-    "include": ["src"]
+    "include": ["src", "emails"]
   },
   "organizeImports": {
     "enabled": true
