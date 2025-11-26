@@ -2,12 +2,12 @@ import ResetPassword from "@/../emails/reset-password";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { render } from "@react-email/components";
 
-if (!process.env.AWS_ACCESS_KEY_ID) {
-  throw new Error("AWS_ACCESS_KEY_ID is not set.");
-}
+import conf from "@/lib/config";
 
-if (!process.env.AWS_SECRET_ACCESS_KEY) {
-  throw new Error("AWS_SECRET_ACCESS_KEY is not set.");
+let client: SESClient | null = null;
+
+if (conf.awsConfigured) {
+  client = new SESClient({ region: conf.awsRegion });
 }
 
 export class EmailError extends Error {
@@ -16,8 +16,6 @@ export class EmailError extends Error {
     this.name = this.constructor.name;
   }
 }
-
-const client = new SESClient({ region: "eu-central-1" });
 
 type SendResetPasswordEmailProps = {
   to: string;
@@ -30,6 +28,10 @@ export async function sendResetPasswordEmail({
   name,
   url,
 }: SendResetPasswordEmailProps) {
+  if (!client) {
+    return;
+  }
+
   const body = await render(<ResetPassword name={name} url={url} />);
 
   const command: SendEmailCommand = new SendEmailCommand({
