@@ -34,6 +34,9 @@ COPY . .
 ARG AUTHORITY="localhost:3000"
 ENV AUTHORITY=${AUTHORITY}
 
+ARG DATABASE_URL="postgresql://app_dev:dev@localhost:5432/dev"
+ENV DATABASE_URL=${DATABASE_URL}
+
 RUN bun run build
 
 FROM base AS release

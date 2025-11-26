@@ -80,6 +80,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:test
           build-args: |
             AUTHORITY=localhost:3000
+            DATABASE_URL=${{ env.DATABASE_URL }}
 
   deploy:
     needs: build
