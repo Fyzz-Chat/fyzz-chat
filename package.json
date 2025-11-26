@@ -20,8 +20,8 @@
     "check-write": "biome check --write ./src",
     "prepare": "husky",
     "postinstall": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "db-push": "prisma db push"
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
