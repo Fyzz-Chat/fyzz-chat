@@ -223,6 +223,7 @@
       "title": "First time here?",
       "link": "Sign up"
     },
+    "forgotPassword": "Forgot password?",
     "success": {
       "title": "Signed in successfully",
       "description": "You have been successfully signed in."
@@ -259,6 +260,21 @@
       "title": "Already have an account?",
       "link": "Sign in"
     }
+  },
+  "requestPasswordReset": {
+    "title": "Reset Password",
+    "description": "Enter your email address and we will send you a link to reset your password.",
+    "submit": "Send Reset Link",
+    "backToLogin": "Back to login"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "description": "Enter your new password below.",
+    "password": "New Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Reset Password",
+    "mismatch": "Passwords do not match",
+    "success": "Password reset successfully"
   },
   "chat": {
     "reasoning": {

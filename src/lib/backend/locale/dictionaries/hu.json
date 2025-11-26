@@ -223,6 +223,7 @@
       "title": "Először vagy itt?",
       "link": "Regisztrálj"
     },
+    "forgotPassword": "Elfelejtetted a jelszavad?",
     "success": {
       "title": "Sikeres bejelentkezés",
       "description": "Sikeresen bejelentkeztél."
@@ -259,6 +260,21 @@
       "title": "Már van fiókod?",
       "link": "Jelentkezz be"
     }
+  },
+  "requestPasswordReset": {
+    "title": "Jelszó visszaállítása",
+    "description": "Add meg az email címedet, és küldünk egy linket a jelszavad visszaállításához.",
+    "submit": "Link küldése",
+    "backToLogin": "Vissza a bejelentkezéshez"
+  },
+  "resetPassword": {
+    "title": "Jelszó visszaállítása",
+    "description": "Add meg az új jelszavadat alább.",
+    "password": "Új jelszó",
+    "confirmPassword": "Jelszó megerősítése",
+    "submit": "Jelszó visszaállítása",
+    "mismatch": "A jelszavak nem egyeznek",
+    "success": "A jelszó sikeresen visszaállítva"
   },
   "chat": {
     "reasoning": {

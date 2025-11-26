@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import publicConf from "@/lib/public-config";
+import Link from "next/link";
 import { type FormEvent, use, useTransition } from "react";
 import { toast } from "sonner";
 import PendingSubmitButton from "./pending-submit-button";
@@ -40,9 +41,9 @@ export default function LoginForm() {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <Label htmlFor="email" className="space-y-1">
-        <span>{translations.login.email.label}</span>
+    <form className="grid gap-4" onSubmit={handleSubmit}>
+      <div className="grid gap-2">
+        <Label htmlFor="email">{translations.login.email.label}</Label>
         <Input
           type="email"
           id="email"
@@ -51,31 +52,29 @@ export default function LoginForm() {
           required
           autoFocus
         />
-      </Label>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="password" className="space-y-1">
-          <span>{translations.login.password}</span>
-          <Input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="****************"
-            required
-          />
-        </Label>
-        <div className="text-xs text-muted-foreground text-right">
-          <a
+      </div>
+      <div className="grid gap-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">{translations.login.password}</Label>
+          <Link
             href="/reset-password/request"
-            className="text-primary hover:underline inline-flex items-center relative"
+            className="text-xs text-primary hover:underline underline-offset-4"
           >
-            <span>Forgot password?</span>
-          </a>
+            {translations.login.forgotPassword}
+          </Link>
         </div>
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="****************"
+          required
+        />
       </div>
       <PendingSubmitButton
         isPending={isPending}
         text={translations.login.signIn}
-        className="mt-2"
+        className="w-full mt-2"
       />
     </form>
   );

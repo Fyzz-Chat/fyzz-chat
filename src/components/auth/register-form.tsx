@@ -46,9 +46,9 @@ export default function RegisterForm() {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <Label htmlFor="name" className="space-y-1">
-        <span>{translations.register.name.label}</span>
+    <form className="grid gap-4" onSubmit={handleSubmit}>
+      <div className="grid gap-2">
+        <Label htmlFor="name">{translations.register.name.label}</Label>
         <Input
           type="text"
           id="name"
@@ -57,9 +57,9 @@ export default function RegisterForm() {
           required
           autoFocus
         />
-      </Label>
-      <Label htmlFor="email" className="space-y-1">
-        <span>{translations.register.email.label}</span>
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="email">{translations.register.email.label}</Label>
         <Input
           type="email"
           id="email"
@@ -67,9 +67,9 @@ export default function RegisterForm() {
           placeholder={translations.register.email.placeholder}
           required
         />
-      </Label>
-      <Label htmlFor="password" className="space-y-1">
-        <span>{translations.register.password}</span>
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="password">{translations.register.password}</Label>
         <Input
           type="password"
           id="password"
@@ -77,8 +77,8 @@ export default function RegisterForm() {
           placeholder="****************"
           required
         />
-      </Label>
-      <div className="text-xs text-muted-foreground mt-2">
+      </div>
+      <div className="text-xs text-muted-foreground">
         {translations.register.privacyPolicy.text}{" "}
         <a
           href="/privacy-policy"
@@ -92,7 +92,7 @@ export default function RegisterForm() {
       <PendingSubmitButton
         isPending={isPending}
         text={translations.register.signUp}
-        className="mt-[18px]"
+        className="w-full mt-2"
       />
     </form>
   );

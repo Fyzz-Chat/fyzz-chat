@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/lib/auth-client";
-import { type FormEvent, useTransition } from "react";
+import { useTranslations } from "@/lib/contexts/translations-context";
+import { type FormEvent, use, useTransition } from "react";
 import { toast } from "sonner";
 
 export default function PasswordResetForm({ token }: { token: string }) {
   const [isPending, startTransition] = useTransition();
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,7 +19,7 @@ export default function PasswordResetForm({ token }: { token: string }) {
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirm-password") as string;
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error(translations.resetPassword.mismatch);
       return;
     }
 
@@ -28,7 +31,7 @@ export default function PasswordResetForm({ token }: { token: string }) {
         },
         {
           onSuccess: () => {
-            toast.success("Password reset successfully");
+            toast.success(translations.resetPassword.success);
           },
           onError: (error) => {
             toast.error(error.error.message);
@@ -39,15 +42,31 @@ export default function PasswordResetForm({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input type="password" id="password" name="password" />
-        <Label htmlFor="confirm-password">Confirm Password</Label>
-        <Input type="password" id="confirm-password" name="confirm-password" />
+    <form onSubmit={handleSubmit} className="grid gap-4">
+      <div className="grid gap-2">
+        <Label htmlFor="password">{translations.resetPassword.password}</Label>
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="****************"
+          required
+        />
       </div>
-      <Button type="submit" className="self-end mt-4 px-5" disabled={isPending}>
-        Reset Password
+      <div className="grid gap-2">
+        <Label htmlFor="confirm-password">
+          {translations.resetPassword.confirmPassword}
+        </Label>
+        <Input
+          type="password"
+          id="confirm-password"
+          name="confirm-password"
+          placeholder="****************"
+          required
+        />
+      </div>
+      <Button type="submit" className="w-full mt-2" disabled={isPending}>
+        {translations.resetPassword.submit}
       </Button>
     </form>
   );

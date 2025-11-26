@@ -223,6 +223,7 @@
       "title": "Erstmalig hier?",
       "link": "Registrieren"
     },
+    "forgotPassword": "Passwort vergessen?",
     "success": {
       "title": "Erfolgreich angemeldet",
       "description": "Du wurdest erfolgreich angemeldet."
@@ -259,6 +260,21 @@
       "title": "Hast du bereits ein Konto?",
       "link": "Anmelden"
     }
+  },
+  "requestPasswordReset": {
+    "title": "Passwort zurücksetzen",
+    "description": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen deines Passworts.",
+    "submit": "Zurücksetzungs-Link senden",
+    "backToLogin": "Zurück zum Login"
+  },
+  "resetPassword": {
+    "title": "Setze dein Passwort zurück",
+    "description": "Gib unten dein neues Passwort ein.",
+    "password": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "submit": "Passwort zurücksetzen",
+    "mismatch": "Passwörter stimmen nicht überein",
+    "success": "Passwort erfolgreich zurückgesetzt"
   },
   "chat": {
     "reasoning": {

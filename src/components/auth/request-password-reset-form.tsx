@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { requestPasswordReset } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import Link from "next/link";
 import { type FormEvent, use, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -33,14 +34,29 @@ export default function RequestPasswordResetForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="grid gap-4">
+      <div className="grid gap-2">
         <Label htmlFor="email">{translations.login.email.label}</Label>
-        <Input type="email" id="email" name="email" />
+        <Input
+          type="email"
+          id="email"
+          name="email"
+          placeholder={translations.login.email.placeholder}
+          required
+          autoFocus
+        />
       </div>
-      <Button type="submit" className="self-end mt-4 px-5" disabled={isPending}>
-        Submit
+      <Button type="submit" className="w-full mt-2" disabled={isPending}>
+        {translations.requestPasswordReset.submit}
       </Button>
+      <div className="text-center">
+        <Link
+          href="/login"
+          className="text-sm text-muted-foreground hover:text-primary transition-colors"
+        >
+          {translations.requestPasswordReset.backToLogin}
+        </Link>
+      </div>
     </form>
   );
 }
