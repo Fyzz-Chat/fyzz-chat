@@ -43,6 +43,45 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
+  user: {
+    additionalFields: {
+      password: {
+        type: "string",
+        required: false,
+      },
+      subscription: {
+        type: "string",
+        required: true,
+        defaultValue: "free",
+      },
+      customerId: {
+        type: "string",
+        required: false,
+      },
+      freeMessages: {
+        type: "number",
+        required: true,
+        defaultValue: 10,
+      },
+      memory: {
+        type: "string",
+        required: false,
+      },
+      memoryEnabled: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+      },
+      mcpServers: {
+        type: "json",
+        required: false,
+      },
+      defaultModel: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
   databaseHooks: {
     user: {
       create: {
