@@ -43,4 +43,20 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          logger.info(`Creating user with email ${user.email}`);
+
+          // Add custom fields to the user here
+          return {
+            data: {
+              ...user,
+            },
+          };
+        },
+      },
+    },
+  },
 });
