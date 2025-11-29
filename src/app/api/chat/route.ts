@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
     },
     abortSignal: abortController.signal,
     onAbort: async () => {
-      logger.info("Stream aborted");
+      logger.info(`Stream aborted for user: ${user.id}`);
       await endConversation();
     },
     onChunk: async ({ chunk }) => {
