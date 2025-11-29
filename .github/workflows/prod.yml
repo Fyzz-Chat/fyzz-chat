@@ -7,10 +7,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
 
 jobs:
   test:
+    if: vars.DISABLE_BUILD != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: semantic-release
-    
+
       - name: Capture release tag
         id: tag
         run: |
@@ -88,8 +88,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:latest
             ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:${{ needs.release.outputs.release_tag }}
-          build-args: |
-            AUTHORITY=localhost:3000
 
   deploy:
     needs: build

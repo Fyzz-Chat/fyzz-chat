@@ -31,11 +31,10 @@ COPY --from=install /temp/dev/node_modules ./node_modules
 COPY --from=install /temp/prod/src/lib/prisma/generated ./src/lib/prisma/generated
 COPY . .
 
-ARG AUTHORITY="localhost:3000"
-ENV AUTHORITY=${AUTHORITY}
-
-ARG DATABASE_URL="postgresql://app_dev:dev@localhost:5432/dev"
-ENV DATABASE_URL=${DATABASE_URL}
+# These are required for the build step but not for the runtime image
+ENV AUTHORITY="localhost:3000"
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+ENV DIRECT_DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 
 RUN bun run build
 

@@ -7,10 +7,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  DATABASE_URL: ${{ secrets.DATABASE_URL_STAGE }}
 
 jobs:
   test:
+    if: vars.DISABLE_BUILD != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -78,9 +78,6 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:test
-          build-args: |
-            AUTHORITY=localhost:3000
-            DATABASE_URL=${{ env.DATABASE_URL }}
 
   deploy:
     needs: build
