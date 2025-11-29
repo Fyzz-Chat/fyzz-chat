@@ -3,6 +3,7 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { render } from "@react-email/components";
 
 import conf from "@/lib/config";
+import { logger } from "@/lib/logger";
 
 let client: SESClient | null = null;
 
@@ -13,6 +14,13 @@ if (conf.awsConfigured) {
 export class EmailError extends Error {
   constructor(message: string) {
     super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class EmailNotConfiguredError extends Error {
+  constructor() {
+    super("Email client not configured.");
     this.name = this.constructor.name;
   }
 }
@@ -28,10 +36,6 @@ export async function sendResetPasswordEmail({
   name,
   url,
 }: SendResetPasswordEmailProps) {
-  if (!client) {
-    return;
-  }
-
   const body = await render(<ResetPassword name={name} url={url} />);
 
   const command: SendEmailCommand = new SendEmailCommand({
@@ -53,10 +57,19 @@ export async function sendResetPasswordEmail({
   });
 
   try {
+    if (!client) {
+      throw new EmailNotConfiguredError();
+    }
+
     const data = await client.send(command);
 
     return data;
   } catch (error) {
+    if (error instanceof EmailNotConfiguredError) {
+      logger.error("Email client not configured.");
+      return;
+    }
+
     console.error(error);
     throw new EmailError("Failed to send email.");
   }
