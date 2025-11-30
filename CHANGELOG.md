@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.3.0...v0.3.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* **ci:** release first, then build ([008849d](https://github.com/Fyzz-Chat/fyzz-chat/commit/008849d7cb8db9b60d0deef96a69e069b9015671))
+
 # [0.3.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.2.1...v0.3.0) (2025-11-30)
 
 
