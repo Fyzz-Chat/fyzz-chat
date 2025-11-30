@@ -541,14 +541,14 @@ const providers: Provider[] = [
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
-      {
-        id: "gemini-3-pro-image-preview",
-        name: "Nano Banana Pro",
-        features: [images],
-        provider: wrappedGoogle,
-        tools: false,
-        extensions: [...imageTypes],
-      },
+      // {
+      //   id: "gemini-3-pro-image-preview",
+      //   name: "Nano Banana Pro",
+      //   features: [images],
+      //   provider: wrappedGoogle,
+      //   tools: false,
+      //   extensions: [...imageTypes],
+      // },
       {
         id: "gemini-2.5-flash-image",
         name: "Nano Banana",
