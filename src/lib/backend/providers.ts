@@ -558,6 +558,14 @@ const providers: Provider[] = [
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
       },
       {
+        id: "gemini-2.5-flash-lite",
+        name: "Gemini 2.5 Flash Lite",
+        features: [images],
+        provider: wrappedGoogle,
+        tools: false,
+        extensions: [...imageTypes],
+      },
+      {
         id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
         features: [pdf, reasoning, search],
