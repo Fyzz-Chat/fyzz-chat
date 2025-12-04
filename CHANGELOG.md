@@ -1,3 +1,17 @@
+# [0.4.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.3.1...v0.4.0) (2025-12-04)
+
+
+### Bug Fixes
+
+* **chat:** delete loading to be able open model menu instantly ([86a7e8c](https://github.com/Fyzz-Chat/fyzz-chat/commit/86a7e8c92d02ffa2992c7c08e0ee8e3c2b0bc02b))
+
+
+### Features
+
+* add snow in december ([b3260b7](https://github.com/Fyzz-Chat/fyzz-chat/commit/b3260b7f0f6a923cd009317ffde31e272b8ed7cf))
+* **google:** add gemini 2.5 flash lite ([f9fdb84](https://github.com/Fyzz-Chat/fyzz-chat/commit/f9fdb84770ede04c65618c2b9519c761af049213))
+* **openai:** add gpt oss 120b from fireworks ([1f805e8](https://github.com/Fyzz-Chat/fyzz-chat/commit/1f805e8c0478a6a804d47a0886e21c4b0695c7a1))
+
 ## [0.3.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.3.0...v0.3.1) (2025-11-30)
 
 
