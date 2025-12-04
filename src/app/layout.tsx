@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import SnowfallCanvas from "@/components/snowfall-canvas";
 import { Toaster } from "@/components/ui/sonner";
 import conf from "@/lib/config";
 import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
@@ -59,6 +60,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <Toaster position="top-right" />
+          <SnowfallCanvas />
         </Providers>
       </body>
     </html>
