@@ -30,7 +30,7 @@ export default function AuthCard({
   const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
 
   return (
-    <Card className="w-full sm:w-[400px] border-border/50 shadow-lg backdrop-blur-sm bg-card/95 mx-auto">
+    <Card className="w-92 border-border/50 shadow-lg backdrop-blur-sm bg-card/95">
       <CardHeader className="text-center space-y-2 pb-6">
         <CardTitle className="text-2xl font-bold tracking-tight">{title}</CardTitle>
         <CardDescription className="text-base">{description}</CardDescription>

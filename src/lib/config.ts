@@ -28,6 +28,9 @@ const schema = z.object({
 
   // JWT
   jwtSecret: z.string().default(""),
+
+  // Turnstile
+  turnstileSecretKey: z.string().optional(),
 });
 
 const envVars = {
@@ -62,6 +65,9 @@ const envVars = {
 
   // JWT
   jwtSecret: process.env.JWT_SECRET,
+
+  // Turnstile
+  turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,
 };
 
 const conf = schema.parse(envVars);
