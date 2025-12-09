@@ -6,7 +6,7 @@ const PasswordSchema = z
   .min(8, { message: "Password must be at least 8 characters" })
   .regex(/[A-Z]/, { message: "Add an uppercase letter" })
   .regex(/[a-z]/, { message: "Add a lowercase letter" })
-  .regex(/[0-9]/, { message: "Add a number" })
+  .regex(/\d/, { message: "Add a number" })
   .regex(/[!@#$%^&*(),.?":{}|<>+\-=_~`[\]\\;'/]/, {
     message: "Add a special character",
   });
