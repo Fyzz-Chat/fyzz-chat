@@ -45,7 +45,7 @@ export async function sendResetPasswordEmail({
   const body = await render(<ResetPassword name={name} url={url} />);
 
   const command: SendEmailCommand = new SendEmailCommand({
-    Source: "noreply@fyzz.chat",
+    Source: conf.fromEmailAddress,
     Destination: {
       ToAddresses: [to],
     },

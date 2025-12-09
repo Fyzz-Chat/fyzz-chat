@@ -24,6 +24,7 @@ const schema = z.object({
   awsUploadsBucket: z.string().default(""),
   awsCloudfrontKeyPairId: z.string().default(""),
   awsCloudfrontPrivateKey: z.string().default(""),
+  fromEmailAddress: z.string().optional(),
   awsConfigured: z.boolean().default(false),
 
   // JWT
@@ -55,13 +56,15 @@ const envVars = {
   awsUploadsBucket: process.env.AWS_UPLOADS_BUCKET,
   awsCloudfrontKeyPairId: process.env.AWS_CLOUDFRONT_KEY_PAIR_ID,
   awsCloudfrontPrivateKey: process.env.AWS_CLOUDFRONT_PRIVATE_KEY,
+  fromEmailAddress: process.env.FROM_EMAIL_ADDRESS,
   awsConfigured:
     process.env.AWS_ACCESS_KEY_ID !== undefined &&
     process.env.AWS_SECRET_ACCESS_KEY !== undefined &&
     process.env.AWS_REGION !== undefined &&
     process.env.AWS_UPLOADS_BUCKET !== undefined &&
     process.env.AWS_CLOUDFRONT_KEY_PAIR_ID !== undefined &&
-    process.env.AWS_CLOUDFRONT_PRIVATE_KEY !== undefined,
+    process.env.AWS_CLOUDFRONT_PRIVATE_KEY !== undefined &&
+    process.env.FROM_EMAIL_ADDRESS !== undefined,
 
   // JWT
   jwtSecret: process.env.JWT_SECRET,
