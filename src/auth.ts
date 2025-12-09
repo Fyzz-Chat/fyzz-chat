@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma/prisma";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { after } from "next/server";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -13,15 +14,16 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }, _request) => {
-      logger.info(`Sending reset password email to ${user.email}`);
-      await sendResetPasswordEmail({
-        to: user.email,
-        name: user.name,
-        url: url,
-      });
+      after(() =>
+        sendResetPasswordEmail({
+          to: user.email,
+          name: user.name,
+          url: url,
+        })
+      );
     },
     onPasswordReset: async ({ user }, _request) => {
-      logger.info(`Password for user ${user.email} has been reset`);
+      logger.info(`Password for user ${user.id} has been reset`);
     },
   },
   socialProviders: {
@@ -86,7 +88,7 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          logger.info(`Creating user with email ${user.email}`);
+          logger.info(`Creating user with id ${user.id}`);
 
           // Add custom fields to the user here
           return {

@@ -7,9 +7,114 @@ import conf from "@/lib/config";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
+import publicConf from "@/lib/public-config";
+import { turnstileFailedResponse, verifyTurnstile } from "@/lib/turnstile";
 import type { FormState } from "@/lib/utils";
+import {
+  type LoginFormData,
+  type RegisterFormData,
+  loginSchema,
+  registerSchema,
+} from "@/types/auth";
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
+
+export async function signInUser(
+  _prevState: any,
+  formData: LoginFormData
+): Promise<FormState> {
+  const parsed = loginSchema.safeParse(formData);
+
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0];
+    return {
+      message: "Validation failed",
+      description: firstError?.message ?? "Invalid input. Please check your data.",
+      success: false,
+    };
+  }
+
+  const parsedData = parsed.data;
+
+  const turnstileResponse = parsedData["cf-turnstile-response"];
+  const turnstileVerified = await verifyTurnstile(turnstileResponse);
+
+  if (!turnstileVerified) {
+    return turnstileFailedResponse;
+  }
+
+  const body = {
+    email: parsedData.email,
+    password: parsedData.password,
+    callbackURL: publicConf.redirectPath,
+  };
+
+  try {
+    await auth.api.signInEmail({ body });
+
+    return {
+      message: "Signed in successfully",
+      description: "You have been successfully signed in.",
+      success: true,
+    };
+  } catch (error: any) {
+    logger.error(error);
+    return {
+      message: "Failed to sign in",
+      description: "Email or password is incorrect.",
+      success: false,
+    };
+  }
+}
+
+export async function registerUser(
+  _prevState: any,
+  formData: RegisterFormData
+): Promise<FormState> {
+  const parsed = registerSchema.safeParse(formData);
+
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0];
+    return {
+      message: "Validation failed",
+      description: firstError?.message ?? "Invalid input. Please check your data.",
+      success: false,
+    };
+  }
+
+  const parsedData = parsed.data;
+
+  const turnstileResponse = parsedData["cf-turnstile-response"];
+  const turnstileVerified = await verifyTurnstile(turnstileResponse);
+
+  if (!turnstileVerified) {
+    return turnstileFailedResponse;
+  }
+
+  const body = {
+    name: parsedData.name,
+    email: parsedData.email,
+    password: parsedData.password,
+    callbackURL: publicConf.redirectPath,
+  };
+
+  try {
+    await auth.api.signUpEmail({ body });
+
+    return {
+      message: "Registered successfully",
+      description: "You have been successfully registered.",
+      success: true,
+    };
+  } catch (error: any) {
+    logger.error(error);
+    return {
+      message: "Registration failed",
+      description: "Unable to complete registration. Please try again.",
+      success: false,
+    };
+  }
+}
 
 export async function setUserPassword(password: string): Promise<FormState> {
   const sessionHeaders = await headers();
@@ -39,12 +144,14 @@ export async function setUserPassword(password: string): Promise<FormState> {
 export async function requestPasswordReset(email: string): Promise<FormState> {
   try {
     const response = await auth.api.requestPasswordReset({
-      body: { email, redirectTo: `${conf.scheme}://${conf.authority}/reset-password` },
+      body: { email, redirectTo: `${conf.host}/reset-password` },
     });
 
     return {
       message: "Password reset email sent",
-      description: response.message,
+      description:
+        response.message ||
+        "If an account exists with this email, you will receive a password reset link.",
       success: true,
     };
   } catch (e) {

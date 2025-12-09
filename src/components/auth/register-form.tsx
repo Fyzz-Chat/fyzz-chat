@@ -1,83 +1,105 @@
 "use client";
 
+import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/lib/auth-client";
+import useToast from "@/hooks/use-toast";
+import { registerUser } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import publicConf from "@/lib/public-config";
+import type { FormState } from "@/lib/utils";
+import { initialState } from "@/lib/utils";
+import { type RegisterFormData, registerSchema } from "@/types/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type FormEvent, use, useTransition } from "react";
-import { toast } from "sonner";
+import { use, useActionState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import PendingSubmitButton from "./pending-submit-button";
 
 export default function RegisterForm() {
-  const [isPending, startTransition] = useTransition();
+  const [state, formAction, isPending] = useActionState(registerUser, initialState);
+  const [isTransitionPending, startTransition] = useTransition();
+  const router = useRouter();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const router = useRouter();
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      "cf-turnstile-response": "",
+    },
+  });
 
-    startTransition(async () => {
-      await signUp.email(
-        {
-          name,
-          email,
-          password,
-          callbackURL: publicConf.redirectPath,
-        },
-        {
-          onSuccess: () => {
-            localStorage.setItem("fyzz-auth-method", "password");
-            router.push("/chat");
-          },
-          onError: (error) => {
-            toast.error(error.error.message);
-          },
-        }
-      );
+  const toastCallback = (state: FormState) => {
+    if (state.success) {
+      localStorage.setItem("fyzz-auth-method", "password");
+      router.push(publicConf.redirectPath);
+    }
+  };
+
+  useToast(state, toastCallback);
+
+  const onSubmit = async (data: RegisterFormData) => {
+    startTransition(() => {
+      formAction(data);
     });
+  };
+
+  function setTurnstileValue(token: string) {
+    setValue("cf-turnstile-response", token);
   }
 
+  const isLoading = isPending || isSubmitting || isTransitionPending;
+
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit}>
-      <div className="grid gap-2">
-        <Label htmlFor="name">{translations.register.name.label}</Label>
+    <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <Label htmlFor="name" className="grid gap-2">
+        <span>{translations.register.name.label}</span>
         <Input
           type="text"
           id="name"
-          name="name"
           placeholder={translations.register.name.placeholder}
-          required
           autoFocus
+          {...register("name")}
         />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="email">{translations.register.email.label}</Label>
+        {errors.name && (
+          <span className="text-destructive text-xs">{errors.name.message}</span>
+        )}
+      </Label>
+      <Label htmlFor="email" className="grid gap-2">
+        <span>{translations.register.email.label}</span>
         <Input
           type="email"
           id="email"
-          name="email"
           placeholder={translations.register.email.placeholder}
-          required
+          {...register("email")}
         />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="password">{translations.register.password}</Label>
+        {errors.email && (
+          <span className="text-destructive text-xs">{errors.email.message}</span>
+        )}
+      </Label>
+      <Label htmlFor="password" className="grid gap-2">
+        <span>{translations.register.password}</span>
         <Input
           type="password"
           id="password"
-          name="password"
           placeholder="****************"
-          required
+          {...register("password")}
         />
-      </div>
+        {errors.password && (
+          <span className="text-destructive text-xs">{errors.password.message}</span>
+        )}
+      </Label>
+      <TurnstileComponent setValue={setTurnstileValue} />
       <div className="text-xs text-muted-foreground">
         {translations.register.privacyPolicy.text}{" "}
         <a
@@ -89,11 +111,7 @@ export default function RegisterForm() {
           <ExternalLink size={10} className="ml-1 relative -top-px" />
         </a>
       </div>
-      <PendingSubmitButton
-        isPending={isPending}
-        text={translations.register.signUp}
-        className="w-full mt-2"
-      />
+      <PendingSubmitButton isPending={isLoading} text={translations.register.signUp} />
     </form>
   );
 }

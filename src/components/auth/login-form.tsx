@@ -1,58 +1,78 @@
 "use client";
 
+import PendingSubmitButton from "@/components/auth/pending-submit-button";
+import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn } from "@/lib/auth-client";
+import useToast from "@/hooks/use-toast";
+import { signInUser } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import publicConf from "@/lib/public-config";
+import { type FormState, initialState } from "@/lib/utils";
+import { type LoginFormData, loginSchema } from "@/types/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { type FormEvent, use, useTransition } from "react";
-import { toast } from "sonner";
-import PendingSubmitButton from "./pending-submit-button";
+import { useRouter } from "next/navigation";
+import { use, useActionState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
-  const [isPending, startTransition] = useTransition();
+  const [state, formAction, isPending] = useActionState(signInUser, initialState);
+  const [isTransitionPending, startTransition] = useTransition();
+  const router = useRouter();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      "cf-turnstile-response": "",
+    },
+  });
 
-    startTransition(async () => {
-      await signIn.email(
-        {
-          email,
-          password,
-          callbackURL: publicConf.redirectPath,
-        },
-        {
-          onSuccess: () => {
-            localStorage.setItem("fyzz-auth-method", "password");
-          },
-          onError: (error) => {
-            toast.error(error.error.message);
-          },
-        }
-      );
+  const toastCallback = (state: FormState) => {
+    if (state.success) {
+      localStorage.setItem("fyzz-auth-method", "password");
+      router.push(publicConf.redirectPath);
+    }
+  };
+
+  useToast(state, toastCallback);
+
+  async function onSubmit(data: LoginFormData) {
+    startTransition(() => {
+      formAction(data);
     });
   }
 
+  function setTurnstileValue(token: string) {
+    setValue("cf-turnstile-response", token);
+  }
+
+  const isLoading = isPending || isSubmitting || isTransitionPending;
+
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit}>
-      <div className="grid gap-2">
-        <Label htmlFor="email">{translations.login.email.label}</Label>
+    <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <Label htmlFor="email" className="grid gap-2">
+        <span>{translations.login.email.label}</span>
         <Input
           type="email"
           id="email"
-          name="email"
           placeholder={translations.login.email.placeholder}
-          required
           autoFocus
+          {...register("email")}
         />
-      </div>
+        {errors.email && (
+          <span className="text-destructive text-xs">{errors.email.message}</span>
+        )}
+      </Label>
       <div className="grid gap-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">{translations.login.password}</Label>
@@ -66,16 +86,15 @@ export default function LoginForm() {
         <Input
           type="password"
           id="password"
-          name="password"
           placeholder="****************"
-          required
+          {...register("password")}
         />
+        {errors.password && (
+          <span className="text-destructive text-xs">{errors.password.message}</span>
+        )}
       </div>
-      <PendingSubmitButton
-        isPending={isPending}
-        text={translations.login.signIn}
-        className="w-full mt-2"
-      />
+      <TurnstileComponent setValue={setTurnstileValue} />
+      <PendingSubmitButton isPending={isLoading} text={translations.login.signIn} />
     </form>
   );
 }
