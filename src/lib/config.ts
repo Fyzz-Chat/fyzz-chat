@@ -8,10 +8,8 @@ const schema = z.object({
   logLevel: z.enum(["error", "warn", "info", "debug"]).default("info"),
   logDrainUrl: z.string().default(""),
   scheme: z.string().default("https"),
-  authority: z.string(),
+  authority: z.string().default("localhost:3000"),
   host: z.url(),
-  databaseUrl: z.url(),
-  directDatabaseUrl: z.url(),
 
   // Auth
   githubId: z.string().optional(),
@@ -41,9 +39,7 @@ const envVars = {
   logDrainUrl: process.env.LOG_DRAIN_URL,
   scheme: process.env.SCHEME,
   authority: process.env.AUTHORITY,
-  host: `${process.env.SCHEME || "https"}://${process.env.AUTHORITY}`,
-  databaseUrl: process.env.DATABASE_URL,
-  directDatabaseUrl: process.env.DIRECT_DATABASE_URL,
+  host: `${process.env.SCHEME || "https"}://${process.env.AUTHORITY || "localhost:3000"}`,
 
   // Auth
   githubId: process.env.GITHUB_CLIENT_ID,
