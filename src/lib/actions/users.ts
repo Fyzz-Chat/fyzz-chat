@@ -10,7 +10,12 @@ import prisma from "@/lib/prisma/prisma";
 import publicConf from "@/lib/public-config";
 import { turnstileFailedResponse, verifyTurnstile } from "@/lib/turnstile";
 import type { FormState } from "@/lib/utils";
-import { type LoginFormData, loginSchema } from "@/types/auth";
+import {
+  type LoginFormData,
+  type RegisterFormData,
+  loginSchema,
+  registerSchema,
+} from "@/types/auth";
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 
@@ -57,6 +62,55 @@ export async function signInUser(
     return {
       message: "Failed to sign in",
       description: "Email or password is incorrect.",
+      success: false,
+    };
+  }
+}
+
+export async function registerUser(
+  _prevState: any,
+  formData: RegisterFormData
+): Promise<FormState> {
+  const parsed = registerSchema.safeParse(formData);
+
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0];
+    return {
+      message: "Validation failed",
+      description: firstError?.message ?? "Invalid input. Please check your data.",
+      success: false,
+    };
+  }
+
+  const parsedData = parsed.data;
+
+  const turnstileResponse = parsedData["cf-turnstile-response"];
+  const turnstileVerified = await verifyTurnstile(turnstileResponse);
+
+  if (!turnstileVerified) {
+    return turnstileFailedResponse;
+  }
+
+  const body = {
+    name: parsedData.name,
+    email: parsedData.email,
+    password: parsedData.password,
+    callbackURL: publicConf.redirectPath,
+  };
+
+  try {
+    await auth.api.signUpEmail({ body });
+
+    return {
+      message: "Registered successfully",
+      description: "You have been successfully registered.",
+      success: true,
+    };
+  } catch (error: any) {
+    logger.error(error);
+    return {
+      message: "Registration failed",
+      description: "Unable to complete registration. Please try again.",
       success: false,
     };
   }
