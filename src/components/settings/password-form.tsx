@@ -6,7 +6,10 @@ import { Label } from "@/components/ui/label";
 import { setUserPassword } from "@/lib/actions/users";
 import { changePassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { type FormEvent, use, useTransition } from "react";
+import { type UpdatePasswordFormData, updatePasswordSchema } from "@/types/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { use, useMemo, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function PasswordForm({
@@ -14,33 +17,54 @@ export default function PasswordForm({
 }: {
   hasPassword?: boolean;
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [isTransitionPending, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const currentPassword = formData.get("current-password") as string;
-    const newPassword = formData.get("new-password") as string;
-    const confirmPassword = formData.get("confirm-password") as string;
-
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
+  const schema = useMemo(() => {
+    if (!hasPassword) {
+      return updatePasswordSchema;
     }
+    return updatePasswordSchema.refine(
+      (data) => {
+        return (
+          data.currentPassword !== undefined && data.currentPassword.trim().length > 0
+        );
+      },
+      {
+        message: "Current password is required",
+        path: ["currentPassword"],
+      }
+    );
+  }, [hasPassword]);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<UpdatePasswordFormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = (data: UpdatePasswordFormData) => {
     startTransition(async () => {
       if (hasPassword) {
         await changePassword(
           {
-            currentPassword,
-            newPassword,
+            currentPassword: data.currentPassword ?? "",
+            newPassword: data.newPassword,
             revokeOtherSessions: true,
           },
           {
             onSuccess: () => {
               toast.success("Password updated");
+              reset();
             },
             onError: (error) => {
               toast.error(error.error.message);
@@ -48,37 +72,53 @@ export default function PasswordForm({
           }
         );
       } else {
-        const result = await setUserPassword(newPassword);
+        const result = await setUserPassword(data.newPassword);
         if (result.success) {
           toast.success(result.message);
+          reset();
         } else {
           toast.error(result.message);
         }
       }
     });
-  }
+  };
+
+  const isLoading = isSubmitting || isTransitionPending;
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
       {hasPassword && (
         <div>
           <Label htmlFor="current-password">
             {translations.settings.security.currentPassword}
           </Label>
-          <Input type="password" id="current-password" name="current-password" required />
+          <Input type="password" id="current-password" {...register("currentPassword")} />
+          {errors.currentPassword && (
+            <span className="text-destructive text-xs">
+              {errors.currentPassword.message}
+            </span>
+          )}
         </div>
       )}
       <div>
         <Label htmlFor="new-password">{translations.settings.security.newPassword}</Label>
-        <Input type="password" id="new-password" name="new-password" required />
+        <Input type="password" id="new-password" {...register("newPassword")} />
+        {errors.newPassword && (
+          <span className="text-destructive text-xs">{errors.newPassword.message}</span>
+        )}
       </div>
       <div>
         <Label htmlFor="confirm-password">
           {translations.settings.security.confirmPassword}
         </Label>
-        <Input type="password" id="confirm-password" name="confirm-password" required />
+        <Input type="password" id="confirm-password" {...register("confirmPassword")} />
+        {errors.confirmPassword && (
+          <span className="text-destructive text-xs">
+            {errors.confirmPassword.message}
+          </span>
+        )}
       </div>
-      <Button type="submit" className="self-end mt-4 px-5" disabled={isPending}>
+      <Button type="submit" className="mt-4 w-fit" disabled={isLoading}>
         {translations.settings.security.saveButton}
       </Button>
     </form>

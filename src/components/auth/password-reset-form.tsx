@@ -5,11 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { type FormEvent, use, useTransition } from "react";
+import { type FormEvent, use, useState } from "react";
 import { toast } from "sonner";
 
 export default function PasswordResetForm({ token }: { token: string }) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 
@@ -23,7 +23,8 @@ export default function PasswordResetForm({ token }: { token: string }) {
       return;
     }
 
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       await resetPassword(
         {
           newPassword: password,
@@ -34,11 +35,13 @@ export default function PasswordResetForm({ token }: { token: string }) {
             toast.success(translations.resetPassword.success);
           },
           onError: (error) => {
-            toast.error(error.error.message);
+            toast.error(error.error.message || "Failed to reset password");
           },
         }
       );
-    });
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
