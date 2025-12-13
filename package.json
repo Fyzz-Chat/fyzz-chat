@@ -9,6 +9,7 @@
     "million-dev": "MILLION_LINT=true next dev",
     "analyze": "ANALYZE=true next build --webpack",
     "build": "prisma generate && next build",
+    "build:standalone": "prisma generate && EXPORT_MODE=standalone next build",
     "start": "next start",
     "type-check": "tsc --noEmit",
     "lint-staged": "lint-staged",
