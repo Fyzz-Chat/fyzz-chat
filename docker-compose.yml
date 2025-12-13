@@ -4,15 +4,16 @@ services:
     build:
       context: ./
       target: dev
-    working_dir: /usr/src/app/
+    working_dir: /app/
     env_file: .env
     environment:
       DATABASE_URL: postgres://app_dev:dev_password@database:5432/dev
     ports:
       - 3000:3000
     volumes:
-      - ./:/usr/src/app/
-      - /usr/src/app/node_modules/
+      - ./:/app/
+      - /app/node_modules/
+      - /app/src/lib/prisma/generated/
     command: bun run dev
 
   prod:
@@ -20,7 +21,9 @@ services:
     build:
       context: ./
       target: release
-    working_dir: /usr/src/app/
+      args:
+        NEXT_PUBLIC_TURNSTILE_SITEKEY: ${NEXT_PUBLIC_TURNSTILE_SITEKEY}
+    working_dir: /app/
     env_file: .env
     environment:
       DATABASE_URL: postgres://app_dev:dev_password@database:5432/dev

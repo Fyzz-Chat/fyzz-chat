@@ -11,12 +11,14 @@ import publicConf from "@/lib/public-config";
 import { type FormState, initialState } from "@/lib/utils";
 import { type LoginFormData, loginSchema } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useActionState, useTransition } from "react";
+import { use, useActionState, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [state, formAction, isPending] = useActionState(signInUser, initialState);
   const [isTransitionPending, startTransition] = useTransition();
   const router = useRouter();
@@ -41,6 +43,9 @@ export default function LoginForm() {
     if (state.success) {
       localStorage.setItem("fyzz-auth-method", "password");
       router.push(publicConf.redirectPath);
+    } else {
+      setValue("cf-turnstile-response", "");
+      turnstileRef.current?.reset();
     }
   };
 
@@ -66,6 +71,7 @@ export default function LoginForm() {
           type="email"
           id="email"
           placeholder={translations.login.email.placeholder}
+          autoComplete="email"
           autoFocus
           {...register("email")}
         />
@@ -87,13 +93,14 @@ export default function LoginForm() {
           type="password"
           id="password"
           placeholder="****************"
+          autoComplete="current-password"
           {...register("password")}
         />
         {errors.password && (
           <span className="text-destructive text-xs">{errors.password.message}</span>
         )}
       </div>
-      <TurnstileComponent setValue={setTurnstileValue} />
+      <TurnstileComponent turnstileRef={turnstileRef} setValue={setTurnstileValue} />
       <PendingSubmitButton isPending={isLoading} text={translations.login.signIn} />
     </form>
   );

@@ -10,7 +10,7 @@ const schema = z.object({
 
 const envVars = {
   // Auth
-  redirectPath: process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL,
+  redirectPath: process.env.NEXT_PUBLIC_AUTH_REDIRECT_PATH || "/chat",
 
   // Turnstile
   turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY,
