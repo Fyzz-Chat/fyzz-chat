@@ -92,7 +92,12 @@ export default function PasswordForm({
           <Label htmlFor="current-password">
             {translations.settings.security.currentPassword}
           </Label>
-          <Input type="password" id="current-password" {...register("currentPassword")} />
+          <Input
+            type="password"
+            id="current-password"
+            autoComplete="current-password"
+            {...register("currentPassword")}
+          />
           {errors.currentPassword && (
             <span className="text-destructive text-xs">
               {errors.currentPassword.message}
@@ -102,7 +107,12 @@ export default function PasswordForm({
       )}
       <div>
         <Label htmlFor="new-password">{translations.settings.security.newPassword}</Label>
-        <Input type="password" id="new-password" {...register("newPassword")} />
+        <Input
+          type="password"
+          id="new-password"
+          autoComplete="new-password"
+          {...register("newPassword")}
+        />
         {errors.newPassword && (
           <span className="text-destructive text-xs">{errors.newPassword.message}</span>
         )}
@@ -111,7 +121,12 @@ export default function PasswordForm({
         <Label htmlFor="confirm-password">
           {translations.settings.security.confirmPassword}
         </Label>
-        <Input type="password" id="confirm-password" {...register("confirmPassword")} />
+        <Input
+          type="password"
+          id="confirm-password"
+          autoComplete="new-password"
+          {...register("confirmPassword")}
+        />
         {errors.confirmPassword && (
           <span className="text-destructive text-xs">
             {errors.confirmPassword.message}

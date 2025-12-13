@@ -74,6 +74,7 @@ export default function RegisterForm() {
           id="name"
           placeholder={translations.register.name.placeholder}
           autoFocus
+          autoComplete="name"
           {...register("name")}
         />
         {errors.name && (
@@ -86,6 +87,7 @@ export default function RegisterForm() {
           type="email"
           id="email"
           placeholder={translations.register.email.placeholder}
+          autoComplete="email"
           {...register("email")}
         />
         {errors.email && (
@@ -98,6 +100,7 @@ export default function RegisterForm() {
           type="password"
           id="password"
           placeholder="****************"
+          autoComplete="new-password"
           {...register("password")}
         />
         {errors.password && (
