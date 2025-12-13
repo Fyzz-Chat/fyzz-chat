@@ -11,13 +11,15 @@ import type { FormState } from "@/lib/utils";
 import { initialState } from "@/lib/utils";
 import { type RegisterFormData, registerSchema } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { use, useActionState, useTransition } from "react";
+import { use, useActionState, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import PendingSubmitButton from "./pending-submit-button";
 
 export default function RegisterForm() {
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [state, formAction, isPending] = useActionState(registerUser, initialState);
   const [isTransitionPending, startTransition] = useTransition();
   const router = useRouter();
@@ -43,6 +45,9 @@ export default function RegisterForm() {
     if (state.success) {
       localStorage.setItem("fyzz-auth-method", "password");
       router.push(publicConf.redirectPath);
+    } else {
+      setValue("cf-turnstile-response", "");
+      turnstileRef.current?.reset();
     }
   };
 
@@ -99,7 +104,7 @@ export default function RegisterForm() {
           <span className="text-destructive text-xs">{errors.password.message}</span>
         )}
       </Label>
-      <TurnstileComponent setValue={setTurnstileValue} />
+      <TurnstileComponent turnstileRef={turnstileRef} setValue={setTurnstileValue} />
       <div className="text-xs text-muted-foreground">
         {translations.register.privacyPolicy.text}{" "}
         <a
