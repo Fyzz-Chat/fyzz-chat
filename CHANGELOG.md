@@ -1,3 +1,18 @@
+# [0.6.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.5.0...v0.6.0) (2025-12-14)
+
+
+### Bug Fixes
+
+* **anthropic:** ensure tool calls have results ([726223b](https://github.com/Fyzz-Chat/fyzz-chat/commit/726223bae488f31500efd1cb703d5a794ee8e235))
+* **model-menu:** clean up imports ([5b6b1d0](https://github.com/Fyzz-Chat/fyzz-chat/commit/5b6b1d09652a7c00e79d546729639a9516ff3d2f))
+* update readme ([4cdd357](https://github.com/Fyzz-Chat/fyzz-chat/commit/4cdd3578fadc4f138772868bc3c65f77559bc1a6))
+
+
+### Features
+
+* **header:** link to github version ([b8064cc](https://github.com/Fyzz-Chat/fyzz-chat/commit/b8064ccc9275e7bbaac494dd38247f464961c305))
+* **model-menu:** highlight active model ([aa67d0d](https://github.com/Fyzz-Chat/fyzz-chat/commit/aa67d0d257610d9a1df0df6c63bdfa2ed6e3beef))
+
 # [0.5.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.4.0...v0.5.0) (2025-12-14)
 
 
