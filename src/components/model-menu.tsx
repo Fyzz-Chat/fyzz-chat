@@ -15,7 +15,7 @@ import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, Maximize2, Minimize2 } from "lucide-react";
+import { Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { memo, use, useEffect, useState } from "react";
 import {
@@ -174,7 +174,7 @@ function StatusList({
   const translations = use(translationsPromise);
   const stableId = useChatStore((state) => state.stableId);
 
-  const model = useModelStore((state) => state.model);
+  const selectedModel = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
 
@@ -189,7 +189,10 @@ function StatusList({
   const modelCount = providers.flatMap((provider) => provider.models).length;
 
   return (
-    <Command className="rounded-none md:rounded-md" defaultValue={model?.name || ""}>
+    <Command
+      className="rounded-none md:rounded-md"
+      defaultValue={selectedModel?.name || ""}
+    >
       <CommandInput
         placeholder={translations.input.modelMenu.placeholder.replace(
           "{number}",
@@ -231,12 +234,21 @@ function StatusList({
                   setOpen(false);
                 }}
                 className={cn(
-                  "group flex justify-between transition-all duration-300 ease-out border",
+                  "group relative flex justify-between transition-all duration-300 ease-out border",
                   isEnlarged
                     ? "py-3 px-3 flex-col items-center gap-1 h-[160px] border-border"
-                    : "pl-6 border-none"
+                    : "pl-6 border-none",
+                  model.id === selectedModel?.id ? "border-primary" : "border-transparent"
                 )}
               >
+                {model.id === selectedModel?.id && (
+                  <Check
+                    className={cn(
+                      "absolute size-4 text-primary",
+                      isEnlarged ? "top-2 right-2" : "left-0"
+                    )}
+                  />
+                )}
                 <span className="text-center">{model.name}</span>
                 <div
                   className={cn(
