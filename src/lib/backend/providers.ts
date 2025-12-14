@@ -26,19 +26,17 @@ import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
 import { type Tool, extractReasoningMiddleware, wrapLanguageModel } from "ai";
 
-const azureConfigured =
-  process.env.AZURE_API_KEY !== undefined &&
-  process.env.AZURE_RESOURCE_NAME !== undefined; // &&
+const azureConfigured = !!process.env.AZURE_API_KEY && !!process.env.AZURE_RESOURCE_NAME; // &&
 // process.env.AZURE_GPT41_API_KEY !== undefined &&
 // process.env.AZURE_GPT41_RESOURCE_NAME !== undefined;
-export const openaiConfigured = process.env.OPENAI_API_KEY !== undefined;
+export const openaiConfigured = !!process.env.OPENAI_API_KEY;
 const openaiConfiguredAzureNot = openaiConfigured && !azureConfigured;
-const anthropicConfigured = process.env.ANTHROPIC_API_KEY !== undefined;
-const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
-const xaiConfigured = process.env.XAI_API_KEY !== undefined;
-const metaConfigured = process.env.FIREWORKS_API_KEY !== undefined;
-const deepseekConfigured = process.env.FIREWORKS_API_KEY !== undefined;
-const perplexityConfigured = process.env.PERPLEXITY_API_KEY !== undefined;
+const anthropicConfigured = !!process.env.ANTHROPIC_API_KEY;
+const googleConfigured = !!process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const xaiConfigured = !!process.env.XAI_API_KEY;
+const metaConfigured = !!process.env.FIREWORKS_API_KEY;
+const deepseekConfigured = !!process.env.FIREWORKS_API_KEY;
+const perplexityConfigured = !!process.env.PERPLEXITY_API_KEY;
 
 export function getProvidersPublic(): PublicProvider[] {
   return filterProviders().map((provider) => ({
@@ -68,9 +66,13 @@ export function getModel(modelId: string, browse: boolean) {
     throw new Error(`Model ${modelId} not found`);
   }
 
-  const { id, provider, tools } = model;
+  const { id, provider, tools, mcpTools } = model;
 
-  return { model: provider(id, browse), supportsTools: tools };
+  return {
+    model: provider(id, browse),
+    supportsTools: tools,
+    supportsMcpTools: mcpTools,
+  };
 }
 
 export function getAnthropicProviderOptions(modelId: string): AnthropicProviderOptions {
@@ -262,6 +264,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -270,6 +273,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -278,6 +282,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -286,6 +291,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -294,6 +300,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -302,6 +309,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -310,6 +318,7 @@ const providers: Provider[] = [
         features: [reasoning, coding],
         provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -318,6 +327,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -326,6 +336,7 @@ const providers: Provider[] = [
         features: [reasoning, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -334,6 +345,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: [],
       },
       {
@@ -342,6 +354,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -350,6 +363,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(azure),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -358,6 +372,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: true,
         extensions: [],
       },
     ],
@@ -373,6 +388,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -381,6 +397,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -389,6 +406,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -397,6 +415,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -405,6 +424,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -413,6 +433,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -421,6 +442,7 @@ const providers: Provider[] = [
         features: [reasoning, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -429,6 +451,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -437,6 +460,7 @@ const providers: Provider[] = [
         features: [reasoning, coding],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -445,6 +469,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: [],
       },
       {
@@ -453,6 +478,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -461,6 +487,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(openai),
         tools: true,
+        mcpTools: true,
         extensions: imageTypes,
       },
       {
@@ -469,6 +496,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: true,
         extensions: [],
       },
     ],
@@ -484,6 +512,7 @@ const providers: Provider[] = [
         features: [pdf, search],
         provider: wrappedModel(anthropic),
         tools: true,
+        mcpTools: false,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -492,6 +521,7 @@ const providers: Provider[] = [
         features: [pdf, search],
         provider: wrappedModel(anthropic),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -500,6 +530,7 @@ const providers: Provider[] = [
         features: [pdf, reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
+        mcpTools: true,
         extensions: [...imageTypes, "application/pdf"],
       },
       // {
@@ -508,6 +539,7 @@ const providers: Provider[] = [
       //   features: [pdf, reasoning, search],
       //   provider: wrappedModel(anthropic),
       //   tools: true,
+      //   mcpTools: true,
       //   extensions: [...imageTypes, "application/pdf"],
       // },
       // {
@@ -516,6 +548,7 @@ const providers: Provider[] = [
       //   features: [pdf, reasoning, search],
       //   provider: wrappedModel(anthropic),
       //   tools: true,
+      //   mcpTools: true,
       //   extensions: [...imageTypes, "application/pdf"],
       // },
       // {
@@ -524,6 +557,7 @@ const providers: Provider[] = [
       //   features: [pdf, reasoning, search],
       //   provider: wrappedModel(anthropic),
       //   tools: true,
+      //   mcpTools: true,
       //   extensions: [...imageTypes, "application/pdf"],
       // },
     ],
@@ -539,6 +573,7 @@ const providers: Provider[] = [
         features: [pdf],
         provider: wrappedGoogle,
         tools: true,
+        mcpTools: false,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -547,6 +582,7 @@ const providers: Provider[] = [
         features: [pdf, search],
         provider: wrappedGoogle,
         tools: true,
+        mcpTools: false,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -555,6 +591,7 @@ const providers: Provider[] = [
         features: [pdf, search],
         provider: wrappedGoogle,
         tools: true,
+        mcpTools: false,
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
       },
       {
@@ -563,6 +600,7 @@ const providers: Provider[] = [
         features: [images],
         provider: wrappedGoogle,
         tools: false,
+        mcpTools: false,
         extensions: [...imageTypes],
       },
       {
@@ -571,6 +609,7 @@ const providers: Provider[] = [
         features: [pdf, reasoning, search],
         provider: wrappedGoogle,
         tools: true,
+        mcpTools: false,
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
       },
       {
@@ -579,6 +618,7 @@ const providers: Provider[] = [
         features: [pdf],
         provider: wrappedGoogle,
         tools: true,
+        mcpTools: false,
         extensions: [...imageTypes, "application/pdf"],
       },
       {
@@ -587,6 +627,7 @@ const providers: Provider[] = [
         features: [images],
         provider: wrappedGoogle,
         tools: false,
+        mcpTools: false,
         extensions: [...imageTypes],
       },
       // {
@@ -595,6 +636,7 @@ const providers: Provider[] = [
       //   features: [images],
       //   provider: wrappedGoogle,
       //   tools: false,
+      //   mcpTools: false,
       //   extensions: [...imageTypes],
       // },
     ],
@@ -610,6 +652,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(xai),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
       {
@@ -617,6 +660,7 @@ const providers: Provider[] = [
         name: "Grok 3",
         provider: wrappedModel(xai),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
       {
@@ -625,6 +669,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedModel(xai),
         tools: true,
+        mcpTools: false,
         extensions: imageTypes,
       },
     ],
@@ -639,6 +684,7 @@ const providers: Provider[] = [
         name: "Llama 3.1 405B",
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
       {
@@ -647,6 +693,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
       {
@@ -655,6 +702,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
     ],
@@ -669,6 +717,7 @@ const providers: Provider[] = [
         name: "DeepSeek V3.1",
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
       {
@@ -676,6 +725,7 @@ const providers: Provider[] = [
         name: "DeepSeek V3.1 Terminus",
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
     ],
@@ -690,6 +740,7 @@ const providers: Provider[] = [
         name: "Qwen 3 Coder 480B",
         provider: wrappedModel(fireworks),
         tools: true,
+        mcpTools: false,
         extensions: [],
       },
     ],
@@ -705,6 +756,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(perplexity),
         tools: false,
+        mcpTools: false,
         extensions: [],
       },
       {
@@ -713,6 +765,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(perplexity),
         tools: false,
+        mcpTools: false,
         extensions: [],
       },
     ],

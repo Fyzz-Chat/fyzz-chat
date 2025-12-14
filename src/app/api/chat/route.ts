@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
   const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages?.[messages.length - 1];
-  const { model, supportsTools } = getModel(modelId, browse);
+  const { model, supportsTools, supportsMcpTools } = getModel(modelId, browse);
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
 
   if (supportsTools && !temporaryChat) {
     try {
-      const toolsResult = await getTools(user, modelId, browse);
+      const toolsResult = await getTools(user, modelId, browse, supportsMcpTools);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
     } catch (error: any) {
@@ -208,7 +208,9 @@ export async function POST(req: NextRequest) {
 
       try {
         if (existingConversation?.title === "New Chat") {
-          updateConversationTitle(id, messages);
+          await updateConversationTitle(id, messages).catch((error) => {
+            logger.error("Failed to update conversation title", error);
+          });
         }
 
         const lastMessage = responseMessage as CustomUIMessage;
@@ -269,7 +271,8 @@ async function acquireConversationLock(conversationId: string): Promise<boolean>
 async function getTools(
   user: SessionUser,
   modelId: string,
-  search: boolean
+  search: boolean,
+  supportsMcpTools: boolean
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: McpClient[] }> {
   const tools: { [key: string]: Tool } = {};
 
@@ -288,11 +291,17 @@ async function getTools(
   const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);
 
-  const mcpClients = await getMcpClients();
+  let mcpClients: McpClient[] = [];
 
-  if (mcpClients) {
-    const mcpTools = await getMcpTools(mcpClients);
-    Object.assign(tools, mcpTools);
+  // Only load MCP tools if the model supports them
+  if (supportsMcpTools) {
+    const clients = await getMcpClients();
+
+    if (clients) {
+      mcpClients = clients;
+      const mcpTools = await getMcpTools(clients);
+      Object.assign(tools, mcpTools);
+    }
   }
 
   return { tools, mcpClients };

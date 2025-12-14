@@ -22,6 +22,7 @@ export type Model = {
   free?: boolean;
   provider: (model: string, browse: boolean) => LanguageModel;
   tools: boolean;
+  mcpTools: boolean;
   extensions: (ImageType | string)[];
 };
 
