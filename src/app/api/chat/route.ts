@@ -39,7 +39,7 @@ import {
   stepCountIs,
   streamText,
 } from "ai";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, after } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
 export const maxDuration = 55;
@@ -201,55 +201,57 @@ export async function POST(req: NextRequest) {
     onError: (error: any) => JSON.stringify(error),
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage, isAborted }) => {
-      const reasoningDurations = reasoning.finish();
-      if (temporaryChat) {
-        return;
-      }
-
-      try {
-        if (existingConversation?.title === "New Chat") {
-          updateConversationTitle(id, messages);
+      after(async () => {
+        const reasoningDurations = reasoning.finish();
+        if (temporaryChat) {
+          return;
         }
 
-        const lastMessage = responseMessage as CustomUIMessage;
-        const lastUserMessage = messages[messages.length - 2];
+        try {
+          if (existingConversation?.title === "New Chat") {
+            await updateConversationTitle(id, messages);
+          }
 
-        if (!lastUserMessage || lastUserMessage.role !== "user") {
-          logger.error({
-            message: "Invalid message order detected before saving.",
-            description:
-              "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
-            conversationId: id,
-            lastUserMessageRole: lastUserMessage?.role,
-            lastMessageRole: lastMessage?.role,
-            historyLength: messages.length,
-          });
+          const lastMessage = responseMessage as CustomUIMessage;
+          const lastUserMessage = messages[messages.length - 2];
+
+          if (!lastUserMessage || lastUserMessage.role !== "user") {
+            logger.error({
+              message: "Invalid message order detected before saving.",
+              description:
+                "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
+              conversationId: id,
+              lastUserMessageRole: lastUserMessage?.role,
+              lastMessageRole: lastMessage?.role,
+              historyLength: messages.length,
+            });
+          }
+
+          let usage: LanguageModelUsage | undefined;
+
+          if (!isAborted) {
+            usage = await result.usage;
+            logger.debug(JSON.stringify(usage));
+          }
+
+          await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
+
+          // const messageWithFiles = await uploadMedia(user.id, id, lastMessage);
+          // File data URLs are not supported yet in Gemini Image Gen models
+          const messageWithFiles = lastMessage;
+
+          await saveMessage(
+            messageWithFiles,
+            reasoningDurations,
+            id,
+            modelId,
+            0,
+            usage?.outputTokens || 0
+          );
+        } finally {
+          await endConversation();
         }
-
-        let usage: LanguageModelUsage | undefined;
-
-        if (!isAborted) {
-          usage = await result.usage;
-          logger.debug(JSON.stringify(usage));
-        }
-
-        await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
-
-        // const messageWithFiles = await uploadMedia(user.id, id, lastMessage);
-        // File data URLs are not supported yet in Gemini Image Gen models
-        const messageWithFiles = lastMessage;
-
-        await saveMessage(
-          messageWithFiles,
-          reasoningDurations,
-          id,
-          modelId,
-          0,
-          usage?.outputTokens || 0
-        );
-      } finally {
-        await endConversation();
-      }
+      });
     },
   });
 }
