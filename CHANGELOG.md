@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.6.0...v0.6.1) (2025-12-14)
+
+
+### Bug Fixes
+
+* **read-url:** revert to raw fetch ([af3536a](https://github.com/Fyzz-Chat/fyzz-chat/commit/af3536a1c6acfb52cf5aa11bd6022a4050e413f0))
+
 # [0.6.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.5.0...v0.6.0) (2025-12-14)
 
 
