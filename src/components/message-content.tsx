@@ -22,8 +22,9 @@ import TextPart from "@/components/message/parts/text-part";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/stores/chat-store";
 import type { CustomUIMessage } from "@/types/chat";
+import { pdfType } from "@/types/provider";
 import type { ToolUIPart } from "ai";
-import { Check, Copy, Download } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { marked } from "marked";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -306,7 +307,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
               );
             }
 
-            if (part.mediaType?.startsWith("application/pdf")) {
+            if (part.mediaType?.startsWith(pdfType)) {
               return <PdfFilePart key={`${message.id}-attachment-${index}`} />;
             }
 

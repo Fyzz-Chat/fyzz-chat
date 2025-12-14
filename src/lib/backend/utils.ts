@@ -1,17 +1,18 @@
-import { readFileSync } from "fs";
-import { join } from "path";
+import "server-only";
+
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
 import type { CustomUIMessage } from "@/types/chat";
+import { pdfType } from "@/types/provider";
 
 export function filterMessages(messages: CustomUIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
   const imageSupport = model?.extensions?.some((extension) =>
     extension.startsWith("image/")
   );
-  const pdfSupport = model?.extensions?.some(
-    (extension) => extension === "application/pdf"
-  );
+  const pdfSupport = model?.extensions?.some((extension) => extension === pdfType);
   const anthropicModel = model?.id.startsWith("claude") || false;
 
   return messages.map((message: CustomUIMessage) => ({
@@ -35,11 +36,7 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
         return false;
       }
 
-      if (
-        !pdfSupport &&
-        part.type === "file" &&
-        part.mediaType?.startsWith("application/pdf")
-      ) {
+      if (!pdfSupport && part.type === "file" && part.mediaType?.startsWith(pdfType)) {
         return false;
       }
 

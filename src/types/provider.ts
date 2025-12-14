@@ -15,6 +15,9 @@ export const imageTypes: ImageType[] = [
   "image/webp",
 ];
 
+export type PDFType = "application/pdf";
+export const pdfType: PDFType = "application/pdf";
+
 export type Model = {
   id: string;
   name: string;

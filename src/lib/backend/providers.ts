@@ -7,6 +7,7 @@ import {
   type PublicModel,
   type PublicProvider,
   imageTypes,
+  pdfType,
 } from "@/types/provider";
 import {
   type AnthropicProvider,
@@ -279,7 +280,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5-mini",
@@ -287,7 +288,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5",
@@ -295,7 +296,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(azure),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5-codex",
@@ -311,7 +312,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5.1-codex",
@@ -390,7 +391,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5-mini",
@@ -398,7 +399,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5",
@@ -406,7 +407,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5-codex",
@@ -422,7 +423,7 @@ const providers: Provider[] = [
         features: [reasoning, search, coding],
         provider: wrappedModel(openai),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gpt-5.1-codex",
@@ -477,7 +478,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(anthropic),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "claude-3-5-haiku-20241022",
@@ -485,7 +486,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(anthropic),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "claude-haiku-4-5-20251001",
@@ -493,7 +494,7 @@ const providers: Provider[] = [
         features: [reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       // {
       //   id: "claude-3-7-sonnet-20250219",
@@ -501,7 +502,7 @@ const providers: Provider[] = [
       //   features: [pdf, reasoning, search],
       //   provider: wrappedModel(anthropic),
       //   tools: true,
-      //   extensions: [...imageTypes, "application/pdf"],
+      //   extensions: [...imageTypes, pdfType],
       // },
       // {
       //   id: "claude-sonnet-4-20250514",
@@ -509,7 +510,7 @@ const providers: Provider[] = [
       //   features: [pdf, reasoning, search],
       //   provider: wrappedModel(anthropic),
       //   tools: true,
-      //   extensions: [...imageTypes, "application/pdf"],
+      //   extensions: [...imageTypes, pdfType],
       // },
       // {
       //   id: "claude-sonnet-4-5",
@@ -517,7 +518,7 @@ const providers: Provider[] = [
       //   features: [pdf, reasoning, search],
       //   provider: wrappedModel(anthropic),
       //   tools: true,
-      //   extensions: [...imageTypes, "application/pdf"],
+      //   extensions: [...imageTypes, pdfType],
       // },
     ],
   },
@@ -532,7 +533,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gemini-2.0-flash",
@@ -540,7 +541,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gemini-2.5-flash",
@@ -548,7 +549,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf", "video/mp4"],
+        extensions: [...imageTypes, pdfType, "video/mp4"],
       },
       {
         id: "gemini-2.5-flash-lite",
@@ -564,7 +565,7 @@ const providers: Provider[] = [
         features: [reasoning, search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf", "video/mp4"],
+        extensions: [...imageTypes, pdfType, "video/mp4"],
       },
       {
         id: "gemini-3-pro-preview",
@@ -572,7 +573,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, "application/pdf"],
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gemini-2.5-flash-image",
