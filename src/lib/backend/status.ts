@@ -2,8 +2,8 @@ import type { Status } from "@/types/status";
 
 export async function status(): Promise<Status> {
   const [openai, claude, perplexity, fireworks] = await Promise.all([
-    isHealthy("openai"),
-    isHealthy("claude"),
+    isOpenAIHealthy(),
+    isClaudeHealthy(),
     isPerplexityHealthy(),
     isFireworksHealthy(),
   ]);
@@ -17,19 +17,38 @@ export async function status(): Promise<Status> {
   };
 }
 
-async function isHealthy(service: "openai" | "claude") {
-  const response = await fetch(`https://status.${service}.com/api/v2/summary.json`);
+async function isOpenAIHealthy() {
+  const openai_api_components = new Set(["Chat Completions", "Responses", "Files"]);
+
+  const response = await fetch("https://status.openai.com/api/v2/summary.json");
 
   if (!response.ok) {
     return false;
   }
 
   const data = await response.json();
+  const components: { name: string; status: string }[] = data.components || [];
 
-  const status = data.status.description;
-  const statusOk = status === "All Systems Operational";
+  const apiComponents = components.filter((c) => openai_api_components.has(c.name));
 
-  return statusOk;
+  return apiComponents.every((c) => c.status === "operational");
+}
+
+async function isClaudeHealthy() {
+  const claude_api_components = new Set(["Claude API (api.anthropic.com)"]);
+
+  const response = await fetch("https://status.claude.com/api/v2/summary.json");
+
+  if (!response.ok) {
+    return false;
+  }
+
+  const data = await response.json();
+  const components: { name: string; status: string }[] = data.components || [];
+
+  const apiComponents = components.filter((c) => claude_api_components.has(c.name));
+
+  return apiComponents.every((c) => c.status === "operational");
 }
 
 async function isPerplexityHealthy() {
