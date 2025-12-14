@@ -37,7 +37,14 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
               <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
               <p className="text-md font-bold">Fyzz.chat</p>
             </FastLink>
-            <p className="text-xs text-muted-foreground mr-auto">{version}</p>
+            <a
+              href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground mr-auto"
+            >
+              {version}
+            </a>
             <NewChatButton />
           </div>
           <div className="flex items-center">
