@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "next dev",
     "dev:email": "email dev --port 3001",
-    "million-dev": "MILLION_LINT=true next dev",
     "analyze": "ANALYZE=true next build --webpack",
     "build": "prisma generate && next build",
     "build:standalone": "prisma generate && EXPORT_MODE=standalone next build",
@@ -128,7 +127,6 @@
     "@biomejs/biome": "1.9.4",
     "@commitlint/cli": "20.1.0",
     "@commitlint/config-conventional": "20.0.0",
-    "@million/lint": "1.0.14",
     "@next/bundle-analyzer": "16.0.10",
     "@react-email/preview-server": "5.0.8",
     "@tailwindcss/postcss": "4.1.18",

@@ -1,4 +1,3 @@
-import MillionLint from "@million/lint";
 import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
@@ -36,18 +35,4 @@ const withBundleAnalyzer = (nextConfig) => {
   }
 };
 
-const withMillionLint = (nextConfig) => {
-  if (process.env.MILLION_LINT === "true") {
-    return MillionLint.next({
-      enabled: true,
-      rsc: true,
-      filter: {
-        include: "**/components/*.{mtsx,mjsx,tsx,jsx}",
-      },
-    })(nextConfig);
-  } else {
-    return nextConfig;
-  }
-};
-
-export default withMillionLint(withBundleAnalyzer(nextConfig));
+export default withBundleAnalyzer(nextConfig);
