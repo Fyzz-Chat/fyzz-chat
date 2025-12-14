@@ -1,3 +1,19 @@
+# [0.5.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.4.0...v0.5.0) (2025-12-14)
+
+
+### Bug Fixes
+
+* **auth:** pass callback to after ([54879d8](https://github.com/Fyzz-Chat/fyzz-chat/commit/54879d89a2a00d219c51423afe929ec9cf377131))
+* **docker:** security optimizations in the dockerfile ([a5ef4f6](https://github.com/Fyzz-Chat/fyzz-chat/commit/a5ef4f623550b56fdf65eab37f4cd5f4fda8407d))
+
+
+### Features
+
+* **auth:** add autocomplete properties to inputs ([7077711](https://github.com/Fyzz-Chat/fyzz-chat/commit/70777115e4d01cd8eb8f36c0cd9bae523e996253))
+* **scripts:** add version update scripts ([641be0f](https://github.com/Fyzz-Chat/fyzz-chat/commit/641be0fa947c9ff843255e7622824634d59095a8))
+* **turnstile:** add warning and debug log to turnstile validation ([304a9f9](https://github.com/Fyzz-Chat/fyzz-chat/commit/304a9f9450c90891813771a64a1e2cfd53d4617f))
+* **turnstile:** reset check after failure ([3276022](https://github.com/Fyzz-Chat/fyzz-chat/commit/327602243e4d73d093f5fb55538b6cf4b06af3c1))
+
 # [0.4.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.3.1...v0.4.0) (2025-12-04)
 
 
