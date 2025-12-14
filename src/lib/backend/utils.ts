@@ -22,6 +22,13 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
     // - Reasoning parts WITH signatures (Anthropic)
     // - Reasoning parts WITHOUT signatures (any model but Anthropic)
     parts: message.parts?.filter((part) => {
+      // Filter out tool-call and tool-result parts for all models
+      // This ensures clean message history without tool usage metadata
+      if (part.type === "tool-call" || part.type === "tool-result") {
+        console.log("Filtering out tool part:", part);
+        return false;
+      }
+
       if (
         anthropicModel &&
         part.type === "reasoning" &&
