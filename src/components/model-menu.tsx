@@ -1,10 +1,12 @@
 "use client";
 
+import { HoverPopover } from "@/components/hover-popover";
 import { KeyHandler } from "@/components/key-handler";
+import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
+import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import { featureIcons, providerIcons } from "@/lib/providers";
-import { getProviderIcon } from "@/lib/providers";
+import { featureIcons, getProviderIcon, providerIcons } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
@@ -15,11 +17,7 @@ import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { memo, use, useEffect, useState } from "react";
-import React from "react";
-import { HoverPopover } from "./hover-popover";
-import { TemporaryChatSwitch } from "./temporary-chat-switch";
-import { Button } from "./ui/button";
+import React, { memo, use, useEffect } from "react";
 import {
   Command,
   CommandEmpty,
