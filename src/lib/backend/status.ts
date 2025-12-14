@@ -67,16 +67,18 @@ async function isPerplexityHealthy() {
 }
 
 async function isFireworksHealthy() {
-  const response = await fetch("https://status.fireworks.ai/index.json");
+  return true;
 
-  if (!response.ok) {
-    return false;
-  }
+  // const response = await fetch("https://status.fireworks.ai/index.json");
 
-  const body = await response.json();
+  // if (!response.ok) {
+  //   return false;
+  // }
 
-  const status = body.data.attributes.aggregate_state;
-  const statusOk = status === "operational";
+  // const body = await response.json();
 
-  return statusOk;
+  // const status = body.data.attributes.aggregate_state;
+  // const statusOk = status === "operational";
+
+  // return statusOk;
 }
