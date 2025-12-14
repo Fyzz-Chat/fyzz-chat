@@ -7,11 +7,14 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
+import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { convertToModelMessages, generateText } from "ai";
 import jwt from "jsonwebtoken";
 
+import { openaiConfigured } from "@/lib/backend/providers";
 import { filterMessages } from "@/lib/backend/utils";
 import conf from "@/lib/config";
 import { mapMessages } from "@/lib/dao/conversations";
@@ -56,10 +59,32 @@ export async function updateConversationTitle(
   conversationId: string,
   messages: CustomUIMessage[]
 ) {
-  const modelId = "gpt-4o-mini";
+  const anthropicConfigured = !!process.env.ANTHROPIC_API_KEY;
+  const googleConfigured = !!process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+  // Select model based on what's configured (prefer OpenAI > Anthropic > Google)
+  let modelId: string;
+  let modelProvider: any;
+
+  if (openaiConfigured) {
+    modelId = "gpt-4o-mini";
+    modelProvider = openai(modelId);
+  } else if (anthropicConfigured) {
+    modelId = "claude-3-haiku-20240307";
+    modelProvider = anthropic(modelId);
+  } else if (googleConfigured) {
+    modelId = "gemini-2.0-flash-lite";
+    modelProvider = google(modelId);
+  } else {
+    // No AI provider configured, skip title generation
+    logger.warn("No AI provider configured for title generation");
+    return null;
+  }
+
   const filteredMessages = filterMessages(messages, modelId);
+
   const { text } = await generateText({
-    model: openai(modelId),
+    model: modelProvider,
     system:
       "Your job is to generate a title for a conversation based on the messages. The title should never be longer than 3 words. Only return the title, no other text.",
     messages: convertToModelMessages(filteredMessages),
