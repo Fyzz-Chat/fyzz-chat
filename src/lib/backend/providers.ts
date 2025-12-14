@@ -478,7 +478,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedModel(anthropic),
         tools: true,
-        extensions: [...imageTypes, pdfType],
+        extensions: [...imageTypes],
       },
       {
         id: "claude-3-5-haiku-20241022",
