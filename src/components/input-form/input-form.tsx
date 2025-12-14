@@ -15,6 +15,7 @@ import ActionButton from "@/components/input-form/action-button";
 import AttachmentButton from "@/components/input-form/attachment-button";
 import InputTextarea from "@/components/input-form/input-textarea";
 import SearchMenu from "@/components/input-form/search-menu";
+import ModelMenu from "@/components/model-menu";
 import useTempChat from "@/hooks/use-temp-chat";
 import { cn, isFileList, uploadFiles } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
@@ -22,10 +23,7 @@ import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
-import dynamic from "next/dynamic";
 import { useLocation, useNavigate } from "react-router-dom";
-
-const LazyModelMenu = dynamic(() => import("@/components/model-menu"));
 
 export default function InputForm({ className }: { className?: string }) {
   useTempChat();
@@ -155,7 +153,7 @@ export default function InputForm({ className }: { className?: string }) {
         <FileUploadInput ref={fileInputRef} />
         <div className="flex items-center w-full gap-2">
           <div className="flex items-center gap-2 mr-auto">
-            <LazyModelMenu />
+            <ModelMenu />
             <SearchMenu />
           </div>
           <AttachmentButton cameraInputRef={cameraInputRef} fileInputRef={fileInputRef} />
