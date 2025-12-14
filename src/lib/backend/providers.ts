@@ -243,13 +243,6 @@ const images: Feature = {
   color: "text-orange-500",
 };
 
-const pdf: Feature = {
-  name: "PDFs",
-  description: "Supports PDFs",
-  icon: "fileText",
-  color: "text-purple-500",
-};
-
 const providers: Provider[] = [
   {
     id: "azure",
@@ -481,7 +474,7 @@ const providers: Provider[] = [
       {
         id: "claude-3-haiku-20240307",
         name: "Claude Haiku 3",
-        features: [pdf, search],
+        features: [search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -489,7 +482,7 @@ const providers: Provider[] = [
       {
         id: "claude-3-5-haiku-20241022",
         name: "Claude Haiku 3.5",
-        features: [pdf, search],
+        features: [search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -497,7 +490,7 @@ const providers: Provider[] = [
       {
         id: "claude-haiku-4-5-20251001",
         name: "Claude Haiku 4.5",
-        features: [pdf, reasoning, search],
+        features: [reasoning, search],
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -536,7 +529,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.0-flash-lite",
         name: "Gemini 2.0 Flash Lite",
-        features: [pdf],
+        features: [],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -544,7 +537,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.0-flash",
         name: "Gemini 2.0 Flash",
-        features: [pdf, search],
+        features: [search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
@@ -552,7 +545,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
-        features: [pdf, search],
+        features: [search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
@@ -560,7 +553,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-flash-lite",
         name: "Gemini 2.5 Flash Lite",
-        features: [images],
+        features: [],
         provider: wrappedGoogle,
         tools: false,
         extensions: [...imageTypes],
@@ -568,7 +561,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
-        features: [pdf, reasoning, search],
+        features: [reasoning, search],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf", "video/mp4"],
@@ -576,7 +569,7 @@ const providers: Provider[] = [
       {
         id: "gemini-3-pro-preview",
         name: "Gemini 3 Pro",
-        features: [pdf],
+        features: [],
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, "application/pdf"],
