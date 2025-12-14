@@ -255,9 +255,7 @@ function filterParts(
 ) {
   return parts
     .filter((part) => {
-      if (part.type === "step-start") {
-        return false;
-      } else if (part.type.startsWith("tool-")) {
+      if (part.type.startsWith("tool-")) {
         return (
           part.type === "tool-memory" ||
           part.type === "tool-generateImage" ||
