@@ -1,12 +1,11 @@
 import conf from "@/lib/config";
-import { ensure } from "@/lib/utils";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import { getSignedUrl as presignUrl } from "@aws-sdk/s3-request-presigner";
 
 let client: S3Client | null = null;
 
-if (conf.awsConfigured) {
+if (conf.s3Configured) {
   client = new S3Client({
     region: conf.awsRegion,
   });
@@ -28,7 +27,7 @@ export async function deleteFile(key: string) {
 }
 
 export function getFileUrlSigned(prefix: string, fileUrl: string) {
-  if (!conf.awsConfigured || fileUrl.startsWith("data:")) {
+  if (!conf.s3Configured || fileUrl.startsWith("data:")) {
     return fileUrl;
   }
 

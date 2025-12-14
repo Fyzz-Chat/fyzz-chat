@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 
 let client: SESClient | null = null;
 
-if (conf.awsConfigured) {
+if (conf.sesConfigured) {
   client = new SESClient({ region: conf.awsRegion });
 }
 
