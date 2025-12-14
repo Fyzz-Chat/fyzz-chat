@@ -28,22 +28,22 @@ export default function StatusNotification() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            {!status.openai && (
+            {!status.providers.openai && (
               <Badge variant="destructive" className="flex justify-center">
                 OpenAI
               </Badge>
             )}
-            {!status.claude && (
+            {!status.providers.anthropic && (
               <Badge variant="destructive" className="flex justify-center">
-                Claude
+                Anthropic
               </Badge>
             )}
-            {!status.perplexity && (
+            {!status.providers.perplexity && (
               <Badge variant="destructive" className="flex justify-center">
                 Perplexity
               </Badge>
             )}
-            {!status.fireworks && (
+            {!status.providers.fireworks && (
               <Badge variant="destructive" className="flex justify-center">
                 Fireworks
               </Badge>

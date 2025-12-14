@@ -30,8 +30,17 @@ export type Model = {
 
 export type PublicModel = Omit<Model, "provider">;
 
+export type ProviderId =
+  | "azure"
+  | "openai"
+  | "anthropic"
+  | "google"
+  | "xai"
+  | "fireworks"
+  | "perplexity";
+
 export type Provider = {
-  id: string;
+  id: ProviderId;
   name: string;
   icon: string;
   models: Model[];

@@ -14,8 +14,9 @@ import { useChatStore } from "@/stores/chat-store";
 import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
+import type { Status } from "@/types/status";
 import { useQuery } from "@tanstack/react-query";
-import { Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { memo, use, useEffect, useState } from "react";
 import {
@@ -36,6 +37,7 @@ import {
 } from "./ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 function ModelMenu() {
   const pathname = usePathname();
@@ -45,6 +47,14 @@ function ModelMenu() {
   const trpc = useTRPC();
   const { data: defaultModel, isLoading } = useQuery(
     trpc.defaultModel.queryOptions(undefined, {
+      staleTime: 0,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: true,
+    })
+  );
+  const { data: status } = useQuery(
+    trpc.status.queryOptions(undefined, {
       staleTime: 0,
       refetchOnMount: true,
       refetchOnReconnect: true,
@@ -119,6 +129,7 @@ function ModelMenu() {
                   setOpen={setModelMenuOpen}
                   providers={providers}
                   isEnlarged={isEnlarged}
+                  status={status}
                 />
               </div>
             </div>
@@ -165,10 +176,12 @@ function StatusList({
   setOpen,
   providers,
   isEnlarged = false,
+  status,
 }: {
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
   isEnlarged?: boolean;
+  status?: Status;
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -217,6 +230,21 @@ function StatusList({
                   { size: 16 }
                 )}
                 {provider.name}
+                {!status?.providers?.[provider.id] && (
+                  <TooltipProvider>
+                    <Tooltip delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <AlertCircle
+                          size={18}
+                          className="ml-auto mr-0.5 text-destructive"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Warning: Some models from {provider.name} might be down.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             }
             className={cn(

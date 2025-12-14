@@ -1,19 +1,24 @@
 import type { Status } from "@/types/status";
 
 export async function status(): Promise<Status> {
-  const [openai, claude, perplexity, fireworks] = await Promise.all([
+  const [openai, anthropic, perplexity, fireworks] = await Promise.all([
     isOpenAIHealthy(),
-    isClaudeHealthy(),
+    isAnthropicHealthy(),
     isPerplexityHealthy(),
     isFireworksHealthy(),
   ]);
 
   return {
-    openai,
-    claude,
-    perplexity,
-    fireworks,
-    all: openai && claude && perplexity && fireworks,
+    all: openai && anthropic && perplexity && fireworks,
+    providers: {
+      azure: openai,
+      openai,
+      anthropic,
+      google: true,
+      xai: true,
+      perplexity,
+      fireworks,
+    },
   };
 }
 
@@ -34,7 +39,7 @@ async function isOpenAIHealthy() {
   return apiComponents.every((c) => c.status === "operational");
 }
 
-async function isClaudeHealthy() {
+async function isAnthropicHealthy() {
   const claude_api_components = new Set(["Claude API (api.anthropic.com)"]);
 
   const response = await fetch("https://status.claude.com/api/v2/summary.json");
