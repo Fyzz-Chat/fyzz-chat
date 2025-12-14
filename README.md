@@ -157,7 +157,7 @@ make db
 There is already a `User` model defined in [`prisma/schema.prisma`](prisma/schema.prisma). The correspondent migration file is located in [`prisma/migrations/`](prisma/migrations/). To create the database schema and generate the Prisma client, run:
 
 ```bash
-bun run migrate
+bun run db:migrate
 ```
 
 ## Authentication
