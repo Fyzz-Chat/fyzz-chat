@@ -15,9 +15,9 @@ import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Maximize2, Minimize2 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import React, { memo, use, useEffect } from "react";
+import React, { memo, use, useEffect, useState } from "react";
 import {
   Command,
   CommandEmpty,
@@ -41,6 +41,7 @@ function ModelMenu() {
   const pathname = usePathname();
   const setModelMenuOpen = useModelMenuStore((state) => state.setModelMenuOpen);
   const modelMenuOpen = useModelMenuStore((state) => state.modelMenuOpen);
+  const [isEnlarged, setIsEnlarged] = useState(false);
   const trpc = useTRPC();
   const { data: defaultModel, isLoading } = useQuery(
     trpc.defaultModel.queryOptions(undefined, {
@@ -61,6 +62,12 @@ function ModelMenu() {
       setDefaultModel(defaultModel || undefined);
     }
   }, [pathname, defaultModel, isLoading]);
+
+  useEffect(() => {
+    if (!modelMenuOpen) {
+      setIsEnlarged(false);
+    }
+  }, [modelMenuOpen]);
 
   if (isDesktop) {
     return (
@@ -86,8 +93,35 @@ function ModelMenu() {
               <ChevronDown size={16} />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0" align="start">
-            <StatusList setOpen={setModelMenuOpen} providers={providers} />
+          <PopoverContent
+            className={cn(
+              "p-0 transition-all duration-300 ease-out",
+              isEnlarged ? "w-[500px]" : "w-[300px]"
+            )}
+            align="start"
+          >
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1 z-10 size-7"
+                onClick={() => setIsEnlarged(!isEnlarged)}
+              >
+                {isEnlarged ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              </Button>
+              <div
+                className={cn(
+                  "transition-all duration-300 ease-out overflow-hidden",
+                  isEnlarged ? "h-[600px]" : "h-[400px]"
+                )}
+              >
+                <StatusList
+                  setOpen={setModelMenuOpen}
+                  providers={providers}
+                  isEnlarged={isEnlarged}
+                />
+              </div>
+            </div>
             <Separator />
             <TemporaryChatSwitch />
           </PopoverContent>
@@ -130,9 +164,11 @@ function ModelMenu() {
 function StatusList({
   setOpen,
   providers,
+  isEnlarged = false,
 }: {
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
+  isEnlarged?: boolean;
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -159,8 +195,14 @@ function StatusList({
           "{number}",
           modelCount.toString()
         )}
+        className={isEnlarged ? "pr-10" : ""}
       />
-      <CommandList>
+      <CommandList
+        className={cn(
+          "transition-all duration-300 ease-out",
+          isEnlarged ? "max-h-[600px]" : "max-h-[400px]"
+        )}
+      >
         <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
         {providers.map((provider) => (
           <CommandGroup
@@ -174,6 +216,11 @@ function StatusList({
                 {provider.name}
               </div>
             }
+            className={cn(
+              "transition-all duration-300 ease-out",
+              isEnlarged &&
+                "**:[[cmdk-group-items]]:grid **:[[cmdk-group-items]]:grid-cols-3 **:[[cmdk-group-items]]:gap-2 p-2"
+            )}
           >
             {provider.models.map((model: PublicModel) => (
               <CommandItem
@@ -183,28 +230,46 @@ function StatusList({
                   handleModelChange(model.id);
                   setOpen(false);
                 }}
-                className="group flex justify-between pl-6"
+                className={cn(
+                  "group flex justify-between transition-all duration-300 ease-out border",
+                  isEnlarged
+                    ? "py-3 px-3 flex-col items-center gap-1 h-[160px] border-border"
+                    : "pl-6 border-none"
+                )}
               >
-                <span className="mr-auto">{model.name}</span>
-                {model.features?.map((feature: Feature) => (
-                  <HoverPopover key={feature.name} content={feature.description}>
-                    <div
-                      className="rounded-full p-1"
-                      onClick={(e) => e.stopPropagation()} // Prevent triggering the CommandItem's onSelect
-                    >
-                      {React.createElement(
-                        featureIcons[feature.icon as keyof typeof featureIcons],
-                        {
-                          size: 16,
-                          className: cn(
-                            feature.color,
-                            "group-data-[selected='true']:text-accent-foreground"
-                          ),
-                        }
-                      )}
-                    </div>
-                  </HoverPopover>
-                ))}
+                <span className="text-center">{model.name}</span>
+                <div
+                  className={cn(
+                    "hidden",
+                    isEnlarged && "grid place-items-center size-full"
+                  )}
+                >
+                  {React.createElement(
+                    providerIcons[provider.icon as keyof typeof providerIcons],
+                    { size: 48 }
+                  )}
+                </div>
+                <div className="flex gap-0.5">
+                  {model.features?.map((feature: Feature) => (
+                    <HoverPopover key={feature.name} content={feature.description}>
+                      <div
+                        className="rounded-full p-1"
+                        onClick={(e) => e.stopPropagation()} // Prevent triggering the CommandItem's onSelect
+                      >
+                        {React.createElement(
+                          featureIcons[feature.icon as keyof typeof featureIcons],
+                          {
+                            size: 16,
+                            className: cn(
+                              feature.color,
+                              "group-data-[selected='true']:text-accent-foreground"
+                            ),
+                          }
+                        )}
+                      </div>
+                    </HoverPopover>
+                  ))}
+                </div>
               </CommandItem>
             ))}
           </CommandGroup>
