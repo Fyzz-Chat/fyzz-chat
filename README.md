@@ -27,6 +27,45 @@ Interested in the hosted version? Check out [Fyzz Chat](https://www.fyzz.chat/ch
 
 However, if you prefer to host it yourself, read on!
 
+## AI Provider Capabilities
+
+Fyzz Chat supports multiple AI providers with varying capabilities. Here's a comprehensive overview:
+
+### Core Capabilities
+
+| Provider | Regular Tools | MCP Tools | Image Input | PDF Support |
+|----------|--------------|-----------|-------------|-------------|
+| **Anthropic (Claude)** | ✅ | ✅ | ✅ (PNG, JPEG, JPG, WEBP) | ✅ |
+| **OpenAI** | ✅ | ✅ | ✅ (Files, URLs, Buffers) | ❌ |
+| **Google (Gemini)** | ✅ | ❌ | ✅ | ❌ |
+| **Azure OpenAI** | ✅ | ✅ | ✅ | ❌ |
+| **Meta (via Fireworks)** | ✅ | ❌ | Varies by model | ❌ |
+| **xAI** | ✅ | ❌ | Grok 4 only | ❌ |
+| **Perplexity** | ❌ | ❌ | ❌ | ❌ |
+
+### Model Context Protocol (MCP) Support
+
+MCP enables AI applications to discover and use tools across various services through a standardized interface.
+
+| Provider | Support Level | Configuration Method |
+|----------|--------------|---------------------|
+| **Anthropic** | ✅ Native | `mcpServers` provider option |
+| **OpenAI** | ✅ Responses API | `openai.tools.mcp()` |
+| **Google** | ❌ Not documented | N/A |
+| **Others** | ❌ Not documented | N/A |
+
+### Sources
+
+This information is based on official documentation from:
+- [Vercel AI SDK Repository](https://github.com/vercel/ai)
+- [Vercel AI SDK - Anthropic Provider](https://github.com/vercel/ai/blob/main/content/providers/01-ai-sdk-providers/05-anthropic.mdx)
+- [Vercel AI SDK - OpenAI Provider](https://github.com/vercel/ai/blob/main/content/providers/01-ai-sdk-providers/03-openai.mdx)
+- [Vercel AI SDK - Google Provider](https://github.com/vercel/ai/blob/main/content/providers/01-ai-sdk-providers/15-google-generative-ai.mdx)
+- [Vercel AI SDK - Azure Provider](https://github.com/vercel/ai/blob/main/content/providers/01-ai-sdk-providers/04-azure.mdx)
+- [AI SDK MCP Tools Documentation](https://github.com/vercel/ai/blob/main/content/docs/03-ai-sdk-core/16-mcp-tools.mdx)
+
+For the complete capabilities table with all models, see the [full documentation](https://github.com/vercel/ai/tree/main/content/providers).
+
 ## Docs for Self-hosters
 
 There are two ways to self-host Fyzz Chat:
