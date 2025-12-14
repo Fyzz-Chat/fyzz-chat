@@ -44,7 +44,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-start p-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
-      <ViewTransitionWrapper className="relative flex items-center pt-10 justify-center flex-1 w-full md:overflow-y-auto">
+      <ViewTransitionWrapper className="relative flex items-start pt-10 justify-center flex-1 w-full md:overflow-y-auto">
         <FastLink
           href="/chat"
           className="absolute top-0 left-0 flex items-center justify-start gap-2"
