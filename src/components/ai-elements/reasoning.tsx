@@ -120,7 +120,7 @@ export const ReasoningTrigger = memo(
           <>
             {isStreaming && !duration ? (
               <div className="flex items-center gap-4">
-                <div className="relative animate-pulse text-primary drop-shadow-[0_0_3px_hsl(var(--ring))]">
+                <div className="relative animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
                   <Cog
                     size={12}
                     className="-mt-1 animate-[spin_2s_linear_infinite_reverse]"
@@ -130,7 +130,7 @@ export const ReasoningTrigger = memo(
                     className="ml-2 -mt-1 absolute animate-[spin_2s_linear_infinite]"
                   />
                 </div>
-                <p className="text-primary animate-pulse drop-shadow-[0_0_3px_hsl(var(--ring))]">
+                <p className="text-primary animate-pulse drop-shadow-[0_0_3px_var(--ring)]">
                   Thinking...
                 </p>
               </div>
