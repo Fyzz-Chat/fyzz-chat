@@ -1,12 +1,12 @@
 import "server-only";
 
+import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage, PartialMessage } from "@/types/chat";
-import type { InputJsonValue } from "@prisma/client/runtime/client";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();
@@ -94,7 +94,7 @@ export async function getConversationsByCursor(
     ],
   });
 
-  let nextCursor: string | undefined = undefined;
+  let nextCursor: string | undefined;
   // Check if there is a next page
   if (items.length > limit) {
     // The +1 at the top is adjusted here

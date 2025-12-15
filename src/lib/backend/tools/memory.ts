@@ -1,6 +1,6 @@
-import { appendToUserMemory } from "@/lib/dao/users";
 import { tool } from "ai";
 import { z } from "zod";
+import { appendToUserMemory } from "@/lib/dao/users";
 
 const toolDescription = `
 This tool can be used to store new and important information about the user.

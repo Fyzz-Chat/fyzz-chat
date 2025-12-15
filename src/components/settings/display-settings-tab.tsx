@@ -1,9 +1,9 @@
 "use client";
 
+import { use } from "react";
 import { LayoutSelector } from "@/components/settings/layout-selector";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { use } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 export function DisplaySettingsTab() {

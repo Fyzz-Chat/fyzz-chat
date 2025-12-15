@@ -1,3 +1,4 @@
+import { use } from "react";
 import { KeyHandler } from "@/components/key-handler";
 import {
   Dialog,
@@ -9,7 +10,6 @@ import {
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useHelpDialogStore } from "@/stores/help-dialog-store";
-import { use } from "react";
 
 export function HelpDialog() {
   const translationsPromise = useTranslations();

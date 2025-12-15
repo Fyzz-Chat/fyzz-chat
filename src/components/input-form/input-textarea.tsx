@@ -1,13 +1,13 @@
 "use client";
 
+import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
-import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
-import TextareaAutosize from "react-textarea-autosize";
 
 export default function InputTextarea({
   handleSendMessage,

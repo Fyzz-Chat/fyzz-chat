@@ -2,6 +2,8 @@
 
 import "server-only";
 
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import conf from "@/lib/config";
 import { getUserIdFromSession } from "@/lib/dao/users";
@@ -12,12 +14,10 @@ import { turnstileFailedResponse, verifyTurnstile } from "@/lib/turnstile";
 import type { FormState } from "@/lib/utils";
 import {
   type LoginFormData,
-  type RegisterFormData,
   loginSchema,
+  type RegisterFormData,
   registerSchema,
 } from "@/types/auth";
-import type { JsonValue } from "@prisma/client/runtime/client";
-import { headers } from "next/headers";
 
 export async function signInUser(
   _prevState: any,

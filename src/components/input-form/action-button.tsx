@@ -1,10 +1,10 @@
 "use client";
 
+import { Send } from "lucide-react";
 import IconPlayerStop from "@/components/icons/icon-player-stop";
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/stores/chat-store";
 import { useInputStore } from "@/stores/input-store";
-import { Send } from "lucide-react";
 
 export default function ActionButton() {
   const status = useChatStore((state) => state.status);

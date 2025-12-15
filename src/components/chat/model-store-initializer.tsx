@@ -1,10 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useTRPC } from "@/lib/trpc/client";
 import { useModelStore } from "@/stores/model-store";
 import type { PublicProvider } from "@/types/provider";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 export default function ModelStoreInitializer({
   providers,

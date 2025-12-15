@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { type Tool, generateText, hasToolCall, tool } from "ai";
+import { generateText, hasToolCall, type Tool, tool } from "ai";
 import z from "zod";
 import { logDuration } from "../utils";
 

@@ -1,7 +1,7 @@
+import { useParams } from "react-router-dom";
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
-import { useParams } from "react-router-dom";
 
 export default function V3IdTempPage() {
   const { id } = useParams();

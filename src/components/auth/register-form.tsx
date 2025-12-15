@@ -1,5 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { use, useActionState, useRef, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,12 +16,6 @@ import publicConf from "@/lib/public-config";
 import type { FormState } from "@/lib/utils";
 import { initialState } from "@/lib/utils";
 import { type RegisterFormData, registerSchema } from "@/types/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { TurnstileInstance } from "@marsidev/react-turnstile";
-import { ExternalLink } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { use, useActionState, useRef, useTransition } from "react";
-import { useForm } from "react-hook-form";
 import PendingSubmitButton from "./pending-submit-button";
 
 export default function RegisterForm() {
@@ -114,6 +114,7 @@ export default function RegisterForm() {
           href="/privacy-policy"
           target="_blank"
           className="text-primary hover:underline inline-flex items-center relative"
+          rel="noopener"
         >
           <span>{translations.register.privacyPolicy.link}</span>
           <ExternalLink size={10} className="ml-1 relative -top-px" />

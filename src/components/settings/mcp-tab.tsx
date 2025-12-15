@@ -1,5 +1,10 @@
 "use client";
 
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { Plus, Trash2 } from "lucide-react";
+import { use, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,11 +19,6 @@ import { Switch } from "@/components/ui/switch";
 import { saveMcpServers } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { MissingKeyError } from "@/types/mcp";
-import type { JsonValue } from "@prisma/client/runtime/client";
-import { Plus, Trash2 } from "lucide-react";
-import { use, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 type ServerItem = { name: string; url: string; enabled: boolean };
 

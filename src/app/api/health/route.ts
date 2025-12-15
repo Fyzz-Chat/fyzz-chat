@@ -1,7 +1,7 @@
+import { NextResponse } from "next/server";
 import { getVersion } from "@/lib/backend/utils";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
-import { NextResponse } from "next/server";
 
 const CONNECTION_QUERY = `
 SELECT 

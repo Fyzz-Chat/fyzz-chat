@@ -1,7 +1,10 @@
 export default function Qwen({
   size = 16,
   className,
-}: { size?: number; className?: string }) {
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
     <svg
       height={size}

@@ -1,5 +1,7 @@
 "use client";
 
+import { Ban, Globe } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,8 +14,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
-import { Ban, Globe } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function SearchMenu() {
   const model = useModelStore((state) => state.model);

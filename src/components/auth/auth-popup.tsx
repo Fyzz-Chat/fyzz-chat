@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils";
 
 export default async function AuthPopup({
   searchParams,
-}: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const translations = await getTranslations();
   const { login, register } = await searchParams;
   const isLogin = login === "true";

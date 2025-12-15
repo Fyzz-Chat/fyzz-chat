@@ -1,10 +1,10 @@
 "use client";
 
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores/search-store";
-import { use, useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 
 function useIsMac() {

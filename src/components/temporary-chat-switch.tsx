@@ -1,10 +1,10 @@
 "use client";
 
-import { useTranslations } from "@/lib/contexts/translations-context";
-import { useModelStore } from "@/stores/model-store";
 import { MessageCircleDashed } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { use } from "react";
+import { useTranslations } from "@/lib/contexts/translations-context";
+import { useModelStore } from "@/stores/model-store";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 

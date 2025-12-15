@@ -1,5 +1,5 @@
-import { debounce } from "@/lib/utils";
 import { create } from "zustand";
+import { debounce } from "@/lib/utils";
 
 function persistInput(input: string) {
   localStorage.setItem("fyzz-input-content", input);

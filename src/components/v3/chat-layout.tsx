@@ -1,10 +1,10 @@
-import { ChatProvider } from "@/components/chat-provider";
+import { Outlet } from "react-router-dom";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
+import { ChatProvider } from "@/components/chat-provider";
 import InputForm from "@/components/input-form/input-form";
 import { EnterHandler, EscapeHandler, HomeHandler } from "@/components/key-handler";
 import { HelpDialog } from "@/components/sidebar/help-dialog";
-import { Outlet } from "react-router-dom";
 
 export default function ChatLayout() {
   return (

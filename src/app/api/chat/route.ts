@@ -1,3 +1,15 @@
+import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
+import {
+  convertToModelMessages,
+  hasToolCall,
+  type LanguageModelUsage,
+  smoothStream,
+  stepCountIs,
+  streamText,
+  type Tool,
+} from "ai";
+import { after, type NextRequest, NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { getFileUrlSigned } from "@/lib/aws/s3";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
@@ -19,28 +31,16 @@ import {
   unlockConversation,
 } from "@/lib/dao/conversations";
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
-import { type SessionUser, getUserFromSession } from "@/lib/dao/users";
+import { getUserFromSession, type SessionUser } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import {
-  McpClientInitError,
   closeMcpClients,
   getMcpClients,
   getMcpTools,
+  McpClientInitError,
 } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
-import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
-import {
-  type LanguageModelUsage,
-  type Tool,
-  convertToModelMessages,
-  hasToolCall,
-  smoothStream,
-  stepCountIs,
-  streamText,
-} from "ai";
-import { type NextRequest, NextResponse, after } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 export const maxDuration = 55;
 

@@ -1,6 +1,6 @@
-import type { Conversation, Message } from "@/lib/prisma/generated/client";
 import type { UIMessage } from "ai";
 import { z } from "zod";
+import type { Conversation, Message } from "@/lib/prisma/generated/client";
 
 const metadataSchema = z.object({
   model: z.string().nullable(),

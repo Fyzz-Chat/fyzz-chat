@@ -1,7 +1,7 @@
 import "server-only";
 
-import type { Locale } from "@/types/locale";
 import { cookies } from "next/headers";
+import type { Locale } from "@/types/locale";
 
 export const locales: Locale[] = ["en", "de", "hu"];
 

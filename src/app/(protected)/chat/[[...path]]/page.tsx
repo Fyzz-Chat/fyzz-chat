@@ -1,5 +1,7 @@
 import "katex/dist/katex.min.css";
 
+import { cookies } from "next/headers";
+import { Outlet } from "react-router-dom";
 import AuthPopup from "@/components/auth/auth-popup";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
@@ -9,8 +11,6 @@ import ClientRouter from "@/components/v3/client-router";
 import conf from "@/lib/config";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
-import { cookies } from "next/headers";
-import { Outlet } from "react-router-dom";
 
 export default async function CatchAll({
   searchParams: searchParamsPromise,

@@ -1,11 +1,11 @@
 import "server-only";
 
+import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { mapMessages } from "@/lib/dao/conversations";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage } from "@/types/chat";
-import type { InputJsonValue } from "@prisma/client/runtime/client";
 
 export async function getMessages(
   conversationId: string,

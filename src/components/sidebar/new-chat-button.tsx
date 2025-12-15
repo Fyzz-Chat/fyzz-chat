@@ -1,8 +1,8 @@
 "use client";
 
+import { SquarePenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FastLink } from "@/components/v3/fast-link";
-import { SquarePenIcon } from "lucide-react";
 
 export function NewChatButton() {
   return (

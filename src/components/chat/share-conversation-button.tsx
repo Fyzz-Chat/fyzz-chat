@@ -1,8 +1,8 @@
 "use client";
 
 import { CalendarIcon, InfinityIcon, Share } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { shareConversationUntilLatestMessage } from "@/lib/actions/conversations";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 const buttons = [
   {
@@ -29,7 +28,10 @@ const buttons = [
 export default function ShareConversationButton({
   conversationId,
   className,
-}: { conversationId: string; className?: string }) {
+}: {
+  conversationId: string;
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
 
   async function handleShareConversationUntilLatestMessage(duration: string) {

@@ -45,7 +45,7 @@ export function VersionChecker() {
   useEffect(() => {
     if (!serverVersion) return;
 
-    let browserVersion = sessionStorage.getItem(BROWSER_VERSION_KEY);
+    const browserVersion = sessionStorage.getItem(BROWSER_VERSION_KEY);
 
     if (!browserVersion) {
       sessionStorage.setItem(BROWSER_VERSION_KEY, serverVersion);

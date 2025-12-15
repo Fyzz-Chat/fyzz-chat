@@ -1,14 +1,5 @@
 import "server-only";
 
-import { codeInterpreterTool } from "@/lib/backend/tools/code-interpreter";
-import {
-  type Feature,
-  type Provider,
-  type PublicModel,
-  type PublicProvider,
-  imageTypes,
-  pdfType,
-} from "@/types/provider";
 import {
   type AnthropicProvider,
   type AnthropicProviderOptions,
@@ -25,7 +16,16 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
-import { type Tool, extractReasoningMiddleware, wrapLanguageModel } from "ai";
+import { extractReasoningMiddleware, type Tool, wrapLanguageModel } from "ai";
+import { codeInterpreterTool } from "@/lib/backend/tools/code-interpreter";
+import {
+  type Feature,
+  imageTypes,
+  type Provider,
+  type PublicModel,
+  type PublicProvider,
+  pdfType,
+} from "@/types/provider";
 
 const azureConfigured =
   process.env.AZURE_API_KEY !== undefined &&
@@ -204,9 +204,7 @@ function wrappedModel(
     | FireworksProvider
     | PerplexityProvider
 ) {
-  return function (model: string, _browse: boolean) {
-    return provider(model);
-  };
+  return (model: string, _browse: boolean) => provider(model);
 }
 
 const _reasoningFireworks = (model: string, _browse: boolean) => {

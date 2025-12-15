@@ -1,3 +1,4 @@
+import { ArrowLeft, Brain, Monitor, Puzzle, Shield, User } from "lucide-react";
 import { FastLink } from "@/components/fast-link";
 import DeleteAccountForm from "@/components/settings/delete-account-form";
 import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
@@ -18,7 +19,6 @@ import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-import { ArrowLeft, Brain, Monitor, Puzzle, Shield, User } from "lucide-react";
 
 export default async function SettingsPage() {
   const translations = await getTranslations();

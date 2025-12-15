@@ -1,10 +1,10 @@
-import { standaloneTrpc } from "@/lib/trpc/client";
-import type { CustomUIMessage } from "@/types/chat";
 import type { FileUIPart, TextUIPart } from "ai";
 import { type ClassValue, clsx } from "clsx";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import { twMerge } from "tailwind-merge";
+import { standaloneTrpc } from "@/lib/trpc/client";
+import type { CustomUIMessage } from "@/types/chat";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

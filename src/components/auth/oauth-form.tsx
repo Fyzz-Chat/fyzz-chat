@@ -1,12 +1,12 @@
 "use client";
 
+import type { FormEvent } from "react";
 import OAuthButton from "@/components/auth/oauth-button";
 import { signIn } from "@/lib/auth-client";
 import publicConf from "@/lib/public-config";
-import type { FormEvent } from "react";
 
 export default function OAuthForm({ provider }: { provider: string }) {
-  let config: { title: string } = { title: "" };
+  const config: { title: string } = { title: "" };
 
   if (provider === "google") {
     config.title = "Google";

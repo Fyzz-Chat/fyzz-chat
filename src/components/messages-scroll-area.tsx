@@ -1,5 +1,7 @@
 "use client";
 
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { KeyHandler } from "@/components/key-handler";
 import { ScrollToBottomButton } from "@/components/scroll-to-bottom-button";
@@ -7,8 +9,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessages } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 
 export default function MessagesScrollArea({
   children,

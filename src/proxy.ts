@@ -1,8 +1,8 @@
-import { locales } from "@/lib/backend/locale/dictionaries";
-import type { Locale } from "@/types/locale";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { type NextRequest, NextResponse } from "next/server";
+import { locales } from "@/lib/backend/locale/dictionaries";
+import type { Locale } from "@/types/locale";
 
 const defaultLocale = "en";
 

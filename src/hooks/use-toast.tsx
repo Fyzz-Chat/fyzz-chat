@@ -1,8 +1,8 @@
 "use client";
 
-import type { FormState } from "@/lib/utils";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import type { FormState } from "@/lib/utils";
 
 const useToast = (
   state: FormState,

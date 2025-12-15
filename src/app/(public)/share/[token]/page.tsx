@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+import type { Metadata, ResolvedMetadata, ResolvingMetadata } from "next";
+import { notFound } from "next/navigation";
 import { MessageContent } from "@/components/message-content";
 import { ScrollToBottom } from "@/components/share/scroll-to-bottom";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -5,9 +8,6 @@ import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
-import jwt from "jsonwebtoken";
-import type { Metadata, ResolvedMetadata, ResolvingMetadata } from "next";
-import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ token: string }>;
@@ -46,7 +46,9 @@ export async function generateMetadata(
 
 export default async function SharePage({
   params,
-}: { params: Promise<{ token: string }> }) {
+}: {
+  params: Promise<{ token: string }>;
+}) {
   const { token } = await params;
 
   const tokenData = jwt.verify(token, conf.jwtSecret) as { messageId: string };

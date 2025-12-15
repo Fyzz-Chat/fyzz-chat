@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { use, useMemo, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,16 +11,8 @@ import { setUserPassword } from "@/lib/actions/users";
 import { changePassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { type UpdatePasswordFormData, updatePasswordSchema } from "@/types/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useMemo, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
-export default function PasswordForm({
-  hasPassword,
-}: {
-  hasPassword?: boolean;
-}) {
+export default function PasswordForm({ hasPassword }: { hasPassword?: boolean }) {
   const [isTransitionPending, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);

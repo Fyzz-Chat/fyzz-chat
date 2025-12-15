@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { AlertCircle, Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import React, { memo, use, useEffect, useState } from "react";
 import { HoverPopover } from "@/components/hover-popover";
 import { KeyHandler } from "@/components/key-handler";
 import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
@@ -15,10 +19,6 @@ import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import type { Status } from "@/types/status";
-import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
-import { usePathname } from "next/navigation";
-import React, { memo, use, useEffect, useState } from "react";
 import {
   Command,
   CommandEmpty,

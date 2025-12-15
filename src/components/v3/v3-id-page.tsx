@@ -1,14 +1,10 @@
+import { useParams } from "react-router-dom";
 import ShareConversationButton from "@/components/chat/share-conversation-button";
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
-import { useParams } from "react-router-dom";
 
-export default function V3IdPage({
-  jwtConfigured,
-}: {
-  jwtConfigured: boolean;
-}) {
+export default function V3IdPage({ jwtConfigured }: { jwtConfigured: boolean }) {
   const { id } = useParams();
 
   return (

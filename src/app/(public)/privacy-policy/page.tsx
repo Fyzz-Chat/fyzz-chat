@@ -1,5 +1,5 @@
-import { canonicalUrl, openGraph } from "@/lib/metadata";
 import type { Metadata } from "next";
+import { canonicalUrl, openGraph } from "@/lib/metadata";
 
 const path = "/privacy-policy";
 const title = "Privacy Policy | Fyzz.chat";

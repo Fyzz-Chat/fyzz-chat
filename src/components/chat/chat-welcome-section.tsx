@@ -1,10 +1,10 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { use, useEffect, useState } from "react";
 import ExampleButton from "@/components/chat/example-button";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useModelStore } from "@/stores/model-store";
-import type { ReactNode } from "react";
-import { use, useEffect, useState } from "react";
 import IconSpy from "../icons/icon-spy";
 
 function getRandomWelcomeMessage(messages: string[]) {
@@ -12,11 +12,7 @@ function getRandomWelcomeMessage(messages: string[]) {
   return messages[randomIndex];
 }
 
-export default function ChatWelcomeSection({
-  children,
-}: {
-  children?: ReactNode;
-}) {
+export default function ChatWelcomeSection({ children }: { children?: ReactNode }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const temporaryChat = useModelStore((state) => state.temporaryChat);

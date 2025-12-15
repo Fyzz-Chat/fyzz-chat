@@ -1,7 +1,7 @@
 "use client";
 
+import { createContext, type ReactNode, useContext } from "react";
 import type { Translations } from "@/types/locale";
-import { type ReactNode, createContext, useContext } from "react";
 
 interface TranslationsContextType {
   translationsPromise: Promise<Translations>;

@@ -1,13 +1,13 @@
-import { auth } from "@/auth";
-import CatalystBadge from "@/components/footer/catalyst-badge";
-import GitHub from "@/components/icons/github";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 import { Suspense } from "react";
+import { auth } from "@/auth";
+import CatalystBadge from "@/components/footer/catalyst-badge";
+import GitHub from "@/components/icons/github";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 async function HeaderItems() {
   const session = await auth.api.getSession({

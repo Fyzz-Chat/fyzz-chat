@@ -1,3 +1,4 @@
+import { Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -5,7 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { getNotifications } from "@/lib/dao/notifications";
 import type { Notification } from "@/lib/prisma/generated/client";
-import { Bell } from "lucide-react";
 import MarkAllAsReadButton from "./mark-all-as-read-button";
 import { NotificationItem } from "./notification-item";
 

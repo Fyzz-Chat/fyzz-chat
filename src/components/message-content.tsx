@@ -1,8 +1,15 @@
 "use client";
 
-// xonokai, tomorrow, twilight, prism
-import { Button } from "@/components/ui/button";
-
+import type { ToolUIPart } from "ai";
+import { Check, Copy } from "lucide-react";
+import { marked } from "marked";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import {
   Source,
   Sources,
@@ -19,21 +26,14 @@ import {
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import PdfFilePart from "@/components/message/parts/pdf-file-part";
 import TextPart from "@/components/message/parts/text-part";
+// xonokai, tomorrow, twilight, prism
+import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/stores/chat-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { pdfType } from "@/types/provider";
-import type { ToolUIPart } from "ai";
-import { Check, Copy } from "lucide-react";
-import { marked } from "marked";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
-import rehypeKatex from "rehype-katex";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
 import { Reasoning, ReasoningContent, ReasoningTrigger } from "./ai-elements/reasoning";
+
 // import { Response } from "@/components/ai-elements/response";
 
 type GenerateImageToolInput = {
@@ -60,14 +60,7 @@ function parseMarkdownIntoBlocks(markdown: string): string[] {
 }
 
 const MemoizedSyntaxHighlighter = memo(
-  ({
-    language,
-    children,
-    ...props
-  }: {
-    language: string;
-    children: string;
-  }) => {
+  ({ language, children, ...props }: { language: string; children: string }) => {
     return (
       <SyntaxHighlighter
         style={tomorrow}

@@ -1,8 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
 
 export function ChatLayoutWrapper({
   children,

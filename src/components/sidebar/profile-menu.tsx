@@ -1,5 +1,7 @@
 "use client";
 
+import { Command, ExternalLink, FileText, Settings } from "lucide-react";
+import { use } from "react";
 import { FastLink } from "@/components/fast-link";
 import { SignIn } from "@/components/sidebar/signin-button";
 import { SignOut } from "@/components/sidebar/signout-button";
@@ -11,8 +13,6 @@ import {
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useHelpDialogStore } from "@/stores/help-dialog-store";
-import { Command, ExternalLink, FileText, Settings } from "lucide-react";
-import { use } from "react";
 
 export default function ProfileMenu({
   authorized,
@@ -61,6 +61,7 @@ export default function ProfileMenu({
           href="/privacy-policy"
           target="_blank"
           className="flex items-center gap-2 size-full px-2 py-1.5"
+          rel="noopener"
         >
           <FileText className="shrink-0" />
           <span className="relative">

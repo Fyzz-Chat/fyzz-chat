@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import type { Viewport } from "next";
+import type React from "react";
 import { Providers } from "@/components/providers";
 import SnowfallCanvas from "@/components/snowfall-canvas";
 import { Toaster } from "@/components/ui/sonner";
 import conf from "@/lib/config";
 import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
-import type { Viewport } from "next";
-import type React from "react";
 
 export const viewport: Viewport = {
   width: "device-width",

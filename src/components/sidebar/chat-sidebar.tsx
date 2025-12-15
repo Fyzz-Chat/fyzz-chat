@@ -1,5 +1,11 @@
 "use client";
 
+import { Loader2, MessageSquare, Trash2 } from "lucide-react";
+import type React from "react";
+import { createElement, use, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,12 +35,6 @@ import { cn, getMessageContent } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
-import { Loader2, MessageSquare, Trash2 } from "lucide-react";
-import { createElement, use, useState } from "react";
-import type React from "react";
-import { useInView } from "react-intersection-observer";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
 
 function groupConversationsByTime(conversations: PartialConversation[]) {
   const now = new Date();
@@ -174,11 +174,7 @@ export default function ChatSidebar({
   );
 }
 
-function ConversationLink({
-  chat,
-}: {
-  chat: PartialConversation;
-}) {
+function ConversationLink({ chat }: { chat: PartialConversation }) {
   const { id } = useParams();
   const currentId = id as string;
 

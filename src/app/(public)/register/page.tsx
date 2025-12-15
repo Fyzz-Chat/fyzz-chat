@@ -1,8 +1,8 @@
+import type { Metadata } from "next";
 import AuthCard from "@/components/auth/auth-card";
 import RegisterForm from "@/components/auth/register-form";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
-import type { Metadata } from "next";
 
 const path = "/register";
 const title = "Register - Fyzz.chat";

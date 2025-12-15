@@ -1,5 +1,7 @@
 "use client";
 
+import { FileText, Trash } from "lucide-react";
+import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +12,6 @@ import {
 } from "@/components/ui/tooltip";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
-import { FileText, Trash } from "lucide-react";
-import Image from "next/image";
 
 export default function FileList() {
   const files = useFileStore((state) => state.files);

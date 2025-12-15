@@ -1,6 +1,6 @@
-import type { PublicProvider } from "@/types/provider";
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
 import dynamic from "next/dynamic";
+import type { PublicProvider } from "@/types/provider";
 
 const LazyAnthropic = dynamic(() => import("@/components/icons/anthropic"));
 const LazyDeepSeek = dynamic(() => import("@/components/icons/deepseek"));

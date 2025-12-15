@@ -1,3 +1,5 @@
+import Image from "next/image";
+import type { ReactNode } from "react";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
@@ -21,8 +23,6 @@ import {
 import { FastLink } from "@/components/v3/fast-link";
 import { getVersion } from "@/lib/backend/utils";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
-import Image from "next/image";
-import type { ReactNode } from "react";
 
 export async function AppSidebar({ children }: { children: ReactNode }) {
   const user = await getUserFromSessionPublic();

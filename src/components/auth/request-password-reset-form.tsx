@@ -1,13 +1,13 @@
 "use client";
 
+import Link from "next/link";
+import { type FormEvent, use, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { requestPasswordReset } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import Link from "next/link";
-import { type FormEvent, use, useState } from "react";
-import { toast } from "sonner";
 
 export default function RequestPasswordResetForm() {
   const [isPending, setIsPending] = useState(false);

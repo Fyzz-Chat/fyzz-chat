@@ -1,8 +1,8 @@
 "use client";
 
+import { type ChangeEvent, forwardRef, type InputHTMLAttributes } from "react";
 import { Input } from "@/components/ui/input";
 import { useFileStore } from "@/stores/file-store";
-import { type ChangeEvent, type InputHTMLAttributes, forwardRef } from "react";
 
 const CameraCaptureInput = forwardRef<
   HTMLInputElement,

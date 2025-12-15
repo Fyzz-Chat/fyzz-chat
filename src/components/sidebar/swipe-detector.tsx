@@ -1,7 +1,7 @@
 "use client";
 
-import { useSidebar } from "@/components/ui/sidebar";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useSidebar } from "@/components/ui/sidebar";
 import { Sidebar } from "../ui/sidebar";
 
 export function SwipeDetector() {

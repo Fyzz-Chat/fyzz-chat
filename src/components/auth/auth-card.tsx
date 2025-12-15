@@ -1,3 +1,5 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
 import OAuthForm from "@/components/auth/oauth-form";
 import {
   Card,
@@ -8,8 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import conf from "@/lib/config";
-import Link from "next/link";
-import type { ReactNode } from "react";
 
 export default function AuthCard({
   title,

@@ -1,4 +1,13 @@
 import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
+import { useCallback } from "react";
+import {
   deleteConversation,
   saveConversation,
   saveConversationModel,
@@ -8,15 +17,6 @@ import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
-import {
-  keepPreviousData,
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
-import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
 
 export function useConversations(
@@ -100,7 +100,10 @@ export function useUpdateConversationModel() {
     mutationFn: ({
       conversationId,
       model,
-    }: { conversationId: string; model: string }) => {
+    }: {
+      conversationId: string;
+      model: string;
+    }) => {
       // Check if conversation exists in cache (indicates it was created in DB)
       const conversationExists = queryClient.getQueryData(
         trpc.conversation.queryKey({ id: conversationId })

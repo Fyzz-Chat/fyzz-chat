@@ -1,11 +1,11 @@
-import { sendResetPasswordEmail } from "@/lib/aws/ses";
-import conf from "@/lib/config";
-import { logger } from "@/lib/logger";
-import prisma from "@/lib/prisma/prisma";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { after } from "next/server";
+import { sendResetPasswordEmail } from "@/lib/aws/ses";
+import conf from "@/lib/config";
+import { logger } from "@/lib/logger";
+import prisma from "@/lib/prisma/prisma";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {

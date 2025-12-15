@@ -1,10 +1,10 @@
 import "server-only";
 
-import { auth } from "@/auth";
-import prisma from "@/lib/prisma/prisma";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { auth } from "@/auth";
+import prisma from "@/lib/prisma/prisma";
 
 const unauthenticatedRedirect = "/chat?login=true";
 

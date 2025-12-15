@@ -1,3 +1,4 @@
+import { Download, Maximize2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,13 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Download, Maximize2, X } from "lucide-react";
 
 export default function ImageFilePart({
   url,
   name = "",
   mediaType = "image/png",
-}: { url: string; name?: string; mediaType?: string }) {
+}: {
+  url: string;
+  name?: string;
+  mediaType?: string;
+}) {
   const isBase64Image = url.startsWith("data:image");
 
   if (isBase64Image) {

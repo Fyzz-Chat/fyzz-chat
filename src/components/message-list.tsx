@@ -1,16 +1,15 @@
 "use client";
 
-import { useConversation, useMessages } from "@/lib/queries/conversations";
+import { Loader2 } from "lucide-react";
 import { memo, useEffect, useMemo } from "react";
-import LastMessage from "./last-message";
-import { MessageItem } from "./message-item";
-import { LoadingDots } from "./ui/loading-dots";
-
+import { useNavigate } from "react-router-dom";
+import { useConversation, useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
-import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import LastMessage from "./last-message";
+import { MessageItem } from "./message-item";
+import { LoadingDots } from "./ui/loading-dots";
 
 const MemoizedMessageItem = memo(MessageItem);
 
@@ -27,11 +26,7 @@ function getErrorMessage(error: { message: string }) {
   return "Something went wrong.";
 }
 
-export function MessagesList({
-  id,
-}: {
-  id: string;
-}) {
+export function MessagesList({ id }: { id: string }) {
   const navigate = useNavigate();
   const status = useChatStore((state) => state.status);
   const error = useChatStore((state) => state.error);

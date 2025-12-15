@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -7,7 +8,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useEffect, useRef, useState } from "react";
 
 interface ThinkingIndicatorProps {
   reasoning: string;
