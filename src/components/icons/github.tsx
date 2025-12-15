@@ -5,6 +5,8 @@ export default function GitHub({ size = 16 }: { size?: number }) {
       height={size}
       viewBox="0 0 98 96"
       xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="GitHub logo"
     >
       <path
         fillRule="evenodd"

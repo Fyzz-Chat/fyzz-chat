@@ -13,6 +13,8 @@ export default function Perplexity({
       height={size}
       fill="currentColor"
       className={className}
+      role="img"
+      aria-label="Perplexity logo"
     >
       <g transform="matrix(1,0,0,1,0,0)">
         {" "}

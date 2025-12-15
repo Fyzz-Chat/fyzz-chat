@@ -11,6 +11,8 @@ export default function IconViewportWide({ size = 24 }: { size?: number }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-viewport-wide"
+      role="img"
+      aria-label="Viewport wide icon"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M10 12h-7l3 -3" />

@@ -116,15 +116,15 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       },
     });
   }, [
-    stop, 
-    regenerate, 
+    stop,
+    regenerate,
     setInput,
-    sendMessage, 
-    setFiles, 
-    setMessages, 
-    stableId, 
-    model, 
-    browse, 
+    sendMessage,
+    setFiles,
+    setMessages,
+    stableId,
+    model,
+    browse,
     temporaryChat,
   ]);
 
@@ -158,14 +158,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       sentRef.current = false;
     }
   }, [
-    status, 
-    input, 
-    stableId, 
-    sendMessage, 
-    files, 
-    setFiles, 
-    model, 
-    browse, 
+    status,
+    input,
+    stableId,
+    sendMessage,
+    files,
+    setFiles,
+    model,
+    browse,
     temporaryChat,
   ]);
 

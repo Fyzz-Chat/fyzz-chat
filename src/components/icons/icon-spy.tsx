@@ -11,6 +11,8 @@ export default function IconSpy({ size = 24 }: { size?: number }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-spy"
+      role="img"
+      aria-label="Spy icon"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M3 11h18" />

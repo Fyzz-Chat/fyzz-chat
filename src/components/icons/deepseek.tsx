@@ -16,6 +16,8 @@ export default function DeepSeek({
       xmlSpace="preserve"
       fill="currentColor"
       className={className}
+      role="img"
+      aria-label="DeepSeek logo"
     >
       <g transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
         <path
