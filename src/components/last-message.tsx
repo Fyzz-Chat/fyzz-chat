@@ -2,7 +2,6 @@
 
 import { useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
-import { useModelStore } from "@/stores/model-store";
 import { MessageItem } from "./message-item";
 
 export default function LastMessage({ conversationId }: { conversationId: string }) {

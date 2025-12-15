@@ -13,14 +13,14 @@ export default function ActionButton() {
   const input = useInputStore((state) => state.input);
 
   return status === "submitted" || status === "streaming" ? (
-    <Button type="submit" size="icon" className="shrink-0 size-9" onClick={() => stop()}>
+    <Button type="submit" size="icon" className="size-9 shrink-0" onClick={() => stop()}>
       <IconPlayerStop size={16} />
     </Button>
   ) : (
     <Button
       type="submit"
       size="icon"
-      className="shrink-0 size-9"
+      className="size-9 shrink-0"
       disabled={input.trim() === "" || (error && error.message === "content_filter")}
     >
       <Send size={16} />

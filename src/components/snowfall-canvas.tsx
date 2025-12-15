@@ -16,7 +16,7 @@ export default function SnowfallCanvas() {
   }
 
   return (
-    <div className="absolute inset-0 z-10 pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 z-10">
       <Snowfall snowflakeCount={60} speed={[0.5, 1]} wind={[-0.5, 0.5]} />
     </div>
   );

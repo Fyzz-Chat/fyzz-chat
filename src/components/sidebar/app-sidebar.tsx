@@ -31,17 +31,17 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
   return (
     <>
       <Sidebar className="border-none">
-        <SidebarHeader className="flex-col gap-4 py-4 pl-4 pr-4 md:pr-2">
-          <div className="flex justify-between items-center w-full gap-2">
+        <SidebarHeader className="flex-col gap-4 py-4 pr-4 pl-4 md:pr-2">
+          <div className="flex w-full items-center justify-between gap-2">
             <FastLink to="/chat" className="flex items-center justify-start gap-2">
               <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
-              <p className="text-md font-bold">Fyzz.chat</p>
+              <p className="font-bold text-md">Fyzz.chat</p>
             </FastLink>
             <a
               href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-muted-foreground mr-auto"
+              className="mr-auto text-muted-foreground text-xs"
             >
               {version}
             </a>
@@ -52,12 +52,12 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
           </div>
           <StatusNotification />
         </SidebarHeader>
-        <SidebarContent className="relative pl-2 pr-2 md:pr-0">
-          <div className="absolute top-0 left-0 right-0 h-4 bg-linear-to-b from-sidebar to-transparent pointer-events-none z-10" />
+        <SidebarContent className="relative pr-2 pl-2 md:pr-0">
+          <div className="pointer-events-none absolute top-0 right-0 left-0 z-10 h-4 bg-linear-to-b from-sidebar to-transparent" />
           {children}
-          <div className="absolute bottom-0 left-0 right-0 h-4 bg-linear-to-t from-sidebar to-transparent pointer-events-none z-10" />
+          <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-4 bg-linear-to-t from-sidebar to-transparent" />
         </SidebarContent>
-        <SidebarFooter className="pl-4 py-4 pr-4 md:pr-2">
+        <SidebarFooter className="py-4 pr-4 pl-4 md:pr-2">
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>

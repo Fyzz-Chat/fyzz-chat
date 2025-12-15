@@ -8,13 +8,13 @@ export function LoadingDots({ className }: LoadingDotsProps) {
   return (
     <div
       className={cn(
-        "flex space-x-1 bg-muted rounded-lg p-4 w-fit h-[60px] items-center justify-center",
+        "flex h-[60px] w-fit items-center justify-center space-x-1 rounded-lg bg-muted p-4",
         className
       )}
     >
-      <div className="w-1.5 h-1.5 bg-current rounded-full animate-[bounce_1s_infinite_0ms]" />
-      <div className="w-1.5 h-1.5 bg-current rounded-full animate-[bounce_1s_infinite_200ms]" />
-      <div className="w-1.5 h-1.5 bg-current rounded-full animate-[bounce_1s_infinite_400ms]" />
+      <div className="h-1.5 w-1.5 animate-[bounce_1s_infinite_0ms] rounded-full bg-current" />
+      <div className="h-1.5 w-1.5 animate-[bounce_1s_infinite_200ms] rounded-full bg-current" />
+      <div className="h-1.5 w-1.5 animate-[bounce_1s_infinite_400ms] rounded-full bg-current" />
     </div>
   );
 }

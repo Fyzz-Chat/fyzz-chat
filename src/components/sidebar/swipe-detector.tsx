@@ -1,8 +1,7 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import {  useEffect, useRef } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Sidebar } from "../ui/sidebar";
 
 export function SwipeDetector() {
   const { setOpenMobile } = useSidebar();

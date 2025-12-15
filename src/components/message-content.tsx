@@ -140,12 +140,12 @@ const CodeBlock = memo(
     }, []);
 
     return (
-      <div className="relative my-2 overflow-x-auto group/code" ref={codeRef}>
+      <div className="group/code relative my-2 overflow-x-auto" ref={codeRef}>
         <div className="relative">
           <Button
             variant="ghost"
             size="icon"
-            className={`absolute top-2 right-2 size-8 transition-opacity duration-100 z-10 ${
+            className={`absolute top-2 right-2 z-10 size-8 transition-opacity duration-100 ${
               isCopied ? "opacity-100" : "opacity-0 group-hover/code:opacity-100"
             }`}
             onClick={handleCopy}
@@ -157,7 +157,7 @@ const CodeBlock = memo(
             )}
           </Button>
           {isCopied && (
-            <div className="absolute top-3 right-12 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20">
+            <div className="absolute top-3 right-12 z-20 rounded-md border bg-background px-2 py-1 text-foreground text-xs shadow-md">
               Copied!
             </div>
           )}
@@ -167,7 +167,7 @@ const CodeBlock = memo(
             {children.replace(/\n$/, "")}
           </MemoizedSyntaxHighlighter>
         ) : (
-          <div className="bg-sidebar/90 p-4 rounded-md border text-sm! text-sidebar-foreground overflow-auto">
+          <div className="overflow-auto rounded-md border bg-sidebar/90 p-4 text-sidebar-foreground text-sm!">
             <code
               style={{
                 fontSize: "14px !important",
@@ -198,7 +198,7 @@ const MemoizedMarkdownBlock = memo(
             ) : (
               <span className="inline-block max-w-full overflow-x-auto overflow-y-hidden align-bottom">
                 <code
-                  className="bg-sidebar border text-sidebar-foreground px-1 py-0.5 rounded"
+                  className="rounded border bg-sidebar px-1 py-0.5 text-sidebar-foreground"
                   style={{ fontSize: "14px !important" }}
                   {...props}
                 >
@@ -208,25 +208,25 @@ const MemoizedMarkdownBlock = memo(
             );
           },
           p({ children }) {
-            return <p className="mb-2 last:mb-0 leading-6">{children}</p>;
+            return <p className="mb-2 leading-6 last:mb-0">{children}</p>;
           },
           ul({ children }) {
-            return <ul className="list-disc pl-6 mb-2 space-y-2">{children}</ul>;
+            return <ul className="mb-2 list-disc space-y-2 pl-6">{children}</ul>;
           },
           ol({ children }) {
-            return <ol className="list-decimal pl-6 mb-4 space-y-2">{children}</ol>;
+            return <ol className="mb-4 list-decimal space-y-2 pl-6">{children}</ol>;
           },
           li({ children }) {
             return <li className="leading-7">{children}</li>;
           },
           h1({ children }) {
-            return <h1 className="text-xl font-bold mb-2 mt-6">{children}</h1>;
+            return <h1 className="mt-6 mb-2 font-bold text-xl">{children}</h1>;
           },
           h2({ children }) {
-            return <h2 className="text-lg font-bold mb-2 mt-6">{children}</h2>;
+            return <h2 className="mt-6 mb-2 font-bold text-lg">{children}</h2>;
           },
           h3({ children }) {
-            return <h3 className="text-md font-bold mb-2 mt-6">{children}</h3>;
+            return <h3 className="mt-6 mb-2 font-bold text-md">{children}</h3>;
           },
           a({ children, href }) {
             return (
@@ -282,7 +282,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
 
   if (message.role === "user") {
     return (
-      <div className="flex flex-col gap-2 items-end w-full">
+      <div className="flex w-full flex-col items-end gap-2">
         {/* NOTE: Everything is a part in v5 */}
         {message.parts?.map((part, index) => {
           if (part.type === "file") {
@@ -318,7 +318,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
   if (message.role === "assistant") {
     let reasoningIndex = 0;
     return (
-      <div className="flex flex-col gap-4 min-h-6">
+      <div className="flex min-h-6 flex-col gap-4">
         {message.parts?.map((part, index) => {
           switch (part.type) {
             case "text": {

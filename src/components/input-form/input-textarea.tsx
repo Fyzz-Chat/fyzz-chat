@@ -80,7 +80,7 @@ export default function InputTextarea({
       onKeyDown={handleKeyDown}
       onPaste={handlePaste}
       rows={1}
-      className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 text-base sm:text-sm resize-none"
+      className="flex max-h-80 min-h-10 w-full resize-none bg-transparent text-base placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
     />
   );
 }

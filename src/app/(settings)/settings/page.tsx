@@ -43,58 +43,58 @@ export default async function SettingsPage() {
   const hasPassword = user?.accounts?.some((account) => account.password);
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-start p-4 min-w-[320px] md:max-h-[calc(100svh-1rem)] bg-background md:rounded-[20px]">
-      <ViewTransitionWrapper className="relative flex items-start pt-10 justify-center flex-1 w-full md:overflow-y-auto">
+    <div className="flex min-w-[320px] flex-1 flex-col items-center justify-start bg-background p-4 md:max-h-[calc(100svh-1rem)] md:rounded-[20px]">
+      <ViewTransitionWrapper className="relative flex w-full flex-1 items-start justify-center pt-10 md:overflow-y-auto">
         <FastLink
           href="/chat"
           className="absolute top-0 left-0 flex items-center justify-start gap-2"
         >
           <ArrowLeft size={20} />
-          <p className="text-sm text-muted-foreground">Back to chat</p>
+          <p className="text-muted-foreground text-sm">Back to chat</p>
         </FastLink>
-        <div className="flex flex-col gap-4 w-full max-w-xl mx-auto">
+        <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold">{translations.settings.title}</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="font-bold text-2xl">{translations.settings.title}</h1>
+            <p className="text-muted-foreground text-sm">
               {translations.settings.description}
             </p>
           </div>
           <Tabs defaultValue="memory" className="w-full pb-5">
             <div className="overflow-x-auto md:overflow-x-visible">
-              <TabsList className="grid grid-cols-3 w-full md:grid-cols-5 md:gap-0 px-1 h-auto">
+              <TabsList className="grid h-auto w-full grid-cols-3 px-1 md:grid-cols-5 md:gap-0">
                 <TabsTrigger
                   value="memory"
-                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                  className="flex min-w-20 items-center justify-center px-3 py-2"
                 >
-                  <Brain className="w-4 h-4 mr-2" />
+                  <Brain className="mr-2 h-4 w-4" />
                   {translations.settings.memory.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="security"
-                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                  className="flex min-w-20 items-center justify-center px-3 py-2"
                 >
-                  <Shield className="w-4 h-4 mr-2" />
+                  <Shield className="mr-2 h-4 w-4" />
                   {translations.settings.security.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="account"
-                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                  className="flex min-w-20 items-center justify-center px-3 py-2"
                 >
-                  <User className="w-4 h-4 mr-2" />
+                  <User className="mr-2 h-4 w-4" />
                   {translations.settings.account.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="display"
-                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                  className="flex min-w-20 items-center justify-center px-3 py-2"
                 >
-                  <Monitor className="w-4 h-4 mr-2" />
+                  <Monitor className="mr-2 h-4 w-4" />
                   {translations.settings.display.tabTitle}
                 </TabsTrigger>
                 <TabsTrigger
                   value="mcp"
-                  className="flex items-center justify-center min-w-20 px-3 py-2"
+                  className="flex min-w-20 items-center justify-center px-3 py-2"
                 >
-                  <Puzzle className="w-4 h-4 mr-2" />
+                  <Puzzle className="mr-2 h-4 w-4" />
                   MCP
                 </TabsTrigger>
               </TabsList>

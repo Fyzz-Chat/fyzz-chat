@@ -15,7 +15,7 @@ export function ScrollToBottomButton({
     <Button
       variant="outline"
       className={cn(
-        "text-xs px-2.5 py-1.5 h-fit rounded-full transition-transform duration-200 delay-100",
+        "h-fit rounded-full px-2.5 py-1.5 text-xs transition-transform delay-100 duration-200",
         className
       )}
       onClick={onClick}

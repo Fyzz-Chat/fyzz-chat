@@ -100,7 +100,7 @@ export default function ChatSidebar({
   });
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto no-scrollbar">
+    <div className="no-scrollbar flex flex-1 flex-col overflow-auto">
       {groupedConversations.today.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
@@ -154,9 +154,9 @@ export default function ChatSidebar({
         <div className="h-4 w-full pb-4">
           <div className="flex items-center justify-center p-2">
             <div className="flex gap-1">
-              <div className="size-2 rounded-full bg-muted animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="size-2 rounded-full bg-muted animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="size-2 rounded-full bg-muted animate-bounce"></div>
+              <div className="size-2 animate-bounce rounded-full bg-muted [animation-delay:-0.3s]"></div>
+              <div className="size-2 animate-bounce rounded-full bg-muted [animation-delay:-0.15s]"></div>
+              <div className="size-2 animate-bounce rounded-full bg-muted"></div>
             </div>
           </div>
         </div>
@@ -235,13 +235,13 @@ function ConversationLink({ chat }: { chat: PartialConversation }) {
           ) : (
             <MessageSquare size={16} />
           )}
-          <span className="inline-block whitespace-nowrap truncate">{chat.title}</span>
-          <div className="hidden group-hover/chat:inline-flex size-5" />
+          <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
+          <div className="hidden size-5 group-hover/chat:inline-flex" />
         </div>
         {chat?.messages?.length > 0 && (
           <p
             className={cn(
-              "text-xs text-muted-foreground truncate w-full",
+              "w-full truncate text-muted-foreground text-xs",
               currentId === chat.id && "text-accent-foreground"
             )}
           >
@@ -254,7 +254,7 @@ function ConversationLink({ chat }: { chat: PartialConversation }) {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 right-3 hidden group-hover/chat:inline-flex items-center justify-center p-2 size-5 hover:bg-transparent z-10"
+            className="absolute top-3 right-3 z-10 hidden size-5 items-center justify-center p-2 hover:bg-transparent group-hover/chat:inline-flex"
           >
             <Trash2
               size={16}
@@ -280,9 +280,7 @@ function ConversationLink({ chat }: { chat: PartialConversation }) {
               className="w-20"
             >
               {isDeleting ? (
-                <>
-                  <Loader2 size={16} className="animate-spin mr-2" />
-                </>
+                <Loader2 size={16} className="mr-2 animate-spin" />
               ) : (
                 "Delete"
               )}

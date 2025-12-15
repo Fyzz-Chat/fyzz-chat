@@ -49,13 +49,13 @@ export default function RequestPasswordResetForm() {
           autoFocus
         />
       </div>
-      <Button type="submit" className="w-full mt-2" disabled={isPending}>
+      <Button type="submit" className="mt-2 w-full" disabled={isPending}>
         {translations.requestPasswordReset.submit}
       </Button>
       <div className="text-center">
         <Link
           href="/login"
-          className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          className="text-muted-foreground text-sm transition-colors hover:text-primary"
         >
           {translations.requestPasswordReset.backToLogin}
         </Link>

@@ -60,23 +60,23 @@ export function MessagesList({ id }: { id: string }) {
     return messages?.messages?.map((message: any) => (
       <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
-  }, [messages?.messages]);
+  }, [messages?.messages, id]);
 
   if (isMessagesLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center h-[calc(100svh-170px)] md:h-[calc(100svh-198px)]">
+      <div className="flex h-[calc(100svh-170px)] flex-1 items-center justify-center md:h-[calc(100svh-198px)]">
         <Loader2 size={40} className="animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 sm:px-8 pt-8">
+    <div className="flex flex-col gap-4 px-4 pt-8 sm:px-8">
       {memoizedConversationMessages}
       <LastMessage conversationId={id} />
       {error && (
         <div className="flex flex-col gap-1">
-          <div className="text-destructive p-4 border border-destructive rounded-lg">
+          <div className="rounded-lg border border-destructive p-4 text-destructive">
             <p>{getErrorMessage(error)}</p>
           </div>
           <span className="h-8" />

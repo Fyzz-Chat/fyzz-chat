@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon, InfinityIcon, Share } from "lucide-react";
+import { InfinityIcon, Share } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ export default function ShareConversationButton({
               key={button.label}
               variant="ghost"
               size="sm"
-              className="h-8 px-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+              className="h-8 px-3 font-medium text-sm hover:bg-accent hover:text-accent-foreground"
               onClick={() => handleShareConversationUntilLatestMessage(button.label)}
             >
               {button.label}
@@ -72,7 +72,7 @@ export default function ShareConversationButton({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+            className="h-8 px-3 font-medium text-sm hover:bg-accent hover:text-accent-foreground"
             onClick={() => handleShareConversationUntilLatestMessage("INFINITY")}
           >
             <InfinityIcon size={16} />

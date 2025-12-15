@@ -56,7 +56,7 @@ export function SearchField() {
       />
       <div
         className={cn(
-          "hidden md:flex items-center justify-center absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none rounded-[4px] bg-muted border",
+          "-translate-y-1/2 pointer-events-none absolute top-1/2 right-2.5 hidden items-center justify-center rounded-[4px] border bg-muted text-muted-foreground md:flex",
           isMac === undefined && "opacity-0"
         )}
       >

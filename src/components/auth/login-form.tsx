@@ -84,7 +84,7 @@ export default function LoginForm() {
           <Label htmlFor="password">{translations.login.password}</Label>
           <Link
             href="/reset-password/request"
-            className="text-xs text-primary hover:underline underline-offset-4"
+            className="text-primary text-xs underline-offset-4 hover:underline"
           >
             {translations.login.forgotPassword}
           </Link>

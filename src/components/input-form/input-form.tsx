@@ -134,14 +134,14 @@ export default function InputForm({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex-none pt-1 sm:px-4 sm:pb-4 w-full bg-background rounded-b-[20px]",
+        "w-full flex-none rounded-b-[20px] bg-background pt-1 sm:px-4 sm:pb-4",
         className
       )}
     >
       <form
         onSubmit={handleSendMessage}
         className={cn(
-          "flex flex-col items-end border rounded-t-xl sm:rounded-b-xl p-4 bg-card transition-colors duration-200 focus-within:border-primary",
+          "flex flex-col items-end rounded-t-xl border bg-card p-4 transition-colors duration-200 focus-within:border-primary sm:rounded-b-xl",
           temporaryChat && "dark:bg-black"
         )}
       >
@@ -149,8 +149,8 @@ export default function InputForm({ className }: { className?: string }) {
         <InputTextarea handleSendMessage={handleSendMessage} />
         <CameraCaptureInput ref={cameraInputRef} />
         <FileUploadInput ref={fileInputRef} />
-        <div className="flex items-center w-full gap-2">
-          <div className="flex items-center gap-2 mr-auto">
+        <div className="flex w-full items-center gap-2">
+          <div className="mr-auto flex items-center gap-2">
             <ModelMenu />
             <SearchMenu />
           </div>

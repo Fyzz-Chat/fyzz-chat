@@ -68,7 +68,7 @@ export default function PasswordResetForm({ token }: { token: string }) {
           required
         />
       </div>
-      <Button type="submit" className="w-full mt-2" disabled={isPending}>
+      <Button type="submit" className="mt-2 w-full" disabled={isPending}>
         {translations.resetPassword.submit}
       </Button>
     </form>

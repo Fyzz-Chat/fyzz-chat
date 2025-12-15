@@ -108,16 +108,16 @@ export default function RegisterForm() {
         )}
       </Label>
       <TurnstileComponent turnstileRef={turnstileRef} setValue={setTurnstileValue} />
-      <div className="text-xs text-muted-foreground">
+      <div className="text-muted-foreground text-xs">
         {translations.register.privacyPolicy.text}{" "}
         <a
           href="/privacy-policy"
           target="_blank"
-          className="text-primary hover:underline inline-flex items-center relative"
+          className="relative inline-flex items-center text-primary hover:underline"
           rel="noopener"
         >
           <span>{translations.register.privacyPolicy.link}</span>
-          <ExternalLink size={10} className="ml-1 relative -top-px" />
+          <ExternalLink size={10} className="-top-px relative ml-1" />
         </a>
       </div>
       <PendingSubmitButton isPending={isLoading} text={translations.register.signUp} />

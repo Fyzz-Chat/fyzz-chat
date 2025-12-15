@@ -45,7 +45,7 @@ export function AnimatedTitle({ text, className, delay = 50 }: AnimatedTitleProp
   }, [currentIndex, text, delay]);
 
   return (
-    <span className={cn("inline-block whitespace-nowrap truncate", className)}>
+    <span className={cn("inline-block truncate whitespace-nowrap", className)}>
       {displayedText}
       {currentIndex < text.length && <span className="animate-pulse">▋</span>}
     </span>

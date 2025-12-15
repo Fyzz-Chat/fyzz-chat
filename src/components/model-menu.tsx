@@ -88,16 +88,16 @@ function ModelMenu() {
             <Button
               variant="secondary"
               size="sm"
-              className="md:flex items-center gap-2"
+              className="items-center gap-2 md:flex"
               disabled={!model}
             >
               {model?.name ? (
                 <span>{model?.name}</span>
               ) : (
-                <div className="flex space-x-1 justify-center items-center">
-                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce"></div>
+                <div className="flex items-center justify-center space-x-1">
+                  <div className="size-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
+                  <div className="size-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
+                  <div className="size-1 animate-bounce rounded-full bg-muted-foreground"></div>
                 </div>
               )}
               <ChevronDown size={16} />
@@ -114,14 +114,14 @@ function ModelMenu() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1 z-10 size-7"
+                className="absolute top-1 right-1 z-10 size-7"
                 onClick={() => setIsEnlarged(!isEnlarged)}
               >
                 {isEnlarged ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               </Button>
               <div
                 className={cn(
-                  "transition-all duration-300 ease-out overflow-hidden",
+                  "overflow-hidden transition-all duration-300 ease-out",
                   isEnlarged ? "h-[600px]" : "h-[400px]"
                 )}
               >
@@ -236,7 +236,7 @@ function StatusList({
                       <TooltipTrigger asChild>
                         <AlertCircle
                           size={18}
-                          className="ml-auto mr-0.5 text-destructive"
+                          className="mr-0.5 ml-auto text-destructive"
                         />
                       </TooltipTrigger>
                       <TooltipContent>
@@ -250,7 +250,7 @@ function StatusList({
             className={cn(
               "transition-all duration-300 ease-out",
               isEnlarged &&
-                "**:[[cmdk-group-items]]:grid **:[[cmdk-group-items]]:grid-cols-3 **:[[cmdk-group-items]]:gap-2 p-2"
+                "p-2 **:[[cmdk-group-items]]:grid **:[[cmdk-group-items]]:grid-cols-3 **:[[cmdk-group-items]]:gap-2"
             )}
           >
             {provider.models.map((model: PublicModel) => (
@@ -262,10 +262,10 @@ function StatusList({
                   setOpen(false);
                 }}
                 className={cn(
-                  "group relative flex justify-between transition-all duration-300 ease-out border",
+                  "group relative flex justify-between border transition-all duration-300 ease-out",
                   isEnlarged
-                    ? "py-3 px-3 flex-col items-center gap-1 h-[160px] border-border"
-                    : "pl-6 border-none",
+                    ? "h-[160px] flex-col items-center gap-1 border-border px-3 py-3"
+                    : "border-none pl-6",
                   model.id === selectedModel?.id ? "border-primary" : "border-transparent"
                 )}
               >
@@ -281,7 +281,7 @@ function StatusList({
                 <div
                   className={cn(
                     "hidden",
-                    isEnlarged && "grid place-items-center size-full"
+                    isEnlarged && "grid size-full place-items-center"
                   )}
                 >
                   {React.createElement(

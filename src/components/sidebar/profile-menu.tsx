@@ -36,7 +36,7 @@ export default function ProfileMenu({
           e.preventDefault();
           setHelpOpen(true);
         }}
-        className="px-2 py-1.5 h-10 cursor-pointer"
+        className="h-10 cursor-pointer px-2 py-1.5"
       >
         <Command className="shrink-0" />
         <span>{translations.sidebar.menu.help}</span>
@@ -44,10 +44,10 @@ export default function ProfileMenu({
       </DropdownMenuItem>
       {authorized && (
         <>
-          <DropdownMenuItem className="p-0 h-10 cursor-pointer" asChild>
+          <DropdownMenuItem className="h-10 cursor-pointer p-0" asChild>
             <FastLink
               href="/settings"
-              className="flex items-center gap-2 size-full px-2 py-1.5"
+              className="flex size-full items-center gap-2 px-2 py-1.5"
             >
               <Settings className="shrink-0" />
               <span>{translations.sidebar.menu.settings}</span>
@@ -56,17 +56,17 @@ export default function ProfileMenu({
           <DropdownMenuSeparator />
         </>
       )}
-      <DropdownMenuItem className="p-0 h-10">
+      <DropdownMenuItem className="h-10 p-0">
         <a
           href="/privacy-policy"
           target="_blank"
-          className="flex items-center gap-2 size-full px-2 py-1.5"
+          className="flex size-full items-center gap-2 px-2 py-1.5"
           rel="noopener"
         >
           <FileText className="shrink-0" />
           <span className="relative">
             {translations.sidebar.menu.privacyPolicy}
-            <ExternalLink className="absolute top-0 -right-4 w-3! h-3!" />
+            <ExternalLink className="-right-4 absolute top-0 h-3! w-3!" />
           </span>
         </a>
       </DropdownMenuItem>

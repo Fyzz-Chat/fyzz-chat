@@ -14,7 +14,7 @@ export default function OAuthButton({
   return (
     <Button
       type="submit"
-      className="relative flex items-center justify-center bg-white text-black hover:bg-gray-100 gap-3 w-full"
+      className="relative flex w-full items-center justify-center gap-3 bg-white text-black hover:bg-gray-100"
       onClick={() => {
         localStorage.setItem("fyzz-auth-method", provider);
       }}

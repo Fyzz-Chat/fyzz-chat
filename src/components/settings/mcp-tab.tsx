@@ -110,7 +110,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
       <CardContent>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 w-full items-start"
+          className="flex w-full flex-col items-start gap-4"
         >
           <div className="flex w-full flex-col gap-4">
             {servers.map((server, index) => (
@@ -138,9 +138,9 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
                   />
                 </div>
                 <div className="flex items-end gap-2">
-                  <div className="flex flex-col gap-1 h-full">
+                  <div className="flex h-full flex-col gap-1">
                     <Label htmlFor={`server-enabled-${index}`}>Enabled</Label>
-                    <div className="flex items-center justify-center flex-1">
+                    <div className="flex flex-1 items-center justify-center">
                       <Switch
                         id={`server-enabled-${index}`}
                         checked={server.enabled}
@@ -171,7 +171,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
               </Button>
             </div>
           </div>
-          <Button type="submit" className="px-5 self-end">
+          <Button type="submit" className="self-end px-5">
             {translations.settings.mcp.saveButton}
           </Button>
         </form>

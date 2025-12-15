@@ -54,7 +54,7 @@ export default function RootLayout({
       <body
         className={cn(
           openSans.className,
-          "flex flex-col min-h-svh min-w-80 justify-center md:overscroll-none"
+          "flex min-h-svh min-w-80 flex-col justify-center md:overscroll-none"
         )}
       >
         <Providers>

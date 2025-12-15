@@ -5,7 +5,6 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useAddMessage } from "@/lib/queries/conversations";
-import { getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
@@ -117,15 +116,15 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       },
     });
   }, [
-    stop,
-    regenerate,
+    stop, 
+    regenerate, 
     setInput,
-    sendMessage,
-    setFiles,
-    setMessages,
-    stableId,
-    model,
-    browse,
+    sendMessage, 
+    setFiles, 
+    setMessages, 
+    stableId, 
+    model, 
+    browse, 
     temporaryChat,
   ]);
 
@@ -159,14 +158,14 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       sentRef.current = false;
     }
   }, [
-    status,
-    input,
-    stableId,
-    sendMessage,
-    files,
-    setFiles,
-    model,
-    browse,
+    status, 
+    input, 
+    stableId, 
+    sendMessage, 
+    files, 
+    setFiles, 
+    model, 
+    browse, 
     temporaryChat,
   ]);
 

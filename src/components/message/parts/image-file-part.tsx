@@ -34,16 +34,16 @@ export default function ImageFilePart({
             <img
               src={url}
               alt={name}
-              className="w-full h-auto object-contain group-hover/image:brightness-50 transition-all duration-200"
+              className="h-auto w-full object-contain transition-all duration-200 group-hover/image:brightness-50"
             />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-200">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover/image:opacity-100">
               <Maximize2 className="size-5 text-white" />
             </div>
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-fit max-w-[95vw] p-0 overflow-hidden bg-background rounded-lg gap-0 [&>button]:hidden">
-        <DialogHeader className="flex flex-row items-center justify-end h-12 px-4 gap-2 space-y-0">
+      <DialogContent className="w-fit max-w-[95vw] gap-0 overflow-hidden rounded-lg bg-background p-0 [&>button]:hidden">
+        <DialogHeader className="flex h-12 flex-row items-center justify-end gap-2 space-y-0 px-4">
           <DialogTitle className="sr-only">{name}</DialogTitle>
           <DialogDescription className="sr-only">Image preview</DialogDescription>
           <Button
@@ -64,8 +64,8 @@ export default function ImageFilePart({
           <img src={url} alt={name} className="max-h-[75vh] object-contain" />
         </div>
         {name && (
-          <DialogFooter className="flex flex-row items-center justify-between h-24 p-4 gap-4">
-            <p className="text-white text-sm font-medium text-pretty truncate">{name}</p>
+          <DialogFooter className="flex h-24 flex-row items-center justify-between gap-4 p-4">
+            <p className="truncate text-pretty font-medium text-sm text-white">{name}</p>
           </DialogFooter>
         )}
       </DialogContent>

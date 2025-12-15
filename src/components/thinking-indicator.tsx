@@ -45,7 +45,7 @@ export function ThinkingIndicator({ reasoning }: ThinkingIndicatorProps) {
   return (
     <Sheet>
       <SheetTrigger>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-muted-foreground text-sm">
           {isReasoning ? "Reasoning..." : "Reasoning finished"}
         </span>
       </SheetTrigger>
@@ -56,7 +56,7 @@ export function ThinkingIndicator({ reasoning }: ThinkingIndicatorProps) {
             Steps taken to generate the response
           </SheetDescription>
         </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-4rem)] mt-4">
+        <ScrollArea className="mt-4 h-[calc(100vh-4rem)]">
           <div className="max-w-none text-muted-foreground text-sm">{reasoning}</div>
         </ScrollArea>
       </SheetContent>

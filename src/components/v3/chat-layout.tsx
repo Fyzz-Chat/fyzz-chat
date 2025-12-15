@@ -14,11 +14,11 @@ export default function ChatLayout() {
       <EscapeHandler />
       <HelpDialog />
       <ModelStoreInitializer />
-      <div className="relative flex flex-1 flex-col pt-14 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
-        <div className="w-full h-px border-b" />
+      <div className="relative flex max-h-svh min-w-[320px] flex-1 flex-col bg-background pt-14 md:rounded-[20px]">
+        <div className="h-px w-full border-b" />
         <Outlet />
-        <div className="absolute max-w-5xl mx-auto bottom-0 left-0 right-0">
-          <div className="relative h-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
+        <div className="absolute right-0 bottom-0 left-0 mx-auto max-w-5xl">
+          <div className="pointer-events-none relative z-10 h-6 bg-linear-to-t from-background to-transparent" />
           <ChatLayoutWrapper>
             <InputForm />
           </ChatLayoutWrapper>

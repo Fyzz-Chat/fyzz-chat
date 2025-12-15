@@ -18,7 +18,7 @@ export default function V3IdPage({ jwtConfigured }: { jwtConfigured: boolean }) 
         />
       )}
       <MessagesScrollArea className="relative h-[calc(100svh-170px)] md:h-[calc(100svh-198px)]">
-        <div className="absolute top-0 left-0 right-0 h-6 bg-linear-to-b from-background to-transparent pointer-events-none z-10" />
+        <div className="pointer-events-none absolute top-0 right-0 left-0 z-10 h-6 bg-linear-to-b from-background to-transparent" />
         <MessagesList id={id as string} />
       </MessagesScrollArea>
     </ViewTransitionWrapper>

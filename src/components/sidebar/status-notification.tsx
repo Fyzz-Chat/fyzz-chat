@@ -21,7 +21,7 @@ export default function StatusNotification() {
 
   return (
     !status.all && (
-      <Card className="bg-destructive/10 border-destructive">
+      <Card className="border-destructive bg-destructive/10">
         <CardHeader>
           <CardTitle>Warning</CardTitle>
           <CardDescription>Some services are down.</CardDescription>

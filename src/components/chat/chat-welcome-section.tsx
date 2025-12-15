@@ -24,16 +24,16 @@ export default function ChatWelcomeSection({ children }: { children?: ReactNode 
 
   if (temporaryChat) {
     return (
-      <div className="flex items-start mx-auto flex-col gap-4 py-6 px-6 lg:px-14 bg-muted/30 border border-muted rounded-lg w-fit">
-        <div className="shrink-0 text-muted-foreground gap-2 flex flex-col justify-center items-center w-full ">
+      <div className="mx-auto flex w-fit flex-col items-start gap-4 rounded-lg border border-muted bg-muted/30 px-6 py-6 lg:px-14">
+        <div className="flex w-full shrink-0 flex-col items-center justify-center gap-2 text-muted-foreground">
           <IconSpy size={50} />
-          <h3 className="text-3xl font-bold text-muted-foreground mb-5">
+          <h3 className="mb-5 font-bold text-3xl text-muted-foreground">
             {translations.home.incognito.title}
           </h3>
         </div>
         <div className="flex flex-col gap-2">
           <p>{translations.home.incognito.intro}</p>
-          <ul className="text-sm text-muted-foreground/80 space-y-3">
+          <ul className="space-y-3 text-muted-foreground/80 text-sm">
             {translations.home.incognito.list.map((item) => (
               <li key={item}>• {item}</li>
             ))}
@@ -45,13 +45,13 @@ export default function ChatWelcomeSection({ children }: { children?: ReactNode 
 
   return (
     <>
-      <h1 className="text-4xl font-bold">{message}</h1>
+      <h1 className="font-bold text-4xl">{message}</h1>
       {children}
       <ul className="flex flex-col">
         {translations.home.welcome.examples.map((example) => (
           <li
             key={example}
-            className="border-b py-1.5 last:border-b-0 text-muted-foreground"
+            className="border-b py-1.5 text-muted-foreground last:border-b-0"
           >
             <ExampleButton example={example} />
           </li>

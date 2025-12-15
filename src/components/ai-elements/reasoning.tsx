@@ -127,10 +127,10 @@ export const ReasoningTrigger = memo(
                   />
                   <Cog
                     size={16}
-                    className="ml-2 -mt-1 absolute animate-[spin_2s_linear_infinite]"
+                    className="-mt-1 absolute ml-2 animate-[spin_2s_linear_infinite]"
                   />
                 </div>
-                <p className="text-primary animate-pulse drop-shadow-[0_0_3px_var(--ring)]">
+                <p className="animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
                   Thinking...
                 </p>
               </div>
@@ -180,13 +180,13 @@ export const ReasoningContent = memo(
         )}
         {...props}
       >
-        <div className="relative h-6 -mb-6 bg-linear-to-b from-background to-transparent pointer-events-none z-10" />
+        <div className="-mb-6 pointer-events-none relative z-10 h-6 bg-linear-to-b from-background to-transparent" />
         <ScrollArea viewportRef={viewportRef}>
           <div className="max-h-56">
             <Response className="grid gap-2 py-3">{children}</Response>
           </div>
         </ScrollArea>
-        <div className="relative h-6 -mt-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
+        <div className="-mt-6 pointer-events-none relative z-10 h-6 bg-linear-to-t from-background to-transparent" />
       </CollapsibleContent>
     );
   }

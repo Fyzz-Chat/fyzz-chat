@@ -49,14 +49,14 @@ export default function DeleteAccountForm() {
   useToast(state, successCallback);
 
   return (
-    <div className="flex flex-col gap-2 p-4 border border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900 rounded-lg">
-      <h4 className="text-lg font-semibold">
+    <div className="flex flex-col gap-2 rounded-lg border border-red-300 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/20">
+      <h4 className="font-semibold text-lg">
         {translations.settings.account.deleteCard.title}
       </h4>
       <p className="text-sm">{translations.settings.account.deleteCard.description}</p>
       <AlertDialog open={open} onOpenChange={handleOpenChange}>
         <AlertDialogTrigger asChild>
-          <Button type="button" variant="destructive" className="w-fit mt-2 self-end">
+          <Button type="button" variant="destructive" className="mt-2 w-fit self-end">
             {translations.settings.account.deleteButton}
           </Button>
         </AlertDialogTrigger>
@@ -66,11 +66,11 @@ export default function DeleteAccountForm() {
               {translations.settings.account.dialog.title}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-left">
-              <span className="text-red-600 dark:text-red-400 font-medium block">
+              <span className="block font-medium text-red-600 dark:text-red-400">
                 {translations.settings.account.dialog.descriptionRed}
               </span>
               <span className="mt-4 block">
-                <span className="text-sm font-medium mb-2 block">
+                <span className="mb-2 block font-medium text-sm">
                   {translations.settings.account.dialog.description}
                 </span>
                 <Input
@@ -81,7 +81,7 @@ export default function DeleteAccountForm() {
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex flex-row gap-2 justify-end items-center">
+          <AlertDialogFooter className="flex flex-row items-center justify-end gap-2">
             <AlertDialogCancel className="mt-0">
               {translations.settings.account.dialog.cancelButton}
             </AlertDialogCancel>

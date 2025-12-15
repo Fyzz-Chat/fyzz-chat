@@ -30,10 +30,10 @@ export function TemporaryChatSwitch() {
 
   return (
     <div>
-      <div className="flex p-1 items-center gap-2 text-sm bg-popover">
+      <div className="flex items-center gap-2 bg-popover p-1 text-sm">
         <Label
           htmlFor="temporary-chat"
-          className="flex items-center gap-2 w-full px-2 py-1.5 cursor-pointer"
+          className="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5"
         >
           <MessageCircleDashed size={16} />
           <p>{translations.input.modelMenu.temporaryChat}</p>
