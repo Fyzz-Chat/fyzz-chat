@@ -162,7 +162,11 @@ function ModelMenu() {
             </DrawerDescription>
           </DrawerHeader>
           <div className="mt-4 border-t">
-            <StatusList setOpen={setModelMenuOpen} providers={providers} />
+            <StatusList
+              setOpen={setModelMenuOpen}
+              providers={providers}
+              status={status}
+            />
             <Separator />
             <TemporaryChatSwitch />
           </div>
