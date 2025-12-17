@@ -47,7 +47,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       onFinish: async ({ message }: { message: CustomUIMessage }) => {
         await addMessage.mutateAsync({
           message,
-          conversationId: stableId,
         });
       },
     }
