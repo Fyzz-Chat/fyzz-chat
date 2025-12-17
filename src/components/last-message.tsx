@@ -9,10 +9,7 @@ export default function LastMessage({ conversationId }: { conversationId: string
   const lastMessage = useChatStore((state) => state.lastMessage);
   const { data: messages, status: messagesStatus } = useMessages(conversationId);
 
-  if (
-    messagesStatus === "success" &&
-    messages?.messages[messages.messages.length - 1]?.id === lastMessage?.id
-  ) {
+  if (messagesStatus === "success" && messages?.messages.at(-1)?.id === lastMessage?.id) {
     return null;
   }
 

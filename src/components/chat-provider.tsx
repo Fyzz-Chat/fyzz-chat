@@ -55,7 +55,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Effect to sync state FROM `useChat` hook TO the Zustand store
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = messages.at(-1);
 
     useChatStore.setState({
       lastMessage,
