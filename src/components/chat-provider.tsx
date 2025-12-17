@@ -70,6 +70,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     useChatStore.setState({
       stop,
       regenerate: (messageId: string) => {
+        const { model, temporaryChat } = useModelStore.getState();
+        const { browse, stableId } = useChatStore.getState();
         regenerate({
           messageId,
           body: {
@@ -86,7 +88,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         return nextMessageId.current;
       },
       emptySubmit: () => {
-        setMessages((_old) => []);
+        const { model, temporaryChat } = useModelStore.getState();
+        const { browse, stableId } = useChatStore.getState();
+        const { setFiles } = useFileStore.getState();
+        setMessages([]);
         sendMessage(undefined, {
           body: {
             id: stableId,
@@ -112,18 +117,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         );
       },
     });
-  }, [
-    stop,
-    regenerate,
-    setInput,
-    sendMessage,
-    setFiles,
-    setMessages,
-    stableId,
-    model,
-    browse,
-    temporaryChat,
-  ]);
+  }, [stop, regenerate, setInput, sendMessage, setMessages]);
 
   // Effect to handle automatic submission on input change
   useEffect(() => {
