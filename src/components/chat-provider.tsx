@@ -1,14 +1,12 @@
 "use client";
 
 import { useAddMessage } from "@/lib/queries/conversations";
-import { getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { useChat } from "@ai-sdk/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -18,7 +16,6 @@ import { v4 as uuidv4 } from "uuid";
  * the Zustand store, which the rest of the application can subscribe to performantly.
  */
 export function ChatProvider({ children }: { children: ReactNode }) {
-  const params = useParams();
   const addMessage = useAddMessage();
 
   // Get state and actions using granular selectors to prevent infinite loops
@@ -28,20 +25,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const setFiles = useFileStore((state) => state.setFiles);
   const stableId = useChatStore((state) => state.stableId);
   const browse = useChatStore((state) => state.browse);
-  const setStableId = useChatStore((state) => state.setStableId);
   const [input, setInput] = useState("");
 
   const nextMessageId = useRef<string>(uuidv4());
   const sentRef = useRef(false);
 
-  // Set the initial stableId from URL params or generate a new one
-  useEffect(() => {
-    if (params.id) {
-      setStableId(params.id as string);
-    } else {
-      setStableId(uuidv4());
-    }
-  }, [params.id, setStableId]);
   // This is the only place `useChat` is called.
   const { messages, status, error, stop, regenerate, setMessages, sendMessage } = useChat(
     {

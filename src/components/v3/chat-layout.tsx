@@ -1,6 +1,7 @@
 import { ChatProvider } from "@/components/chat-provider";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
+import StableIdInitializer from "@/components/chat/stable-id-initializer";
 import InputForm from "@/components/input-form/input-form";
 import { EnterHandler, EscapeHandler, HomeHandler } from "@/components/key-handler";
 import { HelpDialog } from "@/components/sidebar/help-dialog";
@@ -13,6 +14,7 @@ export default function ChatLayout() {
       <EnterHandler />
       <EscapeHandler />
       <HelpDialog />
+      <StableIdInitializer />
       <ModelStoreInitializer />
       <div className="relative flex flex-1 flex-col pt-14 min-w-[320px] max-h-svh bg-background md:rounded-[20px]">
         <div className="w-full h-px border-b" />
