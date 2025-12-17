@@ -1,7 +1,7 @@
 "use client";
 
+import { useStableId } from "@/hooks/use-stable-id";
 import { useAddMessage } from "@/lib/queries/conversations";
-import { getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
@@ -26,7 +26,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
-  const stableId = useChatStore((state) => state.stableId);
+  const stableId = useStableId();
   const browse = useChatStore((state) => state.browse);
   const setStableId = useChatStore((state) => state.setStableId);
   const [input, setInput] = useState("");
@@ -36,12 +36,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Set the initial stableId from URL params or generate a new one
   useEffect(() => {
-    if (params.id) {
-      setStableId(params.id as string);
-    } else {
-      setStableId(uuidv4());
-    }
+    setStableId(params.id || uuidv4());
   }, [params.id, setStableId]);
+
   // This is the only place `useChat` is called.
   const { messages, status, error, stop, regenerate, setMessages, sendMessage } = useChat(
     {

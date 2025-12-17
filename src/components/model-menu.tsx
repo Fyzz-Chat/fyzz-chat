@@ -4,13 +4,13 @@ import { HoverPopover } from "@/components/hover-popover";
 import { KeyHandler } from "@/components/key-handler";
 import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
 import { Button } from "@/components/ui/button";
+import { useStableId } from "@/hooks/use-stable-id";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { featureIcons, getProviderIcon, providerIcons } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
-import { useChatStore } from "@/stores/chat-store";
 import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
@@ -184,7 +184,7 @@ function StatusList({
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const stableId = useChatStore((state) => state.stableId);
+  const stableId = useStableId();
 
   const selectedModel = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
