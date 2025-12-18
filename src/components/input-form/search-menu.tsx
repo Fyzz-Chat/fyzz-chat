@@ -25,7 +25,7 @@ export default function SearchMenu() {
   // Update search state when model changes
   useEffect(() => {
     setSearch(isSonar ? "web" : "none");
-  }, [isSonar, searchSupport]);
+  }, [isSonar]);
 
   function handleChange(value: string) {
     setSearch(value);

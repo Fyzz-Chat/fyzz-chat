@@ -34,6 +34,7 @@ export function SwipeDetector() {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The event listeners should only be added once on mount
   useEffect(() => {
     document.addEventListener("touchstart", handleTouchStart);
     document.addEventListener("touchmove", handleTouchMove);

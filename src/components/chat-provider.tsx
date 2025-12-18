@@ -118,7 +118,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   }, [
     stop,
     regenerate,
-    setInput,
     sendMessage,
     setFiles,
     setMessages,
@@ -167,6 +166,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     model,
     browse,
     temporaryChat,
+    setMessages,
   ]);
 
   return children;

@@ -28,7 +28,7 @@ export default function ModelStoreInitializer({
       setProviders(data);
     }
     setTemporaryChat(false);
-  }, [data]);
+  }, [data, setProviders, setTemporaryChat]);
 
   return null;
 }

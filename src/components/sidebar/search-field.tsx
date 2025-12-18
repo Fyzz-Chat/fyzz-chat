@@ -26,7 +26,7 @@ export function SearchField() {
   const { setSearchQuery } = useSearchStore();
   const isMac = useIsMac();
   const debouncedSetSearchQuery = useCallback(
-    debounce((value: string) => setSearchQuery(value), 300),
+    debounce((value: string) => setSearchQuery(value as unknown as string), 300),
     []
   );
 

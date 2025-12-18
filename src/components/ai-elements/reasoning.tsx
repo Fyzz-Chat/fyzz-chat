@@ -165,6 +165,7 @@ export const ReasoningContent = memo(
     const { isOpen, isStreaming } = useReasoning();
     const viewportRef = useRef<HTMLDivElement | null>(null);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
     useEffect(() => {
       const el = viewportRef.current;
       if (!el) return;

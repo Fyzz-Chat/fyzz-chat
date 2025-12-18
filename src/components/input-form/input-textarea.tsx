@@ -11,9 +11,9 @@ import { useModelStore } from "@/stores/model-store";
 
 export default function InputTextarea({
   handleSendMessage,
-}: {
+}: Readonly<{
   handleSendMessage: (e: KeyboardEvent<HTMLTextAreaElement>) => Promise<void>;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -65,7 +65,7 @@ export default function InputTextarea({
     if (storedInput) {
       setInput(storedInput);
     }
-  }, []);
+  }, [setInput]);
 
   return (
     <TextareaAutosize

@@ -40,11 +40,13 @@ export default function MessagesScrollArea({
   };
 
   // Scroll to bottom when the component mounts
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The effect should only run once on mount
   useEffect(() => {
     scrollToBottom();
   }, []);
 
   // Scroll to bottom when messages change (TanStack Query data) OR when streaming message updates
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
   useEffect(() => {
     if (autoScroll) {
       scrollToBottom();

@@ -24,7 +24,7 @@ const useToast = (
     if (callback) {
       callback(state);
     }
-  }, [state]);
+  }, [state, callback]);
 };
 
 export default useToast;

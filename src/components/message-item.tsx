@@ -87,6 +87,7 @@ export function MessageItem({
     }
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
   useEffect(() => {
     if (isEditing) {
       const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
