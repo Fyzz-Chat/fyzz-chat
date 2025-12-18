@@ -22,7 +22,7 @@ import { MissingKeyError } from "@/types/mcp";
 
 type ServerItem = { name: string; url: string; enabled: boolean };
 
-export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
+export function McpTab({ userMcpServers }: Readonly<{ userMcpServers?: JsonValue }>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const { handleSubmit } = useForm();
@@ -32,7 +32,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
       if (!userMcpServers) return [];
       const parsed =
         typeof userMcpServers === "string" ? JSON.parse(userMcpServers) : userMcpServers;
-      const entries = (parsed as any)?.mcpServers ?? {};
+      const entries = parsed?.mcpServers ?? {};
       return Object.keys(entries).map((key) => ({
         name: key,
         url: entries[key]?.url ?? "",

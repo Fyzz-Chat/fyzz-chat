@@ -25,12 +25,15 @@ async function checkDatabase() {
         }[]
       >(CONNECTION_QUERY);
     logger.debug("Database connections:");
-    connections.forEach((c: any) => {
+    connections.forEach((c) => {
       logger.debug(`IP: ${c.ip},\tState: ${c.state},\tCount: ${c.connection_count}`);
     });
     return { status: "PASS", message: "Connected" };
-  } catch (error: any) {
-    return { status: "FAIL", message: error.message };
+  } catch (error) {
+    return {
+      status: "FAIL",
+      message: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
@@ -61,7 +64,7 @@ export async function GET() {
       },
       { status: dbCheck.status === "PASS" ? 200 : 207 }
     );
-  } catch (error: any) {
+  } catch (error) {
     logger.error("Health check failed:", error);
 
     const endTime = performance.now();
@@ -73,7 +76,7 @@ export async function GET() {
         version: app_version,
         timestamp: new Date().toISOString(),
         responseTime: `${responseTime.toFixed(2)}ms`,
-        error: error.message,
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

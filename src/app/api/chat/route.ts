@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid model", { status: 400 });
   }
 
-  let existingConversation: any;
+  let existingConversation: { id: string; title: string; model: string } | null = null;
   let existingMessages: CustomUIMessage[] = [];
 
   if (temporaryChat) {
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       const toolsResult = await getTools(user, modelId, browse);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
-    } catch (error: any) {
+    } catch (error) {
       logger.error(error);
 
       if (error instanceof McpClientInitError) {
@@ -160,8 +160,10 @@ export async function POST(req: NextRequest) {
         reasoning.onDelta(chunk.id);
       }
     },
-    onError: async (error: any) => {
-      logger.error(error.error.message);
+    onError: async (error) => {
+      logger.error(
+        (error as { error?: { message?: string } }).error?.message ?? "Unknown error"
+      );
       await endConversation();
     },
   });
@@ -169,9 +171,9 @@ export async function POST(req: NextRequest) {
   logDuration(start, "Response time");
 
   result.consumeStream({
-    onError: async (error: any) => {
-      logger.error(error.message);
-      await endConversation();
+    onError: (error) => {
+      logger.error(error instanceof Error ? error.message : "Unknown error");
+      void endConversation();
     },
   });
 
@@ -198,7 +200,7 @@ export async function POST(req: NextRequest) {
         };
       }
     },
-    onError: (error: any) => JSON.stringify(error),
+    onError: (error) => JSON.stringify(error),
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage, isAborted }) => {
       after(async () => {
@@ -212,10 +214,10 @@ export async function POST(req: NextRequest) {
             await updateConversationTitle(id, messages);
           }
 
-          const lastMessage = responseMessage as CustomUIMessage;
-          const lastUserMessage = messages[messages.length - 2];
+          const lastMessage = responseMessage;
+          const lastUserMessage = messages.at(-2);
 
-          if (!lastUserMessage || lastUserMessage.role !== "user") {
+          if (lastUserMessage?.role !== "user") {
             logger.error({
               message: "Invalid message order detected before saving.",
               description:
@@ -234,7 +236,9 @@ export async function POST(req: NextRequest) {
             logger.debug(JSON.stringify(usage));
           }
 
-          await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
+          if (lastUserMessage) {
+            await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
+          }
 
           // const messageWithFiles = await uploadMedia(user.id, id, lastMessage);
           // File data URLs are not supported yet in Gemini Image Gen models

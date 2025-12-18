@@ -435,6 +435,9 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 />
               );
             }
+            default: {
+              return null;
+            }
           }
         })}
         {message.parts?.some((part) => part.type === "source-url") && (
@@ -456,6 +459,8 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                       />
                     </SourcesContent>
                   );
+                default:
+                  return null;
               }
             })}
           </Sources>

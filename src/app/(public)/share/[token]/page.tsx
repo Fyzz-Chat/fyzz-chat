@@ -64,6 +64,7 @@ export default async function SharePage({
       <div className="-mb-6 pointer-events-none relative z-10 h-6 bg-linear-to-b from-background to-transparent" />
       <ScrollArea className="mx-4 h-[calc(100svh-72px-62px)] px-4">
         <div className="mx-auto my-6 flex w-full max-w-5xl flex-1 flex-col gap-8">
+          {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
           {conversation.messages.map((message: any) => (
             <div
               key={message.id}

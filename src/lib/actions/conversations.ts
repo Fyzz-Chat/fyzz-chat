@@ -79,7 +79,7 @@ export async function saveConversationModel(conversationId: string, modelId: str
     });
 
     return updatedConversation;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return null;
   }
@@ -97,8 +97,12 @@ export async function deleteConversation(conversationId: string) {
 
   const attachments =
     conversation?.messages
-      .flatMap((message) => (message.files as JsonValue[])?.map((file: any) => file?.url))
-      .filter((url) => !!url) || [];
+      .flatMap((message) =>
+        (message.files as JsonValue[])?.map(
+          (file: JsonValue) => (file as { url?: string })?.url
+        )
+      )
+      .filter((url): url is string => !!url) || [];
 
   await Promise.all(
     attachments.map(async (attachment) => {

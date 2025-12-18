@@ -73,10 +73,11 @@ function groupConversationsByTime(conversations: PartialConversation[]) {
 export default function ChatSidebar({
   conversations,
   authorized,
-}: {
+}: Readonly<{
+  // biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation
   conversations: { items: any; nextCursor: string | undefined };
   authorized: boolean;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const { searchQuery } = useSearchStore();
@@ -87,7 +88,9 @@ export default function ChatSidebar({
   );
 
   const allConversations = data?.pages.flatMap((page) => page.items) || [];
-  const groupedConversations = groupConversationsByTime(allConversations);
+  const groupedConversations = groupConversationsByTime(
+    allConversations as PartialConversation[]
+  );
 
   // Setup intersection observer for infinite scroll using react-intersection-observer
   const { ref } = useInView({
@@ -174,7 +177,7 @@ export default function ChatSidebar({
   );
 }
 
-function ConversationLink({ chat }: { chat: PartialConversation }) {
+function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   const { id } = useParams();
   const currentId = id as string;
 

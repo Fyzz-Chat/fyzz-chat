@@ -187,7 +187,7 @@ export async function lockConversation(conversationId: string): Promise<boolean>
     });
 
     return true;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return false;
   }
@@ -229,7 +229,7 @@ export function mapMessages(
   messages: PartialMessage[]
 ): CustomUIMessage[] {
   const mappedMessages = messages.map((message: PartialMessage) => {
-    const { files, ...messageWithoutFiles } = message;
+    const { files: _, ...messageWithoutFiles } = message;
     const parts = safeParse(messageWithoutFiles.parts, []);
 
     return {
@@ -269,14 +269,13 @@ function filterParts(
     })
     .map((part) => {
       if (part.type === "tool-generateImage" && part.state === "output-available") {
+        const output = part.output as { url?: string };
+
         return {
           ...part,
           output: {
-            ...(part.output as any),
-            image: getFileUrlSigned(
-              `${userId}/${conversationId}`,
-              (part.output as any).url
-            ),
+            ...output,
+            image: getFileUrlSigned(`${userId}/${conversationId}`, output.url ?? ""),
           },
         };
       } else if (part.type === "file" && !part.url.startsWith("data:")) {
@@ -342,7 +341,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
  * @param fallback - The fallback value to return if parsing fails
  * @returns Parsed JSON or fallback value
  */
-function safeParse<T>(jsonString: any, fallback: T): T {
+function safeParse<T>(jsonString: unknown, fallback: T): T {
   // Handle null or undefined
   if (jsonString == null) {
     return fallback;

@@ -26,7 +26,7 @@ function getErrorMessage(error: { message: string }) {
   return "Something went wrong.";
 }
 
-export function MessagesList({ id }: { id: string }) {
+export function MessagesList({ id }: Readonly<{ id: string }>) {
   const navigate = useNavigate();
   const status = useChatStore((state) => state.status);
   const error = useChatStore((state) => state.error);
@@ -38,7 +38,7 @@ export function MessagesList({ id }: { id: string }) {
   const lastMessage = messages?.messages[messages.messages.length - 1];
   const showLoading =
     (status === "submitted" ||
-      (status == "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&
+      (status === "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&
     lastMessage?.role === "user";
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export function MessagesList({ id }: { id: string }) {
   }, [conversationStatus, conversation, navigate, setModel]);
 
   const memoizedConversationMessages = useMemo(() => {
-    return messages?.messages?.map((message: any) => (
+    return messages?.messages?.map((message) => (
       <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
   }, [messages?.messages, id]);
@@ -84,7 +84,7 @@ export function MessagesList({ id }: { id: string }) {
       )}
       {showLoading && <LoadingDots className="text-muted-foreground" />}
       <div id="messages-end" className="h-4" />
-      {files && files.length > 0 && <div className="h-[54px] w-1" />}
+      {files && files.length > 0 && <div className="h-13.5 w-1" />}
     </div>
   );
 }

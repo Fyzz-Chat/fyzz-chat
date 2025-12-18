@@ -61,7 +61,12 @@ export default function MemoryForm({
         });
       });
     }
-  }, [selectedModel, defaultModel, translations.settings.memory.defaultModel.sonner.description, translations.settings.memory.defaultModel.sonner.title]);
+  }, [
+    selectedModel,
+    defaultModel,
+    translations.settings.memory.defaultModel.sonner.description,
+    translations.settings.memory.defaultModel.sonner.title,
+  ]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -81,7 +86,13 @@ export default function MemoryForm({
         description,
       });
     });
-  }, [enabled, translations.settings.memory.sonner.disabled.description, translations.settings.memory.sonner.disabled.title, translations.settings.memory.sonner.enabled.description, translations.settings.memory.sonner.enabled.title]);
+  }, [
+    enabled,
+    translations.settings.memory.sonner.disabled.description,
+    translations.settings.memory.sonner.disabled.title,
+    translations.settings.memory.sonner.enabled.description,
+    translations.settings.memory.sonner.enabled.title,
+  ]);
 
   return (
     <div className="flex flex-col items-start gap-4">

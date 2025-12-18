@@ -42,7 +42,7 @@ export async function generateImageTool(conversationId: string): Promise<Tool> {
 
         const imageData = imageResponse.output
           .filter((output) => output.type === "image_generation_call")
-          .map((output) => (output as any).result);
+          .map((output) => (output as { result: string }).result);
 
         imageBase64 = imageData[0];
       } else {

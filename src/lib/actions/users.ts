@@ -20,7 +20,7 @@ import {
 } from "@/types/auth";
 
 export async function signInUser(
-  _prevState: any,
+  _prevState: FormState,
   formData: LoginFormData
 ): Promise<FormState> {
   const parsed = loginSchema.safeParse(formData);
@@ -57,7 +57,7 @@ export async function signInUser(
       description: "You have been successfully signed in.",
       success: true,
     };
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return {
       message: "Failed to sign in",
@@ -68,7 +68,7 @@ export async function signInUser(
 }
 
 export async function registerUser(
-  _prevState: any,
+  _prevState: FormState,
   formData: RegisterFormData
 ): Promise<FormState> {
   const parsed = registerSchema.safeParse(formData);
@@ -106,7 +106,7 @@ export async function registerUser(
       description: "You have been successfully registered.",
       success: true,
     };
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return {
       message: "Registration failed",

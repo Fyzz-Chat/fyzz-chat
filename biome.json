@@ -37,6 +37,9 @@
       },
       "nursery": {
         "useSortedClasses": "error"
+      },
+      "performance": {
+        "noImgElement": "off"
       }
     }
   },

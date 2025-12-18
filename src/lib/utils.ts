@@ -31,7 +31,7 @@ export function formatTimeAgo(date: Date) {
 
 export function debounce(func: Function, wait = 100) {
   let timeout: NodeJS.Timeout;
-  return function executedFunction(...args: any[]) {
+  return function executedFunction(...args: unknown[]) {
     const later = () => {
       clearTimeout(timeout);
       func(...args);
@@ -41,7 +41,7 @@ export function debounce(func: Function, wait = 100) {
   };
 }
 
-export function ensure(condition: any, message: string): asserts condition {
+export function ensure(condition: unknown, message: string): asserts condition {
   if (!condition) {
     throw new Error(message);
   }
@@ -87,12 +87,15 @@ export function filterMessagesUpToAnchor(
     });
 }
 
-export function isFileList(value: any): value is FileList {
+export function isFileList(value: unknown): value is FileList {
+  if (value == null || typeof value !== "object") {
+    return false;
+  }
   return (
-    value &&
-    typeof value === "object" &&
-    typeof value.length === "number" &&
-    typeof value.item === "function"
+    "length" in value &&
+    typeof (value as { length: unknown }).length === "number" &&
+    "item" in value &&
+    typeof (value as { item: unknown }).item === "function"
   );
 }
 
@@ -178,10 +181,10 @@ export function getMessageContent(message: CustomUIMessage): string {
   );
 }
 
-export function tryParseJson(data: string): [any, "json" | "text"] {
+export function tryParseJson(data: string): [unknown, "json" | "text"] {
   try {
     return [JSON.parse(data), "json"];
-  } catch (_) {
+  } catch {
     return [data, "text"];
   }
 }

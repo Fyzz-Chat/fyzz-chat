@@ -71,7 +71,7 @@ function ModelMenu() {
     if (pathname === "/chat" && !isLoading) {
       setDefaultModel(defaultModel || undefined);
     }
-  }, [pathname, defaultModel, isLoading]);
+  }, [pathname, defaultModel, isLoading, setDefaultModel]);
 
   useEffect(() => {
     if (!modelMenuOpen) {
@@ -106,7 +106,7 @@ function ModelMenu() {
           <PopoverContent
             className={cn(
               "p-0 transition-all duration-300 ease-out",
-              isEnlarged ? "w-[500px]" : "w-[300px]"
+              isEnlarged ? "w-125" : "w-75"
             )}
             align="start"
           >
@@ -122,7 +122,7 @@ function ModelMenu() {
               <div
                 className={cn(
                   "overflow-hidden transition-all duration-300 ease-out",
-                  isEnlarged ? "h-[600px]" : "h-[400px]"
+                  isEnlarged ? "h-150" : "h-100"
                 )}
               >
                 <StatusList
@@ -177,12 +177,12 @@ function StatusList({
   providers,
   isEnlarged = false,
   status,
-}: {
+}: Readonly<{
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
   isEnlarged?: boolean;
   status?: Status;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const stableId = useChatStore((state) => state.stableId);
@@ -216,7 +216,7 @@ function StatusList({
       <CommandList
         className={cn(
           "transition-all duration-300 ease-out",
-          isEnlarged ? "max-h-[600px]" : "max-h-[400px]"
+          isEnlarged ? "max-h-150" : "max-h-100"
         )}
       >
         <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
@@ -264,7 +264,7 @@ function StatusList({
                 className={cn(
                   "group relative flex justify-between border transition-all duration-300 ease-out",
                   isEnlarged
-                    ? "h-[160px] flex-col items-center gap-1 border-border px-3 py-3"
+                    ? "h-40 flex-col items-center gap-1 border-border px-3 py-3"
                     : "border-none pl-6",
                   model.id === selectedModel?.id ? "border-primary" : "border-transparent"
                 )}
@@ -291,11 +291,13 @@ function StatusList({
                 </div>
                 <div className="flex gap-0.5">
                   {model.features?.map((feature: Feature) => (
-                    <HoverPopover key={feature.name} content={feature.description}>
-                      <div
-                        className="rounded-full p-1"
-                        onClick={(e) => e.stopPropagation()} // Prevent triggering the CommandItem's onSelect
-                      >
+                    <HoverPopover
+                      key={feature.name}
+                      content={feature.description}
+                      triggerAriaLabel={feature.name}
+                      stopPropagation
+                    >
+                      <span className="rounded-full p-1">
                         {React.createElement(
                           featureIcons[feature.icon as keyof typeof featureIcons],
                           {
@@ -306,7 +308,7 @@ function StatusList({
                             ),
                           }
                         )}
-                      </div>
+                      </span>
                     </HoverPopover>
                   ))}
                 </div>

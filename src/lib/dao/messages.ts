@@ -96,7 +96,7 @@ export async function saveMessage(
   completionTokens: number
 ) {
   const userId = await getUserIdFromSession();
-  const { metadata, ...rest } = message;
+  const { metadata: _, ...rest } = message;
 
   return prisma.$transaction(async (tx) => {
     const newMessage = await tx.message.create({
