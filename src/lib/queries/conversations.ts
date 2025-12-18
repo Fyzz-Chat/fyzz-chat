@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
 import { useCallback } from "react";
+import { useStableId } from "@/hooks/use-stable-id";
 import {
   deleteConversation,
   saveConversation,
@@ -193,14 +194,13 @@ export function useDeleteConversation() {
 export function useAddMessage() {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
+  const conversationId = useStableId();
 
   return useMutation({
     mutationFn: async ({
       message,
-      conversationId,
     }: {
       message: CustomUIMessage & { model?: string };
-      conversationId: string;
     }) => {
       // Optimistically update the cache
       const optimisticMessage = {
@@ -249,7 +249,7 @@ export function useAddMessage() {
 
       return optimisticMessage;
     },
-    onError: (_, { conversationId }) => {
+    onError: (_) => {
       // Revert optimistic updates on error
       queryClient.invalidateQueries(
         trpc.conversation.queryFilter({ id: conversationId })

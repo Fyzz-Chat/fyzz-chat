@@ -116,7 +116,6 @@ export default function InputForm({ className }: { className?: string }) {
           reasoningDurations: [],
         },
       },
-      conversationId: stableId,
     });
     setInput("");
     localStorage.removeItem("fyzz-input-content");

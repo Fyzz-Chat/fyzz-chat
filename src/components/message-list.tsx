@@ -35,7 +35,7 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
   const { data: conversation, status: conversationStatus } = useConversation(id);
   const { data: messages, isLoading: isMessagesLoading } = useMessages(id);
   const newMessage = useChatStore((state) => state.lastMessage);
-  const lastMessage = messages?.messages[messages.messages.length - 1];
+  const lastMessage = messages?.messages.at(-1);
   const showLoading =
     (status === "submitted" ||
       (status === "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&

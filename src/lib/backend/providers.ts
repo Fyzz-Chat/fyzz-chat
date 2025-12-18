@@ -308,7 +308,7 @@ const providers: Provider[] = [
         id: "gpt-5.1",
         name: "GPT-5.1",
         features: [reasoning, search, coding],
-        provider: wrappedModel(openai),
+        provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: [...imageTypes, pdfType],
       },
@@ -316,9 +316,17 @@ const providers: Provider[] = [
         id: "gpt-5.1-codex",
         name: "GPT-5.1 Codex",
         features: [reasoning, coding],
-        provider: wrappedModel(openai),
+        provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: imageTypes,
+      },
+      {
+        id: "gpt-5.2",
+        name: "GPT-5.2",
+        features: [reasoning, search, coding],
+        provider: wrappedModel(openai), // TODO: Change to azure when available
+        tools: true,
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "o3-mini",
@@ -430,6 +438,14 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+      },
+      {
+        id: "gpt-5.2",
+        name: "GPT-5.2",
+        features: [reasoning, search, coding],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "o3-mini",
@@ -564,6 +580,14 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, pdfType, "video/mp4"],
+      },
+      {
+        id: "gemini-3-flash-preview",
+        name: "Gemini 3 Flash",
+        features: [reasoning, search],
+        provider: wrappedGoogle,
+        tools: true,
+        extensions: [...imageTypes, pdfType],
       },
       {
         id: "gemini-3-pro-preview",

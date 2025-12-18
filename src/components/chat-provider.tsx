@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { useStableId } from "@/hooks/use-stable-id";
 import { useAddMessage } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
@@ -25,7 +26,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
-  const stableId = useChatStore((state) => state.stableId);
+  const stableId = useStableId();
   const browse = useChatStore((state) => state.browse);
   const setStableId = useChatStore((state) => state.setStableId);
   const [input, setInput] = useState("");
@@ -35,12 +36,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Set the initial stableId from URL params or generate a new one
   useEffect(() => {
-    if (params.id) {
-      setStableId(params.id as string);
-    } else {
-      setStableId(uuidv4());
-    }
+    setStableId(params.id || uuidv4());
   }, [params.id, setStableId]);
+
   // This is the only place `useChat` is called.
   const { messages, status, error, stop, regenerate, setMessages, sendMessage } = useChat(
     {
@@ -49,7 +47,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       onFinish: async ({ message }: { message: CustomUIMessage }) => {
         await addMessage.mutateAsync({
           message,
-          conversationId: stableId,
         });
       },
     }
@@ -57,7 +54,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
   // Effect to sync state FROM `useChat` hook TO the Zustand store
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = messages.at(-1);
 
     useChatStore.setState({
       lastMessage,
@@ -73,6 +70,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     useChatStore.setState({
       stop,
       regenerate: (messageId: string) => {
+        const { model, temporaryChat } = useModelStore.getState();
+        const { browse, stableId } = useChatStore.getState();
         regenerate({
           messageId,
           body: {
@@ -89,7 +88,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         return nextMessageId.current;
       },
       emptySubmit: () => {
-        setMessages((_old) => []);
+        const { model, temporaryChat } = useModelStore.getState();
+        const { browse, stableId } = useChatStore.getState();
+        const { setFiles } = useFileStore.getState();
+        setMessages([]);
         sendMessage(undefined, {
           body: {
             id: stableId,
@@ -115,17 +117,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         );
       },
     });
-  }, [
-    stop,
-    regenerate,
-    sendMessage,
-    setFiles,
-    setMessages,
-    stableId,
-    model,
-    browse,
-    temporaryChat,
-  ]);
+  }, [stop, regenerate, sendMessage, setMessages]);
 
   // Effect to handle automatic submission on input change
   useEffect(() => {

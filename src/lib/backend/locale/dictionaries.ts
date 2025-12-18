@@ -13,7 +13,7 @@ const dictionaries = {
 
 export const getTranslations = async () => {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get("locale")?.value as Locale) || "en";
+  const _lang = (cookieStore.get("locale")?.value as Locale) || "en";
 
-  return dictionaries[lang]();
+  return dictionaries["en"]();
 };
