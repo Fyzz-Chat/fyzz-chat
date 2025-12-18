@@ -117,7 +117,7 @@ export default function RegisterForm() {
           rel="noopener"
         >
           <span>{translations.register.privacyPolicy.link}</span>
-          <ExternalLink size={10} className="-top-px relative ml-1" />
+          <ExternalLink size={10} className="relative -top-px ml-1" />
         </a>
       </div>
       <PendingSubmitButton isPending={isLoading} text={translations.register.signUp} />

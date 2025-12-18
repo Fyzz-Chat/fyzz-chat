@@ -58,7 +58,7 @@ export default function FileList() {
             type="button"
             size="icon"
             variant="ghost"
-            className="-top-3 -right-3 absolute z-10 size-6 rounded-full border bg-muted"
+            className="absolute -top-3 -right-3 z-10 size-6 rounded-full border bg-muted"
             onClick={() => {
               const fileList = Array.from(files || []);
               const newFiles = new DataTransfer();

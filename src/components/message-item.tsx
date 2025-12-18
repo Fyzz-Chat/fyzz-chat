@@ -189,7 +189,7 @@ export function MessageItem({
             </Tooltip>
           </TooltipProvider>
           {isCopied && (
-            <div className="-bottom-8 -translate-x-1/2 absolute left-1/2 z-20 transform rounded-md border bg-background px-2 py-1 text-foreground text-xs shadow-md">
+            <div className="absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 transform rounded-md border bg-background px-2 py-1 text-foreground text-xs shadow-md">
               Copied!
             </div>
           )}

@@ -61,7 +61,7 @@ export default async function SharePage({
 
   return (
     <>
-      <div className="-mb-6 pointer-events-none relative z-10 h-6 bg-linear-to-b from-background to-transparent" />
+      <div className="pointer-events-none relative z-10 -mb-6 h-6 bg-linear-to-b from-background to-transparent" />
       <ScrollArea className="mx-4 h-[calc(100svh-72px-62px)] px-4">
         <div className="mx-auto my-6 flex w-full max-w-5xl flex-1 flex-col gap-8">
           {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
@@ -81,7 +81,7 @@ export default async function SharePage({
         </div>
       </ScrollArea>
       <ScrollToBottom />
-      <div className="-mt-6 pointer-events-none relative z-10 h-6 bg-linear-to-t from-background to-transparent" />
+      <div className="pointer-events-none relative z-10 -mt-6 h-6 bg-linear-to-t from-background to-transparent" />
     </>
   );
 }
