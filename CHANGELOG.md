@@ -1,3 +1,20 @@
+# [0.7.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.6.1...v0.7.0) (2025-12-18)
+
+
+### Bug Fixes
+
+* **chat:** set title correctly for new conversations ([bef7f24](https://github.com/Fyzz-Chat/fyzz-chat/commit/bef7f247d1920f16173b970e1514d780599cf749))
+* **model-menu:** pass status to mobile menu ([784ea7a](https://github.com/Fyzz-Chat/fyzz-chat/commit/784ea7aaee223037cd4616a71021ce26d4808791))
+* **model:** set height dynamically ([ef40bf1](https://github.com/Fyzz-Chat/fyzz-chat/commit/ef40bf1e6fc91978c0b5393adf76894abf9f105e))
+* **models:** remove pdf from haiku 3 ([1ab9e0f](https://github.com/Fyzz-Chat/fyzz-chat/commit/1ab9e0f07f5bd6973df506b166052ca039334278))
+* **settings:** fix jump on navigation ([1880d45](https://github.com/Fyzz-Chat/fyzz-chat/commit/1880d459156619b62157216c4e1863e24fd7ada0))
+
+
+### Features
+
+* **models:** add gemini 3 flash ([5a07874](https://github.com/Fyzz-Chat/fyzz-chat/commit/5a07874e6393240a4184fbb1c31cbf84ac96ff2d))
+* **models:** add gpt 5.2 ([280a28d](https://github.com/Fyzz-Chat/fyzz-chat/commit/280a28d5d9f6ec149e80105d9002a390e448416d))
+
 ## [0.6.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.6.0...v0.6.1) (2025-12-14)
 
 
