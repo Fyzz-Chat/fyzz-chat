@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
+import { AlertCircle, Check, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
-import React, { memo, use, useEffect, useState } from "react";
+import React, { memo, use, useEffect } from "react";
 import { HoverPopover } from "@/components/hover-popover";
 import { KeyHandler } from "@/components/key-handler";
 import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
@@ -43,7 +43,6 @@ function ModelMenu() {
   const pathname = usePathname();
   const setModelMenuOpen = useUIStore((state) => state.setModelMenuOpen);
   const modelMenuOpen = useUIStore((state) => state.modelMenuOpen);
-  const [isEnlarged, setIsEnlarged] = useState(false);
   const trpc = useTRPC();
   const { data: defaultModel, isLoading } = useQuery(
     trpc.defaultModel.queryOptions(undefined, {
@@ -73,12 +72,6 @@ function ModelMenu() {
     }
   }, [pathname, defaultModel, isLoading, setDefaultModel]);
 
-  useEffect(() => {
-    if (!modelMenuOpen) {
-      setIsEnlarged(false);
-    }
-  }, [modelMenuOpen]);
-
   if (isDesktop) {
     return (
       <>
@@ -100,34 +93,24 @@ function ModelMenu() {
                   <div className="size-1 animate-bounce rounded-full bg-muted-foreground"></div>
                 </div>
               )}
-              <ChevronDown size={16} />
+              <ChevronDown
+                size={16}
+                className={cn(
+                  "transition-transform duration-200 ease-out",
+                  modelMenuOpen && "rotate-180"
+                )}
+              />
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className={cn(
-              "p-0 transition-all duration-300 ease-out",
-              isEnlarged ? "w-125" : "w-75"
-            )}
+            className="p-0 transition-all duration-300 ease-out"
             align="start"
           >
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-1 right-1 z-10 size-7"
-                onClick={() => setIsEnlarged(!isEnlarged)}
-              >
-                {isEnlarged ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-              </Button>
-              <div className="overflow-hidden transition-all duration-300 ease-out">
-                <StatusList
-                  setOpen={setModelMenuOpen}
-                  providers={providers}
-                  isEnlarged={isEnlarged}
-                  status={status}
-                />
-              </div>
-            </div>
+            <StatusList
+              setOpen={setModelMenuOpen}
+              providers={providers}
+              status={status}
+            />
             <Separator />
             <TemporaryChatSwitch />
           </PopoverContent>
@@ -174,12 +157,10 @@ function ModelMenu() {
 function StatusList({
   setOpen,
   providers,
-  isEnlarged = false,
   status,
 }: Readonly<{
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
-  isEnlarged?: boolean;
   status?: Status;
 }>) {
   const translationsPromise = useTranslations();
@@ -210,16 +191,8 @@ function StatusList({
           "{number}",
           modelCount.toString()
         )}
-        className={isEnlarged ? "pr-10" : ""}
       />
-      <CommandList
-        className={cn(
-          "transition-all duration-300 ease-out",
-          isEnlarged
-            ? "max-h-[min(600px,calc(100vh-15rem))]"
-            : "max-h-[min(400px,calc(100vh-15rem))]"
-        )}
-      >
+      <CommandList className="max-h-[min(300px,calc(50vh-5rem))] transition-all duration-300 ease-out">
         <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
         {providers.map((provider) => (
           <CommandGroup
@@ -248,11 +221,7 @@ function StatusList({
                 )}
               </div>
             }
-            className={cn(
-              "transition-all duration-300 ease-out",
-              isEnlarged &&
-                "p-2 **:[[cmdk-group-items]]:grid **:[[cmdk-group-items]]:grid-cols-3 **:[[cmdk-group-items]]:gap-2"
-            )}
+            className="transition-all duration-300 ease-out"
           >
             {provider.models.map((model: PublicModel) => (
               <CommandItem
@@ -264,32 +233,14 @@ function StatusList({
                 }}
                 className={cn(
                   "group relative flex justify-between border transition-all duration-300 ease-out",
-                  isEnlarged
-                    ? "h-40 flex-col items-center gap-1 border-border px-3 py-3"
-                    : "border-none pl-6",
+                  "border-none pl-6",
                   model.id === selectedModel?.id ? "border-primary" : "border-transparent"
                 )}
               >
                 {model.id === selectedModel?.id && (
-                  <Check
-                    className={cn(
-                      "absolute size-4 text-primary",
-                      isEnlarged ? "top-2 right-2" : "left-0"
-                    )}
-                  />
+                  <Check className="absolute left-0 size-4 text-primary" />
                 )}
                 <span className="text-center">{model.name}</span>
-                <div
-                  className={cn(
-                    "hidden",
-                    isEnlarged && "grid size-full place-items-center"
-                  )}
-                >
-                  {React.createElement(
-                    providerIcons[provider.icon as keyof typeof providerIcons],
-                    { size: 48 }
-                  )}
-                </div>
                 <div className="flex gap-0.5">
                   {model.features?.map((feature: Feature) => (
                     <HoverPopover

@@ -16,50 +16,6 @@
       "signIn": "Bejelentkezés"
     }
   },
-  "home": {
-    "welcome": {
-      "messages": [
-        "Kezdhetjük?",
-        "Vágjunk bele!",
-        "Ma mit oldunk meg?",
-        "Miben tudok segíteni?"
-      ],
-      "modal": {
-        "trigger": "Melyik modellt használjam?",
-        "title": "{modelCount} modellünk van",
-        "description": "Melyiket érdemes választanod?",
-        "types": {
-          "image": "Ezek a modellek fel tudnak dolgozni feltöltött képeket.",
-          "pdf": "Ezek a modellek fel tudnak dolgozni feltöltött PDF-eket.",
-          "reasoning": "Ezek a modellek többet gondolkodnak válaszadás előtt. Használd őket komplex kérdésekre.",
-          "internet": "Ezek a modellek hozzáférnek az internethez.",
-          "coding": "Ezek a modellek programozási feladatokra kiválóak."
-        },
-        "general": "De általában minden modell általános célú. Próbáld ki őket, hogy megtaláld a legjobbat számodra.",
-        "switchModel": {
-          "mobile": "Kattints a modell ikonjára a beviteli mező bal alsó sarkában, hogy modellt válts.",
-          "desktop": "Kattints a modell nevére a beviteli mező bal alsó sarkában, hogy modellt válts."
-        }
-      },
-      "examples": [
-        "105 fok Fahrenheit Celsiusban ",
-        "Mi a lámák természetes élőhelye? ",
-        "Melyik a legkisebb ország Afrikában? ",
-        "Hogyan tudsz nekem segíteni? "
-      ]
-    },
-    "incognito": {
-      "title": "Inkognitó mód",
-      "intro": "Ez a beszélgetés",
-      "list": [
-        "Nem fog megjelenni a beszélgetések között",
-        "Nem lesz elmentve a szerverünkön",
-        "Nem fogja eltárolni a feltöltött fájlokat",
-        "Nem fogja frissíteni a memóriát",
-        "Csak addig fog létezni, amíg új beszélgetést nem kezdesz"
-      ]
-    }
-  },
   "input": {
     "placeholder": {
       "desktop": "(Új sor: Shift + Enter)",

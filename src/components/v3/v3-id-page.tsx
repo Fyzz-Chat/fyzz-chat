@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
+import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import ShareConversationButton from "@/components/chat/share-conversation-button";
+import InputForm from "@/components/input-form/input-form";
 import { MessagesList } from "@/components/message-list";
 import MessagesScrollArea from "@/components/messages-scroll-area";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
@@ -21,6 +23,12 @@ export default function V3IdPage({ jwtConfigured }: { jwtConfigured: boolean }) 
         <div className="pointer-events-none absolute top-0 right-0 left-0 z-10 h-6 bg-linear-to-b from-background to-transparent" />
         <MessagesList id={id as string} />
       </MessagesScrollArea>
+      <div className="absolute right-0 bottom-0 left-0 mx-auto max-w-5xl">
+        <div className="pointer-events-none relative z-10 h-6 bg-linear-to-t from-background to-transparent" />
+        <ChatLayoutWrapper>
+          <InputForm />
+        </ChatLayoutWrapper>
+      </div>
     </ViewTransitionWrapper>
   );
 }

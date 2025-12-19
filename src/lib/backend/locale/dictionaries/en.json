@@ -16,50 +16,6 @@
       "signIn": "Sign In"
     }
   },
-  "home": {
-    "welcome": {
-      "messages": [
-        "Ready to achieve?",
-        "Let's get after it!",
-        "Time to excel!",
-        "Let's make progress!"
-      ],
-      "modal": {
-        "trigger": "Which model should I use?",
-        "title": "We have {modelCount} models available",
-        "description": "Which one should you use?",
-        "types": {
-          "image": "These models can analyze uploaded images.",
-          "pdf": "These models can analyze uploaded PDFs.",
-          "reasoning": "These models take time to respond. Use them for complex questions.",
-          "internet": "These models have internet access.",
-          "coding": "These models are ideal for coding questions."
-        },
-        "general": "But generally, all models are general-purpose. Experiment to find the best fit for you.",
-        "switchModel": {
-          "mobile": "Click the model's icon in the lower left corner of the input field to switch models.",
-          "desktop": "Click the model's name in the lower left corner of the input field to switch models."
-        }
-      },
-      "examples": [
-        "105 degrees Fahrenheit to Celsius ",
-        "Where do llamas live naturally? ",
-        "What is the smallest country in Africa? ",
-        "How can you help me? "
-      ]
-    },
-    "incognito": {
-      "title": "Incognito Mode",
-      "intro": "This conversation",
-      "list": [
-        "Won't appear in your chat history",
-        "Won't be saved on our servers",
-        "Won't store uploaded files",
-        "Won't update memory",
-        "Will only exist until you start a new one"
-      ]
-    }
-  },
   "input": {
     "placeholder": {
       "desktop": "(Shift + Enter for new line)",

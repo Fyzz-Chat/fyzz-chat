@@ -16,50 +16,6 @@
       "signIn": "Anmelden"
     }
   },
-  "home": {
-    "welcome": {
-      "messages": [
-        "Bereit für Erfolg?",
-        "Hallo! Wie kann ich helfen?",
-        "Hallo! Lass uns starten!",
-        "Hey! Wie kann ich dir helfen?"
-      ],
-      "modal": {
-        "trigger": "Welches Modell soll ich verwenden?",
-        "title": "Wir haben {modelCount} Modelle zur Auswahl",
-        "description": "Welches ist das Richtige für dich?",
-        "types": {
-          "image": "Diese Modelle können hochgeladene Bilder analysieren.",
-          "pdf": "Diese Modelle können hochgeladene PDFs analysieren.",
-          "reasoning": "Diese Modelle nehmen länger, um zu antworten. Verwende sie für komplexe Fragen.",
-          "internet": "Diese Modelle haben Internet-Zugriff.",
-          "coding": "Diese Modelle sind ideal für Codierungsfragen."
-        },
-        "general": "Aber im Allgemeinen sind alle Modelle allgemein zweckmäßig. Experimentiere, um das Beste für dich zu finden.",
-        "switchModel": {
-          "mobile": "Klicke auf das Modell-Symbol in der unteren linken Ecke des Eingabefelds, um ein Modell zu wechseln.",
-          "desktop": "Klicke auf den Namen des Modells in der unteren linken Ecke des Eingabefelds, um ein Modell zu wechseln."
-        }
-      },
-      "examples": [
-        "105 Grad Fahrenheit in Celsius ",
-        "Wo leben Lamas in freier Natur? ",
-        "Welches ist das kleinste Land Afrikas? ",
-        "Wie kannst du mir helfen? "
-      ]
-    },
-    "incognito": {
-      "title": "Inkognito-Modus",
-      "intro": "Diese Unterhaltung",
-      "list": [
-        "Erscheint nicht in der Chat-Verlauf",
-        "Wird nicht auf unseren Servern gespeichert",
-        "Speichert keine hochgeladenen Dateien",
-        "Aktualisiert keine Erinnerungen",
-        "Existiert nur bis du eine neue Unterhaltung beginnst"
-      ]
-    }
-  },
   "input": {
     "placeholder": {
       "desktop": "(Neue Zeile: Shift + Enter)",
