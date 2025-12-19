@@ -21,7 +21,7 @@ export default function ActionButton() {
       type="submit"
       size="icon"
       className="size-9 shrink-0"
-      disabled={input.trim() === "" || (error && error.message === "content_filter")}
+      disabled={input.trim() === "" || error?.message === "content_filter"}
     >
       <Send size={16} />
     </Button>
