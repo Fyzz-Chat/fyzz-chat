@@ -110,8 +110,8 @@ const SidebarProvider = React.forwardRef<
         }
       };
 
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
+      globalThis.addEventListener("keydown", handleKeyDown);
+      return () => globalThis.removeEventListener("keydown", handleKeyDown);
     }, [toggleSidebar]);
 
     // We add a state so that we can do data-state="expanded" or "collapsed".
@@ -178,11 +178,12 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
-    const _pathname = usePathname();
+    const pathname = usePathname();
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: We want to close the mobile sidebar when the pathname changes
     useEffect(() => {
       setOpenMobile(false);
-    }, [setOpenMobile]);
+    }, [pathname]);
 
     if (collapsible === "none") {
       return (
