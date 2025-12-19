@@ -153,7 +153,7 @@ export default function InputForm({ className }: { className?: string }) {
             <ModelMenu />
             <SearchMenu />
           </div>
-          {model.extensions?.length > 0 && (
+          {model?.extensions?.length > 0 && (
             <AttachmentButton
               cameraInputRef={cameraInputRef}
               fileInputRef={fileInputRef}
