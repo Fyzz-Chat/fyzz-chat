@@ -11,9 +11,9 @@ export default function IconPlayerStop({ size = 24 }: { size?: number }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-player-stop"
-      role="img"
       aria-label="Stop player icon"
     >
+      <title id="player-stop-title">Stop player icon</title>
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M5 5m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
     </svg>

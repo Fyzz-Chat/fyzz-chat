@@ -11,9 +11,9 @@ export default function IconViewportNarrow({ size = 24 }: { size?: number }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       className="icon icon-tabler icons-tabler-outline icon-tabler-viewport-narrow"
-      role="img"
       aria-label="Viewport narrow icon"
     >
+      <title id="viewport-narrow-title">Viewport narrow icon</title>
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M3 12h7l-3 -3" />
       <path d="M7 15l3 -3" />
