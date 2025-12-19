@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useActionState, useRef, useTransition } from "react";
@@ -22,6 +23,7 @@ export default function LoginForm() {
   const [state, formAction, isPending] = useActionState(signInUser, initialState);
   const [isTransitionPending, startTransition] = useTransition();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 
@@ -42,6 +44,7 @@ export default function LoginForm() {
   const toastCallback = (state: FormState) => {
     if (state.success) {
       localStorage.setItem("fyzz-auth-method", "password");
+      queryClient.clear();
       router.push(publicConf.redirectPath);
     } else {
       setValue("cf-turnstile-response", "");
