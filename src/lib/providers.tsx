@@ -1,15 +1,13 @@
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
-import dynamic from "next/dynamic";
+import Anthropic from "@/components/icons/anthropic";
+import DeepSeek from "@/components/icons/deepseek";
+import Google from "@/components/icons/google";
+import Meta from "@/components/icons/meta";
+import OpenAI from "@/components/icons/openai";
+import Perplexity from "@/components/icons/perplexity";
+import Qwen from "@/components/icons/qwen";
+import XAI from "@/components/icons/xai";
 import type { PublicProvider } from "@/types/provider";
-
-const LazyAnthropic = dynamic(() => import("@/components/icons/anthropic"));
-const LazyDeepSeek = dynamic(() => import("@/components/icons/deepseek"));
-const LazyGoogle = dynamic(() => import("@/components/icons/google"));
-const LazyXAI = dynamic(() => import("@/components/icons/xai"));
-const LazyMeta = dynamic(() => import("@/components/icons/meta"));
-const LazyOpenAI = dynamic(() => import("@/components/icons/openai"));
-const LazyPerplexity = dynamic(() => import("@/components/icons/perplexity"));
-const LazyQwen = dynamic(() => import("@/components/icons/qwen"));
 
 export const featureIcons = {
   brain: Brain,
@@ -20,14 +18,14 @@ export const featureIcons = {
 };
 
 export const providerIcons = {
-  openai: LazyOpenAI,
-  anthropic: LazyAnthropic,
-  google: LazyGoogle,
-  xai: LazyXAI,
-  meta: LazyMeta,
-  deepseek: LazyDeepSeek,
-  perplexity: LazyPerplexity,
-  qwen: LazyQwen,
+  openai: OpenAI,
+  anthropic: Anthropic,
+  google: Google,
+  xai: XAI,
+  meta: Meta,
+  deepseek: DeepSeek,
+  perplexity: Perplexity,
+  qwen: Qwen,
 };
 
 export function getProviderIcon(providers: PublicProvider[], modelId: string | null) {

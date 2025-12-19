@@ -4,10 +4,33 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, Check, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { memo, use, useEffect } from "react";
-import { HoverPopover } from "@/components/hover-popover";
 import { KeyHandler } from "@/components/key-handler";
 import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useStableId } from "@/hooks/use-stable-id";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
@@ -19,25 +42,6 @@ import { useModelStore } from "@/stores/model-store";
 import { useUIStore } from "@/stores/ui-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import type { Status } from "@/types/status";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "./ui/command";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "./ui/drawer";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Separator } from "./ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 function ModelMenu() {
   const pathname = usePathname();
@@ -102,15 +106,8 @@ function ModelMenu() {
               />
             </Button>
           </PopoverTrigger>
-          <PopoverContent
-            className="p-0 transition-all duration-300 ease-out"
-            align="start"
-          >
-            <StatusList
-              setOpen={setModelMenuOpen}
-              providers={providers}
-              status={status}
-            />
+          <PopoverContent className="p-0" align="start">
+            <StatusList providers={providers} status={status} />
             <Separator />
             <TemporaryChatSwitch />
           </PopoverContent>
@@ -140,11 +137,7 @@ function ModelMenu() {
             </DrawerDescription>
           </DrawerHeader>
           <div className="mt-4 border-t">
-            <StatusList
-              setOpen={setModelMenuOpen}
-              providers={providers}
-              status={status}
-            />
+            <StatusList providers={providers} status={status} />
             <Separator />
             <TemporaryChatSwitch />
           </div>
@@ -155,11 +148,9 @@ function ModelMenu() {
 }
 
 function StatusList({
-  setOpen,
   providers,
   status,
 }: Readonly<{
-  setOpen: (open: boolean) => void;
   providers: PublicProvider[];
   status?: Status;
 }>) {
@@ -167,6 +158,7 @@ function StatusList({
   const translations = use(translationsPromise);
   const stableId = useStableId();
 
+  const setOpen = useUIStore((state) => state.setModelMenuOpen);
   const selectedModel = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
@@ -182,31 +174,31 @@ function StatusList({
   const modelCount = providers.flatMap((provider) => provider.models).length;
 
   return (
-    <Command
-      className="rounded-none md:rounded-md"
-      defaultValue={selectedModel?.name || ""}
-    >
-      <CommandInput
-        placeholder={translations.input.modelMenu.placeholder.replace(
-          "{number}",
-          modelCount.toString()
-        )}
-      />
-      <CommandList className="max-h-[min(300px,calc(50vh-5rem))] transition-all duration-300 ease-out">
-        <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
-        {providers.map((provider) => (
-          <CommandGroup
-            key={`${provider.id}-${provider.name}`}
-            heading={
-              <div className="flex items-center gap-2">
-                {React.createElement(
-                  providerIcons[provider.icon as keyof typeof providerIcons],
-                  { size: 16 }
-                )}
-                {provider.name}
-                {!status?.providers?.[provider.id] && (
-                  <TooltipProvider>
-                    <Tooltip delayDuration={0}>
+    <TooltipProvider delayDuration={0}>
+      <Command
+        className="rounded-none md:rounded-md"
+        defaultValue={selectedModel?.name || ""}
+      >
+        <CommandInput
+          placeholder={translations.input.modelMenu.placeholder.replace(
+            "{number}",
+            modelCount.toString()
+          )}
+        />
+        <CommandList className="max-h-[min(300px,calc(50vh-5rem))] transition-all duration-150 ease-out">
+          <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
+          {providers.map((provider) => (
+            <CommandGroup
+              key={`${provider.id}-${provider.name}`}
+              heading={
+                <div className="flex items-center gap-2">
+                  {React.createElement(
+                    providerIcons[provider.icon as keyof typeof providerIcons],
+                    { size: 16 }
+                  )}
+                  {provider.name}
+                  {!status?.providers?.[provider.id] && (
+                    <Tooltip>
                       <TooltipTrigger asChild>
                         <AlertCircle
                           size={18}
@@ -217,59 +209,61 @@ function StatusList({
                         <p>Warning: Some models from {provider.name} might be down.</p>
                       </TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
-            }
-            className="transition-all duration-300 ease-out"
-          >
-            {provider.models.map((model: PublicModel) => (
-              <CommandItem
-                key={model.name}
-                value={model.name}
-                onSelect={() => {
-                  handleModelChange(model.id);
-                  setOpen(false);
-                }}
-                className={cn(
-                  "group relative flex justify-between border transition-all duration-300 ease-out",
-                  "border-none pl-6",
-                  model.id === selectedModel?.id ? "border-primary" : "border-transparent"
-                )}
-              >
-                {model.id === selectedModel?.id && (
-                  <Check className="absolute left-0 size-4 text-primary" />
-                )}
-                <span className="text-center">{model.name}</span>
-                <div className="flex gap-0.5">
-                  {model.features?.map((feature: Feature) => (
-                    <HoverPopover
-                      key={feature.name}
-                      content={feature.description}
-                      triggerAriaLabel={feature.name}
-                      stopPropagation
-                    >
-                      <span className="rounded-full p-1">
-                        {React.createElement(
-                          featureIcons[feature.icon as keyof typeof featureIcons],
-                          {
-                            size: 16,
-                            className: cn(
-                              feature.color,
-                              "group-data-[selected='true']:text-accent-foreground"
-                            ),
-                          }
-                        )}
-                      </span>
-                    </HoverPopover>
-                  ))}
+                  )}
                 </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        ))}
-      </CommandList>
-    </Command>
+              }
+              className="transition-all duration-150 ease-out"
+            >
+              {provider.models.map((model: PublicModel) => (
+                <CommandItem
+                  key={model.name}
+                  value={model.name}
+                  onSelect={() => {
+                    handleModelChange(model.id);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "group relative flex justify-between border transition-all duration-150 ease-out",
+                    "border-none pl-6",
+                    model.id === selectedModel?.id
+                      ? "border-primary"
+                      : "border-transparent"
+                  )}
+                >
+                  {model.id === selectedModel?.id && (
+                    <Check className="absolute left-0 size-4 text-primary" />
+                  )}
+                  <span className="text-center">{model.name}</span>
+                  <div className="flex gap-0.5">
+                    {model.features?.map((feature: Feature) => (
+                      <Tooltip key={feature.name} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <span className="rounded-full p-1">
+                            {React.createElement(
+                              featureIcons[feature.icon as keyof typeof featureIcons],
+                              {
+                                size: 16,
+                                className: cn(
+                                  feature.color,
+                                  "group-data-[selected='true']:text-accent-foreground"
+                                ),
+                              }
+                            )}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{feature.description}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ))}
+        </CommandList>
+      </Command>
+    </TooltipProvider>
   );
 }
 
