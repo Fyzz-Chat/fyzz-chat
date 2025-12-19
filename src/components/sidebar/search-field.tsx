@@ -1,22 +1,12 @@
 "use client";
 
 import { use, useCallback, useEffect, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
+import useIsMac from "@/hooks/use-is-mac";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores/search-store";
-import { Input } from "../ui/input";
-
-function useIsMac() {
-  const [isMac, setIsMac] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    const platform = globalThis.navigator.platform.toLowerCase();
-    setIsMac(platform.includes("mac"));
-  }, []);
-
-  return isMac;
-}
 
 export function SearchField() {
   const translationsPromise = useTranslations();
