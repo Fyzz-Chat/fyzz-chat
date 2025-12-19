@@ -1,3 +1,17 @@
+# [0.8.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.7.0...v0.8.0) (2025-12-19)
+
+
+### Bug Fixes
+
+* hooks dependency arrays ([3f5e9d6](https://github.com/Fyzz-Chat/fyzz-chat/commit/3f5e9d61f9cfc8d19eb9d9f3533d544b96f735dc))
+* **icons:** use accessible properties ([8c916b7](https://github.com/Fyzz-Chat/fyzz-chat/commit/8c916b7d87602082aa3cc0d56f52b432068e4953))
+* **model-menu:** adjust height correctly ([88fddc6](https://github.com/Fyzz-Chat/fyzz-chat/commit/88fddc6ca10c01e433f06f783105ea0db9f54582))
+
+
+### Features
+
+* **biome:** include email in lint ([cd1b32c](https://github.com/Fyzz-Chat/fyzz-chat/commit/cd1b32c4ff2de7585e236c91273253b7087893fd))
+
 # [0.7.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.6.1...v0.7.0) (2025-12-18)
 
 
