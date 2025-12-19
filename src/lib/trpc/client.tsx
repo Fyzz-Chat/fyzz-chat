@@ -14,7 +14,9 @@ import type { AppRouter } from "./routers/_app";
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 let browserQueryClient: QueryClient;
 
-const persister = createIDBPersister("fyzz-chat-query-cache");
+export const QUERY_CACHE_KEY = "fyzz-chat-query-cache";
+
+const persister = createIDBPersister(QUERY_CACHE_KEY);
 
 function getQueryClient() {
   if (typeof window === "undefined") {
