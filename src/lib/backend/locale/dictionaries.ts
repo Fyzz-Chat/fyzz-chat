@@ -15,5 +15,5 @@ export const getTranslations = async () => {
   const cookieStore = await cookies();
   const _lang = (cookieStore.get("locale")?.value as Locale) || "en";
 
-  return dictionaries["en"]();
+  return dictionaries.en();
 };
