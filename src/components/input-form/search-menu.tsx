@@ -34,8 +34,12 @@ export default function SearchMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={isSonar || !searchSupport}>
-        <Button variant="outline" size="icon" className="shrink-0">
+      <DropdownMenuTrigger
+        asChild
+        disabled={isSonar || !searchSupport}
+        hidden={!searchSupport}
+      >
+        <Button variant="ghost" size="icon" className="shrink-0 rounded-full">
           <Globe size={16} />
         </Button>
       </DropdownMenuTrigger>

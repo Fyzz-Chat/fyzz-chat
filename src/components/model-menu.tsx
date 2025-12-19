@@ -83,9 +83,9 @@ function ModelMenu() {
         <Popover open={modelMenuOpen} onOpenChange={setModelMenuOpen}>
           <PopoverTrigger asChild className="hidden md:flex">
             <Button
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              className="items-center gap-2 md:flex"
+              className="items-center gap-2 rounded-2xl border md:flex"
               disabled={!model}
             >
               {model?.name ? (

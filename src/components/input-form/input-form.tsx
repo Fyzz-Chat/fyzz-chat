@@ -140,7 +140,7 @@ export default function InputForm({ className }: { className?: string }) {
       <form
         onSubmit={handleSendMessage}
         className={cn(
-          "flex flex-col items-end rounded-t-2xl border bg-card p-3 transition-colors duration-200 focus-within:border-primary sm:rounded-b-2xl",
+          "flex flex-col items-end rounded-t-3xl border bg-card p-3 transition-colors duration-200 focus-within:border-primary sm:rounded-b-3xl",
           temporaryChat && "dark:bg-black"
         )}
       >
