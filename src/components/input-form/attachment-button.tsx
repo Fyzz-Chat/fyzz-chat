@@ -47,7 +47,7 @@ export default function AttachmentButton({
                 type="button"
                 size="icon"
                 variant="ghost"
-                className="size-9 shrink-0 p-5"
+                className="size-9 shrink-0 rounded-full"
                 disabled={!extensions?.length}
               >
                 <Paperclip size={16} />

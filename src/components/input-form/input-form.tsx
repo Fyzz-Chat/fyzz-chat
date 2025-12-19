@@ -31,6 +31,7 @@ export default function InputForm({ className }: { className?: string }) {
   const createConversationOptimistic = useCreateConversationOptimistic();
   const addMessage = useAddMessage();
 
+  const model = useModelStore((state) => state.model);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
 
   const files = useFileStore((state) => state.files);
@@ -42,7 +43,6 @@ export default function InputForm({ className }: { className?: string }) {
   async function handleSendMessage(
     e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
   ) {
-    const { model } = useModelStore.getState();
     const { input, setInput } = useInputStore.getState();
     const { stableId, status } = useChatStore.getState();
 
@@ -140,7 +140,7 @@ export default function InputForm({ className }: { className?: string }) {
       <form
         onSubmit={handleSendMessage}
         className={cn(
-          "flex flex-col items-end rounded-t-xl border bg-card p-4 transition-colors duration-200 focus-within:border-primary sm:rounded-b-xl",
+          "flex flex-col items-end rounded-t-2xl border bg-card p-3 transition-colors duration-200 focus-within:border-primary sm:rounded-b-2xl",
           temporaryChat && "dark:bg-black"
         )}
       >
@@ -153,7 +153,12 @@ export default function InputForm({ className }: { className?: string }) {
             <ModelMenu />
             <SearchMenu />
           </div>
-          <AttachmentButton cameraInputRef={cameraInputRef} fileInputRef={fileInputRef} />
+          {model.extensions?.length > 0 && (
+            <AttachmentButton
+              cameraInputRef={cameraInputRef}
+              fileInputRef={fileInputRef}
+            />
+          )}
           <ActionButton />
         </div>
       </form>
