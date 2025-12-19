@@ -1,13 +1,20 @@
 import { create } from "zustand";
 
-interface ModelMenuStore {
+interface UIStore {
+  helpOpen: boolean;
+  setHelpOpen: (helpOpen: boolean | ((helpOpen: boolean) => boolean)) => void;
   modelMenuOpen: boolean;
   setModelMenuOpen: (
     modelMenuOpen: boolean | ((modelMenuOpen: boolean) => boolean)
   ) => void;
 }
 
-export const useModelMenuStore = create<ModelMenuStore>((set, get) => ({
+export const useUIStore = create<UIStore>((set, get) => ({
+  helpOpen: false,
+  setHelpOpen: (helpOpen) =>
+    set({
+      helpOpen: typeof helpOpen === "function" ? helpOpen(get().helpOpen) : helpOpen,
+    }),
   modelMenuOpen: false,
   setModelMenuOpen: (modelMenuOpen) =>
     set({

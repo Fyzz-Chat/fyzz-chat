@@ -15,8 +15,8 @@ import { featureIcons, getProviderIcon, providerIcons } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
-import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
+import { useUIStore } from "@/stores/ui-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import type { Status } from "@/types/status";
 import {
@@ -41,8 +41,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 function ModelMenu() {
   const pathname = usePathname();
-  const setModelMenuOpen = useModelMenuStore((state) => state.setModelMenuOpen);
-  const modelMenuOpen = useModelMenuStore((state) => state.modelMenuOpen);
+  const setModelMenuOpen = useUIStore((state) => state.setModelMenuOpen);
+  const modelMenuOpen = useUIStore((state) => state.modelMenuOpen);
   const [isEnlarged, setIsEnlarged] = useState(false);
   const trpc = useTRPC();
   const { data: defaultModel, isLoading } = useQuery(

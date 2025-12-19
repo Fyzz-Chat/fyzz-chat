@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { useHelpDialogStore } from "@/stores/help-dialog-store";
+import { useUIStore } from "@/stores/ui-store";
 
 export default function ProfileMenu({
   authorized,
@@ -23,7 +23,7 @@ export default function ProfileMenu({
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const setHelpOpen = useHelpDialogStore((state) => state.setHelpOpen);
+  const setHelpOpen = useUIStore((state) => state.setHelpOpen);
 
   return (
     <>

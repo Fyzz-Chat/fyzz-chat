@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { useHelpDialogStore } from "@/stores/help-dialog-store";
+import { useUIStore } from "@/stores/ui-store";
 
 export function HelpDialog() {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const helpOpen = useHelpDialogStore((state) => state.helpOpen);
-  const setHelpOpen = useHelpDialogStore((state) => state.setHelpOpen);
+  const helpOpen = useUIStore((state) => state.helpOpen);
+  const setHelpOpen = useUIStore((state) => state.setHelpOpen);
 
   function handler() {
     setHelpOpen((helpOpen) => !helpOpen);
