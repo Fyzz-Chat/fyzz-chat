@@ -11,7 +11,7 @@ function useIsMac() {
   const [isMac, setIsMac] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
-    const platform = window.navigator.platform.toLowerCase();
+    const platform = globalThis.navigator.platform.toLowerCase();
     setIsMac(platform.includes("mac"));
   }, []);
 
@@ -26,7 +26,7 @@ export function SearchField() {
   const { setSearchQuery } = useSearchStore();
   const isMac = useIsMac();
   const debouncedSetSearchQuery = useCallback(
-    debounce((value: string) => setSearchQuery(value as unknown as string), 300),
+    debounce((value: string) => setSearchQuery(value), 300),
     []
   );
 
