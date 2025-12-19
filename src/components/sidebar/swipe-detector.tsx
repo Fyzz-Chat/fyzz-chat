@@ -1,8 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
-import { type ReactNode, useEffect, useRef, useState } from "react";
-import { Sidebar } from "../ui/sidebar";
 
 export function SwipeDetector() {
   const { setOpenMobile } = useSidebar();
@@ -35,6 +34,7 @@ export function SwipeDetector() {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The event listeners should only be added once on mount
   useEffect(() => {
     document.addEventListener("touchstart", handleTouchStart);
     document.addEventListener("touchmove", handleTouchMove);

@@ -1,6 +1,6 @@
-import { isFileList } from "@/lib/utils";
 import type { FileUIPart } from "ai";
 import { create } from "zustand";
+import { isFileList } from "@/lib/utils";
 
 interface FileStore {
   files: FileUIPart[] | FileList | undefined;

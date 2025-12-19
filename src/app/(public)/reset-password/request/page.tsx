@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getTranslations } from "@/lib/backend/locale/dictionaries";
 
 export default async function Page() {
   return (

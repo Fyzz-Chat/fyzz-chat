@@ -1,8 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
 
 export function ChatLayoutWrapper({
   children,
@@ -17,7 +17,7 @@ export function ChatLayoutWrapper({
     <div
       className={cn(
         "mx-auto",
-        layout === "compact" ? "lg:max-w-2xl w-full" : "max-w-5xl w-full",
+        layout === "compact" ? "w-full lg:max-w-2xl" : "w-full max-w-5xl",
         className
       )}
     >

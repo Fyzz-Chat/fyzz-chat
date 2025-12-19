@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -9,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useTRPC } from "@/lib/trpc/client";
-import { useQuery } from "@tanstack/react-query";
 
 export default function StatusNotification() {
   const trpc = useTRPC();
@@ -21,7 +21,7 @@ export default function StatusNotification() {
 
   return (
     !status.all && (
-      <Card className="bg-destructive/10 border-destructive">
+      <Card className="border-destructive bg-destructive/10">
         <CardHeader>
           <CardTitle>Warning</CardTitle>
           <CardDescription>Some services are down.</CardDescription>

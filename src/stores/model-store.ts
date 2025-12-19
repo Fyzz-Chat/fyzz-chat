@@ -1,5 +1,5 @@
-import type { PublicModel, PublicProvider } from "@/types/provider";
 import { create } from "zustand";
+import type { PublicModel, PublicProvider } from "@/types/provider";
 
 interface ModelStore {
   model: PublicModel;

@@ -1,5 +1,7 @@
 "use client";
 
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { KeyHandler } from "@/components/key-handler";
 import { ScrollToBottomButton } from "@/components/scroll-to-bottom-button";
@@ -7,8 +9,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessages } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 
 export default function MessagesScrollArea({
   children,
@@ -40,11 +40,13 @@ export default function MessagesScrollArea({
   };
 
   // Scroll to bottom when the component mounts
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The effect should only run once on mount
   useEffect(() => {
     scrollToBottom();
   }, []);
 
   // Scroll to bottom when messages change (TanStack Query data) OR when streaming message updates
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
   useEffect(() => {
     if (autoScroll) {
       scrollToBottom();
@@ -74,12 +76,12 @@ export default function MessagesScrollArea({
         handleScroll={handleScroll}
       >
         <ChatLayoutWrapper>{children}</ChatLayoutWrapper>
-        <ChatLayoutWrapper className="absolute bottom-0 left-0 right-0">
-          <div className="flex absolute bottom-6 w-full pointer-events-none">
+        <ChatLayoutWrapper className="absolute right-0 bottom-0 left-0">
+          <div className="pointer-events-none absolute bottom-6 flex w-full">
             <ScrollToBottomButton
               onClick={scrollToBottom}
               className={cn(
-                "mx-auto z-50 pointer-events-auto",
+                "pointer-events-auto z-50 mx-auto",
                 !positionChecked || isUserAtBottom() ? "scale-0" : "scale-100"
               )}
             />

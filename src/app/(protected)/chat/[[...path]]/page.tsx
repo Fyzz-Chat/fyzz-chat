@@ -1,5 +1,7 @@
 import "katex/dist/katex.min.css";
 
+import { cookies } from "next/headers";
+import { Outlet } from "react-router-dom";
 import AuthPopup from "@/components/auth/auth-popup";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
@@ -9,8 +11,6 @@ import ClientRouter from "@/components/v3/client-router";
 import conf from "@/lib/config";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
-import { cookies } from "next/headers";
-import { Outlet } from "react-router-dom";
 
 export default async function CatchAll({
   searchParams: searchParamsPromise,
@@ -39,8 +39,8 @@ export default async function CatchAll({
               authorized={Boolean(user)}
             />
           </AppSidebar>
-          <SidebarInset className="relative md:p-2 bg-sidebar overflow-auto">
-            <SidebarTrigger className="absolute size-8 top-2 left-2 md:top-4 md:left-4 z-20 p-5 touch-manipulation" />
+          <SidebarInset className="relative overflow-auto bg-sidebar md:p-2">
+            <SidebarTrigger className="absolute top-2 left-2 z-20 size-8 touch-manipulation p-5 md:top-4 md:left-4" />
             <AuthPopup searchParams={searchParamsPromise} />
             <Outlet />
           </SidebarInset>

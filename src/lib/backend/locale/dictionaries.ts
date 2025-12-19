@@ -1,7 +1,7 @@
 import "server-only";
 
-import type { Locale } from "@/types/locale";
 import { cookies } from "next/headers";
+import type { Locale } from "@/types/locale";
 
 export const locales: Locale[] = ["en", "de", "hu"];
 
@@ -15,5 +15,5 @@ export const getTranslations = async () => {
   const cookieStore = await cookies();
   const _lang = (cookieStore.get("locale")?.value as Locale) || "en";
 
-  return dictionaries["en"]();
+  return dictionaries.en();
 };

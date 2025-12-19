@@ -1,11 +1,11 @@
 import "server-only";
 
+import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { mapMessages } from "@/lib/dao/conversations";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage } from "@/types/chat";
-import type { InputJsonValue } from "@prisma/client/runtime/client";
 
 export async function getMessages(
   conversationId: string,
@@ -96,7 +96,7 @@ export async function saveMessage(
   completionTokens: number
 ) {
   const userId = await getUserIdFromSession();
-  const { metadata, ...rest } = message;
+  const { metadata: _, ...rest } = message;
 
   return prisma.$transaction(async (tx) => {
     const newMessage = await tx.message.create({

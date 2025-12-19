@@ -1,16 +1,15 @@
 "use client";
 
-import { useConversation, useMessages } from "@/lib/queries/conversations";
+import { Loader2 } from "lucide-react";
 import { memo, useEffect, useMemo } from "react";
-import LastMessage from "./last-message";
-import { MessageItem } from "./message-item";
-import { LoadingDots } from "./ui/loading-dots";
-
+import { useNavigate } from "react-router-dom";
+import { useConversation, useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
-import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import LastMessage from "./last-message";
+import { MessageItem } from "./message-item";
+import { LoadingDots } from "./ui/loading-dots";
 
 const MemoizedMessageItem = memo(MessageItem);
 
@@ -27,11 +26,7 @@ function getErrorMessage(error: { message: string }) {
   return "Something went wrong.";
 }
 
-export function MessagesList({
-  id,
-}: {
-  id: string;
-}) {
+export function MessagesList({ id }: Readonly<{ id: string }>) {
   const navigate = useNavigate();
   const status = useChatStore((state) => state.status);
   const error = useChatStore((state) => state.error);
@@ -43,7 +38,7 @@ export function MessagesList({
   const lastMessage = messages?.messages.at(-1);
   const showLoading =
     (status === "submitted" ||
-      (status == "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&
+      (status === "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&
     lastMessage?.role === "user";
 
   useEffect(() => {
@@ -62,26 +57,26 @@ export function MessagesList({
   }, [conversationStatus, conversation, navigate, setModel]);
 
   const memoizedConversationMessages = useMemo(() => {
-    return messages?.messages?.map((message: any) => (
+    return messages?.messages?.map((message) => (
       <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
     ));
-  }, [messages?.messages]);
+  }, [messages?.messages, id]);
 
   if (isMessagesLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center h-[calc(100svh-170px)] md:h-[calc(100svh-198px)]">
+      <div className="flex h-[calc(100svh-170px)] flex-1 items-center justify-center md:h-[calc(100svh-198px)]">
         <Loader2 size={40} className="animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 sm:px-8 pt-8">
+    <div className="flex flex-col gap-4 px-4 pt-8 sm:px-8">
       {memoizedConversationMessages}
       <LastMessage conversationId={id} />
       {error && (
         <div className="flex flex-col gap-1">
-          <div className="text-destructive p-4 border border-destructive rounded-lg">
+          <div className="rounded-lg border border-destructive p-4 text-destructive">
             <p>{getErrorMessage(error)}</p>
           </div>
           <span className="h-8" />
@@ -89,7 +84,7 @@ export function MessagesList({
       )}
       {showLoading && <LoadingDots className="text-muted-foreground" />}
       <div id="messages-end" className="h-4" />
-      {files && files.length > 0 && <div className="h-[54px] w-1" />}
+      {files && files.length > 0 && <div className="h-13.5 w-1" />}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { FileText, Trash } from "lucide-react";
+import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +12,6 @@ import {
 } from "@/components/ui/tooltip";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
-import { FileText, Trash } from "lucide-react";
-import Image from "next/image";
 
 export default function FileList() {
   const files = useFileStore((state) => state.files);
@@ -23,7 +23,7 @@ export default function FileList() {
 
   return (
     <div
-      className="flex items-center w-full gap-2 transition-all duration-300"
+      className="flex w-full items-center gap-2 transition-all duration-300"
       style={{
         marginBottom: files && files.length > 0 ? "16px" : "0px",
         height: files && files.length > 0 ? "54px" : "0px",
@@ -43,7 +43,7 @@ export default function FileList() {
                       className="size-full rounded-md object-cover"
                     />
                   ) : (
-                    <div className="flex items-center justify-center h-full border rounded-md">
+                    <div className="flex h-full items-center justify-center rounded-md border">
                       <FileText size={24} />
                     </div>
                   )}
@@ -58,7 +58,7 @@ export default function FileList() {
             type="button"
             size="icon"
             variant="ghost"
-            className="absolute -top-3 -right-3 rounded-full size-6 bg-muted border z-10"
+            className="absolute -top-3 -right-3 z-10 size-6 rounded-full border bg-muted"
             onClick={() => {
               const fileList = Array.from(files || []);
               const newFiles = new DataTransfer();

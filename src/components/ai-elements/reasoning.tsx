@@ -1,5 +1,9 @@
 "use client";
 
+import { useControllableState } from "@radix-ui/react-use-controllable-state";
+import { BrainIcon, ChevronDownIcon, Cog } from "lucide-react";
+import type { ComponentProps } from "react";
+import { createContext, memo, useContext, useEffect, useRef, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -7,10 +11,6 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { BrainIcon, ChevronDownIcon, Cog } from "lucide-react";
-import type { ComponentProps } from "react";
-import { createContext, memo, useContext, useEffect, useRef, useState } from "react";
 import { Response } from "./response";
 
 type ReasoningContextValue = {
@@ -127,10 +127,10 @@ export const ReasoningTrigger = memo(
                   />
                   <Cog
                     size={16}
-                    className="ml-2 -mt-1 absolute animate-[spin_2s_linear_infinite]"
+                    className="absolute -mt-1 ml-2 animate-[spin_2s_linear_infinite]"
                   />
                 </div>
-                <p className="text-primary animate-pulse drop-shadow-[0_0_3px_var(--ring)]">
+                <p className="animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
                   Thinking...
                 </p>
               </div>
@@ -165,6 +165,7 @@ export const ReasoningContent = memo(
     const { isOpen, isStreaming } = useReasoning();
     const viewportRef = useRef<HTMLDivElement | null>(null);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
     useEffect(() => {
       const el = viewportRef.current;
       if (!el) return;
@@ -180,13 +181,13 @@ export const ReasoningContent = memo(
         )}
         {...props}
       >
-        <div className="relative h-6 -mb-6 bg-linear-to-b from-background to-transparent pointer-events-none z-10" />
+        <div className="pointer-events-none relative z-10 -mb-6 h-6 bg-linear-to-b from-background to-transparent" />
         <ScrollArea viewportRef={viewportRef}>
           <div className="max-h-56">
             <Response className="grid gap-2 py-3">{children}</Response>
           </div>
         </ScrollArea>
-        <div className="relative h-6 -mt-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
+        <div className="pointer-events-none relative z-10 -mt-6 h-6 bg-linear-to-t from-background to-transparent" />
       </CollapsibleContent>
     );
   }

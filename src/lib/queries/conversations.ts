@@ -1,3 +1,13 @@
+import {
+  type InfiniteData,
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
+import { useCallback } from "react";
 import { useStableId } from "@/hooks/use-stable-id";
 import {
   deleteConversation,
@@ -9,19 +19,32 @@ import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
-import {
-  keepPreviousData,
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
-import { useCallback } from "react";
 import { deleteMessageChainAfter } from "../actions/messages";
 
+// Type definitions for query data
+type ConversationPage = {
+  items: PartialConversation[];
+  nextCursor: string | undefined;
+};
+
+type ConversationsInfiniteData = InfiniteData<ConversationPage, string | null>;
+
+type ConversationData =
+  | {
+      id: string;
+      title: string;
+      model: string;
+    }
+  | null
+  | undefined;
+
+type MessagesData = {
+  messages: CustomUIMessage[];
+  hasMore: boolean;
+};
+
 export function useConversations(
-  conversations: any,
+  conversations: ConversationPage,
   authorized: boolean,
   search?: string
 ) {
@@ -39,6 +62,7 @@ export function useConversations(
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // @ts-expect-error - initialData type inference issue with tRPC
       initialData: search ? undefined : initialData,
       placeholderData: keepPreviousData,
       enabled: authorized && !temporaryChat,
@@ -101,7 +125,10 @@ export function useUpdateConversationModel() {
     mutationFn: ({
       conversationId,
       model,
-    }: { conversationId: string; model: string }) => {
+    }: {
+      conversationId: string;
+      model: string;
+    }) => {
       // Check if conversation exists in cache (indicates it was created in DB)
       const conversationExists = queryClient.getQueryData(
         trpc.conversation.queryKey({ id: conversationId })
@@ -118,10 +145,13 @@ export function useUpdateConversationModel() {
       if (updatedConversation) {
         queryClient.setQueryData(
           trpc.conversation.queryKey({ id: conversationId }),
-          (old: any) => ({
-            ...old,
-            model: updatedConversation.model,
-          })
+          (old: ConversationData): ConversationData => {
+            if (!old) return old;
+            return {
+              ...old,
+              model: updatedConversation.model,
+            };
+          }
         );
       }
     },
@@ -141,18 +171,21 @@ export function useDeleteConversation() {
         trpc.infiniteConversations.infiniteQueryFilter()
       );
       queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (old: any) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page: any) => ({
-              ...page,
-              items: page.items.filter(
-                (conv: PartialConversation) => conv.id !== conversationId
-              ),
-            })),
-          };
-        });
+        queryClient.setQueryData(
+          queryKey,
+          (old: ConversationsInfiniteData | undefined) => {
+            if (!old) return old;
+            return {
+              ...old,
+              pages: old.pages.map((page) => ({
+                ...page,
+                items: page.items.filter(
+                  (conv: PartialConversation) => conv.id !== conversationId
+                ),
+              })),
+            };
+          }
+        );
       });
     },
   });
@@ -178,7 +211,7 @@ export function useAddMessage() {
       // Update conversation detail cache
       queryClient.setQueryData(
         trpc.messages.queryKey({ id: conversationId }),
-        (old: any) => {
+        (old: MessagesData | undefined) => {
           if (!old) return { messages: [optimisticMessage], hasMore: false };
           return {
             ...old,
@@ -192,23 +225,26 @@ export function useAddMessage() {
         trpc.infiniteConversations.infiniteQueryFilter()
       );
       queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (old: any) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page: any) => ({
-              ...page,
-              items: page.items.map((conv: PartialConversation) =>
-                conv.id === conversationId
-                  ? {
-                      ...conv,
-                      messages: [...(conv.messages || []), optimisticMessage],
-                    }
-                  : conv
-              ),
-            })),
-          };
-        });
+        queryClient.setQueryData(
+          queryKey,
+          (old: ConversationsInfiniteData | undefined) => {
+            if (!old) return old;
+            return {
+              ...old,
+              pages: old.pages.map((page) => ({
+                ...page,
+                items: page.items.map((conv: PartialConversation) =>
+                  conv.id === conversationId
+                    ? {
+                        ...conv,
+                        messages: [...(conv.messages || []), optimisticMessage],
+                      }
+                    : conv
+                ),
+              })),
+            };
+          }
+        );
       });
 
       return optimisticMessage;
@@ -248,7 +284,7 @@ export function useRegenerateMessage() {
     onSuccess: (_, { conversationId, messageId, newContent }) => {
       queryClient.setQueryData(
         trpc.messages.queryKey({ id: conversationId }),
-        (old: any) => {
+        (old: MessagesData | undefined) => {
           if (!old) return old;
 
           const filteredMessages = filterMessagesUpToAnchor(
@@ -289,10 +325,15 @@ export function useCreateConversation() {
           trpc.infiniteConversations.infiniteQueryFilter()
         );
         queries.forEach(([queryKey]) => {
-          const key = queryKey as any[];
+          const key = queryKey;
           // Only update unfiltered list optimistically (no search param)
-          if (!key[1]?.input?.search) {
-            queryClient.setQueryData(queryKey, (old: any) => {
+          const input = (key[1] as { input?: { search?: string } } | undefined)?.input;
+          if (input?.search) {
+            return; // Skip filtered queries
+          }
+          queryClient.setQueryData(
+            queryKey,
+            (old: ConversationsInfiniteData | undefined) => {
               if (!old) return old;
               return {
                 ...old,
@@ -304,11 +345,8 @@ export function useCreateConversation() {
                   ...old.pages.slice(1),
                 ],
               };
-            });
-          } else {
-            // Invalidate filtered queries to trigger a refetch
-            queryClient.invalidateQueries({ queryKey });
-          }
+            }
+          );
         });
       }
     },

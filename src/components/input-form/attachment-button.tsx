@@ -1,5 +1,7 @@
 "use client";
 
+import { Camera, Paperclip } from "lucide-react";
+import { type RefObject, use } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,8 +17,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useModelStore } from "@/stores/model-store";
-import { Camera, Paperclip } from "lucide-react";
-import { type RefObject, use } from "react";
 
 export default function AttachmentButton({
   cameraInputRef,
@@ -47,7 +47,7 @@ export default function AttachmentButton({
                 type="button"
                 size="icon"
                 variant="ghost"
-                className="shrink-0 size-9 p-5"
+                className="size-9 shrink-0 p-5"
                 disabled={!extensions?.length}
               >
                 <Paperclip size={16} />

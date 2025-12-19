@@ -1,5 +1,5 @@
-import conf from "@/lib/config";
 import type { MetadataRoute } from "next";
+import conf from "@/lib/config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

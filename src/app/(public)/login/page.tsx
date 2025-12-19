@@ -1,8 +1,8 @@
+import type { Metadata } from "next";
 import AuthCard from "@/components/auth/auth-card";
 import LoginForm from "@/components/auth/login-form";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
-import type { Metadata } from "next";
 
 const path = "/login";
 const title = "Login - Fyzz.chat";

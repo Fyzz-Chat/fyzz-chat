@@ -1,22 +1,12 @@
 "use client";
 
+import { use, useCallback, useEffect, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
+import useIsMac from "@/hooks/use-is-mac";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores/search-store";
-import { use, useCallback, useEffect, useRef, useState } from "react";
-import { Input } from "../ui/input";
-
-function useIsMac() {
-  const [isMac, setIsMac] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    const platform = window.navigator.platform.toLowerCase();
-    setIsMac(platform.includes("mac"));
-  }, []);
-
-  return isMac;
-}
 
 export function SearchField() {
   const translationsPromise = useTranslations();
@@ -56,7 +46,7 @@ export function SearchField() {
       />
       <div
         className={cn(
-          "hidden md:flex items-center justify-center absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none rounded-[4px] bg-muted border",
+          "pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 items-center justify-center rounded-lg border bg-muted text-muted-foreground md:flex",
           isMac === undefined && "opacity-0"
         )}
       >

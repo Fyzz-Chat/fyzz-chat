@@ -2,7 +2,7 @@ import { FileText } from "lucide-react";
 
 export default function PdfFilePart() {
   return (
-    <div className="flex items-center justify-center size-48 border rounded-lg">
+    <div className="flex size-48 items-center justify-center rounded-lg border">
       <FileText size={24} />
     </div>
   );

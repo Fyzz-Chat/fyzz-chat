@@ -2,19 +2,18 @@
 
 import "server-only";
 
-import { deleteFile } from "@/lib/aws/s3";
-import { getUserIdFromSession } from "@/lib/dao/users";
-import { logger } from "@/lib/logger";
-import prisma from "@/lib/prisma/prisma";
-import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 import { openai } from "@ai-sdk/openai";
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { convertToModelMessages, generateText } from "ai";
 import jwt from "jsonwebtoken";
-
+import { deleteFile } from "@/lib/aws/s3";
 import { filterMessages } from "@/lib/backend/utils";
 import conf from "@/lib/config";
 import { mapMessages } from "@/lib/dao/conversations";
+import { getUserIdFromSession } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
+import prisma from "@/lib/prisma/prisma";
+import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 
 export async function saveConversation(conversation: PartialConversation) {
   const userId = await getUserIdFromSession();
@@ -80,7 +79,7 @@ export async function saveConversationModel(conversationId: string, modelId: str
     });
 
     return updatedConversation;
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return null;
   }
@@ -98,8 +97,12 @@ export async function deleteConversation(conversationId: string) {
 
   const attachments =
     conversation?.messages
-      .flatMap((message) => (message.files as JsonValue[])?.map((file: any) => file?.url))
-      .filter((url) => !!url) || [];
+      .flatMap((message) =>
+        (message.files as JsonValue[])?.map(
+          (file: JsonValue) => (file as { url?: string })?.url
+        )
+      )
+      .filter((url): url is string => !!url) || [];
 
   await Promise.all(
     attachments.map(async (attachment) => {
@@ -138,7 +141,7 @@ export async function shareConversationUntilLatestMessage(
     throw new Error("No message found");
   }
 
-  let expiresIn = addDurationToDate(new Date(), duration);
+  const expiresIn = addDurationToDate(new Date(), duration);
 
   const token = jwt.sign({ messageId: message.id, expiresIn }, conf.jwtSecret);
 

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
 import OAuthForm from "@/components/auth/oauth-form";
 import {
   Card,
@@ -8,8 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import conf from "@/lib/config";
-import Link from "next/link";
-import type { ReactNode } from "react";
 
 export default function AuthCard({
   title,
@@ -30,9 +30,9 @@ export default function AuthCard({
   const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
 
   return (
-    <Card className="w-92 border-border/50 shadow-lg backdrop-blur-sm bg-card/95">
-      <CardHeader className="text-center space-y-2 pb-6">
-        <CardTitle className="text-2xl font-bold tracking-tight">{title}</CardTitle>
+    <Card className="w-92 border-border/50 bg-card/95 shadow-lg backdrop-blur-sm">
+      <CardHeader className="space-y-2 pb-6 text-center">
+        <CardTitle className="font-bold text-2xl tracking-tight">{title}</CardTitle>
         <CardDescription className="text-base">{description}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6 px-8">
@@ -54,12 +54,12 @@ export default function AuthCard({
           </div>
         )}
       </CardContent>
-      <CardFooter className="pb-8 pt-0">
-        <p className="mx-auto text-sm text-muted-foreground">
+      <CardFooter className="pt-0 pb-8">
+        <p className="mx-auto text-muted-foreground text-sm">
           {ctaQuestion}{" "}
           <Link
             href={ctaLink}
-            className="font-medium text-primary hover:text-primary/80 hover:underline underline-offset-4 transition-colors"
+            className="font-medium text-primary underline-offset-4 transition-colors hover:text-primary/80 hover:underline"
           >
             {ctaText}
           </Link>

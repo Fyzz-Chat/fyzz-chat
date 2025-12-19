@@ -14,7 +14,7 @@
 }
 
 :root {
-  --background: hsl(24.0 100.00% 98.04%);
+  --background: hsl(24 100.00% 98.04%);
   --foreground: hsl(346.67 7.96% 22.16%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(346.67 7.96% 22.16%);
@@ -24,7 +24,7 @@
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(8.57 100.00% 95.88%);
   --secondary-foreground: hsl(9.91 47.33% 47.65%);
-  --muted: hsl(15.0 100.00% 96.08%);
+  --muted: hsl(15 100.00% 96.08%);
   --muted-foreground: hsl(6.32 18.81% 39.61%);
   --accent: hsl(26.11 98.50% 73.92%);
   --accent-foreground: hsl(346.67 7.96% 22.16%);
@@ -39,7 +39,7 @@
   --chart-3: hsl(23.86 100.00% 82.75%);
   --chart-4: hsl(16.07 100% 78.04%);
   --chart-5: hsl(9.58 54.84% 57.45%);
-  --sidebar-background: hsl(15.0 100.00% 96.08%);
+  --sidebar-background: hsl(15 100.00% 96.08%);
   --sidebar-foreground: hsl(346.67 7.96% 22.16%);
   --sidebar-primary: hsl(11.63 100% 68.63%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
@@ -52,12 +52,15 @@
   --font-mono: "Ubuntu Mono", monospace;
   --shadow-2xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
   --shadow-xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
-  --shadow-sm: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px hsl(0 0% 0% / 0.09);
+  --shadow-sm:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px hsl(0 0% 0% / 0.09);
   --shadow: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px hsl(0 0% 0% / 0.09);
-  --shadow-md: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 2px 4px -4px hsl(0 0% 0% / 0.09);
-  --shadow-lg: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 4px 6px -4px hsl(0 0% 0% / 0.09);
-  --shadow-xl: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 8px 10px -4px
-    hsl(0 0% 0% / 0.09);
+  --shadow-md:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 2px 4px -4px hsl(0 0% 0% / 0.09);
+  --shadow-lg:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 4px 6px -4px hsl(0 0% 0% / 0.09);
+  --shadow-xl:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 8px 10px -4px hsl(0 0% 0% / 0.09);
   --shadow-2xl: 0px 6px 12px -3px hsl(0 0% 0% / 0.22);
 }
 
@@ -99,12 +102,15 @@
   --font-mono: "Ubuntu Mono", monospace;
   --shadow-2xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
   --shadow-xs: 0px 6px 12px -3px hsl(0 0% 0% / 0.04);
-  --shadow-sm: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px hsl(0 0% 0% / 0.09);
+  --shadow-sm:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px hsl(0 0% 0% / 0.09);
   --shadow: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 1px 2px -4px hsl(0 0% 0% / 0.09);
-  --shadow-md: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 2px 4px -4px hsl(0 0% 0% / 0.09);
-  --shadow-lg: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 4px 6px -4px hsl(0 0% 0% / 0.09);
-  --shadow-xl: 0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 8px 10px -4px
-    hsl(0 0% 0% / 0.09);
+  --shadow-md:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 2px 4px -4px hsl(0 0% 0% / 0.09);
+  --shadow-lg:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 4px 6px -4px hsl(0 0% 0% / 0.09);
+  --shadow-xl:
+    0px 6px 12px -3px hsl(0 0% 0% / 0.09), 0px 8px 10px -4px hsl(0 0% 0% / 0.09);
   --shadow-2xl: 0px 6px 12px -3px hsl(0 0% 0% / 0.22);
 }
 

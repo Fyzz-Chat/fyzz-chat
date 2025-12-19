@@ -1,3 +1,4 @@
+import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
 import { getMcpServers } from "@/lib/actions/users";
 import {
   createHttpMcpClient,
@@ -5,7 +6,6 @@ import {
   createStdioMcpClient,
 } from "@/lib/backend/tools/mcp-clients";
 import { logDuration } from "@/lib/backend/utils";
-import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
 
 export class McpClientInitError extends Error {
   constructor() {

@@ -1,5 +1,10 @@
 "use client";
 
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { Plus, Trash2 } from "lucide-react";
+import { use, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,15 +19,10 @@ import { Switch } from "@/components/ui/switch";
 import { saveMcpServers } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { MissingKeyError } from "@/types/mcp";
-import type { JsonValue } from "@prisma/client/runtime/client";
-import { Plus, Trash2 } from "lucide-react";
-import { use, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 type ServerItem = { name: string; url: string; enabled: boolean };
 
-export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
+export function McpTab({ userMcpServers }: Readonly<{ userMcpServers?: JsonValue }>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const { handleSubmit } = useForm();
@@ -32,7 +32,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
       if (!userMcpServers) return [];
       const parsed =
         typeof userMcpServers === "string" ? JSON.parse(userMcpServers) : userMcpServers;
-      const entries = (parsed as any)?.mcpServers ?? {};
+      const entries = parsed?.mcpServers ?? {};
       return Object.keys(entries).map((key) => ({
         name: key,
         url: entries[key]?.url ?? "",
@@ -110,7 +110,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
       <CardContent>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 w-full items-start"
+          className="flex w-full flex-col items-start gap-4"
         >
           <div className="flex w-full flex-col gap-4">
             {servers.map((server, index) => (
@@ -138,9 +138,9 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
                   />
                 </div>
                 <div className="flex items-end gap-2">
-                  <div className="flex flex-col gap-1 h-full">
+                  <div className="flex h-full flex-col gap-1">
                     <Label htmlFor={`server-enabled-${index}`}>Enabled</Label>
-                    <div className="flex items-center justify-center flex-1">
+                    <div className="flex flex-1 items-center justify-center">
                       <Switch
                         id={`server-enabled-${index}`}
                         checked={server.enabled}
@@ -171,7 +171,7 @@ export function McpTab({ userMcpServers }: { userMcpServers?: JsonValue }) {
               </Button>
             </div>
           </div>
-          <Button type="submit" className="px-5 self-end">
+          <Button type="submit" className="self-end px-5">
             {translations.settings.mcp.saveButton}
           </Button>
         </form>

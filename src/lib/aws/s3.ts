@@ -1,7 +1,7 @@
-import conf from "@/lib/config";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import { getSignedUrl as presignUrl } from "@aws-sdk/s3-request-presigner";
+import conf from "@/lib/config";
 
 let client: S3Client | null = null;
 

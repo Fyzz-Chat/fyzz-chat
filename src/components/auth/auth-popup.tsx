@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils";
 
 export default async function AuthPopup({
   searchParams,
-}: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const translations = await getTranslations();
   const { login, register } = await searchParams;
   const isLogin = login === "true";
@@ -16,7 +18,7 @@ export default async function AuthPopup({
     (isLogin || isRegister) && (
       <div
         className={cn(
-          "flex fixed items-center justify-center inset-0 backdrop-blur-xs z-20 animate-in fade-in slide-in-from-bottom-4 duration-500"
+          "fade-in slide-in-from-bottom-4 fixed inset-0 z-20 flex animate-in items-center justify-center backdrop-blur-xs duration-500"
         )}
       >
         <AuthCard

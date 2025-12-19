@@ -1,5 +1,5 @@
-import type { CustomUIMessage } from "@/types/chat";
 import { create } from "zustand";
+import type { CustomUIMessage } from "@/types/chat";
 
 type ChatStatus = "submitted" | "streaming" | "ready" | "error";
 

@@ -1,19 +1,19 @@
 "use client";
 
+import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
-import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
-import TextareaAutosize from "react-textarea-autosize";
 
 export default function InputTextarea({
   handleSendMessage,
-}: {
+}: Readonly<{
   handleSendMessage: (e: KeyboardEvent<HTMLTextAreaElement>) => Promise<void>;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -65,7 +65,7 @@ export default function InputTextarea({
     if (storedInput) {
       setInput(storedInput);
     }
-  }, []);
+  }, [setInput]);
 
   return (
     <TextareaAutosize
@@ -80,7 +80,7 @@ export default function InputTextarea({
       onKeyDown={handleKeyDown}
       onPaste={handlePaste}
       rows={1}
-      className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 text-base sm:text-sm resize-none"
+      className="flex max-h-80 min-h-10 w-full resize-none bg-transparent text-base placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
     />
   );
 }

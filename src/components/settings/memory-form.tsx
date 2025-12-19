@@ -1,5 +1,8 @@
 "use client";
 
+import { use, useEffect, useRef, useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,9 +23,6 @@ import {
 } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import type { PublicProvider } from "@/types/provider";
-import { use, useEffect, useRef, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 export default function MemoryForm({
   defaultModel,
@@ -61,7 +61,12 @@ export default function MemoryForm({
         });
       });
     }
-  }, [selectedModel, defaultModel]);
+  }, [
+    selectedModel,
+    defaultModel,
+    translations.settings.memory.defaultModel.sonner.description,
+    translations.settings.memory.defaultModel.sonner.title,
+  ]);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -81,14 +86,20 @@ export default function MemoryForm({
         description,
       });
     });
-  }, [enabled]);
+  }, [
+    enabled,
+    translations.settings.memory.sonner.disabled.description,
+    translations.settings.memory.sonner.disabled.title,
+    translations.settings.memory.sonner.enabled.description,
+    translations.settings.memory.sonner.enabled.title,
+  ]);
 
   return (
-    <div className="flex flex-col gap-4 items-start">
-      <h4 className="text-sm font-medium">
+    <div className="flex flex-col items-start gap-4">
+      <h4 className="font-medium text-sm">
         {translations.settings.memory.defaultModel.title}
       </h4>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         {translations.settings.memory.defaultModel.description}
       </p>
       <div>
@@ -112,16 +123,16 @@ export default function MemoryForm({
           </SelectContent>
         </Select>
       </div>
-      <h4 className="text-sm font-medium">{translations.settings.memory.sectionTitle}</h4>
+      <h4 className="font-medium text-sm">{translations.settings.memory.sectionTitle}</h4>
       <div className="flex items-center gap-2">
         <Switch id="memory" checked={enabled} onCheckedChange={setEnabled} />
         <Label htmlFor="memory">{translations.settings.memory.toggle.title}</Label>
       </div>
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {translations.settings.memory.toggle.description}
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           {enabled
             ? translations.settings.memory.toggle.descriptionEnabled
             : translations.settings.memory.toggle.descriptionDisabled}
@@ -129,7 +140,7 @@ export default function MemoryForm({
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full items-start"
+        className="flex w-full flex-col items-start gap-4"
       >
         <Textarea
           name="memory"
@@ -139,7 +150,7 @@ export default function MemoryForm({
           rows={6}
           className="resize-none"
         />
-        <Button type="submit" className="px-5 self-end" disabled={!enabled || isPending}>
+        <Button type="submit" className="self-end px-5" disabled={!enabled || isPending}>
           {translations.settings.memory.saveButton}
         </Button>
       </form>

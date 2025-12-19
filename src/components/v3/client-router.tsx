@@ -1,11 +1,11 @@
 "use client";
 
+import { type ReactNode, useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ChatLayout from "@/components/v3/chat-layout";
 import V3IdPage from "@/components/v3/v3-id-page";
 import V3IdTempPage from "@/components/v3/v3-id-temp-page";
 import V3Page from "@/components/v3/v3-page";
-import { type ReactNode, useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 export default function ClientRouter({
   jwtConfigured,

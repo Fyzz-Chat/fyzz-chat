@@ -1,13 +1,13 @@
-import { auth } from "@/auth";
-import CatalystBadge from "@/components/footer/catalyst-badge";
-import GitHub from "@/components/icons/github";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 import { Suspense } from "react";
+import { auth } from "@/auth";
+import CatalystBadge from "@/components/footer/catalyst-badge";
+import GitHub from "@/components/icons/github";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 async function HeaderItems() {
   const session = await auth.api.getSession({
@@ -40,11 +40,11 @@ export default async function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-col flex-1 mx-auto max-w-7xl w-full">
-      <header className="flex w-full p-4 gap-4 justify-end items-center">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
+      <header className="flex w-full items-center justify-end gap-4 p-4">
         <Link
           href="/"
-          className="flex gap-2 items-center mr-auto font-medium text-lg whitespace-pre"
+          className="mr-auto flex items-center gap-2 whitespace-pre font-medium text-lg"
         >
           <Image src="/icon.svg" alt="Catalyst" width={30} height={30} />
           Fyzz.chat
@@ -54,7 +54,7 @@ export default async function Layout({
         </Suspense>
       </header>
       {children}
-      <footer className="flex w-full p-4 justify-between items-center">
+      <footer className="flex w-full items-center justify-between p-4">
         <CatalystBadge />
         <div className="flex size-6 text-foreground">
           <a

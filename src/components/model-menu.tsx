@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { AlertCircle, Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import React, { memo, use, useEffect, useState } from "react";
 import { HoverPopover } from "@/components/hover-popover";
 import { KeyHandler } from "@/components/key-handler";
 import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
@@ -15,10 +19,6 @@ import { useModelMenuStore } from "@/stores/model-menu-store";
 import { useModelStore } from "@/stores/model-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import type { Status } from "@/types/status";
-import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Check, ChevronDown, Maximize2, Minimize2 } from "lucide-react";
-import { usePathname } from "next/navigation";
-import React, { memo, use, useEffect, useState } from "react";
 import {
   Command,
   CommandEmpty,
@@ -71,7 +71,7 @@ function ModelMenu() {
     if (pathname === "/chat" && !isLoading) {
       setDefaultModel(defaultModel || undefined);
     }
-  }, [pathname, defaultModel, isLoading]);
+  }, [pathname, defaultModel, isLoading, setDefaultModel]);
 
   useEffect(() => {
     if (!modelMenuOpen) {
@@ -88,16 +88,16 @@ function ModelMenu() {
             <Button
               variant="secondary"
               size="sm"
-              className="md:flex items-center gap-2"
+              className="items-center gap-2 md:flex"
               disabled={!model}
             >
               {model?.name ? (
                 <span>{model?.name}</span>
               ) : (
-                <div className="flex space-x-1 justify-center items-center">
-                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                  <div className="size-1 bg-muted-foreground rounded-full animate-bounce"></div>
+                <div className="flex items-center justify-center space-x-1">
+                  <div className="size-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
+                  <div className="size-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
+                  <div className="size-1 animate-bounce rounded-full bg-muted-foreground"></div>
                 </div>
               )}
               <ChevronDown size={16} />
@@ -106,7 +106,7 @@ function ModelMenu() {
           <PopoverContent
             className={cn(
               "p-0 transition-all duration-300 ease-out",
-              isEnlarged ? "w-[500px]" : "w-[300px]"
+              isEnlarged ? "w-125" : "w-75"
             )}
             align="start"
           >
@@ -114,12 +114,12 @@ function ModelMenu() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1 z-10 size-7"
+                className="absolute top-1 right-1 z-10 size-7"
                 onClick={() => setIsEnlarged(!isEnlarged)}
               >
                 {isEnlarged ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               </Button>
-              <div className="transition-all duration-300 ease-out overflow-hidden">
+              <div className="overflow-hidden transition-all duration-300 ease-out">
                 <StatusList
                   setOpen={setModelMenuOpen}
                   providers={providers}
@@ -176,12 +176,12 @@ function StatusList({
   providers,
   isEnlarged = false,
   status,
-}: {
+}: Readonly<{
   setOpen: (open: boolean) => void;
   providers: PublicProvider[];
   isEnlarged?: boolean;
   status?: Status;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const stableId = useStableId();
@@ -216,8 +216,8 @@ function StatusList({
         className={cn(
           "transition-all duration-300 ease-out",
           isEnlarged
-            ? "max-h-[min(600px,calc(100vh-12rem))]"
-            : "max-h-[min(400px,calc(100vh-12rem))]"
+            ? "max-h-[min(600px,calc(100vh-15rem))]"
+            : "max-h-[min(400px,calc(100vh-15rem))]"
         )}
       >
         <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
@@ -237,7 +237,7 @@ function StatusList({
                       <TooltipTrigger asChild>
                         <AlertCircle
                           size={18}
-                          className="ml-auto mr-0.5 text-destructive"
+                          className="mr-0.5 ml-auto text-destructive"
                         />
                       </TooltipTrigger>
                       <TooltipContent>
@@ -251,7 +251,7 @@ function StatusList({
             className={cn(
               "transition-all duration-300 ease-out",
               isEnlarged &&
-                "**:[[cmdk-group-items]]:grid **:[[cmdk-group-items]]:grid-cols-3 **:[[cmdk-group-items]]:gap-2 p-2"
+                "p-2 **:[[cmdk-group-items]]:grid **:[[cmdk-group-items]]:grid-cols-3 **:[[cmdk-group-items]]:gap-2"
             )}
           >
             {provider.models.map((model: PublicModel) => (
@@ -263,10 +263,10 @@ function StatusList({
                   setOpen(false);
                 }}
                 className={cn(
-                  "group relative flex justify-between transition-all duration-300 ease-out border",
+                  "group relative flex justify-between border transition-all duration-300 ease-out",
                   isEnlarged
-                    ? "py-3 px-3 flex-col items-center gap-1 h-[160px] border-border"
-                    : "pl-6 border-none",
+                    ? "h-40 flex-col items-center gap-1 border-border px-3 py-3"
+                    : "border-none pl-6",
                   model.id === selectedModel?.id ? "border-primary" : "border-transparent"
                 )}
               >
@@ -282,7 +282,7 @@ function StatusList({
                 <div
                   className={cn(
                     "hidden",
-                    isEnlarged && "grid place-items-center size-full"
+                    isEnlarged && "grid size-full place-items-center"
                   )}
                 >
                   {React.createElement(
@@ -292,11 +292,13 @@ function StatusList({
                 </div>
                 <div className="flex gap-0.5">
                   {model.features?.map((feature: Feature) => (
-                    <HoverPopover key={feature.name} content={feature.description}>
-                      <div
-                        className="rounded-full p-1"
-                        onClick={(e) => e.stopPropagation()} // Prevent triggering the CommandItem's onSelect
-                      >
+                    <HoverPopover
+                      key={feature.name}
+                      content={feature.description}
+                      triggerAriaLabel={feature.name}
+                      stopPropagation
+                    >
+                      <span className="rounded-full p-1">
                         {React.createElement(
                           featureIcons[feature.icon as keyof typeof featureIcons],
                           {
@@ -307,7 +309,7 @@ function StatusList({
                             ),
                           }
                         )}
-                      </div>
+                      </span>
                     </HoverPopover>
                   ))}
                 </div>

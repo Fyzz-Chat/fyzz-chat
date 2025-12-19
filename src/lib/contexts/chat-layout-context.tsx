@@ -1,7 +1,7 @@
 "use client";
 
+import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
 import type { ChatLayout } from "@/types/chat";
-import { type ReactNode, createContext, useCallback, useContext, useState } from "react";
 
 const CHAT_LAYOUT_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
@@ -23,12 +23,13 @@ export function useChatLayout() {
 export function ChatLayoutContextProvider({
   children,
   defaultLayout = "wide",
-}: {
+}: Readonly<{
   children: ReactNode;
   defaultLayout?: ChatLayout;
-}) {
+}>) {
   const [layout, _setLayout] = useState<ChatLayout>(defaultLayout);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: Neet furhter investigation
   const setLayout = useCallback(
     (layout: ChatLayout) => {
       document.cookie = `fyzz-chat-layout=${layout}; path=/; max-age=${CHAT_LAYOUT_COOKIE_MAX_AGE}`;

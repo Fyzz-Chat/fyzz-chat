@@ -1,9 +1,9 @@
 "use client";
 
+import { use } from "react";
 import { LayoutSelector } from "@/components/settings/layout-selector";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { use } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 export function DisplaySettingsTab() {
@@ -18,22 +18,22 @@ export function DisplaySettingsTab() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col space-y-2">
-          <h3 className="text-sm font-medium">
+          <h3 className="font-medium text-sm">
             {translations.settings.display.layout.title}
           </h3>
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {translations.settings.display.layout.description}
             </p>
             <LayoutSelector />
           </div>
         </div>
         <div className="flex flex-col space-y-2">
-          <h3 className="text-sm font-medium">
+          <h3 className="font-medium text-sm">
             {translations.settings.display.theme.title}
           </h3>
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {translations.settings.display.theme.description}
             </p>
             <ThemeToggle />

@@ -4,9 +4,9 @@ import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 
 export default function V3Page() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
+    <div className="flex flex-1 items-center justify-center p-4">
       <ViewTransitionWrapper className="flex flex-1 items-center justify-center">
-        <div className="max-w-2xl w-full space-y-4">
+        <div className="w-full max-w-2xl space-y-4">
           <ChatWelcomeSection>
             <IntroDialog />
           </ChatWelcomeSection>

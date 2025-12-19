@@ -1,12 +1,12 @@
 "use client";
 
+import { type FormEvent, use, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { type FormEvent, use, useState } from "react";
-import { toast } from "sonner";
 
 export default function PasswordResetForm({ token }: { token: string }) {
   const [isPending, setIsPending] = useState(false);
@@ -68,7 +68,7 @@ export default function PasswordResetForm({ token }: { token: string }) {
           required
         />
       </div>
-      <Button type="submit" className="w-full mt-2" disabled={isPending}>
+      <Button type="submit" className="mt-2 w-full" disabled={isPending}>
         {translations.resetPassword.submit}
       </Button>
     </form>

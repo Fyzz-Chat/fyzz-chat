@@ -1,8 +1,8 @@
 "use client";
 
-import publicConf from "@/lib/public-config";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import type { RefObject } from "react";
+import publicConf from "@/lib/public-config";
 
 export default function TurnstileComponent({
   turnstileRef,

@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import IconViewportNarrow from "@/components/icons/icon-viewport-narrow";
 import IconViewportWide from "@/components/icons/icon-viewport-wide";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { use } from "react";
 
 export function LayoutSelector() {
   const translationsPromise = useTranslations();

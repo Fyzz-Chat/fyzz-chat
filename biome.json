@@ -1,5 +1,14 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["src/**", "emails/**", "scripts/**", "!src/lib/prisma/generated"]
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -9,82 +18,30 @@
     "lineWidth": 90,
     "attributePosition": "auto"
   },
-  "files": {
-    "ignoreUnknown": false,
-    "ignore": ["src/lib/prisma/generated", ".next"],
-    "include": ["src", "emails"]
-  },
-  "organizeImports": {
-    "enabled": true
-  },
   "linter": {
     "enabled": true,
+    "domains": {
+      "next": "recommended"
+    },
     "rules": {
-      "recommended": false,
-      "complexity": {
-        "noExtraBooleanCast": "error",
-        "noMultipleSpacesInRegularExpressionLiterals": "error",
-        "noUselessCatch": "error",
-        "noWith": "error",
-        "useArrowFunction": "off"
+      "recommended": true,
+      "suspicious": {
+        "noUnknownAtRules": "warn",
+        "noExplicitAny": "error",
+        "noEmptyBlockStatements": "error",
+        "useBiomeIgnoreFolder": "error"
       },
       "correctness": {
-        "noConstAssign": "error",
-        "noConstantCondition": "error",
-        "noEmptyCharacterClassInRegex": "error",
-        "noEmptyPattern": "error",
-        "noGlobalObjectCalls": "error",
-        "noInnerDeclarations": "error",
-        "noInvalidConstructorSuper": "error",
-        "noNewSymbol": "error",
-        "noNonoctalDecimalEscape": "error",
-        "noPrecisionLoss": "error",
-        "noSelfAssign": "error",
-        "noSetterReturn": "error",
-        "noSwitchDeclarations": "error",
-        "noUndeclaredVariables": "error",
-        "noUnreachable": "error",
-        "noUnreachableSuper": "error",
-        "noUnsafeFinally": "error",
-        "noUnsafeOptionalChaining": "error",
-        "noUnusedLabels": "error",
-        "noUnusedVariables": "error",
-        "useIsNan": "error",
-        "useValidForDirection": "error",
-        "useYield": "error"
+        "noUnusedImports": "error",
+        "noUndeclaredVariables": "error"
       },
-      "style": {
-        "useBlockStatements": "off",
-        "useTemplate": "error",
-        "useImportType": "error"
+      "nursery": {
+        "useSortedClasses": "error"
       },
-      "suspicious": {
-        "noAssignInExpressions": "error",
-        "noAsyncPromiseExecutor": "error",
-        "noCatchAssign": "error",
-        "noClassAssign": "error",
-        "noCompareNegZero": "error",
-        "noControlCharactersInRegex": "error",
-        "noDebugger": "error",
-        "noDuplicateCase": "error",
-        "noDuplicateClassMembers": "error",
-        "noDuplicateObjectKeys": "error",
-        "noDuplicateParameters": "error",
-        "noEmptyBlockStatements": "error",
-        "noFallthroughSwitchClause": "error",
-        "noFunctionAssign": "error",
-        "noGlobalAssign": "error",
-        "noImportAssign": "error",
-        "noMisleadingCharacterClass": "error",
-        "noPrototypeBuiltins": "error",
-        "noRedeclare": "error",
-        "noShadowRestrictedNames": "error",
-        "noUnsafeNegation": "error",
-        "useGetterReturn": "error",
-        "useValidTypeof": "error"
+      "performance": {
+        "noImgElement": "off"
       }
-    },
-    "ignore": ["src/lib/prisma/client/**"]
+    }
   },
   "javascript": {
     "formatter": {
@@ -97,6 +54,19 @@
       "bracketSameLine": false,
       "quoteStyle": "double",
       "attributePosition": "auto"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
     }
   }
 }

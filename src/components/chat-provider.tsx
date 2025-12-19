@@ -1,15 +1,15 @@
 "use client";
 
+import { useChat } from "@ai-sdk/react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import { useStableId } from "@/hooks/use-stable-id";
 import { useAddMessage } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
-import { useChat } from "@ai-sdk/react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * This component is a "controller" that bridges the `ai/react` `useChat` hook
@@ -117,7 +117,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         );
       },
     });
-  }, [stop, regenerate, setInput, sendMessage, setMessages]);
+  }, [stop, regenerate, sendMessage, setMessages]);
 
   // Effect to handle automatic submission on input change
   useEffect(() => {
@@ -158,6 +158,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     model,
     browse,
     temporaryChat,
+    setMessages,
   ]);
 
   return children;

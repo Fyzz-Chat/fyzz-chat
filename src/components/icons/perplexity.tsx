@@ -1,7 +1,10 @@
 export default function Perplexity({
   size = 16,
   className,
-}: { size?: number; className?: string }) {
+}: {
+  size?: number;
+  className?: string;
+}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +13,9 @@ export default function Perplexity({
       height={size}
       fill="currentColor"
       className={className}
+      aria-label="Perplexity logo"
     >
+      <title id="perplexity-title">Perplexity logo</title>
       <g transform="matrix(1,0,0,1,0,0)">
         {" "}
         <g transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)">

@@ -1,5 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
+import { use } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,9 +15,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useTRPC } from "@/lib/trpc/client";
-import { useQuery } from "@tanstack/react-query";
-import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
-import { use } from "react";
 
 export default function Examples() {
   const translationsPromise = useTranslations();

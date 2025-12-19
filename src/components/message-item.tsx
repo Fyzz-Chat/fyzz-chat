@@ -1,11 +1,11 @@
+import { Check, Copy, Edit, Loader2, RefreshCw, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import { useRegenerateMessage } from "@/lib/queries/conversations";
 import { cn, getMessageContent } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
-import { Check, Copy, Edit, Loader2, RefreshCw, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import TextareaAutosize from "react-textarea-autosize";
 import { MessageContent } from "./message-content";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
@@ -13,7 +13,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 export function MessageItem({
   message,
   conversationId,
-}: { message: CustomUIMessage; conversationId: string }) {
+}: {
+  message: CustomUIMessage;
+  conversationId: string;
+}) {
   const regenerateMessage = useRegenerateMessage();
 
   const temporaryChat = useModelStore((state) => state.temporaryChat);
@@ -84,6 +87,7 @@ export function MessageItem({
     }
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
   useEffect(() => {
     if (isEditing) {
       const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
@@ -109,17 +113,17 @@ export function MessageItem({
     <div
       data-message-id={message.id}
       className={cn(
-        "flex flex-col gap-1 group w-full",
+        "group flex w-full flex-col gap-1",
         message.role === "user" ? "ml-auto max-w-[80%] items-end" : "mr-auto max-w-full"
       )}
     >
       {isEditing ? (
-        <div className="flex items-center gap-1 w-full">
+        <div className="flex w-full items-center gap-1">
           <TextareaAutosize
             id="edit-message"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="flex min-h-10 max-h-80 w-full bg-transparent placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 resize-none border rounded-lg p-[18px]"
+            className="flex max-h-80 min-h-10 w-full resize-none rounded-lg border bg-transparent p-[18px] placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
       ) : (
@@ -169,12 +173,12 @@ export function MessageItem({
                   {isCopied ? (
                     <Check
                       size={18}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                      className="opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                     />
                   ) : (
                     <Copy
                       size={18}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                      className="opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                     />
                   )}
                 </Button>
@@ -185,7 +189,7 @@ export function MessageItem({
             </Tooltip>
           </TooltipProvider>
           {isCopied && (
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-background text-foreground px-2 py-1 rounded-md text-xs border shadow-md z-20">
+            <div className="absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 transform rounded-md border bg-background px-2 py-1 text-foreground text-xs shadow-md">
               Copied!
             </div>
           )}
@@ -208,7 +212,7 @@ export function MessageItem({
                 ) : (
                   <RefreshCw
                     size={18}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                    className="opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                   />
                 )}
               </Button>
@@ -219,8 +223,8 @@ export function MessageItem({
           </Tooltip>
         </TooltipProvider>
         {message.role === "assistant" && (
-          <div className="flex h-full self-center ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
-            <p className="text-xs text-muted-foreground">{model?.name}</p>
+          <div className="ml-2 flex h-full self-center opacity-0 transition-opacity duration-100 group-hover:opacity-100">
+            <p className="text-muted-foreground text-xs">{model?.name}</p>
           </div>
         )}
         <TooltipProvider>
@@ -237,7 +241,7 @@ export function MessageItem({
               >
                 <Edit
                   size={18}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                  className="opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                 />
               </Button>
             </TooltipTrigger>

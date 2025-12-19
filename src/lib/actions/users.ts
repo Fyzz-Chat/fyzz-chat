@@ -2,6 +2,8 @@
 
 import "server-only";
 
+import type { JsonValue } from "@prisma/client/runtime/client";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import conf from "@/lib/config";
 import { getUserIdFromSession } from "@/lib/dao/users";
@@ -12,15 +14,13 @@ import { turnstileFailedResponse, verifyTurnstile } from "@/lib/turnstile";
 import type { FormState } from "@/lib/utils";
 import {
   type LoginFormData,
-  type RegisterFormData,
   loginSchema,
+  type RegisterFormData,
   registerSchema,
 } from "@/types/auth";
-import type { JsonValue } from "@prisma/client/runtime/client";
-import { headers } from "next/headers";
 
 export async function signInUser(
-  _prevState: any,
+  _prevState: FormState,
   formData: LoginFormData
 ): Promise<FormState> {
   const parsed = loginSchema.safeParse(formData);
@@ -57,7 +57,7 @@ export async function signInUser(
       description: "You have been successfully signed in.",
       success: true,
     };
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return {
       message: "Failed to sign in",
@@ -68,7 +68,7 @@ export async function signInUser(
 }
 
 export async function registerUser(
-  _prevState: any,
+  _prevState: FormState,
   formData: RegisterFormData
 ): Promise<FormState> {
   const parsed = registerSchema.safeParse(formData);
@@ -106,7 +106,7 @@ export async function registerUser(
       description: "You have been successfully registered.",
       success: true,
     };
-  } catch (error: any) {
+  } catch (error) {
     logger.error(error);
     return {
       message: "Registration failed",

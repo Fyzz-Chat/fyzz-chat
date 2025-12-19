@@ -26,7 +26,7 @@ export class CompositeAbortController {
   }
 
   // Auto-abort after specified seconds
-  abortIn(seconds: number, reason?: any): void {
+  abortIn(seconds: number, reason?: string | Error): void {
     if (this.aborted) return; // Don't set timeout if already aborted
 
     this.cancelAbort(); // Cancel any existing timeout
@@ -52,18 +52,18 @@ export class CompositeAbortController {
   }
 }
 
-function normalizeAbortReason(reason?: any): any {
+function normalizeAbortReason(reason?: string | Error): Error | DOMException {
   // If already an AbortError/DOMException, keep it
   if (reason instanceof Error && reason.name === "AbortError") return reason;
   // Prefer DOMException when available for web compatibility
   const message = typeof reason === "string" ? reason : "Aborted";
   try {
     // DOMException may not exist in some Node runtimes
-    const domEx = new (globalThis as any).DOMException(message, "AbortError");
+    const domEx = new DOMException(message, "AbortError");
     return domEx;
   } catch {
     const err = new Error(message);
-    (err as any).name = "AbortError";
+    err.name = "AbortError";
     return err;
   }
 }

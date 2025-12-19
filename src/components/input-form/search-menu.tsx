@@ -1,5 +1,7 @@
 "use client";
 
+import { Ban, Globe } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,8 +14,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
-import { Ban, Globe } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function SearchMenu() {
   const model = useModelStore((state) => state.model);
@@ -25,7 +25,7 @@ export default function SearchMenu() {
   // Update search state when model changes
   useEffect(() => {
     setSearch(isSonar ? "web" : "none");
-  }, [isSonar, searchSupport]);
+  }, [isSonar]);
 
   function handleChange(value: string) {
     setSearch(value);
@@ -44,27 +44,27 @@ export default function SearchMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => handleChange("none")}>
           <div
-            className={cn("flex gap-2 items-start", search === "none" && "text-primary")}
+            className={cn("flex items-start gap-2", search === "none" && "text-primary")}
           >
             <div className="flex pt-0.5">
               <Ban size={16} />
             </div>
             <div className="flex flex-col gap-0.5">
               <p>None</p>
-              <p className="text-xs text-muted-foreground">Default model behavior</p>
+              <p className="text-muted-foreground text-xs">Default model behavior</p>
             </div>
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleChange("web")}>
           <div
-            className={cn("flex gap-2 items-start", search === "web" && "text-primary")}
+            className={cn("flex items-start gap-2", search === "web" && "text-primary")}
           >
             <div className="flex pt-0.5">
               <Globe size={16} />
             </div>
             <div className="flex flex-col gap-0.5">
               <p>Web</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Search the web for information
               </p>
             </div>

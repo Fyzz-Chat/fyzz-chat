@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+import type { Metadata, ResolvedMetadata, ResolvingMetadata } from "next";
+import { notFound } from "next/navigation";
 import { MessageContent } from "@/components/message-content";
 import { ScrollToBottom } from "@/components/share/scroll-to-bottom";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -5,9 +8,6 @@ import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
-import jwt from "jsonwebtoken";
-import type { Metadata, ResolvedMetadata, ResolvingMetadata } from "next";
-import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ token: string }>;
@@ -46,7 +46,9 @@ export async function generateMetadata(
 
 export default async function SharePage({
   params,
-}: { params: Promise<{ token: string }> }) {
+}: {
+  params: Promise<{ token: string }>;
+}) {
   const { token } = await params;
 
   const tokenData = jwt.verify(token, conf.jwtSecret) as { messageId: string };
@@ -59,14 +61,15 @@ export default async function SharePage({
 
   return (
     <>
-      <div className="relative h-6 -mb-6 bg-linear-to-b from-background to-transparent pointer-events-none z-10" />
-      <ScrollArea className="h-[calc(100svh-72px-62px)] px-4 mx-4">
-        <div className="flex flex-1 flex-col gap-8 max-w-5xl w-full mx-auto my-6">
+      <div className="pointer-events-none relative z-10 -mb-6 h-6 bg-linear-to-b from-background to-transparent" />
+      <ScrollArea className="mx-4 h-[calc(100svh-72px-62px)] px-4">
+        <div className="mx-auto my-6 flex w-full max-w-5xl flex-1 flex-col gap-8">
+          {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
           {conversation.messages.map((message: any) => (
             <div
               key={message.id}
               className={cn(
-                "flex flex-col gap-1 group",
+                "group flex flex-col gap-1",
                 message.role === "user"
                   ? "ml-auto max-w-[80%] items-end"
                   : "mr-auto max-w-full"
@@ -78,7 +81,7 @@ export default async function SharePage({
         </div>
       </ScrollArea>
       <ScrollToBottom />
-      <div className="relative h-6 -mt-6 bg-linear-to-t from-background to-transparent pointer-events-none z-10" />
+      <div className="pointer-events-none relative z-10 -mt-6 h-6 bg-linear-to-t from-background to-transparent" />
     </>
   );
 }

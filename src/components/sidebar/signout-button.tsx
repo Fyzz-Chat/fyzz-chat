@@ -1,10 +1,10 @@
 "use client";
 
-import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { signOut } from "@/lib/auth-client";
 import { LoaderCircle, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { signOut } from "@/lib/auth-client";
 
 export function SignOut({ buttonText }: { buttonText: string }) {
   const [isLoading, setIsLoading] = useState(false);

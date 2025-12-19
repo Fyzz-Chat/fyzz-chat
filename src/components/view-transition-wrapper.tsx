@@ -1,12 +1,15 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { type ReactNode, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export default function ViewTransitionWrapper({
   children,
   className,
-}: { children: ReactNode; className?: string }) {
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
