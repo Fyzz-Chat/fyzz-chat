@@ -119,12 +119,7 @@ function ModelMenu() {
               >
                 {isEnlarged ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               </Button>
-              <div
-                className={cn(
-                  "overflow-hidden transition-all duration-300 ease-out",
-                  isEnlarged ? "h-150" : "h-100"
-                )}
-              >
+              <div className="overflow-hidden transition-all duration-300 ease-out">
                 <StatusList
                   setOpen={setModelMenuOpen}
                   providers={providers}
@@ -220,7 +215,9 @@ function StatusList({
       <CommandList
         className={cn(
           "transition-all duration-300 ease-out",
-          isEnlarged ? "max-h-150" : "max-h-100"
+          isEnlarged
+            ? "max-h-[min(600px,calc(100vh-15rem))]"
+            : "max-h-[min(400px,calc(100vh-15rem))]"
         )}
       >
         <CommandEmpty>{translations.input.modelMenu.noResults}</CommandEmpty>
