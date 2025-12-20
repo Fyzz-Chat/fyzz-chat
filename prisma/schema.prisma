@@ -34,28 +34,11 @@ model User {
   memoryEnabled Boolean        @default(false) @map("memory_enabled")
   mcpServers    Json?          @map("mcp_servers")
   defaultModel  String?        @map("default_model")
-  notifications Notification[]
   conversations Conversation[]
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
 
   @@map("users")
-}
-
-model Notification {
-  id        Int      @id @default(autoincrement())
-  type      String
-  title     String
-  content   String
-  link      String?
-  read      Boolean  @default(false)
-  archived  Boolean  @default(false)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String   @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("notifications")
 }
 
 model Conversation {
