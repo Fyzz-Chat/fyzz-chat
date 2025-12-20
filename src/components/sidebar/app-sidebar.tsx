@@ -47,7 +47,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
             </a>
             <NewChatButton />
           </div>
-          <div className="flex items-center pr-2">
+          <div className="flex items-center pt-2 pr-2">
             <SearchField />
           </div>
           <StatusNotification />
