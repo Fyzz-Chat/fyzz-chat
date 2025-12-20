@@ -31,7 +31,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
   return (
     <>
       <Sidebar className="border-none">
-        <SidebarHeader className="flex-col gap-4 py-4 pr-4 pl-4 md:pr-2">
+        <SidebarHeader className="flex-col gap-4 p-2 pl-4">
           <div className="flex w-full items-center justify-between gap-2">
             <FastLink to="/chat" className="flex items-center justify-start gap-2">
               <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
@@ -47,12 +47,12 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
             </a>
             <NewChatButton />
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center pr-2">
             <SearchField />
           </div>
           <StatusNotification />
         </SidebarHeader>
-        <SidebarContent className="relative pr-2 pl-2 md:pr-0">
+        <SidebarContent className="relative px-2">
           <div className="pointer-events-none absolute top-0 right-0 left-0 z-10 h-4 bg-linear-to-b from-sidebar to-transparent" />
           {children}
           <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-4 bg-linear-to-t from-sidebar to-transparent" />

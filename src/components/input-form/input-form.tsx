@@ -132,10 +132,7 @@ export default function InputForm({ className }: { className?: string }) {
 
   return (
     <div
-      className={cn(
-        "w-full flex-none rounded-b-[20px] bg-background pt-1 sm:px-4 sm:pb-4",
-        className
-      )}
+      className={cn("w-full flex-none rounded-b-[20px] pt-1 sm:px-4 sm:pb-4", className)}
     >
       <form
         onSubmit={handleSendMessage}

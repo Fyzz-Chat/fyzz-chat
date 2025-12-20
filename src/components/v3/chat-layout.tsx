@@ -12,7 +12,7 @@ export default function ChatLayout() {
       <EscapeHandler />
       <HelpDialog />
       <ModelStoreInitializer />
-      <div className="relative flex max-h-svh min-w-[320px] flex-1 flex-col bg-background pt-14 md:rounded-[20px]">
+      <div className="relative flex max-h-svh min-w-[320px] flex-1 flex-col pt-14">
         <div className="h-px w-full border-b" />
         <Outlet />
       </div>

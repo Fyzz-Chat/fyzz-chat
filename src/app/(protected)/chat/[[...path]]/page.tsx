@@ -39,8 +39,8 @@ export default async function CatchAll({
               authorized={Boolean(user)}
             />
           </AppSidebar>
-          <SidebarInset className="relative overflow-auto bg-sidebar md:p-2">
-            <SidebarTrigger className="absolute top-2 left-2 z-20 size-8 touch-manipulation p-5 md:top-4 md:left-4" />
+          <SidebarInset className="relative overflow-auto">
+            <SidebarTrigger className="absolute top-2 left-2 z-20 size-8 touch-manipulation p-5" />
             <AuthPopup searchParams={searchParamsPromise} />
             <Outlet />
           </SidebarInset>
