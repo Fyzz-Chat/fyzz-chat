@@ -230,10 +230,8 @@ function StatusList({
                       : "border-transparent"
                   )}
                 >
-                  {model.id === selectedModel?.id && (
-                    <Check className="absolute left-0 size-4 text-primary" />
-                  )}
                   <span className="text-center">{model.name}</span>
+                  {model.id === selectedModel?.id && <Check className="mr-auto size-4" />}
                   <div className="flex gap-0.5">
                     {model.features?.map((feature: Feature) => (
                       <Tooltip key={feature.name} delayDuration={0}>
