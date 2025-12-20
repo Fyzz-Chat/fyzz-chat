@@ -3,13 +3,13 @@
 import { Loader2 } from "lucide-react";
 import { memo, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import LastMessage from "@/components/last-message";
+import { LoadingDots } from "@/components/loading-dots";
+import { MessageItem } from "@/components/message-item";
 import { useConversation, useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
-import LastMessage from "./last-message";
-import { MessageItem } from "./message-item";
-import { LoadingDots } from "./ui/loading-dots";
 
 const MemoizedMessageItem = memo(MessageItem);
 
