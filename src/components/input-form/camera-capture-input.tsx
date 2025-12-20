@@ -1,16 +1,13 @@
 "use client";
 
-import { type ChangeEvent, forwardRef, type InputHTMLAttributes } from "react";
+import type * as React from "react";
 import { Input } from "@/components/ui/input";
 import { useFileStore } from "@/stores/file-store";
 
-const CameraCaptureInput = forwardRef<
-  HTMLInputElement,
-  InputHTMLAttributes<HTMLInputElement>
->((props, ref) => {
+function CameraCaptureInput({ ...props }: React.ComponentProps<typeof Input>) {
   const setFiles = useFileStore((state) => state.setFiles);
 
-  function handlePhotoCapture(event: ChangeEvent<HTMLInputElement>) {
+  function handlePhotoCapture(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files && event.target.files.length > 0) {
       try {
         // Ensure we have a valid file
@@ -42,7 +39,7 @@ const CameraCaptureInput = forwardRef<
 
   return (
     <Input
-      ref={ref}
+      data-slot="camera-capture-input"
       type="file"
       capture="environment"
       accept="image/*"
@@ -51,8 +48,6 @@ const CameraCaptureInput = forwardRef<
       {...props}
     />
   );
-});
-
-CameraCaptureInput.displayName = "CameraCaptureInput";
+}
 
 export default CameraCaptureInput;
