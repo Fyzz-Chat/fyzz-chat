@@ -231,8 +231,9 @@ function StatusList({
                   )}
                 >
                   <span className="text-center">{model.name}</span>
-                  {model.id === selectedModel?.id && <Check className="mr-auto size-4" />}
-                  <div className="flex gap-0.5">
+                  <span className="text-muted-foreground/40 text-sm">{model.cost}x</span>
+                  {model.id === selectedModel?.id && <Check className="size-4" />}
+                  <div className="ml-auto flex gap-0.5">
                     {model.features?.map((feature: Feature) => (
                       <Tooltip key={feature.name} delayDuration={0}>
                         <TooltipTrigger asChild>
