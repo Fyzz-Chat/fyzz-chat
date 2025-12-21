@@ -155,11 +155,6 @@ export async function POST(req: NextRequest) {
       logger.info(`Stream aborted for user: ${user.id}`);
       await endConversation();
     },
-    onChunk: async ({ chunk }) => {
-      if (chunk.type === "reasoning-delta") {
-        reasoning.onDelta(chunk.id);
-      }
-    },
     onStepFinish: async (result) => {
       if (result.finishReason !== "tool-calls" || result.dynamicToolCalls?.length < 1) {
         return;
@@ -195,6 +190,22 @@ export async function POST(req: NextRequest) {
           createdAt: new Date(),
           reasoningDurations: [],
         };
+      }
+
+      if (part.type === "reasoning-start") {
+        reasoning.startBlock(part.id);
+      }
+
+      if (part.type === "reasoning-end") {
+        const finishedBlock = reasoning.finishBlock(part.id);
+        if (finishedBlock) {
+          return {
+            model: modelId,
+            content: "",
+            createdAt: new Date(),
+            reasoningDurations: reasoning.durations,
+          };
+        }
       }
 
       if (part.type === "finish") {
@@ -334,36 +345,38 @@ function mapFileParts(
 }
 
 function createReasoningTimer() {
-  let currentId: string | null = null;
-  let startMs = 0;
   const durations: { id: string; ms: number }[] = [];
+  const activeBlocks = new Map<string, number>(); // id -> startTime
 
-  function onDelta(id?: string) {
-    if (!id) return;
-    if (currentId === null) {
-      currentId = id;
-      startMs = performance.now();
-      return;
+  function startBlock(id: string) {
+    if (!activeBlocks.has(id)) {
+      activeBlocks.set(id, performance.now());
+      logger.debug(`Started reasoning block ${id}`);
     }
-    if (id !== currentId) {
-      const elapsed = Math.round(performance.now() - startMs);
-      durations.push({ id: currentId, ms: elapsed });
-      logger.debug(`Reasoning step ${currentId} took ${elapsed}ms`);
-      currentId = id;
-      startMs = performance.now();
+  }
+
+  function finishBlock(id: string) {
+    const startTime = activeBlocks.get(id);
+    if (startTime) {
+      const elapsed = Math.round(performance.now() - startTime);
+      durations.push({ id, ms: elapsed });
+      activeBlocks.delete(id);
+      logger.debug(`Finished reasoning block ${id} in ${elapsed}ms`);
+      return { id, ms: elapsed };
     }
+    return null;
   }
 
   function finish() {
-    if (currentId !== null) {
-      const elapsed = Math.round(performance.now() - startMs);
-      durations.push({ id: currentId, ms: elapsed });
-      logger.debug(`Reasoning step ${currentId} took ${elapsed}ms`);
-      logger.debug(`Reasoning durations: ${JSON.stringify(durations)}`);
-      currentId = null;
+    // Finish any remaining active blocks
+    for (const [id, startTime] of activeBlocks) {
+      const elapsed = Math.round(performance.now() - startTime);
+      durations.push({ id, ms: elapsed });
+      logger.debug(`Auto-finished reasoning block ${id} in ${elapsed}ms`);
     }
+    activeBlocks.clear();
     return durations;
   }
 
-  return { onDelta, finish, durations };
+  return { startBlock, finishBlock, finish, durations };
 }
