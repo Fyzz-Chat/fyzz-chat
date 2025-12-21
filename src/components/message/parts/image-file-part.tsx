@@ -47,8 +47,8 @@ export default function ImageFilePart({
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-fit max-w-[95vw] gap-0 overflow-hidden rounded-lg bg-background p-0 [&>button]:hidden">
-        <DialogHeader className="flex h-12 flex-row items-center justify-end gap-2 space-y-0 px-4">
+      <DialogContent className="h-screen max-h-none w-screen max-w-none gap-0 overflow-hidden bg-background p-0 [&>button]:hidden">
+        <DialogHeader className="flex flex-row items-center justify-end gap-2 space-y-0 px-4 py-2">
           <DialogTitle className="sr-only">{name}</DialogTitle>
           <DialogDescription className="sr-only">Image preview</DialogDescription>
           <Button
@@ -65,11 +65,15 @@ export default function ImageFilePart({
             <X size={20} />
           </DialogClose>
         </DialogHeader>
-        <div className="flex items-center justify-center">
-          <img src={url} alt={name} className="max-h-[75vh] object-contain" />
+        <div className="flex items-center justify-center pb-12">
+          <img
+            src={url}
+            alt={name}
+            className="max-h-[calc(100vh-6rem)] max-w-screen object-contain sm:max-w-[95vw]"
+          />
         </div>
         {name && (
-          <DialogFooter className="flex h-24 flex-row items-center justify-between gap-4 p-4">
+          <DialogFooter className="flex flex-row items-center justify-between gap-4 p-4">
             <p className="truncate text-pretty font-medium text-sm text-white">{name}</p>
           </DialogFooter>
         )}
