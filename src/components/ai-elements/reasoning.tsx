@@ -85,15 +85,11 @@ export const Reasoning = memo(
       }
     }, [isStreaming, isOpen, defaultOpen, setIsOpen, hasAutoClosedRef]);
 
-    const handleOpenChange = (newOpen: boolean) => {
-      setIsOpen(newOpen);
-    };
-
     return (
       <ReasoningContext.Provider value={{ isStreaming, isOpen, setIsOpen }}>
         <Collapsible
           className={cn("not-prose", className)}
-          onOpenChange={handleOpenChange}
+          onOpenChange={setIsOpen}
           open={isOpen}
           {...props}
         >
@@ -136,10 +132,7 @@ export const ReasoningTrigger = memo(
             )}
             <ChevronDownIcon
               className={cn(
-                "size-4 text-muted-foreground transition-all",
-                isStreaming && !duration
-                  ? "animate-pulse text-foreground"
-                  : "opacity-0 group-hover/reasoning:opacity-100",
+                "size-4 text-muted-foreground opacity-0 transition-all group-hover/reasoning:opacity-100",
                 isOpen ? "rotate-0 opacity-100" : "-rotate-90"
               )}
             />
