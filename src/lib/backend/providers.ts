@@ -25,6 +25,7 @@ import {
   type PublicModel,
   type PublicProvider,
   pdfType,
+  videoType,
 } from "@/types/provider";
 
 const azureConfigured =
@@ -255,6 +256,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
+        cost: 1,
       },
       {
         id: "gpt-4.1-mini",
@@ -263,6 +265,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
+        cost: 1,
       },
       {
         id: "gpt-4.1",
@@ -271,6 +274,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "gpt-5-nano",
@@ -279,6 +283,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gpt-5-mini",
@@ -287,6 +292,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gpt-5",
@@ -295,6 +301,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 2,
       },
       {
         id: "gpt-5-codex",
@@ -303,6 +310,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "gpt-5.1",
@@ -311,6 +319,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 2,
       },
       {
         id: "gpt-5.1-codex",
@@ -319,6 +328,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "gpt-5.2",
@@ -327,6 +337,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai), // TODO: Change to azure when available
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 3,
       },
       {
         id: "o3-mini",
@@ -335,6 +346,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: [],
+        cost: 1,
       },
       {
         id: "o4-mini",
@@ -343,6 +355,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
+        cost: 1,
       },
       {
         id: "o3",
@@ -351,6 +364,7 @@ const providers: Provider[] = [
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "accounts/fireworks/models/gpt-oss-120b",
@@ -359,6 +373,7 @@ const providers: Provider[] = [
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
+        cost: 1,
       },
     ],
   },
@@ -374,6 +389,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+        cost: 1,
       },
       {
         id: "gpt-4.1-mini",
@@ -382,6 +398,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+        cost: 1,
       },
       {
         id: "gpt-4.1",
@@ -390,6 +407,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "gpt-5-nano",
@@ -398,6 +416,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gpt-5-mini",
@@ -406,6 +425,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gpt-5",
@@ -414,6 +434,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 2,
       },
       {
         id: "gpt-5-codex",
@@ -422,6 +443,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "gpt-5.1",
@@ -430,6 +452,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 2,
       },
       {
         id: "gpt-5.1-codex",
@@ -438,6 +461,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "gpt-5.2",
@@ -446,6 +470,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 3,
       },
       {
         id: "o3-mini",
@@ -454,14 +479,7 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [],
-      },
-      {
-        id: "o3",
-        name: "o3",
-        features: [reasoning],
-        provider: wrappedModel(openai),
-        tools: true,
-        extensions: imageTypes,
+        cost: 1,
       },
       {
         id: "o4-mini",
@@ -470,6 +488,16 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
+        cost: 1,
+      },
+      {
+        id: "o3",
+        name: "o3",
+        features: [reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: imageTypes,
+        cost: 2,
       },
       {
         id: "accounts/fireworks/models/gpt-oss-120b",
@@ -478,6 +506,7 @@ const providers: Provider[] = [
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
+        cost: 1,
       },
     ],
   },
@@ -493,6 +522,7 @@ const providers: Provider[] = [
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes],
+        cost: 1,
       },
       {
         id: "claude-3-5-haiku-20241022",
@@ -501,6 +531,7 @@ const providers: Provider[] = [
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "claude-haiku-4-5-20251001",
@@ -509,31 +540,35 @@ const providers: Provider[] = [
         provider: wrappedModel(anthropic),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
-      // {
-      //   id: "claude-3-7-sonnet-20250219",
-      //   name: "Claude 3.7 Sonnet",
-      //   features: [pdf, reasoning, search],
-      //   provider: wrappedModel(anthropic),
-      //   tools: true,
-      //   extensions: [...imageTypes, pdfType],
-      // },
-      // {
-      //   id: "claude-sonnet-4-20250514",
-      //   name: "Claude Sonnet 4",
-      //   features: [pdf, reasoning, search],
-      //   provider: wrappedModel(anthropic),
-      //   tools: true,
-      //   extensions: [...imageTypes, pdfType],
-      // },
-      // {
-      //   id: "claude-sonnet-4-5",
-      //   name: "Claude Sonnet 4.5",
-      //   features: [pdf, reasoning, search],
-      //   provider: wrappedModel(anthropic),
-      //   tools: true,
-      //   extensions: [...imageTypes, pdfType],
-      // },
+      {
+        id: "claude-sonnet-4-20250514",
+        name: "Claude Sonnet 4",
+        features: [reasoning, search],
+        provider: wrappedModel(anthropic),
+        tools: true,
+        extensions: [...imageTypes, pdfType],
+        cost: 3,
+      },
+      {
+        id: "claude-sonnet-4-5",
+        name: "Claude Sonnet 4.5",
+        features: [reasoning, search],
+        provider: wrappedModel(anthropic),
+        tools: true,
+        extensions: [...imageTypes, pdfType],
+        cost: 3,
+      },
+      {
+        id: "claude-opus-4-5-20251101",
+        name: "Claude Opus 4.5",
+        features: [reasoning, search],
+        provider: wrappedModel(anthropic),
+        tools: true,
+        extensions: [...imageTypes, pdfType],
+        cost: 5,
+      },
     ],
   },
   {
@@ -548,6 +583,7 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gemini-2.0-flash",
@@ -556,6 +592,7 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gemini-2.5-flash",
@@ -563,7 +600,8 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, pdfType, "video/mp4"],
+        extensions: [...imageTypes, pdfType, videoType],
+        cost: 1,
       },
       {
         id: "gemini-2.5-flash-lite",
@@ -572,6 +610,7 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: false,
         extensions: [...imageTypes],
+        cost: 1,
       },
       {
         id: "gemini-2.5-pro",
@@ -579,7 +618,8 @@ const providers: Provider[] = [
         features: [reasoning, search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, pdfType, "video/mp4"],
+        extensions: [...imageTypes, pdfType, videoType],
+        cost: 2,
       },
       {
         id: "gemini-3-flash-preview",
@@ -588,6 +628,7 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "gemini-3-pro-preview",
@@ -596,6 +637,7 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 3,
       },
       {
         id: "gemini-2.5-flash-image",
@@ -604,6 +646,7 @@ const providers: Provider[] = [
         provider: wrappedGoogle,
         tools: false,
         extensions: [...imageTypes],
+        cost: 1,
       },
       // {
       //   id: "gemini-3-pro-image-preview",
@@ -621,19 +664,21 @@ const providers: Provider[] = [
     icon: "xai",
     models: [
       {
-        id: "grok-3-mini-beta",
+        id: "grok-3-mini",
         name: "Grok 3 mini",
         features: [reasoning],
         provider: wrappedModel(xai),
         tools: true,
         extensions: [],
+        cost: 1,
       },
       {
-        id: "grok-3-beta",
+        id: "grok-3",
         name: "Grok 3",
         provider: wrappedModel(xai),
         tools: true,
         extensions: [],
+        cost: 3,
       },
       {
         id: "grok-4-0709",
@@ -642,6 +687,34 @@ const providers: Provider[] = [
         provider: wrappedModel(xai),
         tools: true,
         extensions: imageTypes,
+        cost: 3,
+      },
+      {
+        id: "grok-4-fast-non-reasoning",
+        name: "Grok 4 Fast",
+        features: [],
+        provider: wrappedModel(xai),
+        tools: true,
+        extensions: [...imageTypes, pdfType, videoType],
+        cost: 1,
+      },
+      {
+        id: "grok-code-fast-1",
+        name: "Grok Code Fast 1",
+        features: [coding, reasoning],
+        provider: wrappedModel(xai),
+        tools: true,
+        extensions: [],
+        cost: 1,
+      },
+      {
+        id: "grok-4-1-fast-non-reasoning",
+        name: "Grok 4.1 Fast",
+        features: [],
+        provider: wrappedModel(xai),
+        tools: true,
+        extensions: [...imageTypes],
+        cost: 1,
       },
     ],
   },
@@ -651,27 +724,13 @@ const providers: Provider[] = [
     icon: "meta",
     models: [
       {
-        id: "accounts/fireworks/models/llama-v3p1-405b-instruct",
-        name: "Llama 3.1 405B",
-        provider: wrappedModel(fireworks),
-        tools: true,
-        extensions: [],
-      },
-      {
-        id: "accounts/fireworks/models/llama4-scout-instruct-basic",
-        name: "Llama 4 Scout",
-        features: [],
-        provider: wrappedModel(fireworks),
-        tools: true,
-        extensions: [],
-      },
-      {
         id: "accounts/fireworks/models/llama4-maverick-instruct-basic",
         name: "Llama 4 Maverick",
         features: [],
         provider: wrappedModel(fireworks),
         tools: true,
-        extensions: [],
+        extensions: [...imageTypes],
+        cost: 1,
       },
     ],
   },
@@ -686,6 +745,7 @@ const providers: Provider[] = [
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
+        cost: 1,
       },
       {
         id: "accounts/fireworks/models/deepseek-v3p1-terminus",
@@ -693,6 +753,7 @@ const providers: Provider[] = [
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
+        cost: 1,
       },
     ],
   },
@@ -707,6 +768,7 @@ const providers: Provider[] = [
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
+        cost: 1,
       },
     ],
   },
@@ -722,6 +784,7 @@ const providers: Provider[] = [
         provider: wrappedModel(perplexity),
         tools: false,
         extensions: [],
+        cost: 1,
       },
       {
         id: "sonar-pro",
@@ -730,6 +793,7 @@ const providers: Provider[] = [
         provider: wrappedModel(perplexity),
         tools: false,
         extensions: [],
+        cost: 3,
       },
     ],
   },

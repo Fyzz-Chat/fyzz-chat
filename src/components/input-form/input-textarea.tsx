@@ -8,6 +8,7 @@ import { isFileList } from "@/lib/utils";
 import { useFileStore } from "@/stores/file-store";
 import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
+import type { ExtensionType } from "@/types/provider";
 
 export default function InputTextarea({
   handleSendMessage,
@@ -48,7 +49,7 @@ export default function InputTextarea({
       }
 
       Array.from(clipboardItems).forEach((item) => {
-        if (extensions?.includes(item.type)) {
+        if (extensions?.includes(item.type as ExtensionType)) {
           const file = item.getAsFile();
           if (file) {
             newFiles.items.add(file);

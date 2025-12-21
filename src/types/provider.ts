@@ -18,6 +18,11 @@ export const imageTypes: ImageType[] = [
 export type PDFType = "application/pdf";
 export const pdfType: PDFType = "application/pdf";
 
+export type VideoType = "video/mp4";
+export const videoType: VideoType = "video/mp4";
+
+export type ExtensionType = ImageType | PDFType | VideoType;
+
 export type Model = {
   id: string;
   name: string;
@@ -25,7 +30,8 @@ export type Model = {
   free?: boolean;
   provider: (model: string, browse: boolean) => LanguageModel;
   tools: boolean;
-  extensions: (ImageType | string)[];
+  extensions: ExtensionType[];
+  cost: number;
 };
 
 export type PublicModel = Omit<Model, "provider">;
