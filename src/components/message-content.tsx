@@ -33,7 +33,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/stores/chat-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { pdfType } from "@/types/provider";
-import type { CodeInterpreterOutput } from "@/types/tools";
+import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 import { Reasoning, ReasoningContent, ReasoningTrigger } from "./ai-elements/reasoning";
 
 // import { Response } from "@/components/ai-elements/response";
@@ -391,24 +391,13 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                 </Tool>
               );
             }
-            case "tool-generateImage": {
-              const imageTool = part as GenerateImageToolUIPart;
+            case "tool-image_generation": {
+              const output = part.output as ImageGenerationOutput;
               return (
-                <Tool defaultOpen key={`${message.id}-tool-generateImage-${index}`}>
-                  <ToolHeader type="tool-generateImage" state={part.state} />
+                <Tool open key={`${message.id}-tool-image_generation-${index}`}>
+                  <ToolHeader type="tool-image_generation" state={part.state} />
                   <ToolContent>
-                    <ToolInput input={imageTool.input} />
-                    <ToolOutput
-                      output={
-                        <ImageFilePart
-                          key={`${message.id}-file-${index}`}
-                          url={imageTool.output?.image || ""}
-                          name={imageTool.output?.name}
-                          mediaType={imageTool.output?.contentType}
-                        />
-                      }
-                      errorText={imageTool.errorText}
-                    />
+                    <ImageFilePart url={`data:image/png;base64,${output?.result}`} />
                   </ToolContent>
                 </Tool>
               );

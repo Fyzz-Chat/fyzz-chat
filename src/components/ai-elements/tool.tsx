@@ -5,6 +5,7 @@ import type { ToolUIPart } from "ai";
 import { ChevronDownIcon, WrenchIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useMemo } from "react";
+import { CodeBlock } from "@/components/ai-elements/code-block";
 import ShiningText from "@/components/shining-text";
 import {
   Collapsible,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import type { CodeInterpreterOutput } from "@/types/tools";
-import { CodeBlock } from "./code-block";
 
 type ToolContextValue = {
   isOpen: boolean;

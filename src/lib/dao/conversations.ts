@@ -7,6 +7,7 @@ import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage, PartialMessage } from "@/types/chat";
+import type { ImageGenerationOutput } from "@/types/tools";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();
@@ -258,7 +259,7 @@ function filterParts(
       if (part.type.startsWith("tool-")) {
         return (
           part.type === "tool-memory" ||
-          part.type === "tool-generateImage" ||
+          part.type === "tool-image_generation" ||
           part.type === "tool-readUrl" ||
           part.type === "tool-readYoutube" ||
           part.type === "tool-code_interpreter"
@@ -268,15 +269,16 @@ function filterParts(
       }
     })
     .map((part) => {
-      if (part.type === "tool-generateImage" && part.state === "output-available") {
-        const output = part.output as { url?: string };
+      if (part.type === "tool-image_generation" && part.state === "output-available") {
+        const output = part.output as ImageGenerationOutput;
 
         return {
           ...part,
-          output: {
-            ...output,
-            image: getFileUrlSigned(`${userId}/${conversationId}`, output.url ?? ""),
-          },
+          output,
+          // output: {
+          //   ...output,
+          //   image: getFileUrlSigned(`${userId}/${conversationId}`, output.url ?? ""),
+          // },
         };
       } else if (part.type === "file" && !part.url.startsWith("data:")) {
         const key = `${userId}/${conversationId}`;

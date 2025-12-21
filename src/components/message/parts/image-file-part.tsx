@@ -21,9 +21,14 @@ export default function ImageFilePart({
   mediaType?: string;
 }) {
   const isBase64Image = url.startsWith("data:image");
+  const data = url.split(",")[1];
+
+  if (!data || data === "undefined") {
+    return null;
+  }
 
   if (isBase64Image) {
-    url = base64ToDownloadableUrl(url, mediaType);
+    url = base64ToDownloadableUrl(data, mediaType);
   }
 
   return (
@@ -74,14 +79,12 @@ export default function ImageFilePart({
 }
 
 function base64ToDownloadableUrl(base64: string, mediaType: string) {
-  const base64Data = base64.split(",")[1];
-
-  const binaryString = window.atob(base64Data);
+  const binaryString = globalThis.atob(base64);
 
   const bytes = new Uint8Array(binaryString.length);
 
   for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
+    bytes[i] = binaryString.codePointAt(i) ?? 0;
   }
 
   const blob = new Blob([bytes], { type: mediaType });

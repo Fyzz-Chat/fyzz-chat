@@ -10,3 +10,7 @@ export type CodeInterpreterOutput = {
       }
   > | null;
 };
+
+export type ImageGenerationOutput = {
+  result: string;
+};

@@ -128,11 +128,22 @@ export function getProviderTools(modelId: string, search: boolean) {
     modelId !== "gpt-5.1-codex" &&
     modelId !== "o3-mini";
 
+  const supportsOpenAIImageGeneration =
+    isOpenAIModel && getModelPublic(modelId)?.features?.includes(images);
+
   const tools: { [key: string]: Tool } = {};
 
   if (isOpenAIModel) {
     if (supportsOpenAICodeInterpreter) {
       tools.code_interpreter = openai.tools.codeInterpreter();
+    }
+
+    if (supportsOpenAIImageGeneration) {
+      tools.image_generation = openai.tools.imageGeneration({
+        model: "gpt-image-1.5",
+        outputFormat: "jpeg",
+        outputCompression: 50,
+      });
     }
 
     if (search) {
@@ -258,7 +269,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4o-mini",
         name: "GPT-4o mini",
-        features: [],
+        features: [images],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -267,7 +278,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
-        features: [],
+        features: [images],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -276,7 +287,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1",
         name: "GPT-4.1",
-        features: [],
+        features: [images],
         provider: wrappedModel(azure),
         tools: true,
         extensions: imageTypes,
@@ -391,7 +402,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4o-mini",
         name: "GPT-4o mini",
-        features: [],
+        features: [images],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -400,7 +411,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
-        features: [],
+        features: [images],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
@@ -409,7 +420,7 @@ const providers: Provider[] = [
       {
         id: "gpt-4.1",
         name: "GPT-4.1",
-        features: [],
+        features: [images],
         provider: wrappedModel(openai),
         tools: true,
         extensions: imageTypes,
