@@ -1,7 +1,5 @@
-import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import type { Viewport } from "next";
 import type React from "react";
 import { Providers } from "@/components/providers";
 import SnowfallCanvas from "@/components/snowfall-canvas";
@@ -15,8 +13,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   interactiveWidget: "resizes-content",
 };
-
-const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(conf.host),
@@ -53,7 +49,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          openSans.className,
           "flex min-h-svh min-w-80 flex-col justify-center md:overscroll-none"
         )}
       >
