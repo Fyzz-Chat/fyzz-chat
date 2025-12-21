@@ -156,10 +156,12 @@ export async function POST(req: NextRequest) {
       await endConversation();
     },
     onStepFinish: async (result) => {
-      if (result.finishReason !== "tool-calls" || result.dynamicToolCalls?.length < 1) {
-        return;
+      if (0 < result.dynamicToolCalls?.length) {
+        logger.debug("Dynamic tool call finished.");
       }
-      logger.debug("MCP tool call finished.");
+      if (0 < result.staticToolCalls?.length) {
+        logger.debug("Static tool call finished.");
+      }
     },
     onError: async (error) => {
       logger.error(
