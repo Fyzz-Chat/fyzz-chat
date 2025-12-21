@@ -1,3 +1,24 @@
+# [0.9.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.8.0...v0.9.0) (2025-12-21)
+
+
+### Bug Fixes
+
+* **auth:** fetch conversations after login ([f78c91c](https://github.com/Fyzz-Chat/fyzz-chat/commit/f78c91ce70823e92c2ec50d93e45e4ae6f10cea2))
+* **images:** show images in correct size on click ([9166740](https://github.com/Fyzz-Chat/fyzz-chat/commit/91667402f626b725e07535e432c2e70c867493b9))
+* **input:** handle not loaded model ([b762649](https://github.com/Fyzz-Chat/fyzz-chat/commit/b7626499d03959818fc1bab5904731641de8a335))
+* **sign-out:** clear conversations on signout ([ca19ef6](https://github.com/Fyzz-Chat/fyzz-chat/commit/ca19ef6a191f177630b063ee516957a8b5d6ad7f))
+
+
+### Features
+
+* add coderabbit config ([116f455](https://github.com/Fyzz-Chat/fyzz-chat/commit/116f4555da6a3f588f10dfa2c9205a52c5351672))
+* add mcp tool finish handler ([c548934](https://github.com/Fyzz-Chat/fyzz-chat/commit/c5489342ed1847e90a136ecc156dc6ed17690bb3))
+* **image-generation:** add openai image generation ([4602564](https://github.com/Fyzz-Chat/fyzz-chat/commit/46025643ae13f2aa2f8fd22025467184bd370ae8))
+* **mcp:** add ai elements mcp server ([4bd0216](https://github.com/Fyzz-Chat/fyzz-chat/commit/4bd0216e14f9bd8179fa6a88079af6f2d6096112))
+* **mcp:** add shadcn mcp server ([384dd19](https://github.com/Fyzz-Chat/fyzz-chat/commit/384dd190307b7e03445d9020eab55785c294f69a))
+* **models:** introduce cost multiplier ([190e3f5](https://github.com/Fyzz-Chat/fyzz-chat/commit/190e3f537df89bd6155325c9e9fed66d00874a37))
+* **models:** show cost multiplier ([2242bd6](https://github.com/Fyzz-Chat/fyzz-chat/commit/2242bd64865de3d200c9796ca709bd19ee37dbeb))
+
 # [0.8.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.7.0...v0.8.0) (2025-12-19)
 
 
