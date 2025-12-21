@@ -1,9 +1,11 @@
 "use client";
 
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { BrainIcon, ChevronDownIcon, Cog } from "lucide-react";
+import { BrainIcon, ChevronDownIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import { createContext, memo, useContext, useEffect, useRef, useState } from "react";
+import { Response } from "@/components/ai-elements/response";
+import ShiningText from "@/components/shining-text";
 import {
   Collapsible,
   CollapsibleContent,
@@ -11,7 +13,6 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Response } from "./response";
 
 type ReasoningContextValue = {
   isStreaming: boolean;
@@ -45,7 +46,7 @@ export const Reasoning = memo(
     className,
     isStreaming = false,
     open,
-    defaultOpen = true,
+    defaultOpen = false,
     onOpenChange,
     duration: durationProp,
     children,
@@ -120,18 +121,8 @@ export const ReasoningTrigger = memo(
           <>
             {isStreaming && !duration ? (
               <div className="flex items-center gap-4">
-                <div className="relative animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
-                  <Cog
-                    size={12}
-                    className="-mt-1 animate-[spin_2s_linear_infinite_reverse]"
-                  />
-                  <Cog
-                    size={16}
-                    className="absolute -mt-1 ml-2 animate-[spin_2s_linear_infinite]"
-                  />
-                </div>
                 <p className="animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
-                  Thinking...
+                  <ShiningText>Thinking...</ShiningText>
                 </p>
               </div>
             ) : (
@@ -145,7 +136,7 @@ export const ReasoningTrigger = memo(
             <ChevronDownIcon
               className={cn(
                 "size-4 text-muted-foreground transition-transform",
-                isStreaming && !duration ? "animate-pulse text-primary" : "",
+                isStreaming && !duration ? "animate-pulse text-foreground" : "",
                 isOpen ? "rotate-180" : "rotate-0"
               )}
             />

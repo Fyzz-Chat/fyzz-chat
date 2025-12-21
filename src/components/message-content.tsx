@@ -412,17 +412,19 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
             }
             case "reasoning": {
               return (
-                <Reasoning
-                  key={`${message.id}-reasoning-${index}`}
-                  isStreaming={status === "streaming"}
-                >
-                  <ReasoningTrigger
-                    duration={
-                      message.metadata?.reasoningDurations?.[reasoningIndex++]?.ms
-                    }
-                  />
-                  <ReasoningContent>{part.text}</ReasoningContent>
-                </Reasoning>
+                (status === "streaming" || part.text) && (
+                  <Reasoning
+                    key={`${message.id}-reasoning-${index}`}
+                    isStreaming={status === "streaming"}
+                  >
+                    <ReasoningTrigger
+                      duration={
+                        message.metadata?.reasoningDurations?.[reasoningIndex++]?.ms
+                      }
+                    />
+                    <ReasoningContent>{part.text}</ReasoningContent>
+                  </Reasoning>
+                )
               );
             }
             case "file": {

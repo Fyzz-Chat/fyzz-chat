@@ -197,6 +197,17 @@
       opacity: 1;
     }
   }
+
+  --animate-shine: shine 5s linear infinite;
+
+  @keyframes shine {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 @layer base {
