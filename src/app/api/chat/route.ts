@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   logDuration(start, "User fetched");
 
   const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
-  const newMessage: CustomUIMessage = messages?.[messages.length - 1];
+  const newMessage: CustomUIMessage = messages.at(-1);
   const { model, supportsTools } = getModel(modelId, browse);
 
   if (!model) {
@@ -159,6 +159,12 @@ export async function POST(req: NextRequest) {
       if (chunk.type === "reasoning-delta") {
         reasoning.onDelta(chunk.id);
       }
+    },
+    onStepFinish: async (result) => {
+      if (result.finishReason !== "tool-calls" || result.dynamicToolCalls?.length < 1) {
+        return;
+      }
+      logger.debug("MCP tool call finished.");
     },
     onError: async (error) => {
       logger.error(
