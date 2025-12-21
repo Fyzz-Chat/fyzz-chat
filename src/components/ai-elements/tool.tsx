@@ -12,6 +12,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import type { CodeInterpreterOutput } from "@/types/tools";
 import { CodeBlock } from "./code-block";
 
 type ToolContextValue = {
@@ -154,6 +155,30 @@ export const ToolOutput = memo(
           {output && <div>{output}</div>}
         </div>
       </div>
+    );
+  }
+);
+
+type OpenAICodeInterpreterOutputProps = ComponentProps<"div"> & {
+  output: CodeInterpreterOutput;
+  errorText: ToolUIPart["errorText"];
+};
+
+export const OpenAICodeInterpreterOutput = memo(
+  ({ className, output, errorText, ...props }: OpenAICodeInterpreterOutputProps) => {
+    const formattedOutput = output?.outputs?.map((output, index) => (
+      <div key={`${index}-output`} className="flex flex-col gap-2">
+        {output.type === "logs" && <div className="font-mono">{output.logs}</div>}
+        {output.type === "image" && <div>{output.url}</div>}
+      </div>
+    ));
+    return (
+      <ToolOutput
+        output={formattedOutput}
+        errorText={errorText}
+        className={className}
+        {...props}
+      />
     );
   }
 );

@@ -17,7 +17,6 @@ import {
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
 import { extractReasoningMiddleware, type Tool, wrapLanguageModel } from "ai";
-import { codeInterpreterTool } from "@/lib/backend/tools/code-interpreter";
 import {
   type Feature,
   imageTypes,
@@ -123,22 +122,29 @@ export function getProviderTools(modelId: string, search: boolean) {
     (provider) =>
       provider.id === "google" && provider.models.some((model) => model.id === modelId)
   );
+  const supportsOpenAICodeInterpreter =
+    isOpenAIModel &&
+    modelId !== "gpt-5-codex" &&
+    modelId !== "gpt-5.1-codex" &&
+    modelId !== "o3-mini";
 
   const tools: { [key: string]: Tool } = {};
 
   if (isOpenAIModel) {
-    tools.code_interpreter = codeInterpreterTool(modelId);
+    if (supportsOpenAICodeInterpreter) {
+      tools.code_interpreter = openai.tools.codeInterpreter();
+    }
 
     if (search) {
-      tools.web_search = openai.tools.webSearch() as Tool;
+      tools.web_search = openai.tools.webSearch();
     }
   } else if (isAnthropicModel) {
     if (search) {
-      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 }) as Tool;
+      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 });
     }
   } else if (isGoogleModel) {
     if (search) {
-      tools.google_search = google.tools.googleSearch({}) as Tool;
+      tools.google_search = google.tools.googleSearch({});
     }
   }
 

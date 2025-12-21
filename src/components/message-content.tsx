@@ -17,6 +17,7 @@ import {
   SourcesTrigger,
 } from "@/components/ai-elements/source";
 import {
+  OpenAICodeInterpreterOutput,
   Tool,
   ToolContent,
   ToolHeader,
@@ -32,6 +33,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/stores/chat-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { pdfType } from "@/types/provider";
+import type { CodeInterpreterOutput } from "@/types/tools";
 import { Reasoning, ReasoningContent, ReasoningTrigger } from "./ai-elements/reasoning";
 
 // import { Response } from "@/components/ai-elements/response";
@@ -335,6 +337,7 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                   <ToolHeader type="tool-memory" state={part.state} />
                   <ToolContent>
                     <ToolInput input={part.input} />
+                    <ToolOutput output={""} errorText={part.errorText} />
                   </ToolContent>
                 </Tool>
               );
@@ -367,8 +370,8 @@ export function MessageContent({ message }: { message: CustomUIMessage }) {
                   <ToolHeader type="tool-code_interpreter" state={part.state} />
                   <ToolContent>
                     <ToolInput input={part.input} />
-                    <ToolOutput
-                      output={part.output as string}
+                    <OpenAICodeInterpreterOutput
+                      output={part.output as CodeInterpreterOutput}
                       errorText={part.errorText}
                     />
                   </ToolContent>
