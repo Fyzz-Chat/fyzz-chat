@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.9.0...v0.10.0) (2025-12-22)
+
+
+### Features
+
+* **google:** add gemma 3 ([7520e46](https://github.com/Fyzz-Chat/fyzz-chat/commit/7520e46b18a6e63dfc6ee317afcc2717617175c1))
+
 # [0.9.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.8.0...v0.9.0) (2025-12-21)
 
 
