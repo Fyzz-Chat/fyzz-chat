@@ -673,6 +673,14 @@ const providers: Provider[] = [
       //   tools: false,
       //   extensions: [...imageTypes],
       // },
+      {
+        id: "gemma-3-27b-it",
+        name: "Gemma 3 27B",
+        provider: wrappedGoogle,
+        tools: false,
+        extensions: [],
+        cost: 1,
+      },
     ],
   },
   {
