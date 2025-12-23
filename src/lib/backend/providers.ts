@@ -678,7 +678,7 @@ const providers: Provider[] = [
         name: "Gemma 3 27B",
         provider: wrappedGoogle,
         tools: false,
-        extensions: [],
+        extensions: [...imageTypes],
         cost: 1,
       },
     ],
