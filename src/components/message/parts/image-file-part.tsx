@@ -21,13 +21,13 @@ export default function ImageFilePart({
   mediaType?: string;
 }) {
   const isBase64Image = url.startsWith("data:image");
-  const data = url.split(",")[1];
-
-  if (!data || data === "undefined") {
-    return null;
-  }
 
   if (isBase64Image) {
+    const data = url.split(",")[1];
+    if (!data || data === "undefined") {
+      return null;
+    }
+
     url = base64ToDownloadableUrl(data, mediaType);
   }
 
