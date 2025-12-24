@@ -1,3 +1,10 @@
+## [0.11.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.11.0...v0.11.1) (2025-12-24)
+
+
+### Bug Fixes
+
+* **images:** show uploaded images correctly ([d658721](https://github.com/Fyzz-Chat/fyzz-chat/commit/d6587216d8501c73908a2bc5e4f22bc11e2fd684))
+
 # [0.11.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.10.0...v0.11.0) (2025-12-23)
 
 
