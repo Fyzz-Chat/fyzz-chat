@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
 
   const result = streamText({
     model,
-    messages: convertToModelMessages(filteredMessages),
+    messages: await convertToModelMessages(filteredMessages),
     system: extendedSystemPrompt,
     stopWhen: [stepCountIs(5), hasToolCall("generateImage")],
     experimental_transform: smoothStream({

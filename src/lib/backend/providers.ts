@@ -8,7 +8,7 @@ import {
 import type { AzureOpenAIProvider } from "@ai-sdk/azure";
 import { createAzure } from "@ai-sdk/azure";
 import { type FireworksProvider, fireworks } from "@ai-sdk/fireworks";
-import { google } from "@ai-sdk/google";
+import { type GoogleGenerativeAIProviderOptions, google } from "@ai-sdk/google";
 import {
   type OpenAIProvider,
   type OpenAIResponsesProviderOptions,
@@ -16,7 +16,7 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
-import { extractReasoningMiddleware, type Tool, wrapLanguageModel } from "ai";
+import { extractReasoningMiddleware, type ToolSet, wrapLanguageModel } from "ai";
 import {
   type Feature,
   imageTypes,
@@ -93,9 +93,9 @@ export function getOpenaiProviderOptions(
   };
 }
 
-export function getGoogleProviderOptions(modelId: string): {
-  thinkingConfig?: { thinkingBudget: number; includeThoughts: boolean };
-} {
+export function getGoogleProviderOptions(
+  modelId: string
+): GoogleGenerativeAIProviderOptions {
   const thinkingModel = isThinkingModel(modelId, "google");
 
   return thinkingModel
@@ -131,7 +131,7 @@ export function getProviderTools(modelId: string, search: boolean) {
   const supportsOpenAIImageGeneration =
     isOpenAIModel && getModelPublic(modelId)?.features?.includes(images);
 
-  const tools: { [key: string]: Tool } = {};
+  const tools: ToolSet = {};
 
   if (isOpenAIModel) {
     if (supportsOpenAICodeInterpreter) {
@@ -668,10 +668,11 @@ const providers: Provider[] = [
       // {
       //   id: "gemini-3-pro-image-preview",
       //   name: "Nano Banana Pro",
-      //   features: [images],
+      //   features: [images, reasoning],
       //   provider: wrappedGoogle,
       //   tools: false,
       //   extensions: [...imageTypes],
+      //   cost: 5,
       // },
       {
         id: "gemma-3-27b-it",

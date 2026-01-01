@@ -61,7 +61,7 @@ export async function updateConversationTitle(
     model: openai(modelId),
     system:
       "Your job is to generate a title for a conversation based on the messages. The title should never be longer than 3 words. Only return the title, no other text.",
-    messages: convertToModelMessages(filteredMessages),
+    messages: await convertToModelMessages(filteredMessages),
   });
 
   const updatedConversation = await saveConversationTitle(conversationId, text);
