@@ -9,6 +9,13 @@
         "args": ["dev"],
         "cwd": "${workspaceFolder}",
         "runtimeExecutable": "bun"
+    },
+    {
+      "name": "Debug Current File",
+      "type": "bun",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
     }
   ]
 } 
