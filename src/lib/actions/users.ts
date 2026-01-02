@@ -6,7 +6,7 @@ import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 import conf from "@/lib/config";
-import { getUserIdFromSession } from "@/lib/dao/users";
+import { getUserFromSession, getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import publicConf from "@/lib/public-config";
@@ -165,13 +165,15 @@ export async function requestPasswordReset(email: string): Promise<FormState> {
 }
 
 export async function deleteUser(): Promise<FormState> {
-  const userId = await getUserIdFromSession();
+  const user = await getUserFromSession();
 
   await prisma.user.delete({
     where: {
-      id: userId,
+      id: user.id,
     },
   });
+
+  logger.info(`User ${user.id} has been deleted`);
 
   return {
     message: "User deleted",

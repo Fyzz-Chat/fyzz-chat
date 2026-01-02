@@ -5,7 +5,6 @@ import { use, useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import useToast from "@/hooks/use-toast";
 import { deleteUser } from "@/lib/actions/users";
-import { signOut } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { type FormState, initialState } from "@/lib/utils";
 import {
@@ -40,9 +39,8 @@ export default function DeleteAccountForm() {
     if (state.success) {
       setOpen(false);
       setTimeout(async () => {
-        await signOut();
-        router.push("/chat?login=true");
-      }, 2000);
+        globalThis.location.reload();
+      }, 1000);
     }
   };
 
