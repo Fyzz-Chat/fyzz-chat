@@ -1,3 +1,10 @@
+## [0.12.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.12.0...v0.12.1) (2026-01-02)
+
+
+### Bug Fixes
+
+* **auth:** delete user account correctly ([c36e03d](https://github.com/Fyzz-Chat/fyzz-chat/commit/c36e03d79d6fe3d2b07c6f1c30b85c5aa0fe88ff))
+
 # [0.12.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.11.1...v0.12.0) (2026-01-02)
 
 
