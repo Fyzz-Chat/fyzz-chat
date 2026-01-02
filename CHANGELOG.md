@@ -1,3 +1,11 @@
+# [0.12.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.11.1...v0.12.0) (2026-01-02)
+
+
+### Features
+
+* add current file debug script and recommended bun vs code extension ([1f1f63e](https://github.com/Fyzz-Chat/fyzz-chat/commit/1f1f63e6d7f0f67300222a03b6bdfe96d7383eba))
+* **ai:** upgrade to version 6 ([1bd0909](https://github.com/Fyzz-Chat/fyzz-chat/commit/1bd09095feb735a55474a717bbbc6d9466d80e05))
+
 ## [0.11.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.11.0...v0.11.1) (2025-12-24)
 
 
