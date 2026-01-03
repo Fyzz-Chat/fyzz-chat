@@ -7,11 +7,7 @@ import { SearchField } from "@/components/sidebar/search-field";
 import StatusNotification from "@/components/sidebar/status-notification";
 import { SwipeDetector } from "@/components/sidebar/swipe-detector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -88,18 +84,12 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
                     <ChevronsUpDown className="ml-auto size-4" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                  align="end"
-                  sideOffset={4}
-                >
-                  <ProfileMenu
-                    authorized={Boolean(user)}
-                    userName={user?.name}
-                    userEmail={user?.email}
-                    userImage={user?.image || undefined}
-                  />
-                </DropdownMenuContent>
+                <ProfileMenu
+                  authorized={Boolean(user)}
+                  userName={user?.name}
+                  userEmail={user?.email}
+                  userImage={user?.image || undefined}
+                />
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>

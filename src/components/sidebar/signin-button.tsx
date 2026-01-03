@@ -16,7 +16,7 @@ export function SignIn({ buttonText }: { buttonText: string }) {
   };
 
   return (
-    <SidebarMenuButton className="h-10" onClick={handleClick}>
+    <SidebarMenuButton onClick={handleClick}>
       <LogIn className="shrink-0" />
       <span>{buttonText}</span>
     </SidebarMenuButton>

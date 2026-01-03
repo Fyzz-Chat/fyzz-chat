@@ -6,6 +6,7 @@ import { FastLink } from "@/components/fast-link";
 import { SignIn } from "@/components/sidebar/signin-button";
 import { SignOut } from "@/components/sidebar/signout-button";
 import {
+  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -31,7 +32,11 @@ export default function ProfileMenu({
   const setHelpOpen = useUIStore((state) => state.setHelpOpen);
 
   return (
-    <>
+    <DropdownMenuContent
+      className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+      align="end"
+      sideOffset={4}
+    >
       <DropdownMenuLabel className="p-0 font-normal">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
           <Avatar className="h-8 w-8 rounded-lg">
@@ -56,7 +61,7 @@ export default function ProfileMenu({
           e.preventDefault();
           setHelpOpen(true);
         }}
-        className="h-10 cursor-pointer px-2 py-1.5"
+        className="cursor-pointer px-2 py-1.5"
       >
         <Command className="shrink-0" />
         <span>{translations.sidebar.menu.help}</span>
@@ -64,7 +69,7 @@ export default function ProfileMenu({
       </DropdownMenuItem>
       {authorized && (
         <>
-          <DropdownMenuItem className="h-10 cursor-pointer p-0" asChild>
+          <DropdownMenuItem className="cursor-pointer p-0" asChild>
             <FastLink
               href="/settings"
               className="flex size-full items-center gap-2 px-2 py-1.5"
@@ -76,7 +81,7 @@ export default function ProfileMenu({
           <DropdownMenuSeparator />
         </>
       )}
-      <DropdownMenuItem className="h-10 p-0">
+      <DropdownMenuItem className="p-0">
         <a
           href="/privacy-policy"
           target="_blank"
@@ -98,6 +103,6 @@ export default function ProfileMenu({
           <SignIn buttonText={translations.sidebar.menu.signIn} />
         )}
       </DropdownMenuItem>
-    </>
+    </DropdownMenuContent>
   );
 }

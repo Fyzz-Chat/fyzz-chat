@@ -32,7 +32,7 @@ export function SignOut({ buttonText }: { buttonText: string }) {
   };
 
   return (
-    <SidebarMenuButton className="h-10" onClick={handleSignOut} disabled={isLoading}>
+    <SidebarMenuButton onClick={handleSignOut} disabled={isLoading}>
       {isLoading ? (
         <LoaderCircle className="shrink-0 animate-spin" />
       ) : (
