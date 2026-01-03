@@ -38,24 +38,6 @@ import { Reasoning, ReasoningContent, ReasoningTrigger } from "./ai-elements/rea
 
 // import { Response } from "@/components/ai-elements/response";
 
-type GenerateImageToolInput = {
-  prompt: string;
-};
-
-type GenerateImageToolOutput = {
-  image: string;
-  url: string;
-  name: string;
-  contentType: string;
-};
-
-type GenerateImageToolUIPart = ToolUIPart<{
-  generateImage: {
-    input: GenerateImageToolInput;
-    output: GenerateImageToolOutput;
-  };
-}>;
-
 function parseMarkdownIntoBlocks(markdown: string): string[] {
   const tokens = marked.lexer(markdown);
   return tokens.map((token) => token.raw);

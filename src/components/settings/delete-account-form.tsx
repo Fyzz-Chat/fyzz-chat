@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { use, useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import useToast from "@/hooks/use-toast";
@@ -26,7 +25,6 @@ export default function DeleteAccountForm() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const isConfirmed = confirmText === "delete my account";
-  const router = useRouter();
 
   function handleOpenChange(open: boolean) {
     setOpen(open);
