@@ -57,7 +57,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
           {children}
           <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-4 bg-linear-to-t from-sidebar to-transparent" />
         </SidebarContent>
-        <SidebarFooter className="py-4 pr-4 pl-4 md:pr-2">
+        <SidebarFooter className="py-4 pr-4 pl-4">
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>
