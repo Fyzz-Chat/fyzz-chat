@@ -1,3 +1,4 @@
+import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
@@ -61,11 +62,14 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild className="h-auto">
-                  <SidebarMenuButton>
-                    <Avatar className="size-7">
-                      <AvatarImage src={user?.image || ""} />
-                      <AvatarFallback className="text-muted-foreground">
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage src={user?.image || ""} alt={user?.name} />
+                      <AvatarFallback className="rounded-lg">
                         {user?.name
                           ?.split(" ")
                           .slice(0, 2)
@@ -73,11 +77,28 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
                           .join("") || "A"}
                       </AvatarFallback>
                     </Avatar>
-                    <p>{user?.name || "Anonymous"}</p>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">
+                        {user?.name || "Anonymous"}
+                      </span>
+                      {user?.email && (
+                        <span className="truncate text-xs">{user.email}</span>
+                      )}
+                    </div>
+                    <ChevronsUpDown className="ml-auto size-4" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-64 md:w-60">
-                  <ProfileMenu authorized={Boolean(user)} userEmail={user?.email} />
+                <DropdownMenuContent
+                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                  align="end"
+                  sideOffset={4}
+                >
+                  <ProfileMenu
+                    authorized={Boolean(user)}
+                    userName={user?.name}
+                    userEmail={user?.email}
+                    userImage={user?.image || undefined}
+                  />
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>

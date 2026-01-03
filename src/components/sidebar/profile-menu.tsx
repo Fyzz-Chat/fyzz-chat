@@ -13,13 +13,18 @@ import {
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useUIStore } from "@/stores/ui-store";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function ProfileMenu({
   authorized,
+  userName,
   userEmail,
+  userImage,
 }: {
   authorized: boolean;
+  userName?: string;
   userEmail?: string;
+  userImage?: string;
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -27,8 +32,23 @@ export default function ProfileMenu({
 
   return (
     <>
-      <DropdownMenuLabel className="font-normal opacity-80">
-        {userEmail || translations.sidebar.menu.myAccount}
+      <DropdownMenuLabel className="p-0 font-normal">
+        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+          <Avatar className="h-8 w-8 rounded-lg">
+            <AvatarImage src={userImage} alt={userName} />
+            <AvatarFallback className="rounded-lg">
+              {userName
+                ?.split(" ")
+                .slice(0, 2)
+                .map((n) => n[0])
+                .join("") || "A"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{userName || "Anonymous"}</span>
+            <span className="truncate text-xs">{userEmail}</span>
+          </div>
+        </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem
