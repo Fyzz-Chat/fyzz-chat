@@ -52,12 +52,12 @@ export default function ResetPassword({ name, url }: MailProps) {
             fontStyle="normal"
           />
         </Head>
-        <Body className="bg-secondary font-sans py-10 px-2">
+        <Body className="bg-secondary px-2 py-10 font-sans">
           <Container
-            className="bg-card border border-border mx-auto p-0 max-w-[480px]"
+            className="mx-auto max-w-[480px] border border-border bg-card p-0"
             style={{ borderRadius: "16px" }}
           >
-            <Section className="bg-secondary/50 p-8 border-b border-border">
+            <Section className="border-border border-b bg-secondary/50 p-8">
               <Row align="center">
                 <Column align="center">
                   <Img
@@ -67,7 +67,7 @@ export default function ResetPassword({ name, url }: MailProps) {
                     height={36}
                     className="inline-block align-middle"
                   />
-                  <Text className="text-2xl font-semibold text-white m-0 ml-2 inline-block align-middle tracking-tight">
+                  <Text className="m-0 ml-2 inline-block align-middle font-semibold text-2xl text-white tracking-tight">
                     Fyzz Chat
                   </Text>
                 </Column>
@@ -75,21 +75,21 @@ export default function ResetPassword({ name, url }: MailProps) {
             </Section>
 
             <Section className="p-8">
-              <Heading className="text-xl font-medium text-text mb-4 mt-0">
+              <Heading className="mt-0 mb-4 font-medium text-text text-xl">
                 Password Reset Request
               </Heading>
-              <Text className="text-text text-[15px] leading-7 mb-6">
+              <Text className="mb-6 text-[15px] text-text leading-7">
                 Hi <strong>{name}</strong>,
               </Text>
-              <Text className="text-text text-[15px] leading-7 mb-8">
+              <Text className="mb-8 text-[15px] text-text leading-7">
                 We received a request to reset your password for your Fyzz Chat account.
                 Click the button below to proceed.
               </Text>
 
-              <Section className="text-center mb-8">
+              <Section className="mb-8 text-center">
                 <Button
                   href={url}
-                  className="font-semibold text-[15px] px-8 py-3 block w-auto"
+                  className="block w-auto px-8 py-3 font-semibold text-[15px]"
                   style={{
                     borderRadius: "12px",
                     color: "#ffffff",
@@ -101,14 +101,14 @@ export default function ResetPassword({ name, url }: MailProps) {
                 </Button>
               </Section>
 
-              <Text className="text-text text-[15px] leading-7 mb-4">
+              <Text className="mb-4 text-[15px] text-text leading-7">
                 If you didn't request this change, you can safely ignore this email. Your
                 password will remain unchanged.
               </Text>
 
-              <Hr className="border-t border-border my-8" />
+              <Hr className="my-8 border-border border-t" />
 
-              <Text className="text-muted text-xs text-center leading-5">
+              <Text className="text-center text-muted text-xs leading-5">
                 This link will expire in 24 hours.
                 <br />
                 <Link
@@ -121,8 +121,8 @@ export default function ResetPassword({ name, url }: MailProps) {
               </Text>
             </Section>
 
-            <Section className="bg-secondary/30 p-6 text-center border-t border-border">
-              <Text className="text-muted text-xs m-0">
+            <Section className="border-border border-t bg-secondary/30 p-6 text-center">
+              <Text className="m-0 text-muted text-xs">
                 © {new Date().getFullYear()} Fyzz Chat. All rights reserved.
               </Text>
             </Section>
