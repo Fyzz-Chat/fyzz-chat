@@ -1,9 +1,12 @@
 import jwt from "jsonwebtoken";
 import type { Metadata, ResolvedMetadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
 import { MessageContent } from "@/components/message-content";
-import { ScrollToBottom } from "@/components/share/scroll-to-bottom";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
@@ -60,28 +63,30 @@ export default async function SharePage({
   }
 
   return (
-    <>
-      <div className="pointer-events-none relative z-10 -mb-6 h-6 bg-linear-to-b from-background to-transparent" />
-      <ScrollArea className="mx-4 h-[calc(100svh-72px-62px)] px-4">
-        <div className="mx-auto my-6 flex w-full max-w-5xl flex-1 flex-col gap-8">
-          {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
-          {conversation.messages.map((message: any) => (
-            <div
-              key={message.id}
-              className={cn(
-                "group flex flex-col gap-1",
-                message.role === "user"
-                  ? "ml-auto max-w-[80%] items-end"
-                  : "mr-auto max-w-full"
-              )}
-            >
-              <MessageContent message={message} />
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-      <ScrollToBottom />
-      <div className="pointer-events-none relative z-10 -mt-6 h-6 bg-linear-to-t from-background to-transparent" />
-    </>
+    <div className="relative h-[calc(100svh-72px-62px)]">
+      <div className="flex h-full flex-col">
+        <div className="pointer-events-none relative z-10 -mb-6 h-6 bg-linear-to-b from-background to-transparent" />
+        <Conversation>
+          <ConversationContent className="mx-auto max-w-5xl">
+            {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
+            {conversation.messages.map((message: any) => (
+              <div
+                key={message.id}
+                className={cn(
+                  "group flex flex-col gap-1",
+                  message.role === "user"
+                    ? "ml-auto max-w-[80%] items-end"
+                    : "mr-auto max-w-full"
+                )}
+              >
+                <MessageContent message={message} />
+              </div>
+            ))}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+        <div className="pointer-events-none relative z-10 -mt-6 h-6 bg-linear-to-t from-background to-transparent" />
+      </div>
+    </div>
   );
 }

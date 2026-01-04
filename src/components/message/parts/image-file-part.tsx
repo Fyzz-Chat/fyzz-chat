@@ -1,4 +1,7 @@
+"use client";
+
 import { Download, Maximize2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,14 +24,48 @@ export default function ImageFilePart({
   mediaType?: string;
 }) {
   const isBase64Image = url.startsWith("data:image");
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
-  if (isBase64Image) {
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Create blob URL only on client side, after hydration
+  useEffect(() => {
+    if (!isClient || !isBase64Image) return;
+
     const data = url.split(",")[1];
     if (!data || data === "undefined") {
-      return null;
+      return;
     }
 
-    url = base64ToDownloadableUrl(data, mediaType);
+    try {
+      const binaryString = globalThis.atob(data);
+      const bytes = new Uint8Array(binaryString.length);
+
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.codePointAt(i) ?? 0;
+      }
+
+      const blob = new Blob([bytes], { type: mediaType });
+      const objectUrl = URL.createObjectURL(blob);
+      setBlobUrl(objectUrl);
+
+      // Cleanup
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } catch (error) {
+      console.error("Failed to convert base64 to blob:", error);
+    }
+  }, [isClient, isBase64Image, url, mediaType]);
+
+  // Use blob URL if available (client-side), otherwise use original URL
+  const displayUrl = blobUrl || url;
+
+  if (isBase64Image && !url.split(",")[1]) {
+    return null;
   }
 
   return (
@@ -37,7 +74,7 @@ export default function ImageFilePart({
         <div className="group/image relative w-full max-w-md cursor-pointer">
           <div className="relative overflow-hidden rounded-lg">
             <img
-              src={url}
+              src={displayUrl}
               alt={name}
               className="h-auto w-full object-contain transition-all duration-200 group-hover/image:brightness-50"
             />
@@ -80,18 +117,4 @@ export default function ImageFilePart({
       </DialogContent>
     </Dialog>
   );
-}
-
-function base64ToDownloadableUrl(base64: string, mediaType: string) {
-  const binaryString = globalThis.atob(base64);
-
-  const bytes = new Uint8Array(binaryString.length);
-
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.codePointAt(i) ?? 0;
-  }
-
-  const blob = new Blob([bytes], { type: mediaType });
-
-  return URL.createObjectURL(blob);
 }

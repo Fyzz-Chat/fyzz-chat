@@ -40,13 +40,13 @@ export default async function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
-      <header className="flex w-full items-center justify-end gap-4 p-4">
+    <div className="mx-auto flex w-full flex-1 flex-col">
+      <header className="mx-auto flex w-full max-w-7xl items-center justify-end gap-4 p-4">
         <Link
           href="/"
           className="mr-auto flex items-center gap-2 whitespace-pre font-medium text-lg"
         >
-          <Image src="/icon.svg" alt="Catalyst" width={30} height={30} />
+          <Image src="/icon.svg" alt="Fyzz.chat" width={30} height={30} />
           Fyzz.chat
         </Link>
         <Suspense fallback={<Skeleton className="h-10 w-28" />}>
@@ -54,7 +54,7 @@ export default async function Layout({
         </Suspense>
       </header>
       {children}
-      <footer className="flex w-full items-center justify-between p-4">
+      <footer className="mx-auto flex w-full max-w-7xl items-center justify-between p-4">
         <CatalystBadge />
         <div className="flex size-6 text-foreground">
           <a

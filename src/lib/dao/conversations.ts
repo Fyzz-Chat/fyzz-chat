@@ -329,12 +329,21 @@ export async function public_getConversationUntilMessage(messageId: string) {
           createdAt: true,
           role: true,
           parts: true,
+          reasoningDurations: true,
         },
       },
     },
   });
 
-  return conversation;
+  return {
+    ...conversation,
+    messages: conversation?.messages.map((message) => ({
+      ...message,
+      metadata: {
+        reasoningDurations: message.reasoningDurations as { id: string; ms: number }[],
+      },
+    })),
+  };
 }
 
 /**
