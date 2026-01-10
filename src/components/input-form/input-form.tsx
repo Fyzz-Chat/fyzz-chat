@@ -130,6 +130,20 @@ export default function InputForm({ className }: { className?: string }) {
     }
   }, [files]);
 
+  // Handle text query parameter on page load
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const textParam = searchParams.get("text");
+
+    if (textParam && location.pathname === "/chat") {
+      const { input, setInput } = useInputStore.getState();
+      // Only set if input is empty to avoid overwriting user input
+      if (!input.trim()) {
+        setInput(decodeURIComponent(textParam));
+      }
+    }
+  }, [location]);
+
   return (
     <div
       className={cn("w-full flex-none rounded-b-[20px] pt-1 sm:px-4 sm:pb-4", className)}
