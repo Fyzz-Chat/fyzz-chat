@@ -74,6 +74,8 @@ export async function POST(req: NextRequest) {
       caller.messages({ id }),
     ]);
 
+    logDuration(start, "Conversation fetched");
+
     existingConversation = conversation;
     existingMessages = conversationMessages.messages;
 
@@ -104,6 +106,8 @@ export async function POST(req: NextRequest) {
       const toolsResult = await getTools(user, modelId, browse);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
+
+      logDuration(start, "Tools fetched");
     } catch (error) {
       logger.error(error);
 
@@ -118,6 +122,8 @@ export async function POST(req: NextRequest) {
   if (user.memoryEnabled && !temporaryChat) {
     memoryPrompt = await getMemoryPrompt();
   }
+
+  logDuration(start, "Memory prompt fetched");
 
   const extendedSystemPrompt = `${systemPrompt}${memoryPrompt}`;
 
@@ -134,7 +140,11 @@ export async function POST(req: NextRequest) {
     await unlockConversation(id);
     await closeMcpClients(mcpClients);
     abortController.cancelAbort();
+
+    logDuration(start, "Conversation ended");
   }
+
+  logDuration(start, "Streaming started");
 
   const result = streamText({
     model,
@@ -186,6 +196,8 @@ export async function POST(req: NextRequest) {
     originalMessages: existingMessages,
     messageMetadata: ({ part }) => {
       if (part.type === "start") {
+        logDuration(start, "Response started");
+
         return {
           model: modelId,
           content: "",
