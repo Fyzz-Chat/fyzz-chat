@@ -1,5 +1,5 @@
 import { createMCPClient } from "@ai-sdk/mcp";
-import { Experimental_StdioMCPTransport as StdioMCPTransport } from "@ai-sdk/mcp/mcp-stdio";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 export async function createHttpMcpClient(serverUrl: string) {
@@ -29,7 +29,7 @@ export async function createStdioMcpClient(
   env: Record<string, string>
 ) {
   return await createMCPClient({
-    transport: new StdioMCPTransport({
+    transport: new StdioClientTransport({
       command,
       args,
       env,
