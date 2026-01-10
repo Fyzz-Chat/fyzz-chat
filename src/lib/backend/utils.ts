@@ -2,6 +2,7 @@ import "server-only";
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
 import type { CustomUIMessage } from "@/types/chat";
@@ -56,4 +57,27 @@ export function getVersion() {
   );
   const app_version = packageJson.version;
   return app_version;
+}
+
+export function hasTextPart(message: CustomUIMessage) {
+  return message.parts?.some((part) => part.type === "text" && part.text);
+}
+
+export function mapFileParts(
+  message: CustomUIMessage,
+  userId: string,
+  conversationId: string
+): CustomUIMessage {
+  return {
+    ...message,
+    parts: message.parts?.map((part: CustomUIMessage["parts"][number]) => {
+      if (part.type === "file") {
+        return {
+          ...part,
+          url: getFileUrlSigned(`${userId}/${conversationId}`, part.url),
+        };
+      }
+      return part;
+    }),
+  };
 }

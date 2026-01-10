@@ -11,7 +11,6 @@ import {
 import { after, type NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { updateConversationTitle } from "@/lib/actions/conversations";
-import { getFileUrlSigned } from "@/lib/aws/s3";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
@@ -24,7 +23,12 @@ import {
 } from "@/lib/backend/providers";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
-import { filterMessages, logDuration } from "@/lib/backend/utils";
+import {
+  filterMessages,
+  hasTextPart,
+  logDuration,
+  mapFileParts,
+} from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
   lockConversation,
@@ -333,29 +337,6 @@ async function getTools(
   }
 
   return { tools, mcpClients };
-}
-
-function hasTextPart(message: CustomUIMessage) {
-  return message.parts?.some((part) => part.type === "text" && part.text);
-}
-
-function mapFileParts(
-  message: CustomUIMessage,
-  userId: string,
-  conversationId: string
-): CustomUIMessage {
-  return {
-    ...message,
-    parts: message.parts?.map((part: CustomUIMessage["parts"][number]) => {
-      if (part.type === "file") {
-        return {
-          ...part,
-          url: getFileUrlSigned(`${userId}/${conversationId}`, part.url),
-        };
-      }
-      return part;
-    }),
-  };
 }
 
 function createReasoningTimer() {
