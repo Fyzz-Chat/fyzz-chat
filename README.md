@@ -41,11 +41,11 @@ Fyzz Chat uses Prisma to interact with the database. By default, it uses Postgre
 Regardless of where you will host it, you will have to migrate it first to create the database schema. (You will need to have the `DATABASE_URL` environment variable set up for this to work.)
 
 ```bash
-bun run db-push
+bun run db:deploy
 
 # or
 
-bunx prisma db push
+bunx prisma migrate deploy
 ```
 
 The next step is to set up the environment variables.
@@ -54,8 +54,10 @@ The next step is to set up the environment variables.
 
 The following environment variables are required:
 
-- `AUTH_SECRET`: A random string of at least 32 characters.
+- `BETTER_AUTH_SECRET`: A random string of at least 32 characters.
+- `BETTER_AUTH_URL`: The URL of your application.
 - `DATABASE_URL`: The URL of your database.
+- `DIRECT_DATABASE_URL`: The URL of your database.
 - `OPENAI_API_KEY`: The API key for OpenAI.
 
 The following environment variables are optional and control which additional models are available for use:
@@ -125,60 +127,3 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-# TODO: Rewrite Catalyst docs
-
-## Database
-
-The Catalyst starter kit uses Prisma to interact with the database. By default, it uses PostgreSQL as the database engine.
-
-To set up a local database for development, you can use Docker:
-
-```bash
-docker compose up -d
-```
-
-This command starts a PostgreSQL database in a Docker container and lets it run in the background.
-
-You can find the database connection URL in the [`.env.sample`](.env.sample?plain=1#L38) file.
-
-You can connect to the database with the following command:
-
-```bash
-docker compose exec database psql -U app_dev -d dev
-```
-
-Or, if you have `make` installed, you can use the following command:
-
-```bash
-make db
-```
-
-There is already a `User` model defined in [`prisma/schema.prisma`](prisma/schema.prisma). The correspondent migration file is located in [`prisma/migrations/`](prisma/migrations/). To create the database schema and generate the Prisma client, run:
-
-```bash
-bun run db:migrate
-```
-
-## Authentication
-
-The Catalyst starter kit uses Auth.js for authentication. You can find the authentication logic in [`src/auth.ts`](src/auth.ts).
-
-By default, a development secret is already set in the [`.env.sample`](.env.sample?plain=1#L26) file called `AUTH_SECRET`. Set this secret to a more secure random string at the hosting provider of your choice when deploying the application.
-
-If you also need Google login, add your Google OAuth client ID and secret to the [`.env`](.env.sample?plain=1#L29) file.
-
-GitHub login is also supported. Add your GitHub OAuth client ID and secret to the [`.env`](.env.sample?plain=1#L27) file.
-
-All of these environment variables have placeholders if you copied the [`.env.sample`](.env.sample) file.
-
-## CI/CD
-
-This project uses GitHub Actions for continuous integration and deployment. An example workflow is defined in [`.github/workflows/build.yml`](.github/workflows/build.yml).
-It installs the dependencies, lints the code, and builds the project.
-
-## Logging
-
-Catalyst uses Winston as the default logger and the default log level is `info`. You can change this by setting the `LOG_LEVEL` environment variable in the [`.env`](.env.sample?plain=1#L22) file.
-
-If you want to configure a log drain, set the `LOG_DRAIN_URL` environment variable in the [`.env`](.env.sample?plain=1#L23) file. This will send the logs to the specified URL as well as to the console.
