@@ -1,4 +1,4 @@
-import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
+import type { MCPClient } from "@ai-sdk/mcp";
 import {
   convertToModelMessages,
   hasToolCall,
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
   const filteredMessages = filterMessages(existingMessages, modelId);
 
   let tools: { [key: string]: Tool } = {};
-  let mcpClients: McpClient[] = [];
+  let mcpClients: MCPClient[] = [];
 
   if (supportsTools && !temporaryChat) {
     try {
@@ -295,7 +295,7 @@ async function getTools(
   user: SessionUser,
   modelId: string,
   search: boolean
-): Promise<{ tools: { [key: string]: Tool }; mcpClients: McpClient[] }> {
+): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
   const tools: { [key: string]: Tool } = {};
 
   // if (openaiConfigured) {

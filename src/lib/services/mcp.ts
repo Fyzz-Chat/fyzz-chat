@@ -1,4 +1,4 @@
-import type { experimental_MCPClient as McpClient } from "@ai-sdk/mcp";
+import type { MCPClient } from "@ai-sdk/mcp";
 import { getMcpServers } from "@/lib/actions/users";
 import {
   createHttpMcpClient,
@@ -15,7 +15,7 @@ export class McpClientInitError extends Error {
   }
 }
 
-export async function getMcpClients(): Promise<McpClient[]> {
+export async function getMcpClients(): Promise<MCPClient[]> {
   const beforeFetch = performance.now();
 
   const response = await getMcpServers();
@@ -25,7 +25,7 @@ export async function getMcpClients(): Promise<McpClient[]> {
   }
 
   const servers = JSON.parse(response as string).mcpServers;
-  const entries: { serverKey: string; promise: Promise<McpClient> }[] = [];
+  const entries: { serverKey: string; promise: Promise<MCPClient> }[] = [];
 
   for (const serverKey of Object.keys(servers)) {
     const server = servers[serverKey];
@@ -54,7 +54,7 @@ export async function getMcpClients(): Promise<McpClient[]> {
 
   const settled = await Promise.allSettled(entries.map((e) => e.promise));
   const failures: string[] = [];
-  const clients: McpClient[] = [];
+  const clients: MCPClient[] = [];
 
   settled.forEach((result, index) => {
     if (result.status === "fulfilled") {
@@ -73,7 +73,7 @@ export async function getMcpClients(): Promise<McpClient[]> {
   return clients;
 }
 
-export async function getMcpTools(clients: McpClient[]) {
+export async function getMcpTools(clients: MCPClient[]) {
   const toolsPromises = clients?.map(async (client) => {
     const clientTools = await client.tools();
     return { ...clientTools };
@@ -83,6 +83,6 @@ export async function getMcpTools(clients: McpClient[]) {
   return Object.assign({}, ...toolsArray);
 }
 
-export async function closeMcpClients(clients: McpClient[]) {
+export async function closeMcpClients(clients: MCPClient[]) {
   await Promise.all(clients.map((client) => client.close()));
 }
