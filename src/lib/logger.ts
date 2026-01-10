@@ -28,7 +28,12 @@ class CustomTransport extends Transport {
 }
 
 const transports: Transport[] = [
-  new winston.transports.Console({ format: winston.format.simple() }),
+  new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize({ all: true }),
+      winston.format.simple()
+    ),
+  }),
 ];
 
 if (conf.logDrainUrl) {
