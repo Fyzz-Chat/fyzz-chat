@@ -1,3 +1,10 @@
+## [0.13.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.13.0...v0.13.1) (2026-01-11)
+
+
+### Bug Fixes
+
+* **db:** fix migration image command ([74ba34e](https://github.com/Fyzz-Chat/fyzz-chat/commit/74ba34e96bd0ddb54ccab350403611a0fd4be92c))
+
 # [0.13.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.12.1...v0.13.0) (2026-01-11)
 
 
