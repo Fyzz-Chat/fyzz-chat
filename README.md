@@ -90,7 +90,51 @@ Other environment variables
 
 #### AWS
 
-# TODO: Add docs for AWS
+Deploy Fyzz Chat to AWS using the provided CloudFormation template. The template creates an ECS cluster on EC2 with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
+
+**Prerequisites:**
+
+1. Create secrets in AWS Secrets Manager:
+   - Go to **Secrets Manager** → **Store a new secret**
+   - Select **Other type of secret**
+   - Select **Plaintext**
+   - Create a secret named `fyzz-chat/better-auth-secret` with a random string of at least 32 characters
+   - Create a secret named `fyzz-chat/openai-api-key` with your OpenAI API key
+   - Note the ARN of each secret (you'll need them for the stack parameters)
+
+**Deploy:**
+
+1. Go to **CloudFormation** → **Create stack** → **With new resources (standard)**
+2. Upload `cloudformation.json` as the template
+3. Enter stack name: `fyzz-chat`
+4. Fill in the required parameters:
+   - `BetterAuthSecretArn`: ARN of your BETTER_AUTH_SECRET
+   - `OpenaiApiKeySecretArn`: ARN of your OPENAI_API_KEY
+   - `BetterAuthUrl`: Your application URL (e.g., `https://your-domain.com`)
+5. Review and create the stack
+6. Wait for stack creation to complete (takes ~10-15 minutes)
+
+**Run Database Migrations:**
+
+1. Go to **ECS** → **Clusters** → Select your cluster
+2. Go to the **Tasks** tab
+3. Click **Run new task**
+4. Configure:
+   - **Task definition family**: `fyzz-chat-migration`
+   - **Launch type**: Fargate
+5. Click **Create** and wait for completion
+
+**Enable HTTPS (Optional):**
+
+1. Go to **Certificate Manager** → **Request a certificate**
+2. Request a public certificate for your domain
+3. Add the DNS validation records to your DNS provider
+4. Wait for certificate validation
+5. Go back to **CloudFormation** → Select your stack → **Update**
+6. Use current template and update the `CertificateArn` parameter with your certificate ARN
+7. Complete the stack update
+
+The template will automatically redirect HTTP to HTTPS when a certificate is provided.
 
 ## Docs for Builders
 
