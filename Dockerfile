@@ -72,6 +72,19 @@ EXPOSE 3000
 CMD ["bun", "./server.js"]
 
 
+FROM base AS migrate
+
+WORKDIR /app
+
+COPY package.json bun.lock ./
+COPY prisma/ ./prisma/
+COPY prisma.config.ts ./
+
+RUN bun install --frozen-lockfile --production dotenv dotenv-expand prisma
+
+CMD ["bunx", "prisma", "migrate", "deploy"]
+
+
 FROM base AS dev
 
 # copy the installed dependencies from the install stage
