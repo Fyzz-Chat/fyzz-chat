@@ -563,7 +563,7 @@
                     "ssm:GetParameters"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:ssm:${AWS::Region}::parameter/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+                    "Fn::Sub": "arn:aws:ssm:${AWS::Region}::parameter/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id"
                   }
                 }
               ]
@@ -584,7 +584,7 @@
         "LaunchTemplateName": "fyzz-chat-launch-template",
         "LaunchTemplateData": {
           "ImageId": {
-            "Fn::Sub": "{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}"
+            "Fn::Sub": "{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id}}"
           },
           "InstanceType": {"Ref": "InstanceType"},
           "IamInstanceProfile": {
