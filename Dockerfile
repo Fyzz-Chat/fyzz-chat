@@ -80,7 +80,7 @@ COPY package.json bun.lock ./
 COPY prisma/ ./prisma/
 COPY prisma.config.ts ./
 
-RUN bun install --frozen-lockfile --production dotenv dotenv-expand prisma
+RUN bun install --frozen-lockfile
 
 CMD ["bunx", "prisma", "migrate", "deploy"]
 
