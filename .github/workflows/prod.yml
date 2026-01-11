@@ -66,15 +66,18 @@ jobs:
         id: tags
         run: |
           TAGS="${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:latest"
+          MIGRATE_TAGS="${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:migrate-latest"
 
           git fetch --tags
           if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
             VERSION_TAG=$(git describe --tags --exact-match HEAD)
             TAGS="$TAGS,${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:$VERSION_TAG"
+            MIGRATE_TAGS="$MIGRATE_TAGS,${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:migrate-$VERSION_TAG"
             echo "Found version tag: $VERSION_TAG"
           fi
 
           echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+          echo "migrate_tags=$MIGRATE_TAGS" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -85,6 +88,16 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.tags.outputs.tags }}
+
+      - name: Build and push migration Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: migrate
+          file: Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.migrate_tags }}
 
   deploy:
     needs: release-and-build
