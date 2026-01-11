@@ -1,3 +1,16 @@
+# [0.14.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.13.1...v0.14.0) (2026-01-11)
+
+
+### Bug Fixes
+
+* **cloudformation:** update ami to latest supported version ([1365888](https://github.com/Fyzz-Chat/fyzz-chat/commit/13658882fbb6d4e504218a790f3b48fe692a77ca))
+
+
+### Features
+
+* **cloudformation:** add https listener depending on certificate set ([79ea64a](https://github.com/Fyzz-Chat/fyzz-chat/commit/79ea64a5cb75ea71d4017994e5ff6ee523b3e340))
+* **db:** add migration task definition ([152f887](https://github.com/Fyzz-Chat/fyzz-chat/commit/152f887b32b951f19c6caffbcb7dcca52071891e))
+
 ## [0.13.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.13.0...v0.13.1) (2026-01-11)
 
 
