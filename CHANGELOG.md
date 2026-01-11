@@ -1,3 +1,14 @@
+# [0.13.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.12.1...v0.13.0) (2026-01-11)
+
+
+### Features
+
+* add agent instructions and mcp servers ([a6f1586](https://github.com/Fyzz-Chat/fyzz-chat/commit/a6f158693f87ccaa9040598c19d551d553acd3bc))
+* add cloudformation config ([c081271](https://github.com/Fyzz-Chat/fyzz-chat/commit/c0812718b51d54f4921619204d9e9e2f724f31d8))
+* add rds to stack ([e1ae7e3](https://github.com/Fyzz-Chat/fyzz-chat/commit/e1ae7e38dd40b4855e8b3703b735bc2241472520))
+* **input:** add option to instantly fill a new chat's input ([67da666](https://github.com/Fyzz-Chat/fyzz-chat/commit/67da6661c0ebf49e28f6c315cf4f3e5013cd2b89))
+* **logger:** add colored logs ([d5a9261](https://github.com/Fyzz-Chat/fyzz-chat/commit/d5a92614056816baf5f8915910a1cef7f53d5035))
+
 ## [0.12.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.12.0...v0.12.1) (2026-01-02)
 
 
