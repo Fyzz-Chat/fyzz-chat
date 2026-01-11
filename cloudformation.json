@@ -2,14 +2,6 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "CloudFormation template for deploying Fyzz Chat to ECS on EC2",
   "Parameters": {
-    "DatabaseUrlSecretArn": {
-      "Type": "String",
-      "Description": "Full ARN of the Secrets Manager secret containing the PostgreSQL database connection URL (pooled connection)"
-    },
-    "DirectDatabaseUrlSecretArn": {
-      "Type": "String",
-      "Description": "Full ARN of the Secrets Manager secret containing the PostgreSQL direct database connection URL (for migrations)"
-    },
     "BetterAuthSecretArn": {
       "Type": "String",
       "Description": "Full ARN of the Secrets Manager secret containing BETTER_AUTH_SECRET"
@@ -31,6 +23,19 @@
       "Type": "String",
       "Description": "CIDR block for VPC",
       "Default": "10.0.0.0/16"
+    },
+    "DBInstanceClass": {
+      "Type": "String",
+      "Description": "RDS instance class",
+      "Default": "db.t4g.micro",
+      "AllowedValues": ["db.t4g.micro", "db.t4g.small", "db.t4g.medium", "db.t4g.large", "db.t3.micro", "db.t3.small", "db.t3.medium", "db.t3.large"]
+    },
+    "DBAllocatedStorage": {
+      "Type": "Number",
+      "Description": "Allocated storage for RDS instance in GB",
+      "Default": 20,
+      "MinValue": 20,
+      "MaxValue": 65536
     },
     "Environment": {
       "Type": "String",
@@ -290,6 +295,73 @@
         "Tags": [{"Key": "Name", "Value": "fyzz-chat-ecs-sg"}]
       }
     },
+    "DBSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security group for RDS instance",
+        "VpcId": {"Ref": "VPC"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 5432,
+            "ToPort": 5432,
+            "SourceSecurityGroupId": {"Ref": "ECSSecurityGroup"}
+          }
+        ],
+        "Tags": [{"Key": "Name", "Value": "fyzz-chat-db-sg"}]
+      }
+    },
+    "DBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Subnet group for RDS instance",
+        "SubnetIds": [{"Ref": "PrivateSubnet1"}, {"Ref": "PrivateSubnet2"}],
+        "Tags": [{"Key": "Name", "Value": "fyzz-chat-db-subnet-group"}]
+      }
+    },
+    "DBSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "fyzz-chat-db-secret-${Environment}"
+        },
+        "Description": "Database credentials for Fyzz Chat",
+        "GenerateSecretString": {
+          "SecretStringTemplate": "{\"username\": \"fyzz_chat\"}",
+          "GenerateStringKey": "password",
+          "PasswordLength": 32,
+          "ExcludeCharacters": "\"@/\\"
+        },
+        "Tags": [{"Key": "Name", "Value": "fyzz-chat-db-secret"}]
+      }
+    },
+    "RDSInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBInstanceClass": {"Ref": "DBInstanceClass"},
+        "AllocatedStorage": {"Ref": "DBAllocatedStorage"},
+        "Engine": "postgres",
+        "EngineVersion": "17.6",
+        "DBInstanceIdentifier": {
+          "Fn::Sub": "fyzz-chat-db-${Environment}"
+        },
+        "DBName": "fyzz_chat",
+        "MasterUsername": {
+          "Fn::Sub": "{{resolve:secretsmanager:${DBSecret}:SecretString:username}}"
+        },
+        "MasterUserPassword": {
+          "Fn::Sub": "{{resolve:secretsmanager:${DBSecret}:SecretString:password}}"
+        },
+        "DBSubnetGroupName": {"Ref": "DBSubnetGroup"},
+        "VPCSecurityGroups": [{"Ref": "DBSecurityGroup"}],
+        "PubliclyAccessible": false,
+        "StorageEncrypted": true,
+        "BackupRetentionPeriod": 7,
+        "MultiAZ": false,
+        "DeletionProtection": true,
+        "Tags": [{"Key": "Name", "Value": "fyzz-chat-db"}]
+      }
+    },
     "ApplicationLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
@@ -401,8 +473,6 @@
                     "secretsmanager:GetSecretValue"
                   ],
                   "Resource": [
-                    {"Ref": "DatabaseUrlSecretArn"},
-                    {"Ref": "DirectDatabaseUrlSecretArn"},
                     {"Ref": "BetterAuthSecretArn"},
                     {"Ref": "OpenaiApiKeySecretArn"}
                   ]
@@ -583,21 +653,35 @@
               {
                 "Name": "BETTER_AUTH_URL",
                 "Value": {"Ref": "BetterAuthUrl"}
-              }
-            ],
-            "Secrets": [
+              },
               {
                 "Name": "DATABASE_URL",
-                "ValueFrom": {
-                  "Ref": "DatabaseUrlSecretArn"
+                "Value": {
+                  "Fn::Sub": [
+                    "postgresql://{{resolve:secretsmanager:${Secret}:SecretString:username}}:{{resolve:secretsmanager:${Secret}:SecretString:password}}@${Endpoint}:${Port}/fyzz_chat?pgbouncer=true&connect_timeout=15&sslmode=no-verify",
+                    {
+                      "Secret": {"Ref": "DBSecret"},
+                      "Endpoint": {"Fn::GetAtt": ["RDSInstance", "Endpoint.Address"]},
+                      "Port": {"Fn::GetAtt": ["RDSInstance", "Endpoint.Port"]}
+                    }
+                  ]
                 }
               },
               {
                 "Name": "DIRECT_DATABASE_URL",
-                "ValueFrom": {
-                  "Ref": "DirectDatabaseUrlSecretArn"
+                "Value": {
+                  "Fn::Sub": [
+                    "postgresql://{{resolve:secretsmanager:${Secret}:SecretString:username}}:{{resolve:secretsmanager:${Secret}:SecretString:password}}@${Endpoint}:${Port}/fyzz_chat?connect_timeout=15&sslmode=no-verify",
+                    {
+                      "Secret": {"Ref": "DBSecret"},
+                      "Endpoint": {"Fn::GetAtt": ["RDSInstance", "Endpoint.Address"]},
+                      "Port": {"Fn::GetAtt": ["RDSInstance", "Endpoint.Port"]}
+                    }
+                  ]
                 }
-              },
+              }
+            ],
+            "Secrets": [
               {
                 "Name": "BETTER_AUTH_SECRET",
                 "ValueFrom": {
@@ -710,9 +794,19 @@
       "Value": {"Ref": "CloudWatchLogsGroup"},
       "Export": {"Name": "fyzz-chat-logs-group"}
     },
+    "DBEndpoint": {
+      "Description": "RDS instance endpoint",
+      "Value": {"Fn::GetAtt": ["RDSInstance", "Endpoint.Address"]},
+      "Export": {"Name": "fyzz-chat-db-endpoint"}
+    },
+    "DBSecretArn": {
+      "Description": "Database credentials secret ARN",
+      "Value": {"Ref": "DBSecret"},
+      "Export": {"Name": "fyzz-chat-db-secret-arn"}
+    },
     "NextSteps": {
       "Description": "Next steps after stack creation",
-      "Value": "1. Wait for ALB to be healthy 2. Run database migrations: ECS task with 'bun run db:deploy' 3. Point your domain to the ALB DNS name"
+      "Value": "1. Wait for ALB and RDS to be healthy 2. Run database migrations: ECS task with 'bun run db:deploy' 3. Point your domain to the ALB DNS name"
     }
   }
 }
