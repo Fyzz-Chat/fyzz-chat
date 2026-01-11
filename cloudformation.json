@@ -337,6 +337,7 @@
     },
     "RDSInstance": {
       "Type": "AWS::RDS::DBInstance",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DBInstanceClass": {"Ref": "DBInstanceClass"},
         "AllocatedStorage": {"Ref": "DBAllocatedStorage"},
