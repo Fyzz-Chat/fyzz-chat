@@ -261,7 +261,6 @@ function filterParts(
           part.type === "tool-memory" ||
           part.type === "tool-image_generation" ||
           part.type === "tool-readUrl" ||
-          part.type === "tool-readYoutube" ||
           part.type === "tool-code_interpreter"
         );
       } else {

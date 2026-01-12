@@ -131,17 +131,6 @@ export function MessageItemNew({
               </Tool>
             );
           }
-          case "tool-readYoutube": {
-            return (
-              <Tool key={`${message.id}-tool-readYoutube-${i}`}>
-                <ToolHeader type="tool-readYoutube" state={part.state} />
-                <ToolContent>
-                  <ToolInput input={part.input} />
-                  <ToolOutput output={""} errorText={part.errorText} />
-                </ToolContent>
-              </Tool>
-            );
-          }
           case "tool-code_interpreter": {
             return (
               <Tool key={`${message.id}-tool-code_interpreter-${i}`}>

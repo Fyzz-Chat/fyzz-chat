@@ -315,17 +315,11 @@ async function getTools(
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
   const tools: { [key: string]: Tool } = {};
 
-  // if (openaiConfigured) {
-  //   tools.generateImage = await generateImageTool(conversationId);
-  // }
-
   if (user.memoryEnabled) {
     tools.memory = memoryTool;
   }
 
   tools.readUrl = readUrlTool;
-  // Not working in production yet
-  // tools.readYoutube = readYoutubeTool;
 
   const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);
