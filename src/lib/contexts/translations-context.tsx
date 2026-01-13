@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
 import type { Translations } from "@/types/locale";
 
 interface TranslationsContextType {
@@ -24,9 +24,9 @@ export function TranslationsProvider({
   children: ReactNode;
   translationsPromise: Promise<Translations>;
 }) {
+  const value = useMemo(() => ({ translationsPromise }), [translationsPromise]);
+
   return (
-    <TranslationsContext.Provider value={{ translationsPromise }}>
-      {children}
-    </TranslationsContext.Provider>
+    <TranslationsContext.Provider value={value}>{children}</TranslationsContext.Provider>
   );
 }

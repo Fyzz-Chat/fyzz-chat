@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { cache } from "react";
 import type { Locale } from "@/types/locale";
 
 export const locales: Locale[] = ["en", "de", "hu"];
@@ -11,9 +12,9 @@ const dictionaries = {
   hu: () => import("./dictionaries/hu.json").then((module) => module.default),
 };
 
-export const getTranslations = async () => {
+export const getTranslations = cache(async () => {
   const cookieStore = await cookies();
   const _lang = (cookieStore.get("locale")?.value as Locale) || "en";
 
   return dictionaries.en();
-};
+});
