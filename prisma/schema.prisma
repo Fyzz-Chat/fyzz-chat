@@ -15,16 +15,16 @@ datasource db {
 
 model User {
   // Better Auth tables
-  id            String         @id @default(cuid()) @map("id")
+  id            String    @id @default(cuid()) @map("id")
   name          String
-  email         String         @unique
-  emailVerified Boolean?       @map("email_verified")
-  image         String?        @map("image")
+  email         String    @unique
+  emailVerified Boolean?  @map("email_verified")
+  image         String?   @map("image")
   sessions      Session[]
   accounts      Account[]
 
   // Deprecated columns
-  password      String?        @map("password")
+  password String? @map("password")
 
   // Custom columns
   subscription  String         @default("free")
@@ -53,6 +53,8 @@ model Conversation {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   lastMessageAt DateTime  @default(now()) @map("last_message_at")
 
+  @@index([userId])
+  @@index([userId, lastMessageAt(sort: Desc), id(sort: Desc)])
   @@map("conversations")
 }
 
@@ -74,6 +76,7 @@ model Message {
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
 
+  @@index([conversationId, createdAt])
   @@map("messages")
 }
 
@@ -95,20 +98,20 @@ model Session {
 }
 
 model Account {
-  id                   String   @id @default(cuid())
-  userId               String   @map("user_id")
-  providerId           String   @map("provider_id")
-  accountId            String   @map("account_id")
-  refreshToken         String?  @map("refresh_token")
-  accessToken          String?  @map("access_token")
-  idToken              String?  @map("id_token")
-  accessTokenExpiresAt DateTime? @map("access_token_expires_at")
+  id                    String    @id @default(cuid())
+  userId                String    @map("user_id")
+  providerId            String    @map("provider_id")
+  accountId             String    @map("account_id")
+  refreshToken          String?   @map("refresh_token")
+  accessToken           String?   @map("access_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
   refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
-  scope                String?    @map("scope")
-  password             String?    @map("password")
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt            DateTime @default(now()) @map("created_at")
-  updatedAt            DateTime @updatedAt @map("updated_at")
+  scope                 String?   @map("scope")
+  password              String?   @map("password")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@unique([providerId, accountId])
   @@index([userId])
