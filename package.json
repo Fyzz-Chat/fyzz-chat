@@ -73,6 +73,7 @@
     "@tanstack/query-sync-storage-persister": "5.90.14",
     "@tanstack/react-query": "5.90.12",
     "@tanstack/react-query-persist-client": "5.90.14",
+    "@tanstack/react-virtual": "3.13.18",
     "@trpc/client": "11.7.2",
     "@trpc/react-query": "11.7.2",
     "@trpc/server": "11.7.2",

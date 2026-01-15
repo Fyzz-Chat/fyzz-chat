@@ -111,7 +111,6 @@ export function MessageItem({
 
   return (
     <div
-      data-message-id={message.id}
       className={cn(
         "group flex w-full flex-col gap-1",
         message.role === "user" ? "ml-auto max-w-[80%] items-end" : "mr-auto max-w-full"
