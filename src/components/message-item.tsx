@@ -128,36 +128,36 @@ export function MessageItem({
       ) : (
         <MessageContent message={message} />
       )}
-      <div
-        className={cn(
-          "flex items-start gap-1 text-muted-foreground",
-          message.role === "user" && "flex-row-reverse"
-        )}
-      >
-        {isEditing && (
-          <>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 p-0"
-              onClick={handleCancelEdit}
-              disabled={inProgress}
-            >
-              <X size={18} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 p-0"
-              onClick={handleSaveMessage}
-              disabled={inProgress}
-            >
-              {inProgress ? <Loader2 className="animate-spin" /> : <Check size={18} />}
-            </Button>
-          </>
-        )}
-        <div className="relative">
-          <TooltipProvider>
+      <TooltipProvider>
+        <div
+          className={cn(
+            "flex items-start gap-1 text-muted-foreground",
+            message.role === "user" && "flex-row-reverse"
+          )}
+        >
+          {isEditing && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 p-0"
+                onClick={handleCancelEdit}
+                disabled={inProgress}
+              >
+                <X size={18} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 p-0"
+                onClick={handleSaveMessage}
+                disabled={inProgress}
+              >
+                {inProgress ? <Loader2 className="animate-spin" /> : <Check size={18} />}
+              </Button>
+            </>
+          )}
+          <div className="relative">
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
@@ -186,14 +186,12 @@ export function MessageItem({
                 <p>Copy message</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-          {isCopied && (
-            <div className="absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 transform rounded-md border bg-background px-2 py-1 text-foreground text-xs shadow-md">
-              Copied!
-            </div>
-          )}
-        </div>
-        <TooltipProvider>
+            {isCopied && (
+              <div className="absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 transform rounded-md border bg-background px-2 py-1 text-foreground text-xs shadow-md">
+                Copied!
+              </div>
+            )}
+          </div>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button
@@ -220,13 +218,11 @@ export function MessageItem({
               <p>Regenerate response</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-        {message.role === "assistant" && (
-          <div className="ml-2 flex h-full self-center opacity-0 transition-opacity duration-100 group-hover:opacity-100">
-            <p className="text-muted-foreground text-xs">{model?.name}</p>
-          </div>
-        )}
-        <TooltipProvider>
+          {message.role === "assistant" && (
+            <div className="ml-2 flex h-full self-center opacity-0 transition-opacity duration-100 group-hover:opacity-100">
+              <p className="text-muted-foreground text-xs">{model?.name}</p>
+            </div>
+          )}
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button
@@ -248,8 +244,8 @@ export function MessageItem({
               <p>Edit message</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-      </div>
+        </div>
+      </TooltipProvider>
     </div>
   );
 }
