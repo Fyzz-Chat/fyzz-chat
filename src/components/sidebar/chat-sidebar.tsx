@@ -2,7 +2,7 @@
 
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import type React from "react";
-import { createElement, use, useState } from "react";
+import { createElement, memo, use, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -88,8 +88,9 @@ export default function ChatSidebar({
   );
 
   const allConversations = data?.pages.flatMap((page) => page.items) || [];
-  const groupedConversations = groupConversationsByTime(
-    allConversations as PartialConversation[]
+  const groupedConversations = useMemo(
+    () => groupConversationsByTime(allConversations as PartialConversation[]),
+    [allConversations]
   );
 
   // Setup intersection observer for infinite scroll using react-intersection-observer
@@ -111,7 +112,7 @@ export default function ChatSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.today.map((chat: PartialConversation) => (
-              <ConversationLink key={chat.id} chat={chat} />
+              <MemoizedConversationLink key={chat.id} chat={chat} />
             ))}
           </SidebarGroupContent>
         </SidebarGroup>
@@ -123,7 +124,7 @@ export default function ChatSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.yesterday.map((chat: PartialConversation) => (
-              <ConversationLink key={chat.id} chat={chat} />
+              <MemoizedConversationLink key={chat.id} chat={chat} />
             ))}
           </SidebarGroupContent>
         </SidebarGroup>
@@ -135,7 +136,7 @@ export default function ChatSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.lastWeek.map((chat: PartialConversation) => (
-              <ConversationLink key={chat.id} chat={chat} />
+              <MemoizedConversationLink key={chat.id} chat={chat} />
             ))}
           </SidebarGroupContent>
         </SidebarGroup>
@@ -147,7 +148,7 @@ export default function ChatSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent className="space-y-1">
             {groupedConversations.older.map((chat: PartialConversation) => (
-              <ConversationLink key={chat.id} chat={chat} />
+              <MemoizedConversationLink key={chat.id} chat={chat} />
             ))}
           </SidebarGroupContent>
         </SidebarGroup>
@@ -294,3 +295,5 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
     </div>
   );
 }
+
+const MemoizedConversationLink = memo(ConversationLink);
