@@ -89,12 +89,12 @@ export function MessageItem({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are correct as is
   useEffect(() => {
-    if (isEditing) {
-      const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
-      if (textarea) {
-        textarea.focus();
-        textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
-      }
+    if (!isEditing) return;
+
+    const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
+    if (textarea) {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
     }
 
     const handleEscape = (e: KeyboardEvent) => {
@@ -102,10 +102,10 @@ export function MessageItem({
         handleCancelEdit();
       }
     };
-    window.addEventListener("keydown", handleEscape);
+    globalThis.addEventListener("keydown", handleEscape);
 
     return () => {
-      window.removeEventListener("keydown", handleEscape);
+      globalThis.removeEventListener("keydown", handleEscape);
     };
   }, [isEditing]);
 
