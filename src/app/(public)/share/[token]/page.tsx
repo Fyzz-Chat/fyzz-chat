@@ -6,11 +6,14 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import { MessageContent } from "@/components/message-content";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
 import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
-import { cn } from "@/lib/utils";
 
 type Props = {
   params: Promise<{ token: string }>;
@@ -70,17 +73,25 @@ export default async function SharePage({
           <ConversationContent className="mx-auto max-w-5xl">
             {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
             {conversation.messages.map((message: any) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "group flex flex-col gap-1",
-                  message.role === "user"
-                    ? "ml-auto max-w-[80%] items-end"
-                    : "mr-auto max-w-full"
-                )}
-              >
-                <MessageContent message={message} />
-              </div>
+              <Message key={message.id} from={message.role}>
+                <MessageContent>
+                  {/** biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation */}
+                  {message.parts.map((part: any, i: any) => {
+                    switch (part.type) {
+                      case "text": {
+                        return (
+                          <MessageResponse key={`${message.id}-${i}`}>
+                            {part.text}
+                          </MessageResponse>
+                        );
+                      }
+                      default: {
+                        return null;
+                      }
+                    }
+                  })}
+                </MessageContent>
+              </Message>
             ))}
           </ConversationContent>
           <ConversationScrollButton />
