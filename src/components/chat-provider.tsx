@@ -1,7 +1,14 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type UseChatHelpers, useChat } from "@ai-sdk/react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useStableId } from "@/hooks/use-stable-id";
@@ -10,6 +17,10 @@ import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
+
+type ChatContextType = UseChatHelpers<CustomUIMessage> | null;
+
+const ChatContext = createContext<ChatContextType>(null);
 
 /**
  * This component is a "controller" that bridges the `ai/react` `useChat` hook
@@ -40,17 +51,18 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   }, [params.id, setStableId]);
 
   // This is the only place `useChat` is called.
-  const { messages, status, error, stop, regenerate, setMessages, sendMessage } = useChat(
-    {
-      id: stableId,
-      generateId: () => nextMessageId.current,
-      onFinish: async ({ message }: { message: CustomUIMessage }) => {
-        await addMessage.mutateAsync({
-          message,
-        });
-      },
-    }
-  );
+  const chatApi = useChat({
+    id: stableId,
+    generateId: () => nextMessageId.current,
+    experimental_throttle: 30, // Throttle UI updates to every 30ms during streaming
+    onFinish: async ({ message }: { message: CustomUIMessage }) => {
+      await addMessage.mutateAsync({
+        message,
+      });
+    },
+  });
+
+  const { messages, status, error, stop, regenerate, setMessages, sendMessage } = chatApi;
 
   // Effect to sync state FROM `useChat` hook TO the Zustand store
   useEffect(() => {
@@ -161,5 +173,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setMessages,
   ]);
 
-  return children;
+  return <ChatContext.Provider value={chatApi}>{children}</ChatContext.Provider>;
+}
+
+export function useChatContext() {
+  const context = useContext(ChatContext);
+  if (!context) {
+    throw new Error("useChatContext must be used within ChatProvider");
+  }
+  return context;
 }
