@@ -22,8 +22,7 @@ import { getVersion } from "@/lib/backend/utils";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 
 export async function AppSidebar({ children }: { children: ReactNode }) {
-  const user = await getUserFromSessionPublic();
-  const version = await getVersion();
+  const [user, version] = await Promise.all([getUserFromSessionPublic(), getVersion()]);
 
   return (
     <>
