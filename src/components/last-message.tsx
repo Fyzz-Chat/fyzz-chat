@@ -1,10 +1,12 @@
 "use client";
 
+import { MessageItemNew } from "@/components/message-item-new";
 import { useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
-import { MessageItem } from "./message-item";
 
-export default function LastMessage({ conversationId }: { conversationId: string }) {
+export default function LastMessage({
+  conversationId,
+}: Readonly<{ conversationId: string }>) {
   const lastMessage = useChatStore((state) => state.lastMessage);
   const { data: messages, status: messagesStatus } = useMessages(conversationId);
 
@@ -16,5 +18,5 @@ export default function LastMessage({ conversationId }: { conversationId: string
     return null;
   }
 
-  return <MessageItem message={lastMessage} conversationId={conversationId} />;
+  return <MessageItemNew message={lastMessage} conversationId={conversationId} />;
 }

@@ -1,18 +1,23 @@
 "use client";
 
-import { useVirtualizer } from "@tanstack/react-virtual";
 import { Loader2 } from "lucide-react";
-import { memo, useEffect, useMemo, useRef } from "react";
+import { memo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import LastMessage from "@/components/last-message";
 import { LoadingDots } from "@/components/loading-dots";
-import { MessageItem } from "@/components/message-item";
+import { MessageItemNew } from "@/components/message-item-new";
 import { useConversation, useMessages } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 
-const MemoizedMessageItem = memo(MessageItem);
+const MemoizedMessageItem = memo(MessageItemNew);
 
 function getErrorMessage(error: { message: string }) {
   if (error.message === "content_filter") {
@@ -25,6 +30,42 @@ function getErrorMessage(error: { message: string }) {
     return "One or more MCP servers failed to initialize. Please try again.";
   }
   return "Something went wrong.";
+}
+
+function MessagesContent({
+  id,
+  messages,
+  error,
+  showLoading,
+  files,
+}: Readonly<{
+  id: string;
+  messages: import("@/types/chat").CustomUIMessage[];
+  error: Error | null | undefined;
+  showLoading: boolean;
+  files: FileList | import("ai").FileUIPart[] | undefined;
+}>) {
+  return (
+    <ConversationContent className="pt-8">
+      <ChatLayoutWrapper>
+        {messages.map((message) => (
+          <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
+        ))}
+        <LastMessage conversationId={id} />
+        {error && (
+          <div className="flex flex-col gap-1">
+            <div className="rounded-lg border border-destructive p-4 text-destructive">
+              <p>{getErrorMessage(error)}</p>
+            </div>
+            <span className="h-8" />
+          </div>
+        )}
+        {showLoading && <LoadingDots className="text-muted-foreground" />}
+        <div id="messages-end" className="h-4" />
+        {files && files.length > 0 && <div className="h-13.5 w-1" />}
+      </ChatLayoutWrapper>
+    </ConversationContent>
+  );
 }
 
 export function MessagesList({ id }: Readonly<{ id: string }>) {
@@ -42,8 +83,6 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
       (status === "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&
     lastMessage?.role === "user";
 
-  const parentRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (conversationStatus === "error") {
       navigate("/chat");
@@ -59,26 +98,6 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
     }
   }, [conversationStatus, conversation, navigate, setModel]);
 
-  const virtualizedMessages = useMemo(() => {
-    return messages?.messages || [];
-  }, [messages?.messages]);
-
-  const rowVirtualizer = useVirtualizer({
-    count: virtualizedMessages.length,
-    getScrollElement: () => {
-      const scrollArea = parentRef.current?.closest("[data-radix-scroll-area-viewport]");
-      return scrollArea as HTMLElement | null;
-    },
-    estimateSize: () => 250,
-    overscan: 10,
-    getItemKey: (index) => virtualizedMessages[index]?.id || index,
-    measureElement: (el) => {
-      // Include the margin-bottom (16px from mb-4 class) in measurement
-      return el.getBoundingClientRect().height + 16;
-    },
-    enabled: virtualizedMessages.length > 0,
-  });
-
   if (isMessagesLoading) {
     return (
       <div className="flex h-[calc(100svh-170px)] flex-1 items-center justify-center md:h-[calc(100svh-198px)]">
@@ -88,51 +107,15 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
   }
 
   return (
-    <div ref={parentRef} className="flex flex-col px-4 pt-8 sm:px-8">
-      <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          width: "100%",
-          position: "relative",
-        }}
-      >
-        {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-          const message = virtualizedMessages[virtualItem.index];
-          return (
-            <article
-              key={virtualItem.key}
-              data-index={virtualItem.index}
-              data-message-id={message.id}
-              ref={rowVirtualizer.measureElement}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                transform: `translateY(${virtualItem.start}px)`,
-                willChange: "transform",
-              }}
-              className="mb-4"
-            >
-              <MemoizedMessageItem message={message} conversationId={id} />
-            </article>
-          );
-        })}
-      </div>
-      <div className="flex flex-col gap-4">
-        <LastMessage conversationId={id} />
-        {error && (
-          <div className="flex flex-col gap-1">
-            <div className="rounded-lg border border-destructive p-4 text-destructive">
-              <p>{getErrorMessage(error)}</p>
-            </div>
-            <span className="h-8" />
-          </div>
-        )}
-        {showLoading && <LoadingDots className="text-muted-foreground" />}
-        <div id="messages-end" className="h-4" />
-        {files && files.length > 0 && <div className="h-13.5 w-1" />}
-      </div>
-    </div>
+    <Conversation className="relative size-full">
+      <MessagesContent
+        id={id}
+        messages={messages?.messages || []}
+        error={error}
+        showLoading={showLoading}
+        files={files}
+      />
+      <ConversationScrollButton />
+    </Conversation>
   );
 }

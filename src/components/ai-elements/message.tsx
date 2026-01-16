@@ -289,6 +289,8 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (
     <Streamdown
+      mode="static"
+      shikiTheme={["github-dark", "github-light"]}
       className={cn("size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0", className)}
       {...props}
     />
@@ -407,7 +409,7 @@ export const MessageToolbar = ({
   ...props
 }: MessageToolbarProps) => (
   <div
-    className={cn("mt-4 flex w-full items-center justify-between gap-4", className)}
+    className={cn("flex w-full items-center justify-between gap-4", className)}
     {...props}
   >
     {children}
