@@ -12,6 +12,7 @@ import {
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useStableId } from "@/hooks/use-stable-id";
+import { useBrowseContext } from "@/lib/contexts/browse-context";
 import { useAddMessage } from "@/lib/queries/conversations";
 import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
@@ -38,7 +39,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
   const stableId = useStableId();
-  const browse = useChatStore((state) => state.browse);
+  const { browse } = useBrowseContext();
   const setStableId = useChatStore((state) => state.setStableId);
   const [input, setInput] = useState("");
 
@@ -83,7 +84,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       stop,
       regenerate: (messageId: string) => {
         const { model, temporaryChat } = useModelStore.getState();
-        const { browse, stableId } = useChatStore.getState();
+        const { stableId } = useChatStore.getState();
         regenerate({
           messageId,
           body: {
@@ -101,7 +102,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       },
       emptySubmit: () => {
         const { model, temporaryChat } = useModelStore.getState();
-        const { browse, stableId } = useChatStore.getState();
+        const { stableId } = useChatStore.getState();
         const { setFiles } = useFileStore.getState();
         setMessages([]);
         sendMessage(undefined, {
@@ -129,7 +130,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         );
       },
     });
-  }, [stop, regenerate, sendMessage, setMessages]);
+  }, [stop, regenerate, sendMessage, setMessages, browse]);
 
   // Effect to handle automatic submission on input change
   useEffect(() => {

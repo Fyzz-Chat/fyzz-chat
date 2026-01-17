@@ -11,8 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useBrowseContext } from "@/lib/contexts/browse-context";
 import { cn } from "@/lib/utils";
-import { useChatStore } from "@/stores/chat-store";
 import { useModelStore } from "@/stores/model-store";
 
 export default function SearchMenu() {
@@ -20,7 +20,7 @@ export default function SearchMenu() {
   const searchSupport = model?.features?.some((feature) => feature.name === "Search");
   const isSonar = model?.id === "sonar" || model?.id === "sonar-pro";
   const [search, setSearch] = useState(isSonar ? "web" : "none");
-  const { setBrowse } = useChatStore();
+  const { setBrowse } = useBrowseContext();
 
   // Update search state when model changes
   useEffect(() => {
