@@ -10,12 +10,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useInputFormContext } from "@/lib/contexts/input-form-context";
 import { isFileList } from "@/lib/utils";
-import { useFileStore } from "@/stores/file-store";
 
 export default function FileList() {
-  const files = useFileStore((state) => state.files);
-  const setFiles = useFileStore((state) => state.setFiles);
+  const { files, setFiles } = useInputFormContext();
 
   if (!isFileList(files)) {
     return null;

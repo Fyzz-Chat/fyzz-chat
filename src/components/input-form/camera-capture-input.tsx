@@ -2,10 +2,10 @@
 
 import type * as React from "react";
 import { Input } from "@/components/ui/input";
-import { useFileStore } from "@/stores/file-store";
+import { useInputFormContext } from "@/lib/contexts/input-form-context";
 
 function CameraCaptureInput({ ...props }: React.ComponentProps<typeof Input>) {
-  const setFiles = useFileStore((state) => state.setFiles);
+  const { setFiles } = useInputFormContext();
 
   function handlePhotoCapture(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files && event.target.files.length > 0) {

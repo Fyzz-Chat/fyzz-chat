@@ -2,11 +2,11 @@
 
 import type * as React from "react";
 import { Input } from "@/components/ui/input";
-import { useFileStore } from "@/stores/file-store";
+import { useInputFormContext } from "@/lib/contexts/input-form-context";
 import { useModelStore } from "@/stores/model-store";
 
 function FileUploadInput({ ...props }: React.ComponentProps<typeof Input>) {
-  const setFiles = useFileStore((state) => state.setFiles);
+  const { setFiles } = useInputFormContext();
   const extensions = useModelStore((state) => state.model?.extensions);
 
   return (

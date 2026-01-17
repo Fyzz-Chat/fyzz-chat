@@ -3,14 +3,14 @@
 import { Send } from "lucide-react";
 import IconPlayerStop from "@/components/icons/icon-player-stop";
 import { Button } from "@/components/ui/button";
+import { useInputFormContext } from "@/lib/contexts/input-form-context";
 import { useChatStore } from "@/stores/chat-store";
-import { useInputStore } from "@/stores/input-store";
 
 export default function ActionButton() {
   const status = useChatStore((state) => state.status);
   const stop = useChatStore((state) => state.stop);
   const error = useChatStore((state) => state.error);
-  const input = useInputStore((state) => state.input);
+  const { input } = useInputFormContext();
 
   return status === "submitted" || status === "streaming" ? (
     <Button

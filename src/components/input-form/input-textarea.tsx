@@ -1,12 +1,11 @@
 "use client";
 
-import { type ClipboardEvent, type KeyboardEvent, use, useEffect } from "react";
+import { type ClipboardEvent, type KeyboardEvent, use } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import { useInputFormContext } from "@/lib/contexts/input-form-context";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { isFileList } from "@/lib/utils";
-import { useFileStore } from "@/stores/file-store";
-import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { ExtensionType } from "@/types/provider";
 
@@ -18,10 +17,7 @@ export default function InputTextarea({
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const isMobile = useMediaQuery("(max-width: 640px)");
-  const input = useInputStore((state) => state.input);
-  const setInput = useInputStore((state) => state.setInput);
-  const files = useFileStore((state) => state.files);
-  const setFiles = useFileStore((state) => state.setFiles);
+  const { input, setInput, files, setFiles } = useInputFormContext();
   const extensions = useModelStore((state) => state.model?.extensions);
 
   async function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -60,13 +56,6 @@ export default function InputTextarea({
       setFiles(newFiles.files);
     }
   }
-
-  useEffect(() => {
-    const storedInput = localStorage.getItem("fyzz-input-content");
-    if (storedInput) {
-      setInput(storedInput);
-    }
-  }, [setInput]);
 
   return (
     <TextareaAutosize

@@ -10,7 +10,9 @@ import FileUploadInput from "@/components/input-form/file-upload-input";
 import InputTextarea from "@/components/input-form/input-textarea";
 import SearchMenu from "@/components/input-form/search-menu";
 import ModelMenu from "@/components/model-menu";
+import { useInputForm } from "@/hooks/use-input-form";
 import useTempChat from "@/hooks/use-temp-chat";
+import { InputFormContext } from "@/lib/contexts/input-form-context";
 import {
   useAddMessage,
   useCreateConversation,
@@ -18,12 +20,10 @@ import {
 } from "@/lib/queries/conversations";
 import { cn, isFileList, uploadFiles } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
-import { useFileStore } from "@/stores/file-store";
-import { useInputStore } from "@/stores/input-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 
-export default function InputForm({ className }: { className?: string }) {
+export default function InputForm({ className }: Readonly<{ className?: string }>) {
   useTempChat();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,8 +34,9 @@ export default function InputForm({ className }: { className?: string }) {
   const model = useModelStore((state) => state.model);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
 
-  const files = useFileStore((state) => state.files);
-  const setFiles = useFileStore((state) => state.setFiles);
+  // Use the custom hook that manages input/files state and localStorage
+  const inputFormState = useInputForm();
+  const { input, setInput, files, setFiles } = inputFormState;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -43,12 +44,10 @@ export default function InputForm({ className }: { className?: string }) {
   async function handleSendMessage(
     e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
   ) {
-    const { input, setInput } = useInputStore.getState();
     const { stableId, status } = useChatStore.getState();
 
     e.preventDefault();
     if (!input.trim()) return;
-
     if (status !== "ready") return;
 
     if (location.pathname === "/chat") {
@@ -135,44 +134,45 @@ export default function InputForm({ className }: { className?: string }) {
     const searchParams = new URLSearchParams(location.search);
     const textParam = searchParams.get("text");
 
-    if (textParam && location.pathname === "/chat") {
-      const { input, setInput } = useInputStore.getState();
-      // Only set if input is empty to avoid overwriting user input
-      if (!input.trim()) {
-        setInput(decodeURIComponent(textParam));
-      }
+    if (textParam && location.pathname === "/chat" && !input.trim()) {
+      setInput(decodeURIComponent(textParam));
     }
-  }, [location]);
+  }, [location.search, location.pathname, input, setInput]);
 
   return (
-    <div
-      className={cn("w-full flex-none rounded-b-[20px] pt-1 sm:px-4 sm:pb-4", className)}
-    >
-      <form
-        onSubmit={handleSendMessage}
+    <InputFormContext.Provider value={inputFormState}>
+      <div
         className={cn(
-          "flex flex-col items-end rounded-t-3xl border bg-card p-3 transition-colors duration-200 focus-within:border-primary sm:rounded-b-3xl",
-          temporaryChat && "dark:bg-black"
+          "w-full flex-none rounded-b-[20px] pt-1 sm:px-4 sm:pb-4",
+          className
         )}
       >
-        <FileList />
-        <InputTextarea handleSendMessage={handleSendMessage} />
-        <CameraCaptureInput ref={cameraInputRef} />
-        <FileUploadInput ref={fileInputRef} />
-        <div className="flex w-full items-center gap-2">
-          <div className="mr-auto flex items-center gap-2">
-            <ModelMenu />
-            <SearchMenu />
-          </div>
-          {model?.extensions?.length > 0 && (
-            <AttachmentButton
-              cameraInputRef={cameraInputRef}
-              fileInputRef={fileInputRef}
-            />
+        <form
+          onSubmit={handleSendMessage}
+          className={cn(
+            "flex flex-col items-end rounded-t-3xl border bg-card p-3 transition-colors duration-200 focus-within:border-primary sm:rounded-b-3xl",
+            temporaryChat && "dark:bg-black"
           )}
-          <ActionButton />
-        </div>
-      </form>
-    </div>
+        >
+          <FileList />
+          <InputTextarea handleSendMessage={handleSendMessage} />
+          <CameraCaptureInput ref={cameraInputRef} />
+          <FileUploadInput ref={fileInputRef} />
+          <div className="flex w-full items-center gap-2">
+            <div className="mr-auto flex items-center gap-2">
+              <ModelMenu />
+              <SearchMenu />
+            </div>
+            {model?.extensions?.length > 0 && (
+              <AttachmentButton
+                cameraInputRef={cameraInputRef}
+                fileInputRef={fileInputRef}
+              />
+            )}
+            <ActionButton />
+          </div>
+        </form>
+      </div>
+    </InputFormContext.Provider>
   );
 }

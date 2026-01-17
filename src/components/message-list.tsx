@@ -13,7 +13,6 @@ import { useChatContext } from "@/components/chat-provider";
 import { LoadingDots } from "@/components/loading-dots";
 import { MessageItemNew } from "@/components/message-item-new";
 import { useConversation, useMessages } from "@/lib/queries/conversations";
-import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 
 const MemoizedMessageItem = memo(MessageItemNew);
@@ -37,14 +36,12 @@ function MessagesContent({
   streamingMessages,
   error,
   showLoading,
-  files,
 }: Readonly<{
   id: string;
   persistedMessages: import("@/types/chat").CustomUIMessage[];
   streamingMessages: import("@/types/chat").CustomUIMessage[];
   error: Error | null | undefined;
   showLoading: boolean;
-  files: FileList | import("ai").FileUIPart[] | undefined;
 }>) {
   // Memoize the persisted messages to prevent re-renders
   const persistedMessagesList = useMemo(
@@ -84,7 +81,6 @@ function MessagesContent({
         )}
         {showLoading && <LoadingDots className="text-muted-foreground" />}
         <div id="messages-end" className="h-4" />
-        {files && files.length > 0 && <div className="h-13.5 w-1" />}
       </ChatLayoutWrapper>
     </ConversationContent>
   );
@@ -94,7 +90,6 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
   const navigate = useNavigate();
   const { messages: liveMessages, status, error } = useChatContext();
   const setModel = useModelStore((state) => state.setModel);
-  const files = useFileStore((state) => state.files);
   const { data: conversation, status: conversationStatus } = useConversation(id);
   const { data: messagesData, isLoading: isMessagesLoading } = useMessages(id);
 
@@ -147,7 +142,6 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
         streamingMessages={streamingMessages}
         error={error}
         showLoading={showLoading}
-        files={files}
       />
       <ConversationScrollButton />
     </Conversation>
