@@ -7,7 +7,6 @@ import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import { type CustomUIMessage, metadataSchema, type PartialMessage } from "@/types/chat";
-import type { ImageGenerationOutput } from "@/types/tools";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();
@@ -231,54 +230,30 @@ export function mapMessages(
     return {
       ...message,
       metadata: metadataSchema.parse(message.metadata),
-      parts: filterParts(userId, conversationId, parts),
+      parts: mapFileParts(userId, conversationId, parts),
     };
   });
 
   return mappedMessages;
 }
 
-function filterParts(
+function mapFileParts(
   userId: string,
   conversationId: string,
   parts: CustomUIMessage["parts"]
 ) {
-  return parts
-    .filter((part) => {
-      if (part.type.startsWith("tool-")) {
-        return (
-          part.type === "tool-memory" ||
-          part.type === "tool-image_generation" ||
-          part.type === "tool-readUrl" ||
-          part.type === "tool-code_interpreter"
-        );
-      } else {
-        return true;
-      }
-    })
-    .map((part) => {
-      if (part.type === "tool-image_generation" && part.state === "output-available") {
-        const output = part.output as ImageGenerationOutput;
+  return parts.map((part) => {
+    if (part.type === "file" && !part.url.startsWith("data:")) {
+      const key = `${userId}/${conversationId}`;
 
-        return {
-          ...part,
-          output,
-          // output: {
-          //   ...output,
-          //   image: getFileUrlSigned(`${userId}/${conversationId}`, output.url ?? ""),
-          // },
-        };
-      } else if (part.type === "file" && !part.url.startsWith("data:")) {
-        const key = `${userId}/${conversationId}`;
-
-        return {
-          ...part,
-          url: getFileUrlSigned(key, part.url),
-        };
-      } else {
-        return part;
-      }
-    });
+      return {
+        ...part,
+        url: getFileUrlSigned(key, part.url),
+      };
+    } else {
+      return part;
+    }
+  });
 }
 
 export async function public_getConversationUntilMessage(messageId: string) {
