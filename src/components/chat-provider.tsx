@@ -52,7 +52,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   }, [params.id, setStableId]);
 
   // This is the only place `useChat` is called.
-  const chatApi = useChat({
+  const chatApi = useChat<CustomUIMessage>({
     id: stableId,
     generateId: () => nextMessageId.current,
     experimental_throttle: 30, // Throttle UI updates to every 30ms during streaming

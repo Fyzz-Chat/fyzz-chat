@@ -29,7 +29,6 @@ export async function getMessages(
         model: true,
         parts: true,
         metadata: true,
-        reasoningDurations: true,
         createdAt: true,
       },
       orderBy: {
@@ -69,7 +68,6 @@ export async function getMessages(
       model: true,
       parts: true,
       metadata: true,
-      reasoningDurations: true,
       createdAt: true,
     },
     orderBy: {
@@ -89,7 +87,6 @@ export async function getMessages(
 
 export async function saveMessage(
   message: CustomUIMessage,
-  reasoningDurations: { id: string; ms: number }[],
   conversationId: string,
   model: string,
   promptTokens: number,
@@ -107,7 +104,6 @@ export async function saveMessage(
         model,
         promptTokens,
         completionTokens,
-        reasoningDurations,
         metadata: {
           ...message.metadata,
           content: getMessageContent(message),

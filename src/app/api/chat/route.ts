@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (newMessage && hasTextPart(newMessage)) {
-      await appendMessageToConversation(newMessage, id);
+      await appendMessageToConversation(newMessage, id, modelId);
 
       const mappedMessage = mapFileParts(newMessage, user.id, id);
       existingMessages = [...existingMessages, mappedMessage];
@@ -240,7 +240,6 @@ export async function POST(req: NextRequest) {
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage, isAborted }) => {
       after(async () => {
-        const reasoningDurations = reasoning.finish();
         if (temporaryChat) {
           return;
         }
@@ -276,18 +275,7 @@ export async function POST(req: NextRequest) {
             await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
           }
 
-          // const messageWithFiles = await uploadMedia(user.id, id, lastMessage);
-          // File data URLs are not supported yet in Gemini Image Gen models
-          const messageWithFiles = lastMessage;
-
-          await saveMessage(
-            messageWithFiles,
-            reasoningDurations,
-            id,
-            modelId,
-            0,
-            usage?.outputTokens || 0
-          );
+          await saveMessage(lastMessage, id, modelId, 0, usage?.outputTokens || 0);
         } finally {
           await endConversation();
         }

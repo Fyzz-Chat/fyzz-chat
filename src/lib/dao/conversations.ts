@@ -6,7 +6,12 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
-import { type CustomUIMessage, metadataSchema, type PartialMessage } from "@/types/chat";
+import {
+  type CustomMetadata,
+  type CustomUIMessage,
+  metadataSchema,
+  type PartialMessage,
+} from "@/types/chat";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();
@@ -118,9 +123,18 @@ export async function getConversationsByCursor(
 
 export async function appendMessageToConversation(
   message: CustomUIMessage,
-  conversationId: string
+  conversationId: string,
+  modelId: string
 ): Promise<CustomUIMessage[]> {
   const userId = await getUserIdFromSession();
+
+  const metadata: CustomMetadata = {
+    ...message.metadata,
+    model: modelId,
+    content: getMessageContent(message),
+    reasoningDurations: [],
+    createdAt: new Date(),
+  };
 
   const newMessage = await prisma.$transaction(async (tx) => {
     const createdMessage = await tx.message.create({
@@ -129,6 +143,7 @@ export async function appendMessageToConversation(
         content: getMessageContent(message),
         parts: message.parts as InputJsonValue,
         conversationId,
+        metadata,
       },
     });
 
@@ -292,7 +307,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
           createdAt: true,
           role: true,
           parts: true,
-          reasoningDurations: true,
+          metadata: true,
         },
       },
     },

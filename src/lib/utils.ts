@@ -169,7 +169,7 @@ export function fileToBase64(file: File): Promise<string> {
 }
 
 export function getMessageContent(message: CustomUIMessage): string {
-  if (message.metadata?.content) {
+  if (message?.metadata?.content) {
     return message.metadata.content;
   }
 
