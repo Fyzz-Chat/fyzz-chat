@@ -20,6 +20,7 @@ import {
 } from "@/lib/queries/conversations";
 import { cn, isFileList, uploadFiles } from "@/lib/utils";
 import { useChatStore } from "@/stores/chat-store";
+import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 
@@ -71,6 +72,7 @@ export default function InputForm({ className }: Readonly<{ className?: string }
 
     const fileUIParts = await uploadFiles(stableId, files);
     setFiles(fileUIParts);
+    useFileStore.setState({ files: fileUIParts });
 
     const { setChatInput } = useChatStore.getState();
     const messageId = setChatInput(input);
