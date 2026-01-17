@@ -26,7 +26,6 @@ export async function getMessages(
         id: true,
         content: true,
         role: true,
-        model: true,
         parts: true,
         metadata: true,
         createdAt: true,
@@ -65,7 +64,6 @@ export async function getMessages(
       id: true,
       content: true,
       role: true,
-      model: true,
       parts: true,
       metadata: true,
       createdAt: true,
@@ -88,7 +86,6 @@ export async function getMessages(
 export async function saveMessage(
   message: CustomUIMessage,
   conversationId: string,
-  model: string,
   promptTokens: number,
   completionTokens: number
 ) {
@@ -101,7 +98,6 @@ export async function saveMessage(
         content: getMessageContent(message),
         parts: message.parts as InputJsonValue,
         conversationId,
-        model,
         promptTokens,
         completionTokens,
         metadata: {

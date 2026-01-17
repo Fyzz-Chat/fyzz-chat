@@ -123,16 +123,14 @@ export async function getConversationsByCursor(
 
 export async function appendMessageToConversation(
   message: CustomUIMessage,
-  conversationId: string,
-  modelId: string
+  conversationId: string
 ): Promise<CustomUIMessage[]> {
   const userId = await getUserIdFromSession();
 
   const metadata: CustomMetadata = {
-    ...message.metadata,
-    model: modelId,
+    model: null,
     content: getMessageContent(message),
-    reasoningDurations: [],
+    reasoningDurations: null,
     createdAt: new Date(),
   };
 

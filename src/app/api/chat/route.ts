@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (newMessage && hasTextPart(newMessage)) {
-      await appendMessageToConversation(newMessage, id, modelId);
+      await appendMessageToConversation(newMessage, id);
 
       const mappedMessage = mapFileParts(newMessage, user.id, id);
       existingMessages = [...existingMessages, mappedMessage];
@@ -275,7 +275,7 @@ export async function POST(req: NextRequest) {
             await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
           }
 
-          await saveMessage(lastMessage, id, modelId, 0, usage?.outputTokens || 0);
+          await saveMessage(lastMessage, id, 0, usage?.outputTokens || 0);
         } finally {
           await endConversation();
         }

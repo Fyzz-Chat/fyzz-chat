@@ -3,10 +3,10 @@ import { z } from "zod";
 import type { Conversation, Message } from "@/lib/prisma/generated/client";
 
 export const metadataSchema = z.object({
-  model: z.string(),
-  content: z.string(),
+  model: z.string().nullable(),
+  content: z.string().nullable(),
   createdAt: z.coerce.date(),
-  reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })),
+  reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).nullable(),
 });
 
 export type CustomMetadata = z.infer<typeof metadataSchema>;
