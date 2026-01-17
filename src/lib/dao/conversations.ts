@@ -6,7 +6,7 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
-import type { CustomUIMessage, PartialMessage } from "@/types/chat";
+import { type CustomUIMessage, metadataSchema, type PartialMessage } from "@/types/chat";
 import type { ImageGenerationOutput } from "@/types/tools";
 
 export async function getConversation(id: string) {
@@ -111,9 +111,6 @@ export async function getConversationsByCursor(
       ...item,
       messages: item.messages.map((message) => ({
         ...message,
-        metadata: {
-          content: message.content,
-        },
       })),
     })),
     nextCursor,
@@ -233,14 +230,8 @@ export function mapMessages(
 
     return {
       ...message,
-      role: message.role,
+      metadata: metadataSchema.parse(message.metadata),
       parts: filterParts(userId, conversationId, parts),
-      metadata: {
-        model: message.model,
-        content: message.content,
-        createdAt: message.createdAt,
-        reasoningDurations: message.reasoningDurations as { id: string; ms: number }[],
-      },
     };
   });
 
@@ -336,9 +327,6 @@ export async function public_getConversationUntilMessage(messageId: string) {
     ...conversation,
     messages: conversation?.messages.map((message) => ({
       ...message,
-      metadata: {
-        reasoningDurations: message.reasoningDurations as { id: string; ms: number }[],
-      },
     })),
   };
 }

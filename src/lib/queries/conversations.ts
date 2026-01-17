@@ -62,7 +62,6 @@ export function useConversations(
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      // @ts-expect-error - initialData type inference issue with tRPC
       initialData: search ? undefined : initialData,
       placeholderData: keepPreviousData,
       enabled: authorized && !temporaryChat,
