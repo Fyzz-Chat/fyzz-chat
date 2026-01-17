@@ -3,7 +3,6 @@
 import "server-only";
 
 import { openai } from "@ai-sdk/openai";
-import type { JsonValue } from "@prisma/client/runtime/client";
 import { convertToModelMessages, generateText } from "ai";
 import jwt from "jsonwebtoken";
 import { deleteFile } from "@/lib/aws/s3";
@@ -95,20 +94,19 @@ export async function deleteConversation(conversationId: string) {
     },
   });
 
-  const attachments =
-    conversation?.messages
-      .flatMap((message) =>
-        (message.files as JsonValue[])?.map(
-          (file: JsonValue) => (file as { url?: string })?.url
-        )
-      )
-      .filter((url): url is string => !!url) || [];
-
-  await Promise.all(
-    attachments.map(async (attachment) => {
-      await deleteFile(attachment);
+  const attachments = conversation?.messages
+    .flatMap((message) => {
+      const parts = message.parts as Array<{ type: string; url: string }> | undefined;
+      return (
+        parts?.filter((part) => part.type === "file" && !part.url.startsWith("data:")) ??
+        []
+      );
     })
-  );
+    .filter(Boolean);
+
+  if (attachments && attachments.length > 0) {
+    await Promise.all(attachments.map((attachment) => deleteFile(attachment.url)));
+  }
 
   await prisma.conversation.delete({ where: { id: conversationId, userId } });
 }
