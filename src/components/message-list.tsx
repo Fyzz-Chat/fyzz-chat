@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Conversation,
@@ -9,11 +9,10 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
-import LastMessage from "@/components/last-message";
+import { useChatContext } from "@/components/chat-provider";
 import { LoadingDots } from "@/components/loading-dots";
 import { MessageItemNew } from "@/components/message-item-new";
 import { useConversation, useMessages } from "@/lib/queries/conversations";
-import { useChatStore } from "@/stores/chat-store";
 import { useFileStore } from "@/stores/file-store";
 import { useModelStore } from "@/stores/model-store";
 
@@ -34,24 +33,47 @@ function getErrorMessage(error: { message: string }) {
 
 function MessagesContent({
   id,
-  messages,
+  persistedMessages,
+  streamingMessages,
   error,
   showLoading,
   files,
 }: Readonly<{
   id: string;
-  messages: import("@/types/chat").CustomUIMessage[];
+  persistedMessages: import("@/types/chat").CustomUIMessage[];
+  streamingMessages: import("@/types/chat").CustomUIMessage[];
   error: Error | null | undefined;
   showLoading: boolean;
   files: FileList | import("ai").FileUIPart[] | undefined;
 }>) {
+  // Memoize the persisted messages to prevent re-renders
+  const persistedMessagesList = useMemo(
+    () =>
+      persistedMessages.map((message) => (
+        <MemoizedMessageItem
+          key={message.id}
+          message={message}
+          conversationId={id}
+          isStreaming={false}
+        />
+      )),
+    [persistedMessages, id]
+  );
+
   return (
     <ConversationContent className="pt-8">
       <ChatLayoutWrapper>
-        {messages.map((message) => (
-          <MemoizedMessageItem key={message.id} message={message} conversationId={id} />
+        {/* Old messages - memoized, won't re-render during streaming */}
+        {persistedMessagesList}
+        {/* New streaming messages - only these re-render */}
+        {streamingMessages.map((message) => (
+          <MemoizedMessageItem
+            key={message.id}
+            message={message}
+            conversationId={id}
+            isStreaming={true}
+          />
         ))}
-        <LastMessage conversationId={id} />
         {error && (
           <div className="flex flex-col gap-1">
             <div className="rounded-lg border border-destructive p-4 text-destructive">
@@ -70,18 +92,29 @@ function MessagesContent({
 
 export function MessagesList({ id }: Readonly<{ id: string }>) {
   const navigate = useNavigate();
-  const status = useChatStore((state) => state.status);
-  const error = useChatStore((state) => state.error);
+  const { messages: liveMessages, status, error } = useChatContext();
   const setModel = useModelStore((state) => state.setModel);
   const files = useFileStore((state) => state.files);
   const { data: conversation, status: conversationStatus } = useConversation(id);
-  const { data: messages, isLoading: isMessagesLoading } = useMessages(id);
-  const newMessage = useChatStore((state) => state.lastMessage);
-  const lastMessage = messages?.messages.at(-1);
+  const { data: messagesData, isLoading: isMessagesLoading } = useMessages(id);
+
+  // Persisted messages from database (won't change during streaming)
+  const persistedMessages = messagesData?.messages || [];
+
+  // Calculate streaming messages (messages that exist in live but not in persisted)
+  // Only show streaming messages with meaningful content (>= 2 parts)
+  const streamingMessages = useMemo(() => {
+    const persistedIds = new Set(persistedMessages.map((m) => m.id));
+    return liveMessages.filter(
+      (msg) => !persistedIds.has(msg.id) && (msg.parts?.length ?? 0) >= 2
+    );
+  }, [liveMessages, persistedMessages]);
+
+  const lastPersistedMessage = persistedMessages.at(-1);
   const showLoading =
     (status === "submitted" ||
-      (status === "streaming" && (newMessage?.parts?.length ?? 0) < 2)) &&
-    lastMessage?.role === "user";
+      (status === "streaming" && streamingMessages.length === 0)) &&
+    lastPersistedMessage?.role === "user";
 
   useEffect(() => {
     if (conversationStatus === "error") {
@@ -110,7 +143,8 @@ export function MessagesList({ id }: Readonly<{ id: string }>) {
     <Conversation className="relative size-full">
       <MessagesContent
         id={id}
-        messages={messages?.messages || []}
+        persistedMessages={persistedMessages}
+        streamingMessages={streamingMessages}
         error={error}
         showLoading={showLoading}
         files={files}

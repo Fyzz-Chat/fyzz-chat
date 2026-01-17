@@ -2,7 +2,7 @@
 
 import type { FileUIPart, ToolUIPart } from "ai";
 import { CheckIcon, CopyIcon, EditIcon, RefreshCwIcon, XIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import {
   Message,
@@ -39,14 +39,31 @@ import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools
 export function MessageItemNew({
   message,
   conversationId,
+  isStreaming = false,
 }: {
   message: CustomUIMessage;
   conversationId: string;
+  isStreaming?: boolean;
 }) {
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+
+  // Strategic log: Shows if old messages re-render during streaming
+  // Old messages should only render ONCE (renderCount: 1)
+  // Streaming messages will render multiple times (renderCount: 2, 3, 4...)
+  if (renderCount.current === 1) {
+    console.log(
+      `[MessageItem] ✅ FIRST render - ID: ${message.id.slice(0, 8)}, Role: ${message.role}, Streaming: ${isStreaming}`
+    );
+  } else {
+    console.log(
+      `[MessageItem] 🔄 Re-render #${renderCount.current} - ID: ${message.id.slice(0, 8)} (This should ONLY be streaming messages!)`
+    );
+  }
+
   const regenerateMessage = useRegenerateMessage();
   const [inProgress, setInProgress] = useState(false);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
-  const status = useChatStore((state) => state.status);
   const model = useModelStore((state) =>
     state.getModel(message.metadata?.model || state.model?.id)
   );
@@ -164,9 +181,7 @@ export function MessageItemNew({
             case "text": {
               return (
                 <MessageContent key={`${message.id}-${i}`}>
-                  <MessageResponse isAnimating={status === "streaming"}>
-                    {part.text}
-                  </MessageResponse>
+                  <MessageResponse isAnimating={isStreaming}>{part.text}</MessageResponse>
                 </MessageContent>
               );
             }
@@ -245,10 +260,10 @@ export function MessageItemNew({
             }
             case "reasoning": {
               return (
-                (status === "streaming" || part.text) && (
+                (isStreaming || part.text) && (
                   <Reasoning
                     key={`${message.id}-reasoning-${i}`}
-                    isStreaming={status === "streaming"}
+                    isStreaming={isStreaming}
                   >
                     <ReasoningTrigger
                       duration={
