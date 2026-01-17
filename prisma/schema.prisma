@@ -58,10 +58,16 @@ model Conversation {
   @@map("conversations")
 }
 
+enum MessageRole {
+  system
+  user
+  assistant
+}
+
 model Message {
   id                 String       @id @default(uuid())
   content            String?
-  role               String
+  role               MessageRole
   parts              Json?
   reasoningDurations Json?        @map("reasoning_durations")
   model              String?      @map("model")
