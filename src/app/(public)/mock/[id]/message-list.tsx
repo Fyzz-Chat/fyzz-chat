@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { CheckIcon, GlobeIcon, MessageSquare } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import MessageItem from "@/app/(public)/mock/[id]/message-item";
 import {
   Conversation,
@@ -97,12 +97,25 @@ export default function MockMessageList({
     }
   }, [initialModel, setModel]);
 
-  const messagesList = useMemo(
+  const streamingMessages = useMemo(() => {
+    const persistedIds = new Set(initialMessages.map((m) => m.id));
+    return messages.filter((msg) => !persistedIds.has(msg.id));
+  }, [messages, initialMessages]);
+
+  const existingMessagesList = useMemo(
     () =>
-      messages.map((message) => (
+      initialMessages.map((message) => (
         <MessageItem key={message.id} message={message} conversationId={id} />
       )),
-    [messages, id]
+    [initialMessages, id]
+  );
+
+  const streamingMessagesList = useMemo(
+    () =>
+      streamingMessages.map((message) => (
+        <MessageItem key={message.id} message={message} conversationId={id} />
+      )),
+    [streamingMessages, id]
   );
 
   return (
@@ -116,7 +129,10 @@ export default function MockMessageList({
               description="Type a message below to begin chatting"
             />
           ) : (
-            messagesList
+            <Fragment>
+              {existingMessagesList}
+              {streamingMessagesList}
+            </Fragment>
           )}
         </ConversationContent>
         <ConversationScrollButton />
@@ -138,7 +154,10 @@ export default function MockMessageList({
                   <PromptInputActionAddAttachments />
                 </PromptInputActionMenuContent>
               </PromptInputActionMenu>
-              <PromptInputButton onClick={() => setBrowse(!browse)}>
+              <PromptInputButton
+                onClick={() => setBrowse(!browse)}
+                className="rounded-full"
+              >
                 <GlobeIcon size={16} className={cn(browse && "text-primary")} />
                 <span className={cn(browse && "text-primary")}>Search</span>
               </PromptInputButton>
