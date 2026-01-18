@@ -73,6 +73,7 @@ export default function MockMessageList({ id }: { id: string }) {
         id,
         model,
         temporaryChat: false,
+        browse,
       },
     });
     setInput("");
