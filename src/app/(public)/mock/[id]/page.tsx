@@ -4,12 +4,20 @@ import MockMessageList from "./message-list";
 
 export default async function MockPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const providers = await caller.providers();
+  const [providers, conversation, messages] = await Promise.all([
+    caller.providers(),
+    caller.conversation({ id }),
+    caller.messages({ id }),
+  ]);
 
   return (
     <div className="h-[calc(100svh-170px)] overflow-auto md:h-[calc(100svh-130px)]">
       <ModelStoreInitializer providers={providers} />
-      <MockMessageList id={id} />
+      <MockMessageList
+        id={id}
+        initialModel={conversation?.model}
+        initialMessages={messages.messages}
+      />
     </div>
   );
 }

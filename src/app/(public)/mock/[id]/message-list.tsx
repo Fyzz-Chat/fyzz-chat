@@ -39,19 +39,33 @@ import {
   PromptInputTextarea,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
+import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
-export default function MockMessageList({ id }: { id: string }) {
+export default function MockMessageList({
+  id,
+  initialModel,
+  initialMessages,
+}: {
+  id: string;
+  initialModel: string | undefined;
+  initialMessages: CustomUIMessage[];
+}) {
   const models = useModelStore((state) => state.availableModels);
   const providers = useModelStore((state) => state.providers);
-  const [model, setModel] = useState<string | undefined>(undefined);
-  const modelProvider = providers.find((p) => p.models.some((m) => m.id === model));
+  const model = useModelStore((state) => state.model);
+  const setModel = useModelStore((state) => state.setModel);
+  const updateModel = useUpdateConversationModel();
+  const modelProvider = providers.find((p) => p.models.some((m) => m.id === model.id));
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-  const selectedModelData = models.find((m) => m.id === model);
+  const selectedModelData = models.find((m) => m.id === model.id);
   const [browse, setBrowse] = useState(false);
-  const { messages, sendMessage, status, stop } = useChat<CustomUIMessage>({ id });
+  const { messages, sendMessage, status, stop } = useChat<CustomUIMessage>({
+    id,
+    messages: initialMessages,
+  });
 
   const handleStop = () => {
     if (status === "streaming") {
@@ -70,7 +84,7 @@ export default function MockMessageList({ id }: { id: string }) {
     sendMessage(message, {
       body: {
         id,
-        model,
+        model: model.id,
         temporaryChat: false,
         browse,
       },
@@ -78,14 +92,17 @@ export default function MockMessageList({ id }: { id: string }) {
   };
 
   useEffect(() => {
-    if (models.length > 0) {
-      setModel(models[0].id);
+    if (initialModel) {
+      setModel(initialModel);
     }
-  }, [models]);
+  }, [initialModel, setModel]);
 
   const messagesList = useMemo(
-    () => messages.map((message) => <MessageItem key={message.id} message={message} />),
-    [messages]
+    () =>
+      messages.map((message) => (
+        <MessageItem key={message.id} message={message} conversationId={id} />
+      )),
+    [messages, id]
   );
 
   return (
@@ -147,6 +164,10 @@ export default function MockMessageList({ id }: { id: string }) {
                             key={m.id}
                             onSelect={() => {
                               setModel(m.id);
+                              updateModel.mutateAsync({
+                                conversationId: id,
+                                model: m.id,
+                              });
                               setModelSelectorOpen(false);
                             }}
                             value={m.id}
@@ -158,7 +179,7 @@ export default function MockMessageList({ id }: { id: string }) {
                                   <ModelSelectorLogo key={provider} provider={provider} />
                                 ))}
                               </ModelSelectorLogoGroup> */}
-                            {model === m.id ? (
+                            {model.id === m.id ? (
                               <CheckIcon className="ml-auto size-4" />
                             ) : (
                               <div className="ml-auto size-4" />
