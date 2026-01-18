@@ -16,7 +16,12 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
-import { extractReasoningMiddleware, type ToolSet, wrapLanguageModel } from "ai";
+import {
+  extractReasoningMiddleware,
+  type Tool,
+  type ToolSet,
+  wrapLanguageModel,
+} from "ai";
 import {
   type Feature,
   imageTypes,
@@ -39,6 +44,7 @@ const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
 const xaiConfigured = process.env.XAI_API_KEY !== undefined;
 const metaConfigured = process.env.FIREWORKS_API_KEY !== undefined;
 const deepseekConfigured = process.env.FIREWORKS_API_KEY !== undefined;
+const qwenConfigured = process.env.FIREWORKS_API_KEY !== undefined;
 const perplexityConfigured = process.env.PERPLEXITY_API_KEY !== undefined;
 
 export function getProvidersPublic(): PublicProvider[] {
@@ -135,7 +141,7 @@ export function getProviderTools(modelId: string, search: boolean) {
 
   if (isOpenAIModel) {
     if (supportsOpenAICodeInterpreter) {
-      tools.code_interpreter = openai.tools.codeInterpreter();
+      tools.code_interpreter = openai.tools.codeInterpreter() as Tool;
     }
 
     if (supportsOpenAIImageGeneration) {
@@ -143,19 +149,19 @@ export function getProviderTools(modelId: string, search: boolean) {
         model: "gpt-image-1.5",
         outputFormat: "jpeg",
         outputCompression: 50,
-      });
+      }) as Tool;
     }
 
     if (search) {
-      tools.web_search = openai.tools.webSearch();
+      tools.web_search = openai.tools.webSearch() as Tool;
     }
   } else if (isAnthropicModel) {
     if (search) {
-      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 });
+      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 }) as Tool;
     }
   } else if (isGoogleModel) {
     if (search) {
-      tools.google_search = google.tools.googleSearch({});
+      tools.google_search = google.tools.googleSearch({}) as Tool;
     }
   }
 
@@ -188,10 +194,13 @@ function filterProviders(): Provider[] {
     if (provider.id === "xai" && !xaiConfigured) {
       return false;
     }
-    if (provider.id === "fireworks" && !metaConfigured) {
+    if (provider.id === "meta" && !metaConfigured) {
       return false;
     }
-    if (provider.id === "fireworks" && !deepseekConfigured) {
+    if (provider.id === "deepseek" && !deepseekConfigured) {
+      return false;
+    }
+    if (provider.id === "qwen" && !qwenConfigured) {
       return false;
     }
     if (provider.id === "perplexity" && !perplexityConfigured) {
@@ -745,7 +754,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "meta",
     name: "Meta",
     icon: "meta",
     models: [
@@ -761,7 +770,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "deepseek",
     name: "DeepSeek",
     icon: "deepseek",
     models: [
@@ -784,7 +793,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "qwen",
     name: "Qwen",
     icon: "qwen",
     models: [

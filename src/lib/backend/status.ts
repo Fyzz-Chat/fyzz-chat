@@ -16,8 +16,10 @@ export async function status(): Promise<Status> {
       anthropic,
       google: true,
       xai: true,
+      meta: fireworks,
+      deepseek: fireworks,
+      qwen: fireworks,
       perplexity,
-      fireworks,
     },
   };
 }
