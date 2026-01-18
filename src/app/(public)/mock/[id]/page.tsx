@@ -7,7 +7,7 @@ export default async function MockPage({ params }: { params: Promise<{ id: strin
   const providers = await caller.providers();
 
   return (
-    <div className="flex flex-1 items-center justify-center p-4">
+    <div className="h-[calc(100svh-170px)] overflow-auto md:h-[calc(100svh-130px)]">
       <ModelStoreInitializer providers={providers} />
       <MockMessageList id={id} />
     </div>
