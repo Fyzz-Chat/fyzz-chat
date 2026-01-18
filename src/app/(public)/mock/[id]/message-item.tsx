@@ -1,14 +1,25 @@
 "use client";
 
-import { useRef } from "react";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import {
   Message,
+  MessageAction,
+  MessageActions,
   MessageContent,
   MessageResponse,
+  MessageToolbar,
 } from "@/components/ai-elements/message";
 import type { CustomUIMessage } from "@/types/chat";
 
-export default function MessageItem({ message }: { message: CustomUIMessage }) {
+export default function MessageItem({
+  message,
+  conversationId,
+}: {
+  message: CustomUIMessage;
+  conversationId: string;
+}) {
+  const [isCopied, setIsCopied] = useState(false);
   const renderCount = useRef(0);
   renderCount.current += 1;
 
@@ -16,6 +27,12 @@ export default function MessageItem({ message }: { message: CustomUIMessage }) {
     console.log(
       `[MessageItem] 🔄 Re-render #${renderCount.current} - ID: ${message.id.slice(0, 8)} (This should ONLY be streaming messages!)`
     );
+  }
+
+  function handleCopy() {
+    setIsCopied(true);
+    navigator.clipboard.writeText(message.metadata?.content || "");
+    setTimeout(() => setIsCopied(false), 1500);
   }
 
   return (
@@ -32,6 +49,32 @@ export default function MessageItem({ message }: { message: CustomUIMessage }) {
           }
         })}
       </MessageContent>
+      {message.role === "assistant" && (
+        <MessageToolbar>
+          <MessageActions>
+            <MessageAction label="Copy" tooltip="Copy message" onClick={handleCopy}>
+              {isCopied ? (
+                <CheckIcon className="size-4" />
+              ) : (
+                <CopyIcon className="size-4" />
+              )}
+            </MessageAction>
+          </MessageActions>
+        </MessageToolbar>
+      )}
+      {message.role === "user" && (
+        <MessageToolbar className="flex-row-reverse">
+          <MessageActions>
+            <MessageAction label="Copy" tooltip="Copy message" onClick={handleCopy}>
+              {isCopied ? (
+                <CheckIcon className="size-4" />
+              ) : (
+                <CopyIcon className="size-4" />
+              )}
+            </MessageAction>
+          </MessageActions>
+        </MessageToolbar>
+      )}
     </Message>
   );
 }
