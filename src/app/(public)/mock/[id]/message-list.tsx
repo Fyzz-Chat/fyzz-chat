@@ -178,7 +178,7 @@ export default function MockMessageList({ id }: { id: string }) {
               </PromptInputTools>
               <PromptInputSubmit
                 status={status === "streaming" ? "streaming" : "ready"}
-                disabled={!input.trim()}
+                disabled={!input.trim() && status === "ready"}
                 className="absolute right-1 bottom-1"
               />
             </PromptInputFooter>
