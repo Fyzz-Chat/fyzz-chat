@@ -2,18 +2,14 @@
 
 import { useChat } from "@ai-sdk/react";
 import { CheckIcon, GlobeIcon, MessageSquare } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import MessageItem from "@/app/(public)/mock/[id]/message-item";
 import {
   Conversation,
   ConversationContent,
   ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -45,6 +41,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+import type { CustomUIMessage } from "@/types/chat";
 
 export default function MockMessageList({ id }: { id: string }) {
   const models = useModelStore((state) => state.availableModels);
@@ -55,7 +52,7 @@ export default function MockMessageList({ id }: { id: string }) {
   const selectedModelData = models.find((m) => m.id === model);
   const [input, setInput] = useState("");
   const [browse, setBrowse] = useState(false);
-  const { messages, sendMessage, status } = useChat({ id });
+  const { messages, sendMessage, status } = useChat<CustomUIMessage>({ id });
 
   useEffect(() => {
     if (models.length > 0) {
@@ -81,6 +78,11 @@ export default function MockMessageList({ id }: { id: string }) {
     setInput("");
   };
 
+  const messagesList = useMemo(
+    () => messages.map((message) => <MessageItem key={message.id} message={message} />),
+    [messages]
+  );
+
   return (
     <div className="relative flex flex-1 justify-center">
       <div className="flex h-full flex-1 flex-col">
@@ -93,24 +95,7 @@ export default function MockMessageList({ id }: { id: string }) {
                 description="Type a message below to begin chatting"
               />
             ) : (
-              messages.map((message) => (
-                <Message from={message.role} key={message.id}>
-                  <MessageContent>
-                    {message.parts.map((part, i) => {
-                      switch (part.type) {
-                        case "text": // we don't use any reasoning or tool calls in this example
-                          return (
-                            <MessageResponse key={`${message.id}-${i}`}>
-                              {part.text}
-                            </MessageResponse>
-                          );
-                        default:
-                          return null;
-                      }
-                    })}
-                  </MessageContent>
-                </Message>
-              ))
+              messagesList
             )}
           </ConversationContent>
           <ConversationScrollButton />
