@@ -1,7 +1,6 @@
-"use client";
-
 import { CheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getLastUsedLoginMethod } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 export default function LastUsedIndicator({
@@ -11,15 +10,17 @@ export default function LastUsedIndicator({
   provider: string;
   className?: string;
 }) {
-  const [isLastUsed, setIsLastUsed] = useState(false);
+  const lastMethod = getLastUsedLoginMethod();
+  const [rendered, setRendered] = useState(false);
 
   useEffect(() => {
-    const lastUsed = localStorage.getItem("fyzz-auth-method") === provider;
-    setIsLastUsed(lastUsed);
-  }, [provider]);
+    setRendered(true);
+  }, []);
+
+  if (!rendered) return null;
 
   return (
-    isLastUsed && (
+    lastMethod === provider && (
       <div
         className={cn(
           "fade-in zoom-in absolute -top-1 -right-6 flex animate-in items-center gap-1.5 rounded-md bg-linear-to-br from-primary to-primary/80 px-2.5 py-1 shadow-lg duration-300",

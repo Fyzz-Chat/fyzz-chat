@@ -15,9 +15,6 @@ export default function OAuthButton({
     <Button
       type="submit"
       className="relative flex w-full items-center justify-center gap-3 bg-white text-black hover:bg-gray-100"
-      onClick={() => {
-        localStorage.setItem("fyzz-auth-method", provider);
-      }}
     >
       <Image
         src={`/${provider}.svg`}

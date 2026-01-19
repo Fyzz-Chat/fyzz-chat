@@ -43,7 +43,6 @@ export default function LoginForm() {
 
   const toastCallback = (state: FormState) => {
     if (state.success) {
-      localStorage.setItem("fyzz-auth-method", "password");
       queryClient.clear();
       router.push(publicConf.redirectPath);
     } else {
