@@ -22,7 +22,7 @@ export function SignOut({ buttonText }: { buttonText: string }) {
       await signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push("/chat?login=true");
+            router.push("/chat");
           },
         },
       });

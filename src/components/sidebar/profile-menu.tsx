@@ -3,7 +3,6 @@
 import { Command, ExternalLink, FileText, Settings } from "lucide-react";
 import { use } from "react";
 import { FastLink } from "@/components/fast-link";
-import { SignIn } from "@/components/sidebar/signin-button";
 import { SignOut } from "@/components/sidebar/signout-button";
 import {
   DropdownMenuContent,
@@ -17,14 +16,12 @@ import { useUIStore } from "@/stores/ui-store";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function ProfileMenu({
-  authorized,
   userName,
   userEmail,
   userImage,
 }: {
-  authorized: boolean;
-  userName?: string;
-  userEmail?: string;
+  userName: string;
+  userEmail: string;
   userImage?: string;
 }) {
   const translationsPromise = useTranslations();
@@ -67,20 +64,16 @@ export default function ProfileMenu({
         <span>{translations.sidebar.menu.help}</span>
         <Kbd className="ml-auto">?</Kbd>
       </DropdownMenuItem>
-      {authorized && (
-        <>
-          <DropdownMenuItem className="cursor-pointer p-0" asChild>
-            <FastLink
-              href="/settings"
-              className="flex size-full items-center gap-2 px-2 py-1.5"
-            >
-              <Settings className="shrink-0" />
-              <span>{translations.sidebar.menu.settings}</span>
-            </FastLink>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-        </>
-      )}
+      <DropdownMenuItem className="cursor-pointer p-0" asChild>
+        <FastLink
+          href="/settings"
+          className="flex size-full items-center gap-2 px-2 py-1.5"
+        >
+          <Settings className="shrink-0" />
+          <span>{translations.sidebar.menu.settings}</span>
+        </FastLink>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
       <DropdownMenuItem className="p-0">
         <a
           href="/privacy-policy"
@@ -97,11 +90,7 @@ export default function ProfileMenu({
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild>
-        {authorized ? (
-          <SignOut buttonText={translations.sidebar.menu.signOut} />
-        ) : (
-          <SignIn buttonText={translations.sidebar.menu.signIn} />
-        )}
+        <SignOut buttonText={translations.sidebar.menu.signOut} />
       </DropdownMenuItem>
     </DropdownMenuContent>
   );

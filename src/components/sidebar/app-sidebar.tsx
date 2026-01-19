@@ -1,5 +1,6 @@
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
@@ -7,6 +8,7 @@ import { SearchField } from "@/components/sidebar/search-field";
 import StatusNotification from "@/components/sidebar/status-notification";
 import { SwipeDetector } from "@/components/sidebar/swipe-detector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -56,40 +58,45 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user?.image || ""} alt={user?.name} />
-                      <AvatarFallback className="rounded-lg">
-                        {user?.name
-                          ?.split(" ")
-                          .slice(0, 2)
-                          .map((n) => n[0])
-                          .join("") || "A"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
-                        {user?.name || "Anonymous"}
-                      </span>
-                      {user?.email && (
-                        <span className="truncate text-xs">{user.email}</span>
-                      )}
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <ProfileMenu
-                  authorized={Boolean(user)}
-                  userName={user?.name}
-                  userEmail={user?.email}
-                  userImage={user?.image || undefined}
-                />
-              </DropdownMenu>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                      size="lg"
+                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    >
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage src={user?.image || ""} alt={user?.name} />
+                        <AvatarFallback className="rounded-lg">
+                          {user?.name
+                            ?.split(" ")
+                            .slice(0, 2)
+                            .map((n) => n[0])
+                            .join("") || "A"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">
+                          {user?.name || "Anonymous"}
+                        </span>
+                        {user?.email && (
+                          <span className="truncate text-xs">{user.email}</span>
+                        )}
+                      </div>
+                      <ChevronsUpDown className="ml-auto size-4" />
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <ProfileMenu
+                    userName={user.name}
+                    userEmail={user.email}
+                    userImage={user.image || undefined}
+                  />
+                </DropdownMenu>
+              ) : (
+                <Button asChild className="w-full">
+                  <Link href="/login">Sign in</Link>
+                </Button>
+              )}
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
