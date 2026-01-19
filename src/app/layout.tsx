@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Inter } from "next/font/google";
 import type React from "react";
 import { Providers } from "@/components/providers";
 import SnowfallCanvas from "@/components/snowfall-canvas";
@@ -7,6 +8,11 @@ import { Toaster } from "@/components/ui/sonner";
 import conf from "@/lib/config";
 import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -49,7 +55,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "flex min-h-svh min-w-80 flex-col justify-center md:overscroll-none"
+          "flex min-h-svh min-w-80 flex-col justify-center md:overscroll-none",
+          inter.variable
         )}
       >
         <Providers>
