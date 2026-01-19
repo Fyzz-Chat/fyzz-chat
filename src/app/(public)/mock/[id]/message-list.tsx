@@ -105,7 +105,12 @@ export default function MockMessageList({
   const existingMessagesList = useMemo(
     () =>
       initialMessages.map((message) => (
-        <MessageItem key={message.id} message={message} conversationId={id} />
+        <MessageItem
+          key={message.id}
+          message={message}
+          conversationId={id}
+          isStreaming={false}
+        />
       )),
     [initialMessages, id]
   );
@@ -113,7 +118,12 @@ export default function MockMessageList({
   const streamingMessagesList = useMemo(
     () =>
       streamingMessages.map((message) => (
-        <MessageItem key={message.id} message={message} conversationId={id} />
+        <MessageItem
+          key={message.id}
+          message={message}
+          conversationId={id}
+          isStreaming={true}
+        />
       )),
     [streamingMessages, id]
   );

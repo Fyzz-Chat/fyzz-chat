@@ -1,33 +1,65 @@
 "use client";
 
+import type { FileUIPart, ToolUIPart } from "ai";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Message,
   MessageAction,
   MessageActions,
+  MessageAttachment,
+  MessageAttachments,
   MessageContent,
   MessageResponse,
   MessageToolbar,
 } from "@/components/ai-elements/message";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
+import {
+  OpenAICodeInterpreterOutput,
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
+import ImageFilePart from "@/components/message/parts/image-file-part";
 import type { CustomUIMessage } from "@/types/chat";
+import { pdfType } from "@/types/provider";
+import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 
 export default function MessageItem({
   message,
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: will be used for edit/regenerate features
   conversationId,
+  isStreaming = false,
 }: {
   message: CustomUIMessage;
   conversationId: string;
+  isStreaming?: boolean;
 }) {
   const [isCopied, setIsCopied] = useState(false);
   const renderCount = useRef(0);
   renderCount.current += 1;
 
-  if (renderCount.current > 1) {
+  if (renderCount.current === 1) {
+    console.log(
+      `[MessageItem] ✅ FIRST render - ID: ${message.id.slice(0, 8)}, Role: ${message.role}, Streaming: ${isStreaming}`
+    );
+  } else {
     console.log(
       `[MessageItem] 🔄 Re-render #${renderCount.current} - ID: ${message.id.slice(0, 8)} (This should ONLY be streaming messages!)`
     );
   }
+
+  const attachments: FileUIPart[] = useMemo(() => {
+    return message.parts.filter((part): part is FileUIPart => part.type === "file");
+  }, [message.parts]);
+
+  let reasoningIndex = 0;
 
   function handleCopy() {
     setIsCopied(true);
@@ -37,18 +69,120 @@ export default function MessageItem({
 
   return (
     <Message from={message.role} key={message.id}>
-      <MessageContent>
-        {message.parts.map((part, i) => {
-          switch (part.type) {
-            case "text": // we don't use any reasoning or tool calls in this example
-              return (
-                <MessageResponse key={`${message.id}-${i}`}>{part.text}</MessageResponse>
-              );
-            default:
-              return null;
+      {attachments.length > 0 && message.role === "user" && (
+        <MessageAttachments>
+          {attachments
+            .filter(
+              (attachment) =>
+                attachment.mediaType?.startsWith("image/") ||
+                attachment.mediaType?.startsWith(pdfType)
+            )
+            .map((attachment) => (
+              <MessageAttachment key={attachment.url} data={attachment} />
+            ))}
+        </MessageAttachments>
+      )}
+      {message.parts.map((part, i) => {
+        switch (part.type) {
+          case "text": {
+            return (
+              <MessageContent key={`${message.id}-${i}`}>
+                <MessageResponse isAnimating={isStreaming}>{part.text}</MessageResponse>
+              </MessageContent>
+            );
           }
-        })}
-      </MessageContent>
+          case "file": {
+            if (part.mediaType?.startsWith("image/") && message.role === "assistant") {
+              return (
+                <ImageFilePart
+                  key={`${message.id}-file-${i}`}
+                  url={part.url}
+                  name={part.filename}
+                  mediaType={part.mediaType}
+                />
+              );
+            }
+            return null;
+          }
+          case "tool-memory": {
+            return (
+              <Tool key={`${message.id}-tool-memory-${i}`}>
+                <ToolHeader type="tool-memory" state={part.state} />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                  <ToolOutput output={""} errorText={part.errorText} />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "tool-readUrl": {
+            return (
+              <Tool key={`${message.id}-tool-readUrl-${i}`}>
+                <ToolHeader type="tool-readUrl" state={part.state} />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                  <ToolOutput output={""} errorText={part.errorText} />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "tool-code_interpreter": {
+            return (
+              <Tool key={`${message.id}-tool-code_interpreter-${i}`}>
+                <ToolHeader type="tool-code_interpreter" state={part.state} />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                  <OpenAICodeInterpreterOutput
+                    output={part.output as CodeInterpreterOutput}
+                    errorText={part.errorText}
+                  />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "dynamic-tool": {
+            return (
+              <Tool key={`${message.id}-${part.toolName}-${i}`}>
+                <ToolHeader
+                  type={part.toolName as ToolUIPart["type"]}
+                  state={part.state}
+                />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "tool-image_generation": {
+            const output = part.output as ImageGenerationOutput;
+            return (
+              <Tool open key={`${message.id}-tool-image_generation-${i}`}>
+                <ToolHeader type="tool-image_generation" state={part.state} />
+                <ToolContent>
+                  <ImageFilePart url={`data:image/png;base64,${output?.result}`} />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "reasoning": {
+            return (
+              (isStreaming || part.text) && (
+                <Reasoning key={`${message.id}-reasoning-${i}`} isStreaming={isStreaming}>
+                  <ReasoningTrigger
+                    duration={
+                      message.metadata?.reasoningDurations?.[reasoningIndex++]?.ms
+                    }
+                  />
+                  <ReasoningContent>{part.text}</ReasoningContent>
+                </Reasoning>
+              )
+            );
+          }
+          default: {
+            return null;
+          }
+        }
+      })}
       {message.role === "assistant" && (
         <MessageToolbar>
           <MessageActions>
