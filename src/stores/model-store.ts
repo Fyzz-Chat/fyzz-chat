@@ -29,16 +29,27 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
   providers: [],
   setProviders: (providers: PublicProvider[]) => {
     const availableModels = providers.flatMap((provider) => provider.models);
+    const geminiFlashLiteId = availableModels.find((m) =>
+      m.id.includes("gemini-2.5-flash-lite")
+    )?.id;
     set({
       providers,
       availableModels,
-      model: availableModels[0],
+      model: getModelById(availableModels, geminiFlashLiteId || availableModels[0]?.id),
     });
   },
   getModel: (modelId?: string) =>
     getModelById(get().availableModels, modelId || get().model?.id),
   setDefaultModel: (modelId?: string) => {
     const { availableModels } = get();
-    set({ model: getModelById(availableModels, modelId || availableModels[0]?.id) });
+    const geminiFlashLiteId = availableModels.find((m) =>
+      m.id.includes("gemini-2.5-flash-lite")
+    )?.id;
+    set({
+      model: getModelById(
+        availableModels,
+        modelId || geminiFlashLiteId || availableModels[0]?.id
+      ),
+    });
   },
 }));

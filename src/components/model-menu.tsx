@@ -48,12 +48,17 @@ function ModelMenu() {
   const setModelMenuOpen = useUIStore((state) => state.setModelMenuOpen);
   const modelMenuOpen = useUIStore((state) => state.modelMenuOpen);
   const trpc = useTRPC();
-  const { data: defaultModel, isLoading } = useQuery(
+  const {
+    data: defaultModel,
+    isLoading,
+    isError,
+  } = useQuery(
     trpc.defaultModel.queryOptions(undefined, {
       staleTime: 0,
       refetchOnMount: true,
       refetchOnReconnect: true,
       refetchOnWindowFocus: true,
+      retry: false,
     })
   );
   const { data: status } = useQuery(
@@ -71,10 +76,10 @@ function ModelMenu() {
   const providerIcon = getProviderIcon(providers, model?.id);
 
   useEffect(() => {
-    if (pathname === "/chat" && !isLoading) {
+    if (pathname === "/chat" && !isLoading && (defaultModel || isError)) {
       setDefaultModel(defaultModel || undefined);
     }
-  }, [pathname, defaultModel, isLoading, setDefaultModel]);
+  }, [pathname, defaultModel, isLoading, isError, setDefaultModel]);
 
   if (isDesktop) {
     return (

@@ -106,6 +106,7 @@ export function useMessages(id: string) {
 
   const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
     enabled: !temporaryChat,
+    refetchOnWindowFocus: true,
     meta: {
       persist: !temporaryChat,
     },
