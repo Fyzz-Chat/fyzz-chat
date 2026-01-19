@@ -27,11 +27,6 @@ export const auth = betterAuth({
     },
   },
   socialProviders: {
-    github: {
-      enabled: Boolean(conf.githubId) && Boolean(conf.githubSecret),
-      clientId: conf.githubId || "",
-      clientSecret: conf.githubSecret,
-    },
     google: {
       enabled: Boolean(conf.googleId) && Boolean(conf.googleSecret),
       clientId: conf.googleId || "",
@@ -41,7 +36,7 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ["google", "github"],
+      trustedProviders: ["google"],
     },
   },
   plugins: [nextCookies()],

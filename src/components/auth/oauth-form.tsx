@@ -10,8 +10,6 @@ export default function OAuthForm({ provider }: { provider: string }) {
 
   if (provider === "google") {
     config.title = "Google";
-  } else if (provider === "github") {
-    config.title = "GitHub";
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

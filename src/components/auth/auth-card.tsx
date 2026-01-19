@@ -26,7 +26,6 @@ export default function AuthCard({
   ctaText: string;
   ctaLink: string;
 }) {
-  const hasGitHub = Boolean(conf.githubId) && Boolean(conf.githubSecret);
   const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
 
   return (
@@ -37,7 +36,7 @@ export default function AuthCard({
       </CardHeader>
       <CardContent className="grid gap-6 px-8">
         {children}
-        {(hasGitHub || hasGoogle) && (
+        {hasGoogle && (
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -47,10 +46,9 @@ export default function AuthCard({
             </div>
           </div>
         )}
-        {(hasGitHub || hasGoogle) && (
+        {hasGoogle && (
           <div className="flex flex-col gap-2">
-            {hasGoogle && <OAuthForm provider="google" />}
-            {hasGitHub && <OAuthForm provider="github" />}
+            <OAuthForm provider="google" />
           </div>
         )}
       </CardContent>
