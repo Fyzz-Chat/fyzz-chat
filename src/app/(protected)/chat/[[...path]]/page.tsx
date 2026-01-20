@@ -42,9 +42,7 @@ export default async function CatchAll() {
             />
           </AppSidebar>
           <SidebarInset className="relative overflow-auto">
-            {isLoggedIn && (
-              <SidebarTrigger className="absolute top-2.5 left-2 z-20 size-8 touch-manipulation p-5" />
-            )}
+            <SidebarTrigger className="absolute top-2.5 left-2 z-20 size-8 touch-manipulation p-5" />
             {!isLoggedIn && (
               <div className="absolute top-2 right-2 z-20">
                 <AuthPopup hasGoogle={hasGoogle} />
