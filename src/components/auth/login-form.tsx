@@ -68,7 +68,7 @@ export default function LoginForm() {
 
   return (
     <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <EmailField register={register} errors={errors} />
+      <EmailField register={register} errors={errors} autoFocus />
       <div className="grid gap-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">{translations.login.password}</Label>

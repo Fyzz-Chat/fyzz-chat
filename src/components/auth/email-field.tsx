@@ -5,16 +5,22 @@ import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import type { LoginFormData, RegisterFormData } from "@/types/auth";
+import type {
+  LoginFormData,
+  RegisterFormData,
+  RequestPasswordResetFormData,
+} from "@/types/auth";
 
-type FormData = LoginFormData | RegisterFormData;
+type FormData = LoginFormData | RegisterFormData | RequestPasswordResetFormData;
 
 export default function EmailField<T extends FormData>({
   register,
   errors,
+  autoFocus = false,
 }: {
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
+  autoFocus?: boolean;
 }) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -27,7 +33,7 @@ export default function EmailField<T extends FormData>({
         id="email"
         placeholder={translations.auth.email.placeholder}
         autoComplete="email"
-        autoFocus
+        autoFocus={autoFocus}
         {...register("email" as never)}
       />
       {errors.email?.message && (

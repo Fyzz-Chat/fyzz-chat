@@ -1,27 +1,39 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { type FormEvent, use, useState } from "react";
+import { use, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import EmailField from "@/components/auth/email-field";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { requestPasswordReset } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import {
+  type RequestPasswordResetFormData,
+  requestPasswordResetSchema,
+} from "@/types/auth";
 
 export default function RequestPasswordResetForm() {
   const [isPending, setIsPending] = useState(false);
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get("email") as string;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RequestPasswordResetFormData>({
+    resolver: zodResolver(requestPasswordResetSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
 
+  async function onSubmit(data: RequestPasswordResetFormData) {
     setIsPending(true);
     try {
-      const result = await requestPasswordReset(email);
+      const result = await requestPasswordReset(data.email);
       if (result.success) {
         toast.success(result.message, {
           description: result.description,
@@ -36,20 +48,12 @@ export default function RequestPasswordResetForm() {
     }
   }
 
+  const isLoading = isPending || isSubmitting;
+
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4">
-      <div className="grid gap-2">
-        <Label htmlFor="email">{translations.auth.email.label}</Label>
-        <Input
-          type="email"
-          id="email"
-          name="email"
-          placeholder={translations.auth.email.placeholder}
-          required
-          autoFocus
-        />
-      </div>
-      <Button type="submit" className="mt-2 w-full" disabled={isPending}>
+    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+      <EmailField register={register} errors={errors} autoFocus />
+      <Button type="submit" className="mt-2 w-full" disabled={isLoading}>
         {translations.requestPasswordReset.submit}
       </Button>
       <div className="text-center">
