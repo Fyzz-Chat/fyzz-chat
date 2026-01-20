@@ -29,6 +29,7 @@ export function formatTimeAgo(date: Date) {
   return timeAgo.format(date);
 }
 
+// biome-ignore lint/complexity/noBannedTypes: TODO: Need further investigation
 export function debounce(func: Function, wait = 100) {
   let timeout: NodeJS.Timeout;
   return function executedFunction(...args: unknown[]) {

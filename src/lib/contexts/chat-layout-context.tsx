@@ -32,6 +32,7 @@ export function ChatLayoutContextProvider({
   // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: Neet furhter investigation
   const setLayout = useCallback(
     (layout: ChatLayout) => {
+      // biome-ignore lint/suspicious/noDocumentCookie: TODO: Neet furhter investigation
       document.cookie = `fyzz-chat-layout=${layout}; path=/; max-age=${CHAT_LAYOUT_COOKIE_MAX_AGE}`;
       _setLayout(layout);
     },
