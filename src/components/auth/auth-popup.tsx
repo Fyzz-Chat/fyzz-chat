@@ -42,7 +42,7 @@ export default function AuthPopup({
         <DialogContent className="py-10 sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="mb-5 text-center text-3xl">{title}</DialogTitle>
-            <DialogDescription className="mb-5 text-center text-white">
+            <DialogDescription className="text-center text-foreground">
               {description}
             </DialogDescription>
           </DialogHeader>
@@ -60,7 +60,7 @@ export default function AuthPopup({
       <DrawerContent className="w-full px-5 pb-10">
         <DrawerHeader>
           <DrawerTitle className="my-5 text-center text-3xl">{title}</DrawerTitle>
-          <DrawerDescription className="mb-5 text-center text-white">
+          <DrawerDescription className="text-center text-foreground">
             {description}
           </DrawerDescription>
         </DrawerHeader>
