@@ -7,6 +7,7 @@ import { Fragment } from "react/jsx-runtime";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import EmailField from "@/components/auth/email-field";
+import LastUsedIndicator from "@/components/auth/last-used-indicator";
 import OAuthForm from "@/components/auth/oauth-form";
 import { Button } from "@/components/ui/button";
 import { userExists } from "@/lib/actions/users";
@@ -68,12 +69,13 @@ export default function AuthInitialStep({
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <EmailField register={register} errors={errors} autoFocus />
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button type="submit" className="relative w-full" disabled={isSubmitting}>
           {isSubmitting ? (
             <LoaderCircle className="animate-spin" size={18} />
           ) : (
             <span>Continue</span>
           )}
+          <LastUsedIndicator provider="email" />
         </Button>
       </form>
     </div>
