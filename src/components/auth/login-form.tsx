@@ -5,7 +5,7 @@ import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useActionState, useRef, useTransition } from "react";
+import { use, useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import EmailField from "@/components/auth/email-field";
 import PendingSubmitButton from "@/components/auth/pending-submit-button";
@@ -42,8 +42,16 @@ export default function LoginForm() {
     },
   });
 
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem("auth_email");
+    if (storedEmail) {
+      setValue("email", storedEmail);
+    }
+  }, [setValue]);
+
   const toastCallback = (state: FormState) => {
     if (state.success) {
+      sessionStorage.removeItem("auth_email");
       queryClient.clear();
       router.push(publicConf.redirectPath);
     } else {
