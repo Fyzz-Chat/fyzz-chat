@@ -6,13 +6,13 @@ import OAuthButton from "@/components/auth/oauth-button";
 import { signIn } from "@/lib/auth-client";
 import publicConf from "@/lib/public-config";
 
+const PROVIDER_TITLES: Record<string, string> = {
+  google: "Sign in with Google",
+};
+
 export default function OAuthForm({ provider }: { provider: string }) {
   const [isLoading, setIsLoading] = useState(false);
-  let title = "";
-
-  if (provider === "google") {
-    title = "Sign in with Google";
-  }
+  const title = PROVIDER_TITLES[provider] ?? provider;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
