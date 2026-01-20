@@ -166,13 +166,15 @@
       }
     }
   },
-  "login": {
-    "title": "Welcome back!",
-    "description": "Sign in to your account to continue",
+  "auth": {
     "email": {
       "label": "Email",
       "placeholder": "johndoe@example.com"
-    },
+    }
+  },
+  "login": {
+    "title": "Welcome back!",
+    "description": "Sign in to your account to continue",
     "password": "Password",
     "signIn": "Sign in",
     "firstTime": {
@@ -201,10 +203,6 @@
     "name": {
       "label": "Name",
       "placeholder": "John Doe"
-    },
-    "email": {
-      "label": "Email",
-      "placeholder": "johndoe@example.com"
     },
     "password": "Password",
     "privacyPolicy": {

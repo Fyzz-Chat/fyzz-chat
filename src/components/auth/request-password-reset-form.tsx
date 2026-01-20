@@ -39,12 +39,12 @@ export default function RequestPasswordResetForm() {
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <div className="grid gap-2">
-        <Label htmlFor="email">{translations.login.email.label}</Label>
+        <Label htmlFor="email">{translations.auth.email.label}</Label>
         <Input
           type="email"
           id="email"
           name="email"
-          placeholder={translations.login.email.placeholder}
+          placeholder={translations.auth.email.placeholder}
           required
           autoFocus
         />

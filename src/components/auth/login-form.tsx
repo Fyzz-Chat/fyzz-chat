@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useActionState, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import EmailField from "@/components/auth/email-field";
 import PendingSubmitButton from "@/components/auth/pending-submit-button";
 import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
@@ -67,20 +68,7 @@ export default function LoginForm() {
 
   return (
     <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <Label htmlFor="email" className="grid gap-2">
-        <span>{translations.login.email.label}</span>
-        <Input
-          type="email"
-          id="email"
-          placeholder={translations.login.email.placeholder}
-          autoComplete="email"
-          autoFocus
-          {...register("email")}
-        />
-        {errors.email && (
-          <span className="text-destructive text-xs">{errors.email.message}</span>
-        )}
-      </Label>
+      <EmailField register={register} errors={errors} />
       <div className="grid gap-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">{translations.login.password}</Label>

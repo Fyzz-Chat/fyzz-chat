@@ -166,13 +166,15 @@
       }
     }
   },
-  "login": {
-    "title": "Willkommen zurück!",
-    "description": "Melde dich an, um fortzufahren",
+  "auth": {
     "email": {
       "label": "Email",
       "placeholder": "max.mustermann@example.com"
-    },
+    }
+  },
+  "login": {
+    "title": "Willkommen zurück!",
+    "description": "Melde dich an, um fortzufahren",
     "password": "Passwort",
     "signIn": "Anmelden",
     "firstTime": {
@@ -201,10 +203,6 @@
     "name": {
       "label": "Name",
       "placeholder": "Max Mustermann"
-    },
-    "email": {
-      "label": "Email",
-      "placeholder": "max.mustermann@example.com"
     },
     "password": "Passwort",
     "privacyPolicy": {
