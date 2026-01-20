@@ -1,14 +1,13 @@
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { SignInButton } from "@/components/auth/sign-in-button";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
 import StatusNotification from "@/components/sidebar/status-notification";
 import { SwipeDetector } from "@/components/sidebar/swipe-detector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -93,9 +92,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
                   />
                 </DropdownMenu>
               ) : (
-                <Button asChild className="w-full">
-                  <Link href="/login">Sign in</Link>
-                </Button>
+                <SignInButton />
               )}
             </SidebarMenuItem>
           </SidebarMenu>

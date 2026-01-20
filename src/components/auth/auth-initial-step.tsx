@@ -67,7 +67,7 @@ export default function AuthInitialStep({
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <EmailField register={register} errors={errors} autoFocus />
+        <EmailField register={register} errors={errors} />
 
         <Button type="submit" className="relative w-full" disabled={isSubmitting}>
           {isSubmitting ? (

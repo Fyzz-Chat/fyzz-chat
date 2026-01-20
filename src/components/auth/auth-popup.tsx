@@ -1,5 +1,6 @@
 "use client";
 
+import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,6 +18,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { AuthContext } from "@/lib/contexts/auth-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import AuthInitialStep from "./auth-initial-step";
 
@@ -32,10 +34,11 @@ export default function AuthPopup({
   description = "Chat with the best AI models, all in one place upload images, files and more.",
 }: Readonly<AuthPopupProps>) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { dialogOpen, setDialogOpen } = useContext(AuthContext);
 
   if (isDesktop) {
     return (
-      <Dialog>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button>Log in</Button>
         </DialogTrigger>
@@ -53,7 +56,7 @@ export default function AuthPopup({
   }
 
   return (
-    <Drawer>
+    <Drawer open={dialogOpen} onOpenChange={setDialogOpen}>
       <DrawerTrigger asChild>
         <Button>Log in</Button>
       </DrawerTrigger>

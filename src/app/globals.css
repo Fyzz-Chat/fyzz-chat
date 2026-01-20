@@ -200,6 +200,7 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   letter-spacing: var(--letter-spacing);
+  pointer-events: auto !important;
 }
 
 @layer base {
