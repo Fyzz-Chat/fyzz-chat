@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { userExists } from "@/lib/actions/users";
 
 const emailSchema = z.object({
-  email: z.email("Email is required."),
+  email: z.email("Email is required"),
 });
 
 type EmailFormData = z.infer<typeof emailSchema>;

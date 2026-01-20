@@ -1,10 +1,12 @@
 "use client";
 
+import { AlertCircle } from "lucide-react";
 import { use } from "react";
 import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import { cn } from "@/lib/utils";
 import type {
   LoginFormData,
   RegisterFormData,
@@ -35,9 +37,13 @@ export default function EmailField<T extends FormData>({
         autoComplete="email"
         autoFocus={autoFocus}
         {...register("email" as never)}
+        className={cn(errors.email?.message && "ring-1 ring-destructive")}
       />
       {errors.email?.message && (
-        <span className="text-destructive text-xs">{errors.email.message as string}</span>
+        <div className="flex items-center gap-1 text-destructive">
+          <AlertCircle className="size-3" />
+          <span className="text-xs">{errors.email.message as string}</span>
+        </div>
       )}
     </Label>
   );
