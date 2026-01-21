@@ -7,7 +7,7 @@ import { signIn } from "@/lib/auth-client";
 import publicConf from "@/lib/public-config";
 
 const PROVIDER_TITLES: Record<string, string> = {
-  google: "Sign in with Google",
+  google: "Continue with Google",
 };
 
 export default function OAuthForm({ provider }: { provider: string }) {
