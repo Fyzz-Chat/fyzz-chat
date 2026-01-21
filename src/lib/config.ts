@@ -12,8 +12,6 @@ const schema = z.object({
   host: z.url(),
 
   // Auth
-  githubId: z.string().optional(),
-  githubSecret: z.string().optional(),
   googleId: z.string().optional(),
   googleSecret: z.string().optional(),
 
@@ -43,8 +41,6 @@ const envVars = {
   host: `${process.env.SCHEME || "https"}://${process.env.AUTHORITY || "localhost:3000"}`,
 
   // Auth
-  githubId: process.env.GITHUB_CLIENT_ID,
-  githubSecret: process.env.GITHUB_CLIENT_SECRET,
   googleId: process.env.GOOGLE_CLIENT_ID,
   googleSecret: process.env.GOOGLE_CLIENT_SECRET,
 

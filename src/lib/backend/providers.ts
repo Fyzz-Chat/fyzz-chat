@@ -16,7 +16,12 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, xai } from "@ai-sdk/xai";
-import { extractReasoningMiddleware, type ToolSet, wrapLanguageModel } from "ai";
+import {
+  extractReasoningMiddleware,
+  type Tool,
+  type ToolSet,
+  wrapLanguageModel,
+} from "ai";
 import {
   type Feature,
   imageTypes,
@@ -135,7 +140,7 @@ export function getProviderTools(modelId: string, search: boolean) {
 
   if (isOpenAIModel) {
     if (supportsOpenAICodeInterpreter) {
-      tools.code_interpreter = openai.tools.codeInterpreter();
+      tools.code_interpreter = openai.tools.codeInterpreter() as Tool;
     }
 
     if (supportsOpenAIImageGeneration) {
@@ -143,19 +148,19 @@ export function getProviderTools(modelId: string, search: boolean) {
         model: "gpt-image-1.5",
         outputFormat: "jpeg",
         outputCompression: 50,
-      });
+      }) as Tool;
     }
 
     if (search) {
-      tools.web_search = openai.tools.webSearch();
+      tools.web_search = openai.tools.webSearch() as Tool;
     }
   } else if (isAnthropicModel) {
     if (search) {
-      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 });
+      tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 }) as Tool;
     }
   } else if (isGoogleModel) {
     if (search) {
-      tools.google_search = google.tools.googleSearch({});
+      tools.google_search = google.tools.googleSearch({}) as Tool;
     }
   }
 

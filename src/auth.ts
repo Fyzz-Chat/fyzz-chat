@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { lastLoginMethod } from "better-auth/plugins";
 import { after } from "next/server";
 import { sendResetPasswordEmail } from "@/lib/aws/ses";
 import conf from "@/lib/config";
@@ -27,11 +28,6 @@ export const auth = betterAuth({
     },
   },
   socialProviders: {
-    github: {
-      enabled: Boolean(conf.githubId) && Boolean(conf.githubSecret),
-      clientId: conf.githubId || "",
-      clientSecret: conf.githubSecret,
-    },
     google: {
       enabled: Boolean(conf.googleId) && Boolean(conf.googleSecret),
       clientId: conf.googleId || "",
@@ -41,10 +37,10 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ["google", "github"],
+      trustedProviders: ["google"],
     },
   },
-  plugins: [nextCookies()],
+  plugins: [lastLoginMethod(), nextCookies()],
   user: {
     additionalFields: {
       password: {

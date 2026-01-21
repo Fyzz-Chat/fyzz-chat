@@ -5,8 +5,9 @@ import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { useQueryClient } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { use, useActionState, useRef, useTransition } from "react";
+import { use, useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import EmailField from "@/components/auth/email-field";
 import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,9 +44,16 @@ export default function RegisterForm() {
     },
   });
 
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem("auth_email");
+    if (storedEmail) {
+      setValue("email", storedEmail);
+    }
+  }, [setValue]);
+
   const toastCallback = (state: FormState) => {
     if (state.success) {
-      localStorage.setItem("fyzz-auth-method", "password");
+      sessionStorage.removeItem("auth_email");
       queryClient.clear();
       router.push(publicConf.redirectPath);
     } else {
@@ -79,24 +87,13 @@ export default function RegisterForm() {
           autoFocus
           autoComplete="name"
           {...register("name")}
+          className="h-12"
         />
         {errors.name && (
           <span className="text-destructive text-xs">{errors.name.message}</span>
         )}
       </Label>
-      <Label htmlFor="email" className="grid gap-2">
-        <span>{translations.register.email.label}</span>
-        <Input
-          type="email"
-          id="email"
-          placeholder={translations.register.email.placeholder}
-          autoComplete="email"
-          {...register("email")}
-        />
-        {errors.email && (
-          <span className="text-destructive text-xs">{errors.email.message}</span>
-        )}
-      </Label>
+      <EmailField register={register} errors={errors} />
       <Label htmlFor="password" className="grid gap-2">
         <span>{translations.register.password}</span>
         <Input
@@ -105,6 +102,7 @@ export default function RegisterForm() {
           placeholder="****************"
           autoComplete="new-password"
           {...register("password")}
+          className="h-12"
         />
         {errors.password && (
           <span className="text-destructive text-xs">{errors.password.message}</span>

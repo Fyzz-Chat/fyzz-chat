@@ -1,6 +1,7 @@
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { SignInButton } from "@/components/auth/sign-in-button";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
@@ -56,40 +57,43 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user?.image || ""} alt={user?.name} />
-                      <AvatarFallback className="rounded-lg">
-                        {user?.name
-                          ?.split(" ")
-                          .slice(0, 2)
-                          .map((n) => n[0])
-                          .join("") || "A"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
-                        {user?.name || "Anonymous"}
-                      </span>
-                      {user?.email && (
-                        <span className="truncate text-xs">{user.email}</span>
-                      )}
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <ProfileMenu
-                  authorized={Boolean(user)}
-                  userName={user?.name}
-                  userEmail={user?.email}
-                  userImage={user?.image || undefined}
-                />
-              </DropdownMenu>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                      size="lg"
+                      className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    >
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage src={user?.image || ""} alt={user?.name} />
+                        <AvatarFallback className="rounded-lg">
+                          {user?.name
+                            ?.split(" ")
+                            .slice(0, 2)
+                            .map((n) => n[0])
+                            .join("") || "A"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">
+                          {user?.name || "Anonymous"}
+                        </span>
+                        {user?.email && (
+                          <span className="truncate text-xs">{user.email}</span>
+                        )}
+                      </div>
+                      <ChevronsUpDown className="ml-auto size-4" />
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <ProfileMenu
+                    userName={user.name}
+                    userEmail={user.email}
+                    userImage={user.image || undefined}
+                  />
+                </DropdownMenu>
+              ) : (
+                <SignInButton />
+              )}
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

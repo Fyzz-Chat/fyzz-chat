@@ -116,6 +116,15 @@ export async function registerUser(
   }
 }
 
+export async function userExists(email: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  return Boolean(user?.id);
+}
+
 export async function setUserPassword(password: string): Promise<FormState> {
   const sessionHeaders = await headers();
   try {

@@ -166,13 +166,16 @@
       }
     }
   },
-  "login": {
-    "title": "Üdv újra!",
-    "description": "Jelentkezz be a folytatáshoz",
+  "auth": {
     "email": {
       "label": "Email",
       "placeholder": "gipszjakab@gmail.com"
     },
+    "or": "vagy"
+  },
+  "login": {
+    "title": "Üdv újra!",
+    "description": "Jelentkezz be a folytatáshoz",
     "password": "Jelszó",
     "signIn": "Bejelentkezés",
     "firstTime": {
@@ -201,10 +204,6 @@
     "name": {
       "label": "Név",
       "placeholder": "Gipsz Jakab"
-    },
-    "email": {
-      "label": "Email",
-      "placeholder": "gipszjakab@gmail.com"
     },
     "password": "Jelszó",
     "privacyPolicy": {

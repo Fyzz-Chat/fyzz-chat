@@ -10,3 +10,8 @@
   - You may use `bun run check-write` to fix the code.
 - Install new dependencies with `bun add <package> --exact`, meaning the exact version of the package.
   - If a dependency is installed with ^, install that exact version and remove the ^.
+
+## Code organization
+
+- Keep contexts in `/src/lib/contexts/` folder, hooks in `/src/hooks/` folder, and utils in `/src/lib/utils/` folder.
+- Extract helper functions with no component dependencies to `/src/lib/utils/` or `/src/lib/` subfolders.
