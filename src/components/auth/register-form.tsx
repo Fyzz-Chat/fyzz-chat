@@ -87,6 +87,7 @@ export default function RegisterForm() {
           autoFocus
           autoComplete="name"
           {...register("name")}
+          className="h-12"
         />
         {errors.name && (
           <span className="text-destructive text-xs">{errors.name.message}</span>
@@ -101,6 +102,7 @@ export default function RegisterForm() {
           placeholder="****************"
           autoComplete="new-password"
           {...register("password")}
+          className="h-12"
         />
         {errors.password && (
           <span className="text-destructive text-xs">{errors.password.message}</span>

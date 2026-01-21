@@ -94,6 +94,7 @@ export default function LoginForm() {
           placeholder="****************"
           autoComplete="current-password"
           {...register("password")}
+          className="h-12"
         />
         {errors.password && (
           <span className="text-destructive text-xs">{errors.password.message}</span>

@@ -19,7 +19,7 @@ export default function OAuthButton({
     <Button
       type="submit"
       size="lg"
-      className="relative flex w-full items-center justify-center gap-3 bg-white text-black hover:bg-gray-100"
+      className="relative flex h-12 w-full items-center justify-center gap-3 bg-white text-black hover:bg-gray-100"
       disabled={isLoading}
     >
       {isLoading ? (
