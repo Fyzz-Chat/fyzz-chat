@@ -83,6 +83,7 @@ export default function LoginForm() {
           <Link
             href="/reset-password/request"
             className="text-primary text-xs underline-offset-4 hover:underline"
+            tabIndex={-1}
           >
             {translations.login.forgotPassword}
           </Link>
