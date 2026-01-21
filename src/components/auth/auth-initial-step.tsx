@@ -3,14 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Fragment } from "react/jsx-runtime";
+import { Fragment, use } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import EmailField from "@/components/auth/email-field";
 import LastUsedIndicator from "@/components/auth/last-used-indicator";
 import OAuthForm from "@/components/auth/oauth-form";
 import { Button } from "@/components/ui/button";
 import { userExists } from "@/lib/actions/users";
+import { useTranslations } from "@/lib/contexts/translations-context";
 
 const emailSchema = z.object({
   email: z.email("Email is required"),
@@ -26,6 +28,8 @@ export default function AuthInitialStep({
   hasGoogle = false,
 }: Readonly<AuthInitialStepProps>) {
   const router = useRouter();
+  const translationsPromise = useTranslations();
+  const translations = use(translationsPromise);
 
   const {
     register,
@@ -38,12 +42,16 @@ export default function AuthInitialStep({
   const onSubmit = async (data: EmailFormData) => {
     sessionStorage.setItem("auth_email", data.email);
 
-    const existingUser = await userExists(data.email);
+    try {
+      const existingUser = await userExists(data.email);
 
-    if (existingUser) {
-      router.push("/login");
-    } else {
-      router.push("/register");
+      if (existingUser) {
+        router.push("/login");
+      } else {
+        router.push("/register");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -60,7 +68,9 @@ export default function AuthInitialStep({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-3 text-muted-foreground">or</span>
+              <span className="bg-background px-3 text-muted-foreground">
+                {translations.auth.or}
+              </span>
             </div>
           </div>
         </Fragment>

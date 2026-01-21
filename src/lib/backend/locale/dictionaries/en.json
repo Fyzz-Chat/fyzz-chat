@@ -170,7 +170,8 @@
     "email": {
       "label": "Email",
       "placeholder": "johndoe@example.com"
-    }
+    },
+    "or": "or"
   },
   "login": {
     "title": "Welcome back!",

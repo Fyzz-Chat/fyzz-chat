@@ -17,11 +17,8 @@ export default async function CatchAll() {
   const sidebarState = cookieStore.get("sidebar:state");
   const user = await getUserFromSessionPublic();
   const isLoggedIn = Boolean(user);
-  const defaultOpen = isLoggedIn
-    ? sidebarState
-      ? sidebarState.value === "true"
-      : true
-    : false;
+  const existingSidebarState = sidebarState ? sidebarState.value === "true" : true;
+  const defaultOpen = isLoggedIn ? existingSidebarState : false;
   const jwtConfigured = conf.jwtSecret !== "";
   const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
   const initialConversationsData = user

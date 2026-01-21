@@ -170,7 +170,8 @@
     "email": {
       "label": "Email",
       "placeholder": "max.mustermann@example.com"
-    }
+    },
+    "or": "oder"
   },
   "login": {
     "title": "Willkommen zurück!",

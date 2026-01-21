@@ -12,8 +12,6 @@ const schema = z.object({
   host: z.url(),
 
   // Auth
-  githubId: z.string().optional(),
-  githubSecret: z.string().optional(),
   googleId: z.string().optional(),
   googleSecret: z.string().optional(),
 

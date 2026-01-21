@@ -170,7 +170,8 @@
     "email": {
       "label": "Email",
       "placeholder": "gipszjakab@gmail.com"
-    }
+    },
+    "or": "vagy"
   },
   "login": {
     "title": "Üdv újra!",
