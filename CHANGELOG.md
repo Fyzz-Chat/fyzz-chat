@@ -1,3 +1,22 @@
+# [0.15.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.14.0...v0.15.0) (2026-01-22)
+
+
+### Bug Fixes
+
+* address code review comments ([43f3e18](https://github.com/Fyzz-Chat/fyzz-chat/commit/43f3e18fc8fea4b4dbc164543efc9d9fa25dfd16))
+* **dialog:** revert top left slide in in favor of simple reveal ([1ec0766](https://github.com/Fyzz-Chat/fyzz-chat/commit/1ec0766309df091ae12f5931bb59c19bdd8a456e))
+* **login:** forgot password cannot be tabbed ([3c9bbbe](https://github.com/Fyzz-Chat/fyzz-chat/commit/3c9bbbed6223c3d9b80528aa350b0a2186309ccc))
+* **providers:** add missing types ([149799e](https://github.com/Fyzz-Chat/fyzz-chat/commit/149799e9aee2256faef41c1d6c42bfac46484f57))
+* **translations:** memoize translations ([d9ecc4a](https://github.com/Fyzz-Chat/fyzz-chat/commit/d9ecc4a5b47493984c05ac206807f879638a2a38))
+
+
+### Features
+
+* **auth:** add authPopup and remove sidebar when user not logged in ([0bb9597](https://github.com/Fyzz-Chat/fyzz-chat/commit/0bb9597042d0e513a3c6744fc467666cdfa11f30))
+* **auth:** fill login and register with email address ([086cea8](https://github.com/Fyzz-Chat/fyzz-chat/commit/086cea86c2929f464fefd9426574d059201d5a9a))
+* **db:** add indexes to common columns to increase performance ([c46671c](https://github.com/Fyzz-Chat/fyzz-chat/commit/c46671c6cb235f715a643296deea8dcd72f4230e))
+* implement first step login and sign up popup ([a1d7083](https://github.com/Fyzz-Chat/fyzz-chat/commit/a1d7083c25ba670d68efe9b63f66281c5460acd3))
+
 # [0.14.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.13.1...v0.14.0) (2026-01-11)
 
 
