@@ -42,7 +42,7 @@ export default async function CatchAll() {
             <SidebarTrigger className="absolute top-2.5 left-2 z-20 size-8 touch-manipulation p-5" />
             {!isLoggedIn && (
               <div className="absolute top-2 right-2 z-20">
-                <AuthPopup hasGoogle={hasGoogle} />
+                <AuthPopup anonymousLogin={conf.anonymousLogin} hasGoogle={hasGoogle} />
               </div>
             )}
             <Outlet />

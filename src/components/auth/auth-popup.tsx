@@ -53,12 +53,14 @@ const FEATURES: Feature[] = [
 ];
 
 type AuthPopupProps = {
+  anonymousLogin?: boolean;
   hasGoogle?: boolean;
   title?: string;
   description?: string;
 };
 
 export default function AuthPopup({
+  anonymousLogin = false,
   hasGoogle = false,
   title = "Log in or sign up",
   description = "Claude, ChatGPT, Gemini, Perplexity, and more, all in one place, just a few clicks away",
@@ -112,7 +114,7 @@ export default function AuthPopup({
                   {description}
                 </DialogDescription>
               </DialogHeader>
-              <AuthInitialStep hasGoogle={hasGoogle} />
+              <AuthInitialStep anonymousLogin={anonymousLogin} hasGoogle={hasGoogle} />
             </div>
           </div>
         </DialogContent>
@@ -132,7 +134,7 @@ export default function AuthPopup({
             {description}
           </DrawerDescription>
         </DrawerHeader>
-        <AuthInitialStep hasGoogle={hasGoogle} />
+        <AuthInitialStep anonymousLogin={anonymousLogin} hasGoogle={hasGoogle} />
       </DrawerContent>
     </Drawer>
   );
