@@ -61,7 +61,7 @@ type AuthPopupProps = {
 export default function AuthPopup({
   hasGoogle = false,
   title = "Log in or sign up",
-  description = "Community version, free to use forever",
+  description = "Claude, ChatGPT, Gemini, Perplexity, and more, all in one place, just a few clicks away",
 }: Readonly<AuthPopupProps>) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { dialogOpen, setDialogOpen } = useContext(AuthContext);
