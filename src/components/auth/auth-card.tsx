@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import conf from "@/lib/config";
 
 export default function AuthCard({
   title,
@@ -25,8 +24,6 @@ export default function AuthCard({
   ctaText: string;
   ctaLink: string;
 }) {
-  const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
-
   return (
     <Card className="w-92 border-border/50 bg-card/95 shadow-lg backdrop-blur-sm">
       <CardHeader className="space-y-2 pb-6 text-center">
