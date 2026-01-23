@@ -32,6 +32,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useStableId } from "@/hooks/use-stable-id";
+import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { featureIcons, getProviderIcon, providerIcons } from "@/lib/providers";
@@ -45,6 +46,7 @@ import type { Status } from "@/types/status";
 
 function ModelMenu() {
   const pathname = usePathname();
+  const session = useSession();
   const setModelMenuOpen = useUIStore((state) => state.setModelMenuOpen);
   const modelMenuOpen = useUIStore((state) => state.modelMenuOpen);
   const trpc = useTRPC();
@@ -54,6 +56,7 @@ function ModelMenu() {
       refetchOnMount: true,
       refetchOnReconnect: true,
       refetchOnWindowFocus: true,
+      enabled: session.data !== null,
     })
   );
   const { data: status } = useQuery(

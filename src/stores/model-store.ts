@@ -17,6 +17,10 @@ function getModelById(models: PublicModel[], modelId: string): PublicModel {
   return models.find((m) => m.id === modelId) || models[0];
 }
 
+function findGeminiId(models: PublicModel[]): string | undefined {
+  return models.find((m) => m.id.includes("gemini-2.5-flash-lite"))?.id;
+}
+
 export const useModelStore = create<ModelStore>()((set, get) => ({
   model: {} as PublicModel,
   temporaryChat: false,
@@ -29,16 +33,23 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
   providers: [],
   setProviders: (providers: PublicProvider[]) => {
     const availableModels = providers.flatMap((provider) => provider.models);
+    const geminiFlashLiteId = findGeminiId(availableModels);
     set({
       providers,
       availableModels,
-      model: availableModels[0],
+      model: getModelById(availableModels, geminiFlashLiteId || availableModels[0]?.id),
     });
   },
   getModel: (modelId?: string) =>
     getModelById(get().availableModels, modelId || get().model?.id),
   setDefaultModel: (modelId?: string) => {
     const { availableModels } = get();
-    set({ model: getModelById(availableModels, modelId || availableModels[0]?.id) });
+    const geminiFlashLiteId = findGeminiId(availableModels);
+    set({
+      model: getModelById(
+        availableModels,
+        modelId || geminiFlashLiteId || availableModels[0]?.id
+      ),
+    });
   },
 }));
