@@ -153,7 +153,7 @@ export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src" | "alt"> 
     | "scaleway"
     | "amazon-bedrock"
     | "cerebras"
-    | (string & {});
+    | string;
 };
 
 export const ModelSelectorLogo = ({
