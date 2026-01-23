@@ -1,32 +1,21 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { useQueryClient } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
-import {
-  use,
-  useActionState,
-  useCallback,
-  useEffect,
-  useRef,
-  useTransition,
-} from "react";
+import { use, useActionState, useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import EmailField from "@/components/auth/email-field";
-import TurnstileComponent from "@/components/turnstile";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import NameField from "@/components/auth/name-field";
+import PasswordField from "@/components/auth/password-field";
+import PendingSubmitButton from "@/components/auth/pending-submit-button";
 import { registerUser } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import publicConf from "@/lib/public-config";
-import type { FormState } from "@/lib/utils";
 import { initialState } from "@/lib/utils";
 import { type RegisterFormData, registerSchema } from "@/types/auth";
-import PendingSubmitButton from "./pending-submit-button";
 
 export default function RegisterForm() {
-  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [state, formAction, isPending] = useActionState(registerUser, initialState);
   const [isTransitionPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
@@ -44,7 +33,6 @@ export default function RegisterForm() {
       name: "",
       email: "",
       password: "",
-      "cf-turnstile-response": "",
     },
   });
 
@@ -55,71 +43,29 @@ export default function RegisterForm() {
     }
   }, [setValue]);
 
-  const toastCallback = useCallback(
-    (state: FormState) => {
-      if (state.success) {
-        sessionStorage.removeItem("auth_email");
-        queryClient.clear();
-        globalThis.location.href = publicConf.redirectPath;
-      } else {
-        setValue("cf-turnstile-response", "");
-        turnstileRef.current?.reset();
-      }
-    },
-    [queryClient, setValue]
-  );
-
   useEffect(() => {
-    if (state.success) {
-      toastCallback(state);
-    }
-  }, [state, toastCallback]);
+    if (!state.message) return;
 
-  const onSubmit = async (data: RegisterFormData) => {
+    if (state.success) {
+      sessionStorage.removeItem("auth_email");
+      queryClient.clear();
+      globalThis.location.href = publicConf.redirectPath;
+    }
+  }, [state, queryClient]);
+
+  function onSubmit(data: RegisterFormData) {
     startTransition(() => {
       formAction(data);
     });
-  };
-
-  function setTurnstileValue(token: string) {
-    setValue("cf-turnstile-response", token);
   }
 
   const isLoading = isPending || isSubmitting || isTransitionPending;
 
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <Label htmlFor="name" className="grid gap-2">
-        <span>{translations.register.name.label}</span>
-        <Input
-          type="text"
-          id="name"
-          placeholder={translations.register.name.placeholder}
-          autoFocus
-          autoComplete="name"
-          {...register("name")}
-          className="h-12"
-        />
-        {errors.name && (
-          <span className="text-destructive text-xs">{errors.name.message}</span>
-        )}
-      </Label>
+    <form className="grid w-[300px] gap-6" onSubmit={handleSubmit(onSubmit)}>
+      <NameField register={register} errors={errors} autoFocus />
       <EmailField register={register} errors={errors} />
-      <Label htmlFor="password" className="grid gap-2">
-        <span>{translations.register.password}</span>
-        <Input
-          type="password"
-          id="password"
-          placeholder="****************"
-          autoComplete="new-password"
-          {...register("password")}
-          className="h-12"
-        />
-        {errors.password && (
-          <span className="text-destructive text-xs">{errors.password.message}</span>
-        )}
-      </Label>
-      <TurnstileComponent turnstileRef={turnstileRef} setValue={setTurnstileValue} />
+      <PasswordField register={register} errors={errors} />
       <div className="text-muted-foreground text-xs">
         {translations.register.privacyPolicy.text}{" "}
         <a

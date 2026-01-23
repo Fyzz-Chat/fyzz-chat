@@ -22,6 +22,8 @@ type PasswordFieldProps<T extends FormData> = {
   fieldName?: "password" | "currentPassword" | "newPassword" | "confirmPassword";
   showForgotPassword?: boolean;
   autoFocus?: boolean;
+  autoComplete?: "current-password" | "new-password";
+  label?: string;
 };
 
 export default function PasswordField<T extends FormData>({
@@ -30,16 +32,19 @@ export default function PasswordField<T extends FormData>({
   fieldName = "password",
   showForgotPassword = false,
   autoFocus = false,
+  autoComplete = "current-password",
+  label,
 }: PasswordFieldProps<T>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 
   const fieldError = errors[fieldName as keyof FieldErrors<T>];
+  const displayLabel = label || translations.login.password;
 
   return (
     <Label htmlFor={fieldName} className="grid gap-2">
       <div className="flex items-center justify-between">
-        <span>{translations.login.password}</span>
+        <span>{displayLabel}</span>
         {showForgotPassword && (
           <Link
             href="/reset-password/request"
@@ -54,7 +59,7 @@ export default function PasswordField<T extends FormData>({
         type="password"
         id={fieldName}
         placeholder="****************"
-        autoComplete="current-password"
+        autoComplete={autoComplete}
         autoFocus={autoFocus}
         {...register(fieldName as never)}
         className={cn(
