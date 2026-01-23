@@ -42,3 +42,9 @@ export const updatePasswordSchema = z
   });
 
 export type UpdatePasswordFormData = z.infer<typeof updatePasswordSchema>;
+
+export const requestPasswordResetSchema = z.object({
+  email: z.email("Enter a valid email address"),
+});
+
+export type RequestPasswordResetFormData = z.infer<typeof requestPasswordResetSchema>;

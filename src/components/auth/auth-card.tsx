@@ -1,15 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import OAuthForm from "@/components/auth/oauth-form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import conf from "@/lib/config";
 
 export default function AuthCard({
   title,
@@ -26,35 +16,14 @@ export default function AuthCard({
   ctaText: string;
   ctaLink: string;
 }) {
-  const hasGitHub = Boolean(conf.githubId) && Boolean(conf.githubSecret);
-  const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
-
   return (
-    <Card className="w-92 border-border/50 bg-card/95 shadow-lg backdrop-blur-sm">
-      <CardHeader className="space-y-2 pb-6 text-center">
-        <CardTitle className="font-bold text-2xl tracking-tight">{title}</CardTitle>
-        <CardDescription className="text-base">{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6 px-8">
-        {children}
-        {(hasGitHub || hasGoogle) && (
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-            </div>
-          </div>
-        )}
-        {(hasGitHub || hasGoogle) && (
-          <div className="flex flex-col gap-2">
-            {hasGoogle && <OAuthForm provider="google" />}
-            {hasGitHub && <OAuthForm provider="github" />}
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="pt-0 pb-8">
+    <div className="flex w-full max-w-[400px] flex-col items-center justify-center gap-8">
+      <div className="space-y-2 text-center">
+        <h1 className="font-bold text-2xl tracking-tight">{title}</h1>
+        <p className="text-base text-muted-foreground">{description}</p>
+      </div>
+      <div className="w-full px-4">{children}</div>
+      <div>
         <p className="mx-auto text-muted-foreground text-sm">
           {ctaQuestion}{" "}
           <Link
@@ -64,7 +33,7 @@ export default function AuthCard({
             {ctaText}
           </Link>
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

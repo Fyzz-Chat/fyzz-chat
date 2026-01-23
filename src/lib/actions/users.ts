@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { randomBytes } from "node:crypto";
 import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
@@ -114,6 +115,54 @@ export async function registerUser(
       success: false,
     };
   }
+}
+
+export async function signInAnonymously(): Promise<FormState> {
+  if (!conf.anonymousLogin) {
+    return {
+      message: "Anonymous login disabled",
+      description: "This feature is not enabled.",
+      success: false,
+    };
+  }
+
+  const randomEmail = `anonymous-${randomBytes(16).toString("hex")}@fyzz.local`;
+  const randomPassword = randomBytes(32).toString("hex");
+
+  try {
+    await auth.api.signUpEmail({
+      body: {
+        name: "Anonymous",
+        email: randomEmail,
+        password: randomPassword,
+        callbackURL: publicConf.redirectPath,
+      },
+    });
+
+    logger.info("Anonymous user created successfully");
+
+    return {
+      message: "Signed in anonymously",
+      description: "You have been signed in as an anonymous user.",
+      success: true,
+    };
+  } catch (error) {
+    logger.error(error);
+    return {
+      message: "Failed to sign in",
+      description: "Unable to create anonymous session. Please try again.",
+      success: false,
+    };
+  }
+}
+
+export async function userExists(email: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  return Boolean(user?.id);
 }
 
 export async function setUserPassword(password: string): Promise<FormState> {

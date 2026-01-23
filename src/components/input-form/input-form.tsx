@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, type KeyboardEvent, useEffect, useRef } from "react";
+import { type FormEvent, type KeyboardEvent, useContext, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ActionButton from "@/components/input-form/action-button";
 import AttachmentButton from "@/components/input-form/attachment-button";
@@ -12,6 +12,8 @@ import SearchMenu from "@/components/input-form/search-menu";
 import ModelMenu from "@/components/model-menu";
 import { useInputForm } from "@/hooks/use-input-form";
 import useTempChat from "@/hooks/use-temp-chat";
+import { useSession } from "@/lib/auth-client";
+import { AuthContext } from "@/lib/contexts/auth-context";
 import { InputFormContext } from "@/lib/contexts/input-form-context";
 import {
   useAddMessage,
@@ -26,6 +28,8 @@ import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 
 export default function InputForm({ className }: Readonly<{ className?: string }>) {
   useTempChat();
+  const session = useSession();
+  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const createConversation = useCreateConversation();
@@ -45,6 +49,11 @@ export default function InputForm({ className }: Readonly<{ className?: string }
   async function handleSendMessage(
     e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
   ) {
+    if (!session.data) {
+      authContext.setDialogOpen(true);
+      return;
+    }
+
     const { stableId, status } = useChatStore.getState();
 
     e.preventDefault();

@@ -43,7 +43,7 @@ export default async function Layout({
     <div className="mx-auto flex w-full flex-1 flex-col">
       <header className="mx-auto flex w-full max-w-7xl items-center justify-end gap-4 p-4">
         <Link
-          href="/"
+          href="/chat"
           className="mr-auto flex items-center gap-2 whitespace-pre font-medium text-lg"
         >
           <Image src="/icon.svg" alt="Fyzz.chat" width={30} height={30} />

@@ -6,7 +6,7 @@ import { cache } from "react";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma/prisma";
 
-const unauthenticatedRedirect = "/chat?login=true";
+const unauthenticatedRedirect = "/login";
 
 export async function getUserByEmail(email: string) {
   const user = await prisma.user.findUnique({

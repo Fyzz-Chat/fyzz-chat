@@ -2,6 +2,12 @@ import "server-only";
 
 import { z } from "zod";
 
+const booleanFromString = z.preprocess(
+  (val) =>
+    typeof val === "string" ? ["true", "yes", "1"].includes(val.toLowerCase()) : val,
+  z.boolean().default(false)
+);
+
 const schema = z.object({
   // General
   environment: z.enum(["development", "stage", "production"]).default("development"),
@@ -12,8 +18,7 @@ const schema = z.object({
   host: z.url(),
 
   // Auth
-  githubId: z.string().optional(),
-  githubSecret: z.string().optional(),
+  anonymousLogin: booleanFromString,
   googleId: z.string().optional(),
   googleSecret: z.string().optional(),
 
@@ -43,8 +48,7 @@ const envVars = {
   host: `${process.env.SCHEME || "https"}://${process.env.AUTHORITY || "localhost:3000"}`,
 
   // Auth
-  githubId: process.env.GITHUB_CLIENT_ID,
-  githubSecret: process.env.GITHUB_CLIENT_SECRET,
+  anonymousLogin: process.env.ANONYMOUS_LOGIN,
   googleId: process.env.GOOGLE_CLIENT_ID,
   googleSecret: process.env.GOOGLE_CLIENT_SECRET,
 

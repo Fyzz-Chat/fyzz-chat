@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
+import AnonymousLoginButton from "@/components/auth/anonymous-login-button";
 import AuthCard from "@/components/auth/auth-card";
 import LoginForm from "@/components/auth/login-form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
+import conf from "@/lib/config";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 
 const path = "/login";
@@ -29,6 +38,22 @@ export const metadata: Metadata = {
 
 export default async function Login() {
   const translations = await getTranslations();
+
+  if (conf.anonymousLogin) {
+    return (
+      <main className="m-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>{translations.login.title}</CardTitle>
+            <CardDescription>{translations.login.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AnonymousLoginButton />
+          </CardContent>
+        </Card>
+      </main>
+    );
+  }
 
   return (
     <main className="m-auto">
