@@ -7,12 +7,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { signInAnonymously } from "@/lib/actions/users";
+import { useSession } from "@/lib/auth-client";
 import publicConf from "@/lib/public-config";
 
 export default function AnonymousLoginButton() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const session = useSession();
 
   const handleAnonymousLogin = async () => {
     setIsLoading(true);
@@ -20,6 +22,7 @@ export default function AnonymousLoginButton() {
       const result = await signInAnonymously();
       if (result.success) {
         queryClient.clear();
+        await session.refetch();
         router.push(publicConf.redirectPath);
       } else {
         toast.error(result.message, {
