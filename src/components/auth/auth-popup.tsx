@@ -2,6 +2,7 @@
 
 import { ImageIcon, type LucideIcon, MessageSquare, Sparkles, Zap } from "lucide-react";
 import { useContext } from "react";
+import { ModelSelectorLogo } from "@/components/ai-elements/model-selector";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +23,17 @@ import {
 import { AuthContext } from "@/lib/contexts/auth-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import AuthInitialStep from "./auth-initial-step";
+
+const PROVIDERS = [
+  "OpenAI",
+  "Anthropic",
+  "Google",
+  "xAI",
+  "Llama",
+  "DeepSeek",
+  "Qwen",
+  "Perplexity",
+];
 
 type Feature = {
   icon: LucideIcon;
@@ -53,12 +65,14 @@ const FEATURES: Feature[] = [
 ];
 
 type AuthPopupProps = {
+  anonymousLogin?: boolean;
   hasGoogle?: boolean;
   title?: string;
   description?: string;
 };
 
 export default function AuthPopup({
+  anonymousLogin = false,
   hasGoogle = false,
   title = "Log in or sign up",
   description = "Claude, ChatGPT, Gemini, Perplexity, and more, all in one place, just a few clicks away",
@@ -75,14 +89,30 @@ export default function AuthPopup({
         <DialogContent className="max-w-4xl gap-0 p-0">
           <div className="grid md:grid-cols-2">
             <div className="bg-linear-to-br from-primary/10 via-primary/5 to-background p-10">
-              <div className="flex h-full flex-col justify-center space-y-8">
-                <div>
-                  <h3 className="mb-2 font-semibold text-2xl text-foreground">
+              <div className="flex h-full flex-col justify-start space-y-8">
+                <div className="flex flex-col justify-center gap-2">
+                  <h3 className="font-semibold text-2xl text-foreground">
                     Welcome to Fyzz
                   </h3>
                   <p className="text-muted-foreground text-sm">
                     Your all-in-one AI chat platform
                   </p>
+                  <div className="relative mt-3 overflow-hidden">
+                    <div className="flex w-max animate-scroll-infinite gap-4">
+                      {[...PROVIDERS, ...PROVIDERS].map((provider, index) => (
+                        <div
+                          key={`${provider}-${index}`}
+                          className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
+                        >
+                          <ModelSelectorLogo
+                            provider={provider.toLowerCase()}
+                            className="size-5 text-primary"
+                          />
+                          <span className="font-semibold text-xs">{provider}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-6">
@@ -105,14 +135,14 @@ export default function AuthPopup({
               </div>
             </div>
 
-            <div className="p-10">
-              <DialogHeader>
+            <div className="flex flex-col justify-center p-10">
+              <DialogHeader className="flex-1">
                 <DialogTitle className="mb-5 text-3xl">{title}</DialogTitle>
                 <DialogDescription className="text-foreground">
                   {description}
                 </DialogDescription>
               </DialogHeader>
-              <AuthInitialStep hasGoogle={hasGoogle} />
+              <AuthInitialStep anonymousLogin={anonymousLogin} hasGoogle={hasGoogle} />
             </div>
           </div>
         </DialogContent>
@@ -132,7 +162,7 @@ export default function AuthPopup({
             {description}
           </DrawerDescription>
         </DrawerHeader>
-        <AuthInitialStep hasGoogle={hasGoogle} />
+        <AuthInitialStep anonymousLogin={anonymousLogin} hasGoogle={hasGoogle} />
       </DrawerContent>
     </Drawer>
   );

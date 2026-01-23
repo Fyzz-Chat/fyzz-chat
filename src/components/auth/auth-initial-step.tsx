@@ -7,6 +7,7 @@ import { Fragment, use } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import AnonymousLoginButton from "@/components/auth/anonymous-login-button";
 import EmailField from "@/components/auth/email-field";
 import LastUsedIndicator from "@/components/auth/last-used-indicator";
 import OAuthForm from "@/components/auth/oauth-form";
@@ -21,10 +22,12 @@ const emailSchema = z.object({
 type EmailFormData = z.infer<typeof emailSchema>;
 
 type AuthInitialStepProps = {
+  anonymousLogin?: boolean;
   hasGoogle?: boolean;
 };
 
 export default function AuthInitialStep({
+  anonymousLogin = false,
   hasGoogle = false,
 }: Readonly<AuthInitialStepProps>) {
   const router = useRouter();
@@ -50,10 +53,18 @@ export default function AuthInitialStep({
       } else {
         router.push("/register");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Something went wrong. Please try again.");
     }
   };
+
+  if (anonymousLogin) {
+    return (
+      <div className="grid gap-6 py-5">
+        <AnonymousLoginButton />
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-6 py-5">
