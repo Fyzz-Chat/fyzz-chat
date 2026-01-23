@@ -1,13 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export default function AuthCard({
   title,
@@ -25,13 +17,13 @@ export default function AuthCard({
   ctaLink: string;
 }) {
   return (
-    <Card className="w-92 border-border/50 bg-card/95 shadow-lg backdrop-blur-sm">
-      <CardHeader className="space-y-2 pb-6 text-center">
-        <CardTitle className="font-bold text-2xl tracking-tight">{title}</CardTitle>
-        <CardDescription className="text-base">{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6 px-8">{children}</CardContent>
-      <CardFooter className="pt-0 pb-8">
+    <div className="flex w-full max-w-[400px] flex-col items-center justify-center gap-8">
+      <div className="space-y-2 text-center">
+        <h1 className="font-bold text-2xl tracking-tight">{title}</h1>
+        <p className="text-base text-muted-foreground">{description}</p>
+      </div>
+      <div className="w-full px-4">{children}</div>
+      <div>
         <p className="mx-auto text-muted-foreground text-sm">
           {ctaQuestion}{" "}
           <Link
@@ -41,7 +33,7 @@ export default function AuthCard({
             {ctaText}
           </Link>
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

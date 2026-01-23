@@ -15,7 +15,6 @@ import {
 import { useForm } from "react-hook-form";
 import EmailField from "@/components/auth/email-field";
 import PendingSubmitButton from "@/components/auth/pending-submit-button";
-import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signInUser } from "@/lib/actions/users";
@@ -36,6 +35,7 @@ export default function LoginForm() {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -62,15 +62,14 @@ export default function LoginForm() {
       } else {
         setValue("cf-turnstile-response", "");
         turnstileRef.current?.reset();
+        setError("email", { message: state.description });
       }
     },
-    [queryClient, setValue]
+    [queryClient, setValue, setError]
   );
 
   useEffect(() => {
-    if (state.success) {
-      toastCallback(state);
-    }
+    toastCallback(state);
   }, [state, toastCallback]);
 
   async function onSubmit(data: LoginFormData) {
@@ -79,14 +78,10 @@ export default function LoginForm() {
     });
   }
 
-  function setTurnstileValue(token: string) {
-    setValue("cf-turnstile-response", token);
-  }
-
   const isLoading = isPending || isSubmitting || isTransitionPending;
 
   return (
-    <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="grid w-[300px] gap-6" onSubmit={handleSubmit(onSubmit)}>
       <EmailField register={register} errors={errors} autoFocus />
       <div className="grid gap-2">
         <div className="flex items-center justify-between">
@@ -105,13 +100,12 @@ export default function LoginForm() {
           placeholder="****************"
           autoComplete="current-password"
           {...register("password")}
-          className="h-12"
+          className="h-12 focus-visible:ring-1"
         />
         {errors.password && (
           <span className="text-destructive text-xs">{errors.password.message}</span>
         )}
       </div>
-      <TurnstileComponent turnstileRef={turnstileRef} setValue={setTurnstileValue} />
       <PendingSubmitButton isPending={isLoading} text={translations.login.signIn} />
     </form>
   );

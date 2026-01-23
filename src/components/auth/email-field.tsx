@@ -37,7 +37,10 @@ export default function EmailField<T extends FormData>({
         autoComplete="email"
         autoFocus={autoFocus}
         {...register("email" as never)}
-        className={cn("h-12", errors.email?.message && "ring-1 ring-destructive")}
+        className={cn(
+          "h-12 focus-visible:ring-1",
+          errors.email?.message && "ring-1 ring-destructive"
+        )}
       />
       {errors.email?.message && (
         <div className="flex items-center gap-1 text-destructive">
