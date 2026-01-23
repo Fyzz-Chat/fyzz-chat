@@ -2,10 +2,7 @@
 
 import { ImageIcon, type LucideIcon, MessageSquare, Sparkles, Zap } from "lucide-react";
 import { useContext } from "react";
-import {
-  ModelSelectorLogo,
-  type ModelSelectorLogoProps,
-} from "@/components/ai-elements/model-selector";
+import { ModelSelectorLogo } from "@/components/ai-elements/model-selector";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -108,9 +105,7 @@ export default function AuthPopup({
                           className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
                         >
                           <ModelSelectorLogo
-                            provider={
-                              provider.toLowerCase() as ModelSelectorLogoProps["provider"]
-                            }
+                            provider={provider.toLowerCase()}
                             className="size-5 text-primary"
                           />
                           <span className="font-semibold text-xs">{provider}</span>
