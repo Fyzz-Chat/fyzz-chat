@@ -4,15 +4,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { use, useActionState, useEffect, useRef, useTransition } from "react";
+import {
+  use,
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import EmailField from "@/components/auth/email-field";
 import PendingSubmitButton from "@/components/auth/pending-submit-button";
 import TurnstileComponent from "@/components/turnstile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import useToast from "@/hooks/use-toast";
 import { signInUser } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import publicConf from "@/lib/public-config";
@@ -23,7 +28,6 @@ export default function LoginForm() {
   const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [state, formAction, isPending] = useActionState(signInUser, initialState);
   const [isTransitionPending, startTransition] = useTransition();
-  const router = useRouter();
   const queryClient = useQueryClient();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -49,18 +53,25 @@ export default function LoginForm() {
     }
   }, [setValue]);
 
-  const toastCallback = (state: FormState) => {
-    if (state.success) {
-      sessionStorage.removeItem("auth_email");
-      queryClient.clear();
-      router.push(publicConf.redirectPath);
-    } else {
-      setValue("cf-turnstile-response", "");
-      turnstileRef.current?.reset();
-    }
-  };
+  const toastCallback = useCallback(
+    (state: FormState) => {
+      if (state.success) {
+        sessionStorage.removeItem("auth_email");
+        queryClient.clear();
+        globalThis.location.href = publicConf.redirectPath;
+      } else {
+        setValue("cf-turnstile-response", "");
+        turnstileRef.current?.reset();
+      }
+    },
+    [queryClient, setValue]
+  );
 
-  useToast(state, toastCallback);
+  useEffect(() => {
+    if (state.success) {
+      toastCallback(state);
+    }
+  }, [state, toastCallback]);
 
   async function onSubmit(data: LoginFormData) {
     startTransition(() => {
