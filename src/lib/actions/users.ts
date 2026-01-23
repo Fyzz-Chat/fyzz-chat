@@ -118,6 +118,14 @@ export async function registerUser(
 }
 
 export async function signInAnonymously(): Promise<FormState> {
+  if (!conf.anonymousLogin) {
+    return {
+      message: "Anonymous login disabled",
+      description: "This feature is not enabled.",
+      success: false,
+    };
+  }
+
   const randomEmail = `anonymous-${randomBytes(16).toString("hex")}@fyzz.local`;
   const randomPassword = randomBytes(32).toString("hex");
 
@@ -131,7 +139,7 @@ export async function signInAnonymously(): Promise<FormState> {
       },
     });
 
-    logger.info(`Anonymous user created with email: ${randomEmail}`);
+    logger.info("Anonymous user created successfully");
 
     return {
       message: "Signed in anonymously",
