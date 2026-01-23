@@ -101,8 +101,6 @@ export default function AuthPopup({
                     Your all-in-one AI chat platform
                   </p>
                   <div className="relative mt-3 overflow-hidden">
-                    {/* <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-linear-to-r from-background to-transparent" /> */}
-                    {/* <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l from-background to-transparent" /> */}
                     <div className="flex w-max animate-scroll-infinite gap-4">
                       {[...PROVIDERS, ...PROVIDERS].map((provider, index) => (
                         <div
