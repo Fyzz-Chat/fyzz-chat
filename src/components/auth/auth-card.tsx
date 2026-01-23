@@ -1,6 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
-import OAuthForm from "@/components/auth/oauth-form";
+import { type ReactNode } from "react";
 import {
   Card,
   CardContent,
@@ -34,24 +33,7 @@ export default function AuthCard({
         <CardTitle className="font-bold text-2xl tracking-tight">{title}</CardTitle>
         <CardDescription className="text-base">{description}</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-6 px-8">
-        {children}
-        {hasGoogle && (
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
-            </div>
-          </div>
-        )}
-        {hasGoogle && (
-          <div className="flex flex-col gap-2">
-            <OAuthForm provider="google" />
-          </div>
-        )}
-      </CardContent>
+      <CardContent className="grid gap-6 px-8">{children}</CardContent>
       <CardFooter className="pt-0 pb-8">
         <p className="mx-auto text-muted-foreground text-sm">
           {ctaQuestion}{" "}
