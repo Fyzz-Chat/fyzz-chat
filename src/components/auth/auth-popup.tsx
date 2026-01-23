@@ -98,7 +98,7 @@ export default function AuthPopup({
                     Your all-in-one AI chat platform
                   </p>
                   <div className="relative mt-3 overflow-hidden">
-                    <div className="flex w-max animate-scroll-infinite gap-4">
+                    <div className="flex w-max animate-scroll-infinite gap-4 motion-reduce:animate-none">
                       {[...PROVIDERS, ...PROVIDERS].map((provider, index) => (
                         <div
                           key={`${provider}-${index}`}
