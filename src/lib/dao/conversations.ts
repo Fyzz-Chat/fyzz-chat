@@ -233,7 +233,7 @@ export function mapMessages(
 
     return {
       ...message,
-      role: message.role as "system" | "user" | "assistant",
+      role: message.role,
       parts: filterParts(userId, conversationId, parts),
       metadata: {
         model: message.model,
