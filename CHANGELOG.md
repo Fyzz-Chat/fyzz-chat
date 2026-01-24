@@ -1,3 +1,18 @@
+# [0.16.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.15.0...v0.16.0) (2026-01-24)
+
+
+### Bug Fixes
+
+* **anonymous-login:** refetch session on successful login ([a383345](https://github.com/Fyzz-Chat/fyzz-chat/commit/a3833459fce685f7fd27ccfe15fa0210ef3fd01b))
+* import streamdown style correctly ([1ba5923](https://github.com/Fyzz-Chat/fyzz-chat/commit/1ba5923f51c58a1dc621a5d2e55e61a51a02cd05))
+* **model-selector:** typing issue fix ([9a06575](https://github.com/Fyzz-Chat/fyzz-chat/commit/9a06575b40dd5ca9a409e5a728dcfb74165e1834))
+* **users:** disable anonymous login server action when not configured, do not log email ([cf6869e](https://github.com/Fyzz-Chat/fyzz-chat/commit/cf6869e5b82a9c84c6e54b2f9b0e10fea7e606c8))
+
+
+### Features
+
+* **auth:** introduce anonymous logins ([dda2e0c](https://github.com/Fyzz-Chat/fyzz-chat/commit/dda2e0cd05ec3db41e13ec9717f51d3f6a808fa9))
+
 # [0.15.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.14.0...v0.15.0) (2026-01-22)
 
 
