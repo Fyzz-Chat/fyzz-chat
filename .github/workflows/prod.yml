@@ -106,3 +106,9 @@ jobs:
       - name: Deploy to Coolify
         run: |
           curl --request GET '${{ secrets.COOLIFY_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+
+      - name: Migrate database
+        run: |
+          bun run db:migrate
+        env:
+          DIRECT_DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
