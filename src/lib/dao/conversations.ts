@@ -132,7 +132,6 @@ export async function appendMessageToConversation(
         ...message,
         content: getMessageContent(message),
         parts: message.parts as InputJsonValue,
-        toolInvocations: undefined,
         conversationId,
       },
     });
@@ -230,12 +229,11 @@ export function mapMessages(
   messages: PartialMessage[]
 ): CustomUIMessage[] {
   const mappedMessages = messages.map((message: PartialMessage) => {
-    const { files: _, ...messageWithoutFiles } = message;
-    const parts = safeParse(messageWithoutFiles.parts, []);
+    const parts = safeParse(message.parts, []);
 
     return {
-      ...messageWithoutFiles,
-      role: messageWithoutFiles.role as "system" | "user" | "assistant",
+      ...message,
+      role: message.role as "system" | "user" | "assistant",
       parts: filterParts(userId, conversationId, parts),
       metadata: {
         model: message.model,

@@ -62,11 +62,7 @@ model Message {
   id                 String       @id @default(uuid())
   content            String?
   role               String
-  reasoning          String?
-  signature          String?
   parts              Json?
-  toolInvocations    Json?
-  files              Json?
   reasoningDurations Json?        @map("reasoning_durations")
   model              String?      @map("model")
   promptTokens       Int?         @default(0) @map("prompt_tokens")

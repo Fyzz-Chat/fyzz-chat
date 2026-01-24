@@ -20,13 +20,7 @@ export type PartialConversation = Omit<
 
 export type PartialMessage = Omit<
   Message,
-  | "reasoning"
-  | "signature"
-  | "toolInvocations"
-  | "promptTokens"
-  | "completionTokens"
-  | "conversationId"
-  | "updatedAt"
+  "promptTokens" | "completionTokens" | "conversationId" | "updatedAt"
 >;
 
 export type ChatLayout = "wide" | "compact";
