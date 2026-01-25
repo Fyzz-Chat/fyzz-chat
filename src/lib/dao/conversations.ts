@@ -6,7 +6,12 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
-import { type CustomUIMessage, metadataSchema, type PartialMessage } from "@/types/chat";
+import {
+  type ConversationPage,
+  type CustomUIMessage,
+  metadataSchema,
+  type PartialMessage,
+} from "@/types/chat";
 import type { ImageGenerationOutput } from "@/types/tools";
 
 export async function getConversation(id: string) {
@@ -31,7 +36,7 @@ export async function getConversationsByCursor(
   limit: number,
   cursor?: string,
   search?: string
-) {
+): Promise<ConversationPage> {
   const userId = await getUserIdFromSession();
 
   // Parse cursor if provided (format: "timestamp_id")
@@ -81,7 +86,10 @@ export async function getConversationsByCursor(
       model: true,
       messages: {
         select: {
-          content: true,
+          id: true,
+          role: true,
+          parts: true,
+          metadata: true,
         },
         take: 1,
         orderBy: {
@@ -111,6 +119,8 @@ export async function getConversationsByCursor(
       ...item,
       messages: item.messages.map((message) => ({
         ...message,
+        parts: safeParse(message.parts, []),
+        metadata: metadataSchema.parse(message.metadata),
       })),
     })),
     nextCursor,

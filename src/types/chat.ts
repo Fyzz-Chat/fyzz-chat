@@ -1,3 +1,4 @@
+import type { InfiniteData } from "@tanstack/react-query";
 import type { UIMessage } from "ai";
 import { z } from "zod";
 import type { Conversation, Message } from "@/lib/prisma/generated/client";
@@ -14,7 +15,7 @@ type CustomMetadata = z.infer<typeof metadataSchema>;
 export type CustomUIMessage = UIMessage<CustomMetadata>;
 
 export type PartialConversation = Omit<
-  Conversation & { messages: (CustomUIMessage & { content: string })[] },
+  Conversation & { messages: CustomUIMessage[] },
   "userId" | "createdAt" | "updatedAt" | "locked"
 >;
 
@@ -24,3 +25,25 @@ export type PartialMessage = Omit<
 >;
 
 export type ChatLayout = "wide" | "compact";
+
+// Type definitions for query data
+export type ConversationPage = {
+  items: PartialConversation[];
+  nextCursor: string | undefined;
+};
+
+export type ConversationsInfiniteData = InfiniteData<ConversationPage, string | null>;
+
+export type ConversationData =
+  | {
+      id: string;
+      title: string;
+      model: string;
+    }
+  | null
+  | undefined;
+
+export type MessagesData = {
+  messages: CustomUIMessage[];
+  hasMore: boolean;
+};
