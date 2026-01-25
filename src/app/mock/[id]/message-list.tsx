@@ -68,7 +68,8 @@ export default function MockMessageList({
     transport: new DefaultChatTransport({
       api: "/api/chat",
       prepareSendMessagesRequest({ id, messages, body }) {
-        return { body: { id, messages: [messages.at(-1)], ...body } };
+        const messagesToSend = body?.temporaryChat ? messages : [messages.at(-1)];
+        return { body: { id, messages: messagesToSend, ...body } };
       },
     }),
     id,
