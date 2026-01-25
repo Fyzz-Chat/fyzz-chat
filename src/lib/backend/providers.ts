@@ -272,15 +272,6 @@ const providers: Provider[] = [
     icon: "openai",
     models: [
       {
-        id: "gpt-4o-mini",
-        name: "GPT-4o mini",
-        features: [images],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: imageTypes,
-        cost: 1,
-      },
-      {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
         features: [images],
@@ -404,15 +395,6 @@ const providers: Provider[] = [
     name: "OpenAI",
     icon: "openai",
     models: [
-      {
-        id: "gpt-4o-mini",
-        name: "GPT-4o mini",
-        features: [images],
-        provider: wrappedModel(openai),
-        tools: true,
-        extensions: imageTypes,
-        cost: 1,
-      },
       {
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
