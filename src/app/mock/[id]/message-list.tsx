@@ -162,21 +162,21 @@ export default function MockMessageList({
 
       <PromptInputProvider>
         <ChatLayoutWrapper>
-          <PromptInput globalDrop multiple onSubmit={handleSubmit} className="px-4">
+          <PromptInput
+            globalDrop
+            multiple
+            onSubmit={handleSubmit}
+            accept={model?.extensions?.join(",")}
+            className="px-4"
+          >
             <PromptInputAttachments>
               {(attachment) => <PromptInputAttachment data={attachment} />}
             </PromptInputAttachments>
             <PromptInputBody>
               <PromptInputTextarea />
             </PromptInputBody>
-            <PromptInputFooter>
-              <PromptInputTools>
-                <PromptInputActionMenu>
-                  <PromptInputActionMenuTrigger />
-                  <PromptInputActionMenuContent>
-                    <PromptInputActionAddAttachments />
-                  </PromptInputActionMenuContent>
-                </PromptInputActionMenu>
+            <PromptInputFooter className="space-x-1">
+              <PromptInputTools className="flex w-full items-center">
                 <PromptInputButton
                   onClick={() => setBrowse(!browse)}
                   className="rounded-full"
@@ -236,6 +236,14 @@ export default function MockMessageList({
                     </ModelSelectorList>
                   </ModelSelectorContent>
                 </ModelSelector>
+                {model.extensions?.length > 0 && (
+                  <PromptInputActionMenu>
+                    <PromptInputActionMenuTrigger className="ml-auto" />
+                    <PromptInputActionMenuContent>
+                      <PromptInputActionAddAttachments />
+                    </PromptInputActionMenuContent>
+                  </PromptInputActionMenu>
+                )}
               </PromptInputTools>
               <PromptInputSubmit status={status} onClick={handleStop} />
             </PromptInputFooter>
