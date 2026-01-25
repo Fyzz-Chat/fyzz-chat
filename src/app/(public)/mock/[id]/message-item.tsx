@@ -27,6 +27,7 @@ import {
   ToolOutput,
 } from "@/components/ai-elements/tool";
 import ImageFilePart from "@/components/message/parts/image-file-part";
+import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 import { pdfType } from "@/types/provider";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
@@ -42,6 +43,7 @@ export default function MessageItem({
   isStreaming?: boolean;
 }) {
   const [isCopied, setIsCopied] = useState(false);
+  const model = useModelStore((state) => state.getModel(message.metadata?.model));
   const renderCount = useRef(0);
   renderCount.current += 1;
 
@@ -197,6 +199,7 @@ export default function MessageItem({
               )}
             </MessageAction>
           </MessageActions>
+          <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>
       )}
       {message.role === "user" && (
