@@ -1,5 +1,4 @@
 import {
-  type InfiniteData,
   keepPreviousData,
   useInfiniteQuery,
   useMutation,
@@ -14,34 +13,19 @@ import {
   saveConversation,
   saveConversationModel,
 } from "@/lib/actions/conversations";
+import { deleteMessageChainAfter } from "@/lib/actions/messages";
 import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage, PartialConversation } from "@/types/chat";
-import { deleteMessageChainAfter } from "../actions/messages";
-
-// Type definitions for query data
-type ConversationPage = {
-  items: PartialConversation[];
-  nextCursor: string | undefined;
-};
-
-type ConversationsInfiniteData = InfiniteData<ConversationPage, string | null>;
-
-type ConversationData =
-  | {
-      id: string;
-      title: string;
-      model: string;
-    }
-  | null
-  | undefined;
-
-type MessagesData = {
-  messages: CustomUIMessage[];
-  hasMore: boolean;
-};
+import type {
+  ConversationData,
+  ConversationPage,
+  ConversationsInfiniteData,
+  CustomUIMessage,
+  MessagesData,
+  PartialConversation,
+} from "@/types/chat";
 
 export function useConversations(
   conversations: ConversationPage,

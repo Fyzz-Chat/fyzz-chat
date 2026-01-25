@@ -68,7 +68,7 @@ model Message {
   id                 String       @id @default(uuid())
   role               MessageRole
   parts              Json?
-  metadata           Json         @default("{}") @map("metadata")
+  metadata           Json         @default("{}")
   content            String?
   promptTokens       Int?         @default(0) @map("prompt_tokens")
   completionTokens   Int?         @default(0) @map("completion_tokens")

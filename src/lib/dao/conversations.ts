@@ -7,6 +7,7 @@ import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import {
+  type ConversationPage,
   type CustomMetadata,
   type CustomUIMessage,
   metadataSchema,
@@ -35,7 +36,7 @@ export async function getConversationsByCursor(
   limit: number,
   cursor?: string,
   search?: string
-) {
+): Promise<ConversationPage> {
   const userId = await getUserIdFromSession();
 
   // Parse cursor if provided (format: "timestamp_id")
@@ -85,7 +86,10 @@ export async function getConversationsByCursor(
       model: true,
       messages: {
         select: {
-          content: true,
+          id: true,
+          role: true,
+          parts: true,
+          metadata: true,
         },
         take: 1,
         orderBy: {
@@ -115,6 +119,8 @@ export async function getConversationsByCursor(
       ...item,
       messages: item.messages.map((message) => ({
         ...message,
+        parts: safeParse(message.parts, []),
+        metadata: metadataSchema.parse(message.metadata),
       })),
     })),
     nextCursor,
@@ -128,9 +134,7 @@ export async function appendMessageToConversation(
   const userId = await getUserIdFromSession();
 
   const metadata: CustomMetadata = {
-    model: null,
     content: getMessageContent(message),
-    reasoningDurations: null,
     createdAt: new Date(),
   };
 

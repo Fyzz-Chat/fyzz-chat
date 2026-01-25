@@ -140,6 +140,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         {
           text: input,
           files,
+          metadata: {
+            createdAt: new Date(),
+            content: input,
+          },
         },
         {
           body: {
