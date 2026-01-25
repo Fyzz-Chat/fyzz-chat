@@ -32,6 +32,7 @@ import {
 } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
+  hasDefaultTitle,
   lockConversation,
   unlockConversation,
 } from "@/lib/dao/conversations";
@@ -62,7 +63,6 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid model", { status: 400 });
   }
 
-  let existingConversation: { id: string; title: string; model: string } | null = null;
   let existingMessages: CustomUIMessage[] = [];
 
   if (temporaryChat) {
@@ -74,14 +74,10 @@ export async function POST(req: NextRequest) {
       throw new Error("Cannot send an empty message to a new conversation.");
     }
   } else {
-    const [conversation, conversationMessages] = await Promise.all([
-      caller.conversation({ id }),
-      caller.messages({ id }),
-    ]);
+    const conversationMessages = await caller.messages({ id });
 
     logDuration(start, "Conversation fetched");
 
-    existingConversation = conversation;
     existingMessages = conversationMessages.messages;
 
     const lock = await acquireConversationLock(id);
@@ -245,7 +241,8 @@ export async function POST(req: NextRequest) {
         }
 
         try {
-          if (existingConversation?.title === "New Chat") {
+          if (await hasDefaultTitle(id)) {
+            logger.debug(`Updating conversation title for ${id}`);
             await updateConversationTitle(id, messages);
           }
 

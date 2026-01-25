@@ -125,6 +125,18 @@ export async function getConversationsByCursor(
   };
 }
 
+export async function hasDefaultTitle(conversationId: string): Promise<boolean> {
+  const userId = await getUserIdFromSession();
+  const conversation = await prisma.conversation.findUnique({
+    where: {
+      id: conversationId,
+      userId,
+    },
+  });
+
+  return conversation?.title === null || conversation?.title === "New Chat";
+}
+
 export async function appendMessageToConversation(
   message: CustomUIMessage,
   conversationId: string
