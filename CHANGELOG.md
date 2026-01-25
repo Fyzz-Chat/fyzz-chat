@@ -1,3 +1,10 @@
+## [0.16.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.16.0...v0.16.1) (2026-01-25)
+
+
+### Bug Fixes
+
+* **conversations:** select metadata instead of content on retrieval ([7f09ccf](https://github.com/Fyzz-Chat/fyzz-chat/commit/7f09ccf8233816d457a6939b64ae90a7cafb3b9a))
+
 # [0.16.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.15.0...v0.16.0) (2026-01-24)
 
 
