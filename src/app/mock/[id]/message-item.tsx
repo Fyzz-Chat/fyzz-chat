@@ -1,11 +1,10 @@
 "use client";
 
-import type { FileUIPart, TextUIPart, ToolUIPart } from "ai";
-import { CheckIcon, CopyIcon } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import type { FileUIPart, ToolUIPart } from "ai";
+import { useMemo, useRef } from "react";
+import MessageCopyAction from "@/app/mock/[id]/message-copy-action";
 import {
   Message,
-  MessageAction,
   MessageActions,
   MessageAttachment,
   MessageAttachments,
@@ -42,7 +41,6 @@ export default function MessageItem({
   conversationId: string;
   isStreaming?: boolean;
 }) {
-  const [isCopied, setIsCopied] = useState(false);
   const model = useModelStore((state) => state.getModel(message.metadata?.model));
   const renderCount = useRef(0);
   renderCount.current += 1;
@@ -62,15 +60,6 @@ export default function MessageItem({
   }, [message.parts]);
 
   let reasoningIndex = 0;
-
-  function handleCopy() {
-    setIsCopied(true);
-    const textContent = message.parts.find(
-      (part): part is TextUIPart => part.type === "text"
-    )?.text;
-    navigator.clipboard.writeText(textContent || "");
-    setTimeout(() => setIsCopied(false), 1500);
-  }
 
   return (
     <Message from={message.role} key={message.id}>
@@ -191,13 +180,7 @@ export default function MessageItem({
       {message.role === "assistant" && (
         <MessageToolbar>
           <MessageActions>
-            <MessageAction label="Copy" tooltip="Copy message" onClick={handleCopy}>
-              {isCopied ? (
-                <CheckIcon className="size-4" />
-              ) : (
-                <CopyIcon className="size-4" />
-              )}
-            </MessageAction>
+            <MessageCopyAction message={message} />
           </MessageActions>
           <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>
@@ -205,13 +188,7 @@ export default function MessageItem({
       {message.role === "user" && (
         <MessageToolbar className="flex-row-reverse">
           <MessageActions>
-            <MessageAction label="Copy" tooltip="Copy message" onClick={handleCopy}>
-              {isCopied ? (
-                <CheckIcon className="size-4" />
-              ) : (
-                <CopyIcon className="size-4" />
-              )}
-            </MessageAction>
+            <MessageCopyAction message={message} />
           </MessageActions>
         </MessageToolbar>
       )}
