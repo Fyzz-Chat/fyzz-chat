@@ -139,10 +139,10 @@ export default function MockMessageList({
   );
 
   return (
-    <div className="flex h-full flex-col gap-4 py-4">
+    <div className="flex h-full flex-col gap-4 md:py-4">
       <Conversation>
         <ConversationContent className="p-0">
-          <ChatLayoutWrapper className="p-8">
+          <ChatLayoutWrapper className="p-4 md:p-8">
             {messages.length === 0 ? (
               <ConversationEmptyState
                 icon={<MessageSquare className="size-12" />}
@@ -167,7 +167,7 @@ export default function MockMessageList({
             multiple
             onSubmit={handleSubmit}
             accept={model?.extensions?.join(",")}
-            className="px-4"
+            className="md:px-4"
           >
             <PromptInputAttachments>
               {(attachment) => <PromptInputAttachment data={attachment} />}
