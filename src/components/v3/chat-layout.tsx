@@ -1,3 +1,5 @@
+"use client";
+
 import { Outlet } from "react-router-dom";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
 import { ChatProvider } from "@/components/chat-provider";
