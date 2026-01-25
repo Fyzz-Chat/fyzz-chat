@@ -599,24 +599,6 @@ const providers: Provider[] = [
     icon: "google",
     models: [
       {
-        id: "gemini-2.0-flash-lite",
-        name: "Gemini 2.0 Flash Lite",
-        features: [],
-        provider: wrappedGoogle,
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 1,
-      },
-      {
-        id: "gemini-2.0-flash",
-        name: "Gemini 2.0 Flash",
-        features: [search],
-        provider: wrappedGoogle,
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 1,
-      },
-      {
         id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
         features: [search],
