@@ -1,6 +1,6 @@
 "use client";
 
-import type { FileUIPart, ToolUIPart } from "ai";
+import type { FileUIPart, TextUIPart, ToolUIPart } from "ai";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import {
@@ -63,7 +63,10 @@ export default function MessageItem({
 
   function handleCopy() {
     setIsCopied(true);
-    navigator.clipboard.writeText(message.metadata?.content || "");
+    const textContent = message.parts.find(
+      (part): part is TextUIPart => part.type === "text"
+    )?.text;
+    navigator.clipboard.writeText(textContent || "");
     setTimeout(() => setIsCopied(false), 1500);
   }
 
