@@ -141,6 +141,7 @@ export default function MockMessageList({
   return (
     <div className="flex h-full flex-col gap-4 md:py-4">
       <Conversation>
+        <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
             {messages.length === 0 ? (
@@ -158,6 +159,7 @@ export default function MockMessageList({
           </ChatLayoutWrapper>
         </ConversationContent>
         <ConversationScrollButton />
+        <div className="absolute bottom-0 h-2 w-full bg-linear-to-t from-background to-transparent" />
       </Conversation>
 
       <PromptInputProvider>
