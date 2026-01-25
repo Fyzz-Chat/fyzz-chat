@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { CheckIcon, GlobeIcon, MessageSquare } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import MessageItem from "@/app/mock/[id]/message-item";
@@ -64,6 +65,12 @@ export default function MockMessageList({
   const selectedModelData = models.find((m) => m.id === model.id);
   const [browse, setBrowse] = useState(false);
   const { messages, sendMessage, status, stop } = useChat<CustomUIMessage>({
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest({ id, messages, body }) {
+        return { body: { id, messages: [messages.at(-1)], ...body } };
+      },
+    }),
     id,
     messages: initialMessages,
   });
