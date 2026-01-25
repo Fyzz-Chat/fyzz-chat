@@ -5,10 +5,8 @@ import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
-import { getMessageContent } from "@/lib/utils";
 import {
   type ConversationPage,
-  type CustomMetadata,
   type CustomUIMessage,
   metadataSchema,
   type PartialMessage,
@@ -133,19 +131,13 @@ export async function appendMessageToConversation(
 ): Promise<CustomUIMessage[]> {
   const userId = await getUserIdFromSession();
 
-  const metadata: CustomMetadata = {
-    content: getMessageContent(message),
-    createdAt: new Date(),
-  };
-
   const newMessage = await prisma.$transaction(async (tx) => {
     const createdMessage = await tx.message.create({
       data: {
         ...message,
-        content: getMessageContent(message),
+        content: message.metadata?.content,
         parts: message.parts as InputJsonValue,
         conversationId,
-        metadata,
       },
     });
 
