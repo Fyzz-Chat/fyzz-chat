@@ -28,6 +28,7 @@ export async function getMessages(
         role: true,
         model: true,
         parts: true,
+        metadata: true,
         reasoningDurations: true,
         createdAt: true,
       },
@@ -67,6 +68,7 @@ export async function getMessages(
       role: true,
       model: true,
       parts: true,
+      metadata: true,
       reasoningDurations: true,
       createdAt: true,
     },
@@ -94,12 +96,11 @@ export async function saveMessage(
   completionTokens: number
 ) {
   const userId = await getUserIdFromSession();
-  const { metadata: _, ...rest } = message;
 
   return prisma.$transaction(async (tx) => {
     const newMessage = await tx.message.create({
       data: {
-        ...rest,
+        ...message,
         content: getMessageContent(message),
         parts: message.parts as InputJsonValue,
         conversationId,
@@ -107,6 +108,10 @@ export async function saveMessage(
         promptTokens,
         completionTokens,
         reasoningDurations,
+        metadata: {
+          ...message.metadata,
+          content: getMessageContent(message),
+        } as InputJsonValue,
       },
     });
 

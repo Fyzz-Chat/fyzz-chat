@@ -2,11 +2,11 @@ import type { UIMessage } from "ai";
 import { z } from "zod";
 import type { Conversation, Message } from "@/lib/prisma/generated/client";
 
-const metadataSchema = z.object({
-  model: z.string().nullable(),
-  content: z.string().nullable(),
-  createdAt: z.date(),
-  reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).nullable(),
+export const metadataSchema = z.object({
+  model: z.string().optional(),
+  content: z.string().optional(),
+  createdAt: z.coerce.date(),
+  reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).optional(),
 });
 
 type CustomMetadata = z.infer<typeof metadataSchema>;
