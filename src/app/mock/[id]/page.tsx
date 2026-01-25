@@ -11,7 +11,7 @@ export default async function MockPage({ params }: { params: Promise<{ id: strin
   ]);
 
   return (
-    <div className="h-[calc(100svh-170px)] overflow-auto md:h-[calc(100svh-130px)]">
+    <div className="h-svh overflow-auto">
       <ModelStoreInitializer providers={providers} />
       <MockMessageList
         id={id}
