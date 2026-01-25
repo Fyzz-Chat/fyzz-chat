@@ -81,14 +81,23 @@ export default function MockMessageList({
       return;
     }
 
-    sendMessage(message, {
-      body: {
-        id,
-        model: model.id,
-        temporaryChat: false,
-        browse,
+    sendMessage(
+      {
+        ...message,
+        metadata: {
+          content: message.text,
+          createdAt: new Date(),
+        },
       },
-    });
+      {
+        body: {
+          id,
+          model: model.id,
+          temporaryChat: false,
+          browse,
+        },
+      }
+    );
   };
 
   useEffect(() => {
