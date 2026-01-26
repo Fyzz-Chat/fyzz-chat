@@ -3,7 +3,8 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { CheckIcon, GlobeIcon, MessageSquare } from "lucide-react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
@@ -41,6 +42,7 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
+import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
@@ -55,6 +57,8 @@ export default function MockMessageList({
   initialModel: string | undefined;
   initialMessages: CustomUIMessage[];
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const models = useModelStore((state) => state.availableModels);
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
@@ -63,10 +67,19 @@ export default function MockMessageList({
   const modelProvider = providers.find((p) => p.models.some((m) => m.id === model.id));
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const selectedModelData = models.find((m) => m.id === model.id);
-  const [browse, setBrowse] = useState(false);
+  const {
+    initialMessage,
+    initialModel: contextInitialModel,
+    initialBrowse,
+    setInitialMessage,
+    setInitialModel: setContextInitialModel,
+    setInitialBrowse,
+  } = useInitialMessage();
+  const [browse, setBrowse] = useState(initialBrowse);
+  const hasSentInitial = useRef(false);
   const { messages, sendMessage, status, stop } = useChat<CustomUIMessage>({
     transport: new DefaultChatTransport({
-      api: "/api/chat",
+      api: "/api/mock",
       prepareSendMessagesRequest({ id, messages, body }) {
         const messagesToSend = body?.temporaryChat ? messages : [messages.at(-1)];
         return { body: { id, messages: messagesToSend, ...body } };
@@ -82,38 +95,73 @@ export default function MockMessageList({
     }
   };
 
-  const handleSubmit = (message: PromptInputMessage) => {
-    const hasText = Boolean(message.text);
-    const hasAttachments = Boolean(message.files?.length);
+  const handleSubmit = useCallback(
+    (message: PromptInputMessage) => {
+      const hasText = Boolean(message.text);
+      const hasAttachments = Boolean(message.files?.length);
 
-    if (!(hasText || hasAttachments)) {
-      return;
-    }
-
-    sendMessage(
-      {
-        ...message,
-        metadata: {
-          content: message.text,
-          createdAt: new Date(),
-        },
-      },
-      {
-        body: {
-          id,
-          model: model.id,
-          temporaryChat: false,
-          browse,
-        },
+      if (!(hasText || hasAttachments)) {
+        return;
       }
-    );
-  };
+
+      sendMessage(
+        {
+          ...message,
+          metadata: {
+            content: message.text,
+            createdAt: new Date(),
+          },
+        },
+        {
+          body: {
+            id,
+            model: model.id,
+            temporaryChat: false,
+            browse,
+          },
+        }
+      );
+    },
+    [id, model.id, browse, sendMessage]
+  );
 
   useEffect(() => {
-    if (initialModel) {
-      setModel(initialModel);
+    const modelToUse = initialModel || contextInitialModel;
+    if (modelToUse) {
+      setModel(modelToUse);
+      setContextInitialModel(null);
     }
-  }, [initialModel, setModel]);
+  }, [initialModel, contextInitialModel, setModel, setContextInitialModel]);
+
+  useEffect(() => {
+    if (
+      initialMessage &&
+      messages.length === 0 &&
+      !hasSentInitial.current &&
+      model.id &&
+      providers.length > 0
+    ) {
+      hasSentInitial.current = true;
+      handleSubmit({ text: initialMessage, files: [] });
+      setInitialMessage(null);
+      setInitialBrowse(false);
+    }
+  }, [
+    initialMessage,
+    messages.length,
+    handleSubmit,
+    setInitialMessage,
+    setInitialBrowse,
+    model.id,
+    providers.length,
+  ]);
+
+  useEffect(() => {
+    const isNew = searchParams.get("new");
+    if (isNew && messages.some((msg) => msg.role === "assistant")) {
+      router.replace(`/mock/${id}`);
+    }
+  }, [messages, searchParams, router, id]);
 
   const streamingMessages = useMemo(() => {
     const persistedIds = new Set(initialMessages.map((m) => m.id));
