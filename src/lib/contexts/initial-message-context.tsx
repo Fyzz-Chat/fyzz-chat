@@ -1,14 +1,17 @@
 "use client";
 
+import type { FileUIPart } from "ai";
 import { createContext, type ReactNode, useContext, useState } from "react";
 
 interface InitialMessageContextType {
   initialMessage: string | null;
   initialModel: string | null;
   initialBrowse: boolean;
+  initialFiles: FileUIPart[];
   setInitialMessage: (message: string | null) => void;
   setInitialModel: (model: string | null) => void;
   setInitialBrowse: (browse: boolean) => void;
+  setInitialFiles: (files: FileUIPart[]) => void;
 }
 
 const InitialMessageContext = createContext<InitialMessageContextType | undefined>(
@@ -19,6 +22,7 @@ export function InitialMessageProvider({ children }: { children: ReactNode }) {
   const [initialMessage, setInitialMessage] = useState<string | null>(null);
   const [initialModel, setInitialModel] = useState<string | null>(null);
   const [initialBrowse, setInitialBrowse] = useState(false);
+  const [initialFiles, setInitialFiles] = useState<FileUIPart[]>([]);
 
   return (
     <InitialMessageContext.Provider
@@ -26,9 +30,11 @@ export function InitialMessageProvider({ children }: { children: ReactNode }) {
         initialMessage,
         initialModel,
         initialBrowse,
+        initialFiles,
         setInitialMessage,
         setInitialModel,
         setInitialBrowse,
+        setInitialFiles,
       }}
     >
       {children}

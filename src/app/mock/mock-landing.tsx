@@ -18,6 +18,12 @@ import {
 } from "@/components/ai-elements/model-selector";
 import {
   PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
+  PromptInputAttachment,
+  PromptInputAttachments,
   PromptInputBody,
   PromptInputButton,
   PromptInputFooter,
@@ -33,7 +39,8 @@ import { useModelStore } from "@/stores/model-store";
 
 export default function MockLanding() {
   const router = useRouter();
-  const { setInitialMessage, setInitialModel, setInitialBrowse } = useInitialMessage();
+  const { setInitialMessage, setInitialModel, setInitialBrowse, setInitialFiles } =
+    useInitialMessage();
   const models = useModelStore((state) => state.availableModels);
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
@@ -50,6 +57,7 @@ export default function MockLanding() {
     setInitialMessage(message.text);
     setInitialModel(model.id);
     setInitialBrowse(browse);
+    setInitialFiles(message.files || []);
     router.push(`/mock/${id}?new=1`);
   };
 
@@ -57,7 +65,15 @@ export default function MockLanding() {
     <div className="flex h-full items-center justify-center p-4">
       <div className="w-full max-w-3xl">
         <PromptInputProvider>
-          <PromptInput onSubmit={handleSubmit}>
+          <PromptInput
+            globalDrop
+            multiple
+            onSubmit={handleSubmit}
+            accept={model?.extensions?.join(",")}
+          >
+            <PromptInputAttachments>
+              {(attachment) => <PromptInputAttachment data={attachment} />}
+            </PromptInputAttachments>
             <PromptInputBody>
               <PromptInputTextarea placeholder="Type a message to start..." />
             </PromptInputBody>
@@ -113,6 +129,14 @@ export default function MockLanding() {
                     </ModelSelectorList>
                   </ModelSelectorContent>
                 </ModelSelector>
+                {model.extensions?.length > 0 && (
+                  <PromptInputActionMenu>
+                    <PromptInputActionMenuTrigger className="ml-auto" />
+                    <PromptInputActionMenuContent>
+                      <PromptInputActionAddAttachments />
+                    </PromptInputActionMenuContent>
+                  </PromptInputActionMenu>
+                )}
               </PromptInputTools>
               <PromptInputSubmit />
             </PromptInputFooter>

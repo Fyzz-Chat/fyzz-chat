@@ -71,9 +71,11 @@ export default function MockMessageList({
     initialMessage,
     initialModel: contextInitialModel,
     initialBrowse,
+    initialFiles,
     setInitialMessage,
     setInitialModel: setContextInitialModel,
     setInitialBrowse,
+    setInitialFiles,
   } = useInitialMessage();
   const [browse, setBrowse] = useState(initialBrowse);
   const hasSentInitial = useRef(false);
@@ -142,9 +144,10 @@ export default function MockMessageList({
       providers.length > 0
     ) {
       hasSentInitial.current = true;
-      handleSubmit({ text: initialMessage, files: [] });
+      handleSubmit({ text: initialMessage, files: initialFiles });
       setInitialMessage(null);
       setInitialBrowse(false);
+      setInitialFiles([]);
     }
   }, [
     initialMessage,
@@ -152,6 +155,8 @@ export default function MockMessageList({
     handleSubmit,
     setInitialMessage,
     setInitialBrowse,
+    setInitialFiles,
+    initialFiles,
     model.id,
     providers.length,
   ]);
