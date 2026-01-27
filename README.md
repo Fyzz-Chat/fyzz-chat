@@ -123,6 +123,9 @@ If you'd like to visualize the templates, you can use the [AWS CloudFormation In
 5. Review and create the stack
 6. Wait for stack creation to complete (takes ~10-15 minutes)
 
+> [!NOTE]
+> When deleting the stack, the database will NOT be deleted. You will need to turn off deletion protection and delete the database manually.
+
 **Run Database Migrations:**
 
 1. Go to **ECS** → **Clusters** → Select your cluster
