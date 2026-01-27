@@ -1,3 +1,18 @@
+# [0.17.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.16.2...v0.17.0) (2026-01-27)
+
+
+### Bug Fixes
+
+* **aws:** introduce base64 cloudfront private key env var ([62be0b3](https://github.com/Fyzz-Chat/fyzz-chat/commit/62be0b39e29c6162443886720106667171a68150))
+* **cloudformation:** remove special characters from db password, double length to 64 ([341c209](https://github.com/Fyzz-Chat/fyzz-chat/commit/341c209f2c8057573639cacf10e1dd690f91d6d2))
+* **fireworks:** separate gpt-oss-20b from openai ([f781cf1](https://github.com/Fyzz-Chat/fyzz-chat/commit/f781cf16bbdb918e89abc8843ec49e778b0ce632))
+* **s3:** add option to set different cloudfront domain and s3 bucket name ([c8169d1](https://github.com/Fyzz-Chat/fyzz-chat/commit/c8169d17a9711513471e4f51a04630b73b7a6b72))
+
+
+### Features
+
+* **cloudformation:** add fargate version ([1e74b0f](https://github.com/Fyzz-Chat/fyzz-chat/commit/1e74b0f0d273c34dc147fc024564cfaf505e1a6a))
+
 ## [0.16.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.16.1...v0.16.2) (2026-01-27)
 
 
