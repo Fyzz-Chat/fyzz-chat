@@ -42,8 +42,7 @@ const openaiConfiguredAzureNot = openaiConfigured && !azureConfigured;
 const anthropicConfigured = process.env.ANTHROPIC_API_KEY !== undefined;
 const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
 const xaiConfigured = process.env.XAI_API_KEY !== undefined;
-const metaConfigured = process.env.FIREWORKS_API_KEY !== undefined;
-const deepseekConfigured = process.env.FIREWORKS_API_KEY !== undefined;
+const fireworksConfigured = process.env.FIREWORKS_API_KEY !== undefined;
 const perplexityConfigured = process.env.PERPLEXITY_API_KEY !== undefined;
 
 export function getProvidersPublic(): PublicProvider[] {
@@ -193,10 +192,7 @@ function filterProviders(): Provider[] {
     if (provider.id === "xai" && !xaiConfigured) {
       return false;
     }
-    if (provider.id === "fireworks" && !metaConfigured) {
-      return false;
-    }
-    if (provider.id === "fireworks" && !deepseekConfigured) {
+    if (provider.id === "fireworks" && !fireworksConfigured) {
       return false;
     }
     if (provider.id === "perplexity" && !perplexityConfigured) {
@@ -379,15 +375,6 @@ const providers: Provider[] = [
         extensions: imageTypes,
         cost: 2,
       },
-      {
-        id: "accounts/fireworks/models/gpt-oss-120b",
-        name: "gpt-oss-120b",
-        features: [reasoning],
-        provider: wrappedModel(fireworks),
-        tools: true,
-        extensions: [],
-        cost: 1,
-      },
     ],
   },
   {
@@ -502,15 +489,6 @@ const providers: Provider[] = [
         tools: true,
         extensions: imageTypes,
         cost: 2,
-      },
-      {
-        id: "accounts/fireworks/models/gpt-oss-120b",
-        name: "gpt-oss-120b",
-        features: [reasoning],
-        provider: wrappedModel(fireworks),
-        tools: true,
-        extensions: [],
-        cost: 1,
       },
     ],
   },
@@ -760,6 +738,22 @@ const providers: Provider[] = [
       {
         id: "fireworks/qwen3-coder-480b-a35b-instruct",
         name: "Qwen 3 Coder 480B",
+        provider: wrappedModel(fireworks),
+        tools: true,
+        extensions: [],
+        cost: 1,
+      },
+    ],
+  },
+  {
+    id: "fireworks",
+    name: "Other",
+    icon: "other",
+    models: [
+      {
+        id: "accounts/fireworks/models/gpt-oss-120b",
+        name: "gpt-oss-120b",
+        features: [reasoning],
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
