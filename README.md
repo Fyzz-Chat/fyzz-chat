@@ -58,15 +58,15 @@ The following environment variables are required:
 - `BETTER_AUTH_URL`: The URL of your application.
 - `DATABASE_URL`: The URL of your database.
 - `DIRECT_DATABASE_URL`: The URL of your database.
-- `OPENAI_API_KEY`: The API key for OpenAI.
+- `OPENAI_API_KEY`: The API key for OpenAI. Create one [here](https://platform.openai.com/api-keys).
 
 The following environment variables are optional and control which additional models are available for use:
 
-- `ANTHROPIC_API_KEY`: The API key for Anthropic.
-- `XAI_API_KEY`: The API key for XAI.
-- `GOOGLE_GENERATIVE_AI_API_KEY`: The API key for Google Generative AI.
-- `PERPLEXITY_API_KEY`: The API key for Perplexity.
-- `FIREWORKS_API_KEY`: The API key for Fireworks.
+- `ANTHROPIC_API_KEY`: The API key for Anthropic. Create one [here](https://platform.claude.com/settings/keys).
+- `XAI_API_KEY`: The API key for XAI. Create it one [here](https://console.x.ai).
+- `GOOGLE_GENERATIVE_AI_API_KEY`: The API key for Google Generative AI. Create one [here](https://aistudio.google.com/app/api-keys).
+- `PERPLEXITY_API_KEY`: The API key for Perplexity. Create one [here](https://www.perplexity.ai/account/api/keys). You might need to create an API Group first [here](https://www.perplexity.ai/account/api/group?create=true).
+- `FIREWORKS_API_KEY`: The API key for Fireworks. Create one [here](https://app.fireworks.ai/settings/users/api-keys).
 
 If you don't set any of these, the application will still start up, but you will only be able to use models from OpenAI.
 
