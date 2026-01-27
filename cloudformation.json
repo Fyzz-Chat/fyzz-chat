@@ -329,8 +329,8 @@
         "GenerateSecretString": {
           "SecretStringTemplate": "{\"username\": \"fyzz_chat\"}",
           "GenerateStringKey": "password",
-          "PasswordLength": 32,
-          "ExcludeCharacters": "\"@/\\"
+          "PasswordLength": 64,
+          "ExcludePunctuation": true
         },
         "Tags": [{"Key": "Name", "Value": "fyzz-chat-db-secret"}]
       }
