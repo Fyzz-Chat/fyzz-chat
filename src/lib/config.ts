@@ -27,6 +27,7 @@ const schema = z.object({
   awsUploadsBucket: z.string().default(""),
   awsCloudfrontKeyPairId: z.string().default(""),
   awsCloudfrontPrivateKey: z.string().default(""),
+  awsCloudfrontDistributionDomain: z.string().default(""),
   fromEmailAddress: z.string().optional(),
   s3Configured: z.boolean().default(false),
   sesConfigured: z.boolean().default(false),
@@ -57,6 +58,8 @@ const envVars = {
   awsUploadsBucket: process.env.AWS_UPLOADS_BUCKET,
   awsCloudfrontKeyPairId: process.env.AWS_CLOUDFRONT_KEY_PAIR_ID,
   awsCloudfrontPrivateKey: process.env.AWS_CLOUDFRONT_PRIVATE_KEY,
+  awsCloudfrontDistributionDomain:
+    process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN || process.env.AWS_UPLOADS_BUCKET,
   fromEmailAddress: process.env.FROM_EMAIL_ADDRESS,
   s3Configured:
     process.env.AWS_ACCESS_KEY_ID !== undefined &&

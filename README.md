@@ -78,6 +78,7 @@ The following environment variables are also optional and control whether upload
 - `AWS_UPLOADS_BUCKET`: The AWS bucket for uploads.
 - `AWS_CLOUDFRONT_KEY_PAIR_ID`: AWS CloudFront key pair ID.
 - `AWS_CLOUDFRONT_PRIVATE_KEY`: AWS CloudFront private key.
+- `AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN`: AWS CloudFront distribution domain. Falls back to `AWS_UPLOADS_BUCKET` if not set. The fallback only works if your bucket's name is the same as your distribution domain.
 
 The last two are required to create signed URLs for uploaded files.
 

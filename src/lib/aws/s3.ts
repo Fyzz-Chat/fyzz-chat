@@ -31,7 +31,7 @@ export function getFileUrlSigned(prefix: string, fileUrl: string) {
     return fileUrl;
   }
 
-  const cloudfrontDistributionDomain = `https://${conf.awsUploadsBucket}`;
+  const cloudfrontDistributionDomain = `https://${conf.awsCloudfrontDistributionDomain}`;
   const url = `${cloudfrontDistributionDomain}/${prefix}/${fileUrl}`;
   const privateKey = conf.awsCloudfrontPrivateKey?.replace(/\|/g, "\n");
   const keyPairId = conf.awsCloudfrontKeyPairId;
