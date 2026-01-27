@@ -164,7 +164,10 @@ export function MessageItemNew({
             case "text": {
               return (
                 <MessageContent key={`${message.id}-${i}`}>
-                  <MessageResponse isAnimating={status === "streaming"}>
+                  <MessageResponse
+                    mode={status === "streaming" ? "streaming" : "static"}
+                    isAnimating={status === "streaming"}
+                  >
                     {part.text}
                   </MessageResponse>
                 </MessageContent>
