@@ -77,7 +77,9 @@ The following environment variables are also optional and control whether upload
 - `AWS_REGION`: The AWS region of your bucket.
 - `AWS_UPLOADS_BUCKET`: The AWS bucket for uploads.
 - `AWS_CLOUDFRONT_KEY_PAIR_ID`: AWS CloudFront key pair ID.
-- `AWS_CLOUDFRONT_PRIVATE_KEY`: AWS CloudFront private key.
+- `AWS_CLOUDFRONT_PRIVATE_KEY`: AWS CloudFront private key with | as line breaks (deprecated).
+- `AWS_CLOUDFRONT_PRIVATE_KEY_BASE64`: AWS CloudFront private key in base64 format.
+    * Quick way to convert to base64 format: `cat key.pem | base64 > base64_key.pem`
 - `AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN`: AWS CloudFront distribution domain. Falls back to `AWS_UPLOADS_BUCKET` if not set. The fallback only works if your bucket's name is the same as your distribution domain.
 
 The last two are required to create signed URLs for uploaded files.

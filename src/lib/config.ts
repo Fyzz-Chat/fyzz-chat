@@ -57,7 +57,11 @@ const envVars = {
   awsRegion: process.env.AWS_REGION,
   awsUploadsBucket: process.env.AWS_UPLOADS_BUCKET,
   awsCloudfrontKeyPairId: process.env.AWS_CLOUDFRONT_KEY_PAIR_ID,
-  awsCloudfrontPrivateKey: process.env.AWS_CLOUDFRONT_PRIVATE_KEY,
+  awsCloudfrontPrivateKey: process.env.AWS_CLOUDFRONT_PRIVATE_KEY_BASE64
+    ? Buffer.from(process.env.AWS_CLOUDFRONT_PRIVATE_KEY_BASE64, "base64").toString(
+        "utf-8"
+      )
+    : process.env.AWS_CLOUDFRONT_PRIVATE_KEY?.replaceAll("|", "\n"),
   awsCloudfrontDistributionDomain:
     process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN || process.env.AWS_UPLOADS_BUCKET,
   fromEmailAddress: process.env.FROM_EMAIL_ADDRESS,
@@ -67,7 +71,8 @@ const envVars = {
     process.env.AWS_REGION !== undefined &&
     process.env.AWS_UPLOADS_BUCKET !== undefined &&
     process.env.AWS_CLOUDFRONT_KEY_PAIR_ID !== undefined &&
-    process.env.AWS_CLOUDFRONT_PRIVATE_KEY !== undefined,
+    (process.env.AWS_CLOUDFRONT_PRIVATE_KEY !== undefined ||
+      process.env.AWS_CLOUDFRONT_PRIVATE_KEY_BASE64 !== undefined),
   sesConfigured:
     process.env.AWS_ACCESS_KEY_ID !== undefined &&
     process.env.AWS_SECRET_ACCESS_KEY !== undefined &&

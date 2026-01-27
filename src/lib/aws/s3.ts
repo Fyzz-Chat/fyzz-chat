@@ -33,7 +33,7 @@ export function getFileUrlSigned(prefix: string, fileUrl: string) {
 
   const cloudfrontDistributionDomain = `https://${conf.awsCloudfrontDistributionDomain}`;
   const url = `${cloudfrontDistributionDomain}/${prefix}/${fileUrl}`;
-  const privateKey = conf.awsCloudfrontPrivateKey?.replace(/\|/g, "\n");
+  const privateKey = conf.awsCloudfrontPrivateKey;
   const keyPairId = conf.awsCloudfrontKeyPairId;
   const dateLessThan = new Date(Date.now() + 60 * 60 * 1000);
 
