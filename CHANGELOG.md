@@ -1,3 +1,11 @@
+## [0.16.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.16.1...v0.16.2) (2026-01-27)
+
+
+### Bug Fixes
+
+* **message:** fix code block streaming ([8e315bd](https://github.com/Fyzz-Chat/fyzz-chat/commit/8e315bdecd934039e3d9b42f97582d2eb0895e45))
+* **streamdown:** fix code block coloring ([c9f2e20](https://github.com/Fyzz-Chat/fyzz-chat/commit/c9f2e20603fa63134c9bbb8093fe86a7eb46261e))
+
 ## [0.16.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.16.0...v0.16.1) (2026-01-25)
 
 
