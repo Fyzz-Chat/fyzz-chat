@@ -131,6 +131,9 @@ If you'd like to visualize the templates, you can use the [AWS CloudFormation In
 4. Configure:
    - **Task definition family**: `fyzz-chat-migration`
    - **Launch type**: Fargate
+5. Networking
+   - VPC: Select `fyzz-chat-vpc`
+   - Security group: Select `fyzz-chat-ecs-sg`
 5. Click **Create** and wait for completion
 
 **Enable HTTPS (Optional):**
