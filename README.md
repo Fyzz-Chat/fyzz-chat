@@ -93,7 +93,13 @@ Other environment variables
 
 #### AWS
 
-Deploy Fyzz Chat to AWS using the provided CloudFormation template. The template creates an ECS cluster on EC2 with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
+Deploy Fyzz Chat to AWS using one of the provided CloudFormation templates in [aws/](aws/). The templates create an ECS cluster with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
+
+There are two templates available:
+- [cloudformation-ec2.json](aws/cloudformation-ec2.json): Deploy Fyzz Chat to AWS using EC2.
+- [cloudformation-fargate.json](aws/cloudformation-fargate.json): Deploy Fyzz Chat to AWS using Fargate.
+
+If you'd like to visualize the templates, you can use the [AWS CloudFormation Infrastructure Composer](https://eu-central-1.console.aws.amazon.com/composer/home). Click on **Create project**, choose the **Template** tab, set the file type to JSON, then copy and paste the template content. Finally, switch back to the **Canvas** tab to visualize the infrastructure.
 
 **Prerequisites:**
 
