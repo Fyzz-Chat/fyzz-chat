@@ -181,11 +181,7 @@ export function useAddMessage() {
   const conversationId = useStableId();
 
   return useMutation({
-    mutationFn: async ({
-      message,
-    }: {
-      message: CustomUIMessage & { model?: string };
-    }) => {
+    mutationFn: async ({ message }: { message: CustomUIMessage }) => {
       // Optimistically update the cache
       const optimisticMessage = {
         ...message,

@@ -118,7 +118,6 @@ export default function InputForm({ className }: Readonly<{ className?: string }
         id: messageId,
         role: "user",
         parts: parts,
-        model: model.id,
         metadata: {
           model: model.id,
           content: input,
