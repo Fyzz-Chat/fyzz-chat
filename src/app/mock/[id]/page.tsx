@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import ModelStoreInitializer from "@/components/chat/model-store-initializer";
 import { caller } from "@/lib/trpc/server";
 import MockMessageList from "./message-list";
 
@@ -13,10 +12,7 @@ export default async function MockPage({
   const { id } = await params;
   const { new: isNew } = await searchParams;
 
-  const [providers, conversation] = await Promise.all([
-    caller.providers(),
-    caller.conversation({ id }).catch(() => null),
-  ]);
+  const conversation = await caller.conversation({ id }).catch(() => null);
 
   if (!conversation && !isNew) {
     redirect("/mock");
@@ -26,7 +22,6 @@ export default async function MockPage({
 
   return (
     <div className="h-svh overflow-auto">
-      <ModelStoreInitializer providers={providers} />
       <MockMessageList
         id={id}
         initialModel={conversation?.model}
