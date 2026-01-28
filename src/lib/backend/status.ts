@@ -19,6 +19,7 @@ export async function status(): Promise<Status> {
       meta: fireworks,
       deepseek: fireworks,
       qwen: fireworks,
+      other: fireworks,
       perplexity,
     },
   };

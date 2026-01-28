@@ -58,15 +58,15 @@ The following environment variables are required:
 - `BETTER_AUTH_URL`: The URL of your application.
 - `DATABASE_URL`: The URL of your database.
 - `DIRECT_DATABASE_URL`: The URL of your database.
-- `OPENAI_API_KEY`: The API key for OpenAI.
+- `OPENAI_API_KEY`: The API key for OpenAI. Create one [here](https://platform.openai.com/api-keys).
 
 The following environment variables are optional and control which additional models are available for use:
 
-- `ANTHROPIC_API_KEY`: The API key for Anthropic.
-- `XAI_API_KEY`: The API key for XAI.
-- `GOOGLE_GENERATIVE_AI_API_KEY`: The API key for Google Generative AI.
-- `PERPLEXITY_API_KEY`: The API key for Perplexity.
-- `FIREWORKS_API_KEY`: The API key for Fireworks.
+- `ANTHROPIC_API_KEY`: The API key for Anthropic. Create one [here](https://platform.claude.com/settings/keys).
+- `XAI_API_KEY`: The API key for XAI. Create it one [here](https://console.x.ai).
+- `GOOGLE_GENERATIVE_AI_API_KEY`: The API key for Google Generative AI. Create one [here](https://aistudio.google.com/app/api-keys).
+- `PERPLEXITY_API_KEY`: The API key for Perplexity. Create one [here](https://www.perplexity.ai/account/api/keys). You might need to create an API Group first [here](https://www.perplexity.ai/account/api/group?create=true).
+- `FIREWORKS_API_KEY`: The API key for Fireworks. Create one [here](https://app.fireworks.ai/settings/users/api-keys).
 
 If you don't set any of these, the application will still start up, but you will only be able to use models from OpenAI.
 
@@ -77,7 +77,10 @@ The following environment variables are also optional and control whether upload
 - `AWS_REGION`: The AWS region of your bucket.
 - `AWS_UPLOADS_BUCKET`: The AWS bucket for uploads.
 - `AWS_CLOUDFRONT_KEY_PAIR_ID`: AWS CloudFront key pair ID.
-- `AWS_CLOUDFRONT_PRIVATE_KEY`: AWS CloudFront private key.
+- `AWS_CLOUDFRONT_PRIVATE_KEY`: AWS CloudFront private key with | as line breaks (deprecated).
+- `AWS_CLOUDFRONT_PRIVATE_KEY_BASE64`: AWS CloudFront private key in base64 format.
+    * Quick way to convert to base64 format: `cat key.pem | base64 > base64_key.pem`
+- `AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN`: AWS CloudFront distribution domain. Falls back to `AWS_UPLOADS_BUCKET` if not set. The fallback only works if your bucket's name is the same as your distribution domain.
 
 The last two are required to create signed URLs for uploaded files.
 
@@ -90,7 +93,13 @@ Other environment variables
 
 #### AWS
 
-Deploy Fyzz Chat to AWS using the provided CloudFormation template. The template creates an ECS cluster on EC2 with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
+Deploy Fyzz Chat to AWS using one of the provided CloudFormation templates in [aws/](aws/). The templates create an ECS cluster with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
+
+There are two templates available:
+- [cloudformation-ec2.json](aws/cloudformation-ec2.json): Deploy Fyzz Chat to AWS using EC2.
+- [cloudformation-fargate.json](aws/cloudformation-fargate.json): Deploy Fyzz Chat to AWS using Fargate.
+
+If you'd like to visualize the templates, you can use the [AWS CloudFormation Infrastructure Composer](https://eu-central-1.console.aws.amazon.com/composer/home). Click on **Create project**, choose the **Template** tab, set the file type to JSON, then copy and paste the template content. Finally, switch back to the **Canvas** tab to visualize the infrastructure.
 
 **Prerequisites:**
 
@@ -114,6 +123,9 @@ Deploy Fyzz Chat to AWS using the provided CloudFormation template. The template
 5. Review and create the stack
 6. Wait for stack creation to complete (takes ~10-15 minutes)
 
+> [!NOTE]
+> When deleting the stack, the database will NOT be deleted. You will need to turn off deletion protection and delete the database manually.
+
 **Run Database Migrations:**
 
 1. Go to **ECS** → **Clusters** → Select your cluster
@@ -122,6 +134,9 @@ Deploy Fyzz Chat to AWS using the provided CloudFormation template. The template
 4. Configure:
    - **Task definition family**: `fyzz-chat-migration`
    - **Launch type**: Fargate
+5. Networking
+   - VPC: Select `fyzz-chat-vpc`
+   - Security group: Select `fyzz-chat-ecs-sg`
 5. Click **Create** and wait for completion
 
 **Enable HTTPS (Optional):**

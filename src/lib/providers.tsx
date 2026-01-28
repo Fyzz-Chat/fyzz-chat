@@ -4,6 +4,7 @@ import DeepSeek from "@/components/icons/deepseek";
 import Google from "@/components/icons/google";
 import Meta from "@/components/icons/meta";
 import OpenAI from "@/components/icons/openai";
+import OtherIcon from "@/components/icons/other-icon";
 import Perplexity from "@/components/icons/perplexity";
 import Qwen from "@/components/icons/qwen";
 import XAI from "@/components/icons/xai";
@@ -26,6 +27,7 @@ export const providerIcons = {
   deepseek: DeepSeek,
   perplexity: Perplexity,
   qwen: Qwen,
+  other: OtherIcon,
 };
 
 export function getProviderIcon(providers: PublicProvider[], modelId: string | null) {

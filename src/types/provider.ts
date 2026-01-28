@@ -45,6 +45,7 @@ export type ProviderId =
   | "meta"
   | "deepseek"
   | "qwen"
+  | "other"
   | "perplexity";
 
 export type Provider = {
