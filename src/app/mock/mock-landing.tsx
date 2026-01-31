@@ -58,7 +58,7 @@ export default function MockLanding() {
     setInitialModel(model.id);
     setInitialBrowse(browse);
     setInitialFiles(message.files || []);
-    router.push(`/mock/${id}?new=1`);
+    router.push(`/mock/${id}`);
   };
 
   return (

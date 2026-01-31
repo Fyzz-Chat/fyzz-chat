@@ -11,6 +11,7 @@ import InputTextarea from "@/components/input-form/input-textarea";
 import SearchMenu from "@/components/input-form/search-menu";
 import ModelMenu from "@/components/model-menu";
 import { useInputForm } from "@/hooks/use-input-form";
+import { useStableId } from "@/hooks/use-stable-id";
 import useTempChat from "@/hooks/use-temp-chat";
 import { useSession } from "@/lib/auth-client";
 import { AuthContext } from "@/lib/contexts/auth-context";
@@ -34,7 +35,8 @@ export default function InputForm({ className }: Readonly<{ className?: string }
   const location = useLocation();
   const createConversation = useCreateConversation();
   const createConversationOptimistic = useCreateConversationOptimistic();
-  const addMessage = useAddMessage();
+  const stableId = useStableId();
+  const addMessage = useAddMessage(stableId);
 
   const model = useModelStore((state) => state.model);
   const temporaryChat = useModelStore((state) => state.temporaryChat);

@@ -31,14 +31,14 @@ const ChatContext = createContext<ChatContextType>(null);
  */
 export function ChatProvider({ children }: { children: ReactNode }) {
   const params = useParams();
-  const addMessage = useAddMessage();
+  const stableId = useStableId();
+  const addMessage = useAddMessage(stableId);
 
   // Get state and actions using granular selectors to prevent infinite loops
   const model = useModelStore((state) => state.model);
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const files = useFileStore((state) => state.files);
   const setFiles = useFileStore((state) => state.setFiles);
-  const stableId = useStableId();
   const { browse } = useBrowseContext();
   const setStableId = useChatStore((state) => state.setStableId);
   const [input, setInput] = useState("");

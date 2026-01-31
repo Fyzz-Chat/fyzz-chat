@@ -31,6 +31,16 @@ import type { CustomUIMessage } from "@/types/chat";
 import { pdfType } from "@/types/provider";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 
+function TypingIndicator() {
+  return (
+    <div className="flex items-center gap-1 px-3 py-1">
+      <div className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
+      <div className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
+      <div className="size-1.5 animate-bounce rounded-full bg-muted-foreground" />
+    </div>
+  );
+}
+
 export default function MessageItem({
   message,
   // biome-ignore lint/correctness/noUnusedFunctionParameters: will be used for edit/regenerate features
@@ -45,15 +55,15 @@ export default function MessageItem({
   const renderCount = useRef(0);
   renderCount.current += 1;
 
-  if (renderCount.current === 1) {
-    console.log(
-      `[MessageItem] ✅ FIRST render - ID: ${message.id.slice(0, 8)}, Role: ${message.role}, Streaming: ${isStreaming}`
-    );
-  } else {
-    console.log(
-      `[MessageItem] 🔄 Re-render #${renderCount.current} - ID: ${message.id.slice(0, 8)} (This should ONLY be streaming messages!)`
-    );
-  }
+  // if (renderCount.current === 1) {
+  //   console.log(
+  //     `[MessageItem] ✅ FIRST render - ID: ${message.id.slice(0, 8)}, Role: ${message.role}, Streaming: ${isStreaming}`
+  //   );
+  // } else {
+  //   console.log(
+  //     `[MessageItem] 🔄 Re-render #${renderCount.current} - ID: ${message.id.slice(0, 8)} (This should ONLY be streaming messages!)`
+  //   );
+  // }
 
   const attachments: FileUIPart[] = useMemo(() => {
     return message.parts.filter((part): part is FileUIPart => part.type === "file");
@@ -76,6 +86,7 @@ export default function MessageItem({
             ))}
         </MessageAttachments>
       )}
+      {message.parts.length < 2 && message.role === "assistant" && <TypingIndicator />}
       {message.parts.map((part, i) => {
         switch (part.type) {
           case "text": {
@@ -182,7 +193,7 @@ export default function MessageItem({
           }
         }
       })}
-      {message.role === "assistant" && (
+      {!isStreaming && message.role === "assistant" && (
         <MessageToolbar>
           <MessageActions>
             <MessageCopyAction message={message} />
@@ -190,7 +201,7 @@ export default function MessageItem({
           <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>
       )}
-      {message.role === "user" && (
+      {!isStreaming && message.role === "user" && (
         <MessageToolbar className="flex-row-reverse">
           <MessageActions>
             <MessageCopyAction message={message} />

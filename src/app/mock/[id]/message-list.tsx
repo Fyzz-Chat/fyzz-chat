@@ -2,14 +2,14 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { CheckIcon, GlobeIcon, MessageSquare } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { CheckIcon, GlobeIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
   ConversationContent,
-  ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import {
@@ -43,7 +43,11 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
-import { useUpdateConversationModel } from "@/lib/queries/conversations";
+import {
+  useAddMessage,
+  useMessages,
+  useUpdateConversationModel,
+} from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
@@ -58,7 +62,6 @@ export default function MockMessageList({
   initialMessages: CustomUIMessage[];
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const models = useModelStore((state) => state.availableModels);
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
@@ -67,6 +70,9 @@ export default function MockMessageList({
   const modelProvider = providers.find((p) => p.models.some((m) => m.id === model.id));
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const selectedModelData = models.find((m) => m.id === model.id);
+  const addMessage = useAddMessage(id);
+  const persistedMessagesData = useMessages(id, initialMessages);
+  const persistedMessages = persistedMessagesData.data?.messages || [];
   const {
     initialMessage,
     initialModel: contextInitialModel,
@@ -79,6 +85,7 @@ export default function MockMessageList({
   } = useInitialMessage();
   const [browse, setBrowse] = useState(initialBrowse);
   const hasSentInitial = useRef(false);
+  const nextMessageId = useRef<string>(uuidv4());
   const { messages, sendMessage, status, stop } = useChat<CustomUIMessage>({
     transport: new DefaultChatTransport({
       api: "/api/mock",
@@ -88,7 +95,13 @@ export default function MockMessageList({
       },
     }),
     id,
-    messages: initialMessages,
+    generateId: () => nextMessageId.current,
+    messages: persistedMessages,
+    onFinish: async ({ message }: { message: CustomUIMessage }) => {
+      await addMessage.mutateAsync({
+        message,
+      });
+    },
   });
 
   const handleStop = () => {
@@ -98,13 +111,44 @@ export default function MockMessageList({
   };
 
   const handleSubmit = useCallback(
-    (message: PromptInputMessage) => {
+    async (message: PromptInputMessage) => {
       const hasText = Boolean(message.text);
       const hasAttachments = Boolean(message.files?.length);
 
       if (!(hasText || hasAttachments)) {
         return;
       }
+
+      const newMessage: CustomUIMessage = {
+        id: nextMessageId.current,
+        role: "user",
+        parts: [
+          ...(hasText
+            ? [
+                {
+                  type: "text" as const,
+                  text: message.text || "",
+                },
+              ]
+            : []),
+          ...(hasAttachments
+            ? message.files.map((file) => ({
+                type: "file" as const,
+                mediaType: file.type,
+                filename: file.filename,
+                url: file.url,
+              }))
+            : []),
+        ],
+        metadata: {
+          content: message.text,
+          createdAt: new Date(),
+        },
+      };
+
+      await addMessage.mutateAsync({
+        message: newMessage,
+      });
 
       sendMessage(
         {
@@ -123,8 +167,10 @@ export default function MockMessageList({
           },
         }
       );
+
+      nextMessageId.current = uuidv4();
     },
-    [id, model.id, browse, sendMessage]
+    [id, model.id, browse, sendMessage, addMessage]
   );
 
   useEffect(() => {
@@ -161,21 +207,14 @@ export default function MockMessageList({
     providers.length,
   ]);
 
-  useEffect(() => {
-    const isNew = searchParams.get("new");
-    if (isNew && messages.some((msg) => msg.role === "assistant")) {
-      router.replace(`/mock/${id}`);
-    }
-  }, [messages, searchParams, router, id]);
-
   const streamingMessages = useMemo(() => {
-    const persistedIds = new Set(initialMessages.map((m) => m.id));
+    const persistedIds = new Set(persistedMessages.map((m) => m.id));
     return messages.filter((msg) => !persistedIds.has(msg.id));
-  }, [messages, initialMessages]);
+  }, [messages, persistedMessages]);
 
   const existingMessagesList = useMemo(
     () =>
-      initialMessages.map((message) => (
+      persistedMessages.map((message) => (
         <MessageItem
           key={message.id}
           message={message}
@@ -183,7 +222,7 @@ export default function MockMessageList({
           isStreaming={false}
         />
       )),
-    [initialMessages, id]
+    [persistedMessages, id]
   );
 
   const streamingMessagesList = useMemo(
@@ -199,19 +238,23 @@ export default function MockMessageList({
     [streamingMessages, id]
   );
 
+  useEffect(() => {
+    if (
+      !hasSentInitial.current &&
+      streamingMessages.length === 0 &&
+      persistedMessages.length === 0
+    ) {
+      router.push("/mock");
+    }
+  }, [streamingMessages.length, persistedMessages.length, router]);
+
   return (
-    <div className="flex h-full flex-col gap-4 md:py-4">
+    <div className="flex h-svh flex-col gap-4 md:py-4">
       <Conversation>
         <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
-            {messages.length === 0 ? (
-              <ConversationEmptyState
-                icon={<MessageSquare className="size-12" />}
-                title="Start a conversation"
-                description="Type a message below to begin chatting"
-              />
-            ) : (
+            {messages.length === 0 ? null : (
               <Fragment>
                 {existingMessagesList}
                 {streamingMessagesList}
