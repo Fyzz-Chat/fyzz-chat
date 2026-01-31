@@ -1,7 +1,7 @@
 "use client";
 
 import type { FileUIPart, ToolUIPart } from "ai";
-import { useMemo, useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 import MessageCopyAction from "@/app/mock/[id]/message-copy-action";
 import {
   Message,
@@ -41,7 +41,7 @@ function TypingIndicator() {
   );
 }
 
-export default function MessageItem({
+function MessageItem({
   message,
   // biome-ignore lint/correctness/noUnusedFunctionParameters: will be used for edit/regenerate features
   conversationId,
@@ -211,3 +211,5 @@ export default function MessageItem({
     </Message>
   );
 }
+
+export default memo(MessageItem);
