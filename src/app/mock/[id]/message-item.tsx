@@ -3,6 +3,7 @@
 import type { FileUIPart, ToolUIPart } from "ai";
 import { memo, useMemo, useRef } from "react";
 import MessageCopyAction from "@/app/mock/[id]/message-copy-action";
+import MessageRegenerateAction from "@/app/mock/[id]/message-regenerate-action";
 import {
   Message,
   MessageActions,
@@ -43,13 +44,12 @@ function TypingIndicator() {
 
 function MessageItem({
   message,
-  // biome-ignore lint/correctness/noUnusedFunctionParameters: will be used for edit/regenerate features
-  conversationId,
   isStreaming = false,
+  onRegenerate,
 }: {
   message: CustomUIMessage;
-  conversationId: string;
   isStreaming?: boolean;
+  onRegenerate?: (messageId: string) => Promise<void>;
 }) {
   const model = useModelStore((state) => state.getModel(message.metadata?.model));
   const renderCount = useRef(0);
@@ -197,6 +197,7 @@ function MessageItem({
         <MessageToolbar>
           <MessageActions>
             <MessageCopyAction message={message} />
+            <MessageRegenerateAction messageId={message.id} onRegenerate={onRegenerate} />
           </MessageActions>
           <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>

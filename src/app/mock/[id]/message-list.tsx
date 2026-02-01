@@ -46,6 +46,7 @@ import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import {
   useAddMessage,
   useMessages,
+  useRegenerateMessage,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,7 @@ export default function MockMessageList({
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const selectedModelData = models.find((m) => m.id === model.id);
   const addMessage = useAddMessage(id);
+  const regenerateMessage = useRegenerateMessage();
   const persistedMessagesData = useMessages(id, initialMessages);
   const persistedMessages = persistedMessagesData.data?.messages || [];
   const {
@@ -86,7 +88,7 @@ export default function MockMessageList({
   const [browse, setBrowse] = useState(initialBrowse);
   const hasSentInitial = useRef(false);
   const nextMessageId = useRef<string>(uuidv4());
-  const { messages, sendMessage, status, stop } = useChat<CustomUIMessage>({
+  const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
     transport: new DefaultChatTransport({
       api: "/api/mock",
       prepareSendMessagesRequest({ id, messages, body }) {
@@ -109,6 +111,26 @@ export default function MockMessageList({
       stop();
     }
   };
+
+  const handleRegenerateMessage = useCallback(
+    async (messageId: string) => {
+      await regenerateMessage.mutateAsync({
+        messageId,
+        conversationId: id,
+      });
+      await regenerate({
+        messageId,
+        body: {
+          id,
+          model: model.id,
+          temporaryChat: false,
+          browse,
+          regenerate: true,
+        },
+      });
+    },
+    [regenerateMessage, regenerate, id, model.id, browse]
+  );
 
   const handleSubmit = useCallback(
     async (message: PromptInputMessage) => {
@@ -218,11 +240,11 @@ export default function MockMessageList({
         <MessageItem
           key={message.id}
           message={message}
-          conversationId={id}
           isStreaming={false}
+          onRegenerate={handleRegenerateMessage}
         />
       )),
-    [persistedMessages, id]
+    [persistedMessages, handleRegenerateMessage]
   );
 
   const streamingMessagesList = useMemo(
@@ -231,11 +253,11 @@ export default function MockMessageList({
         <MessageItem
           key={message.id}
           message={message}
-          conversationId={id}
           isStreaming={true}
+          onRegenerate={handleRegenerateMessage}
         />
       )),
-    [streamingMessages, id]
+    [streamingMessages, handleRegenerateMessage]
   );
 
   useEffect(() => {
