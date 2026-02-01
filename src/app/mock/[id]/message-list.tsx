@@ -125,7 +125,6 @@ export default function MockMessageList({
           model: model.id,
           temporaryChat: false,
           browse,
-          regenerate: true,
         },
       });
     },

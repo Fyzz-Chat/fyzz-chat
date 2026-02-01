@@ -88,14 +88,7 @@ export async function POST(req: NextRequest) {
   const user = await getUserFromSession();
   logDuration(start, "User fetched");
 
-  const {
-    id,
-    messages,
-    model: modelId,
-    browse,
-    temporaryChat,
-    regenerate,
-  } = await req.json();
+  const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages.at(-1);
   const { model, supportsTools } = getModel(modelId, browse);
 
@@ -124,8 +117,9 @@ export async function POST(req: NextRequest) {
 
     const conversationMessages = await caller.messages({ id });
     existingMessages = conversationMessages.messages;
+    const isRegeneratedMessage = existingMessages.find((m) => m.id === newMessage.id);
 
-    if (newMessage && hasTextPart(newMessage) && !regenerate) {
+    if (newMessage && hasTextPart(newMessage) && !isRegeneratedMessage) {
       await appendMessageToConversation(newMessage, id);
 
       const mappedMessage = mapFileParts(newMessage, user.id, id);
