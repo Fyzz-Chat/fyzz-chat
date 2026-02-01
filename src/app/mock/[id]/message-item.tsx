@@ -1,11 +1,13 @@
 "use client";
 
 import type { FileUIPart, ToolUIPart } from "ai";
-import { memo, useMemo, useRef } from "react";
+import { Check, Pencil, X } from "lucide-react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageCopyAction from "@/app/mock/[id]/message-copy-action";
 import MessageRegenerateAction from "@/app/mock/[id]/message-regenerate-action";
 import {
   Message,
+  MessageAction,
   MessageActions,
   MessageAttachment,
   MessageAttachments,
@@ -46,14 +48,20 @@ function MessageItem({
   message,
   isStreaming = false,
   onRegenerate,
+  onEdit,
 }: {
   message: CustomUIMessage;
   isStreaming?: boolean;
   onRegenerate?: (messageId: string) => Promise<void>;
+  onEdit?: (messageId: string, newContent: string) => Promise<void>;
 }) {
   const model = useModelStore((state) => state.getModel(message.metadata?.model));
   const renderCount = useRef(0);
   renderCount.current += 1;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // if (renderCount.current === 1) {
   //   console.log(
@@ -68,6 +76,57 @@ function MessageItem({
   const attachments: FileUIPart[] = useMemo(() => {
     return message.parts.filter((part): part is FileUIPart => part.type === "file");
   }, [message.parts]);
+
+  const textContent = useMemo(() => {
+    const textPart = message.parts.find((part) => part.type === "text");
+    return textPart?.type === "text" ? textPart.text : "";
+  }, [message.parts]);
+
+  const handleStartEdit = useCallback(() => {
+    setEditedContent(textContent);
+    setIsEditing(true);
+  }, [textContent]);
+
+  const handleCancelEdit = useCallback(() => {
+    setIsEditing(false);
+    setEditedContent("");
+  }, []);
+
+  const handleSaveEdit = useCallback(async () => {
+    if (!onEdit || !editedContent.trim() || editedContent === textContent) {
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onEdit(message.id, editedContent);
+      setIsEditing(false);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onEdit, editedContent, textContent, message.id]);
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
+    if (textarea) {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+    }
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleCancelEdit();
+      }
+    };
+    globalThis.addEventListener("keydown", handleEscape);
+
+    return () => {
+      globalThis.removeEventListener("keydown", handleEscape);
+    };
+  }, [isEditing, handleCancelEdit]);
 
   let reasoningIndex = 0;
 
@@ -90,6 +149,22 @@ function MessageItem({
       {message.parts.map((part, i) => {
         switch (part.type) {
           case "text": {
+            if (isEditing && message.role === "user") {
+              return (
+                <MessageContent
+                  key={`${message.id}-${i}`}
+                  className="min-w-[calc(max(70%,300px))] p-0!"
+                >
+                  <textarea
+                    id="edit-message"
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full resize-none rounded-md bg-secondary px-4 py-3 text-sm focus-visible:outline-hidden"
+                    rows={Math.min(editedContent.split("\n").length, 10)}
+                  />
+                </MessageContent>
+              );
+            }
             return (
               <MessageContent key={`${message.id}-${i}`}>
                 <MessageResponse
@@ -205,7 +280,37 @@ function MessageItem({
       {!isStreaming && message.role === "user" && (
         <MessageToolbar className="flex-row-reverse">
           <MessageActions>
-            <MessageCopyAction message={message} />
+            {isEditing ? (
+              <>
+                <MessageAction
+                  label="Save"
+                  tooltip="Save changes"
+                  onClick={handleSaveEdit}
+                  disabled={isSaving || !editedContent.trim()}
+                >
+                  <Check className="size-4" />
+                </MessageAction>
+                <MessageAction
+                  label="Cancel"
+                  tooltip="Cancel editing"
+                  onClick={handleCancelEdit}
+                  disabled={isSaving}
+                >
+                  <X className="size-4" />
+                </MessageAction>
+              </>
+            ) : (
+              <>
+                <MessageAction
+                  label="Edit"
+                  tooltip="Edit message"
+                  onClick={handleStartEdit}
+                >
+                  <Pencil className="size-4" />
+                </MessageAction>
+                <MessageCopyAction message={message} />
+              </>
+            )}
           </MessageActions>
         </MessageToolbar>
       )}

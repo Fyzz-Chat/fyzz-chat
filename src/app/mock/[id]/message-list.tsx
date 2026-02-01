@@ -131,6 +131,26 @@ export default function MockMessageList({
     [regenerateMessage, regenerate, id, model.id, browse]
   );
 
+  const handleEditMessage = useCallback(
+    async (messageId: string, newContent: string) => {
+      await regenerateMessage.mutateAsync({
+        messageId,
+        conversationId: id,
+        newContent,
+      });
+      await regenerate({
+        messageId,
+        body: {
+          id,
+          model: model.id,
+          temporaryChat: false,
+          browse,
+        },
+      });
+    },
+    [regenerateMessage, regenerate, id, model.id, browse]
+  );
+
   const handleSubmit = useCallback(
     async (message: PromptInputMessage) => {
       const hasText = Boolean(message.text);
@@ -241,9 +261,10 @@ export default function MockMessageList({
           message={message}
           isStreaming={false}
           onRegenerate={handleRegenerateMessage}
+          onEdit={handleEditMessage}
         />
       )),
-    [persistedMessages, handleRegenerateMessage]
+    [persistedMessages, handleRegenerateMessage, handleEditMessage]
   );
 
   const streamingMessagesList = useMemo(
@@ -254,9 +275,10 @@ export default function MockMessageList({
           message={message}
           isStreaming={true}
           onRegenerate={handleRegenerateMessage}
+          onEdit={handleEditMessage}
         />
       )),
-    [streamingMessages, handleRegenerateMessage]
+    [streamingMessages, handleRegenerateMessage, handleEditMessage]
   );
 
   useEffect(() => {
