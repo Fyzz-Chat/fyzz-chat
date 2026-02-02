@@ -314,6 +314,7 @@ export default function MockMessageList({
           <PromptInput
             globalDrop
             multiple
+            blocked={["streaming", "submitted"].includes(status)}
             onSubmit={handleSubmit}
             accept={model?.extensions?.join(",")}
             maxFileSize={1024 * 1024 * 20} // 20MB

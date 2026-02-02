@@ -451,6 +451,7 @@ export type PromptInputProps = Omit<
   // Minimal constraints
   maxFiles?: number;
   maxFileSize?: number; // bytes
+  blocked?: boolean; // when true, the onSubmit will not be called
   onError?: (err: {
     code: "max_files" | "max_file_size" | "accept";
     message: string;
@@ -469,6 +470,7 @@ export const PromptInput = ({
   syncHiddenInput,
   maxFiles,
   maxFileSize,
+  blocked,
   onError,
   onSubmit,
   children,
@@ -604,10 +606,10 @@ export const PromptInput = ({
   // Note: File input cannot be programmatically set for security reasons
   // The syncHiddenInput prop is no longer functional
   useEffect(() => {
-    if (syncHiddenInput && inputRef.current && files.length === 0) {
+    if (syncHiddenInput && inputRef.current && files.length === 0 && !blocked) {
       inputRef.current.value = "";
     }
-  }, [files, syncHiddenInput]);
+  }, [files, syncHiddenInput, blocked]);
 
   // Attach drop handlers on nearest form and document (opt-in)
   useEffect(() => {
@@ -709,6 +711,10 @@ export const PromptInput = ({
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
+
+    if (blocked) {
+      return;
+    }
 
     const form = event.currentTarget;
     const text = usingProvider
