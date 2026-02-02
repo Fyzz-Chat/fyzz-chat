@@ -768,6 +768,15 @@ const providers: Provider[] = [
         extensions: [],
         cost: 1,
       },
+      {
+        id: "fireworks/kimi-k2p5",
+        name: "Kimi K2.5",
+        features: [reasoning],
+        provider: wrappedModel(fireworks),
+        tools: true,
+        extensions: [...imageTypes],
+        cost: 1,
+      },
     ],
   },
   {
