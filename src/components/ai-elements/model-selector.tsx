@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentProps, ReactNode } from "react";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   Command,
   CommandDialog,
@@ -39,6 +39,15 @@ export type ModelSelectorProps = ComponentProps<typeof Dialog>;
 export const ModelSelector = ({ children, ...props }: ModelSelectorProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const contextValue = useMemo(() => ({ isDesktop }), [isDesktop]);
+  const [rendered, setRendered] = useState(false);
+
+  useEffect(() => {
+    setRendered(true);
+  }, []);
+
+  if (!rendered) {
+    return null;
+  }
 
   return (
     <ModelSelectorContext.Provider value={contextValue}>
