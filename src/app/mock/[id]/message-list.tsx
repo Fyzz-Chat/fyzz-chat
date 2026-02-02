@@ -316,6 +316,7 @@ export default function MockMessageList({
             multiple
             onSubmit={handleSubmit}
             accept={model?.extensions?.join(",")}
+            maxFileSize={1024 * 1024 * 20} // 20MB
             className="md:px-4"
           >
             <PromptInputAttachments>
