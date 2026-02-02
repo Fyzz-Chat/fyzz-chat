@@ -48,10 +48,11 @@ export function HomeHandler() {
   return <KeyHandler keyString="n" handler={handler} />;
 }
 
+function handler() {
+  document.getElementById("message-input")?.focus();
+}
+
 export function EnterHandler() {
-  function handler() {
-    document.getElementById("message-input")?.focus();
-  }
   return <KeyHandler keyString="Enter" handler={handler} />;
 }
 
