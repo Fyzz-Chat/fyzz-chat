@@ -31,7 +31,6 @@ import {
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
-import { pdfType } from "@/types/provider";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 
 function TypingIndicator() {
@@ -134,15 +133,9 @@ function MessageItem({
     <Message from={message.role} key={message.id}>
       {attachments.length > 0 && message.role === "user" && (
         <MessageAttachments>
-          {attachments
-            .filter(
-              (attachment) =>
-                attachment.mediaType?.startsWith("image/") ||
-                attachment.mediaType?.startsWith(pdfType)
-            )
-            .map((attachment) => (
-              <MessageAttachment key={attachment.url} data={attachment} />
-            ))}
+          {attachments.map((attachment) => (
+            <MessageAttachment key={attachment.url} data={attachment} />
+          ))}
         </MessageAttachments>
       )}
       {message.parts.length < 2 && message.role === "assistant" && <TypingIndicator />}

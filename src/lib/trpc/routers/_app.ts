@@ -36,10 +36,16 @@ export const appRouter = createTRPCRouter({
       return conversation;
     }),
   getUploadUrls: protectedProcedure
-    .input(z.object({ conversationId: z.string(), count: z.number() }))
+    .input(
+      z.object({
+        conversationId: z.string(),
+        count: z.number(),
+        fileIds: z.array(z.string()).optional(),
+      })
+    )
     .query(async (opts) => {
-      const { conversationId, count } = opts.input;
-      return getUploadUrls(opts.ctx.user.id, conversationId, count);
+      const { conversationId, count, fileIds } = opts.input;
+      return getUploadUrls(opts.ctx.user.id, conversationId, count, fileIds);
     }),
   infiniteConversations: protectedProcedure
     .input(

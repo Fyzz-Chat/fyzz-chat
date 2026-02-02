@@ -275,11 +275,13 @@ export const usePromptInputAttachments = () => {
 export type PromptInputAttachmentProps = HTMLAttributes<HTMLDivElement> & {
   data: FileUIPart & { id: string };
   className?: string;
+  isUploading?: boolean;
 };
 
 export function PromptInputAttachment({
   data,
   className,
+  isUploading,
   ...props
 }: PromptInputAttachmentProps) {
   const attachments = usePromptInputAttachments();
@@ -290,6 +292,28 @@ export function PromptInputAttachment({
   const isImage = mediaType === "image";
 
   const attachmentLabel = filename || (isImage ? "Image" : "Attachment");
+
+  const icon = isImage ? (
+    <img
+      alt={filename || "attachment"}
+      className="size-5 object-cover"
+      height={20}
+      src={data.url}
+      width={20}
+    />
+  ) : (
+    <div className="flex size-5 items-center justify-center text-muted-foreground">
+      <PaperclipIcon className="size-3" />
+    </div>
+  );
+
+  const iconWithUploading = isUploading ? (
+    <div className="flex size-5 items-center justify-center text-muted-foreground">
+      <Loader2Icon className="size-3 animate-spin" />
+    </div>
+  ) : (
+    icon
+  );
 
   return (
     <PromptInputHoverCard>
@@ -304,19 +328,7 @@ export function PromptInputAttachment({
         >
           <div className="relative size-5 shrink-0">
             <div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0">
-              {isImage ? (
-                <img
-                  alt={filename || "attachment"}
-                  className="size-5 object-cover"
-                  height={20}
-                  src={data.url}
-                  width={20}
-                />
-              ) : (
-                <div className="flex size-5 items-center justify-center text-muted-foreground">
-                  <PaperclipIcon className="size-3" />
-                </div>
-              )}
+              {iconWithUploading}
             </div>
             <Button
               aria-label="Remove attachment"

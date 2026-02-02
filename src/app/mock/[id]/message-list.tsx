@@ -49,7 +49,7 @@ import {
   useRegenerateMessage,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
-import { cn } from "@/lib/utils";
+import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
@@ -86,6 +86,7 @@ export default function MockMessageList({
     setInitialFiles,
   } = useInitialMessage();
   const [browse, setBrowse] = useState(initialBrowse);
+  const [areFilesUploading, setAreFilesUploading] = useState(false);
   const hasSentInitial = useRef(false);
   const nextMessageId = useRef<string>(uuidv4());
   const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
@@ -172,20 +173,18 @@ export default function MockMessageList({
                 },
               ]
             : []),
-          ...(hasAttachments
-            ? message.files.map((file) => ({
-                type: "file" as const,
-                mediaType: file.type,
-                filename: file.filename,
-                url: file.url,
-              }))
-            : []),
+          ...(hasAttachments ? message.files : []),
         ],
         metadata: {
           content: message.text,
           createdAt: new Date(),
         },
       };
+
+      if (hasAttachments) {
+        setAreFilesUploading(true);
+        message.files = await uploadFileParts(id, message.files);
+      }
 
       await addMessage.mutateAsync({
         message: newMessage,
@@ -232,16 +231,17 @@ export default function MockMessageList({
     ) {
       hasSentInitial.current = true;
       handleSubmit({ text: initialMessage, files: initialFiles });
-      setInitialMessage(null);
       setInitialBrowse(false);
+      setInitialMessage(null);
       setInitialFiles([]);
+      setAreFilesUploading(false);
     }
   }, [
     initialMessage,
     messages.length,
     handleSubmit,
-    setInitialMessage,
     setInitialBrowse,
+    setInitialMessage,
     setInitialFiles,
     initialFiles,
     model.id,
@@ -320,7 +320,12 @@ export default function MockMessageList({
             className="md:px-4"
           >
             <PromptInputAttachments>
-              {(attachment) => <PromptInputAttachment data={attachment} />}
+              {(attachment) => (
+                <PromptInputAttachment
+                  data={attachment}
+                  isUploading={areFilesUploading}
+                />
+              )}
             </PromptInputAttachments>
             <PromptInputBody>
               <PromptInputTextarea />
