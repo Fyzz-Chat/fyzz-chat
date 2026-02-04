@@ -769,7 +769,7 @@ const providers: Provider[] = [
         cost: 1,
       },
       {
-        id: "fireworks/kimi-k2p5",
+        id: "accounts/fireworks/models/kimi-k2p5",
         name: "Kimi K2.5",
         features: [reasoning],
         provider: wrappedModel(fireworks),
