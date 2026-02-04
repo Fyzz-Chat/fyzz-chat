@@ -43,7 +43,7 @@ export default function StatusNotification() {
                 Perplexity
               </Badge>
             )}
-            {!status.providers.meta && (
+            {!status.providers.llama && (
               <Badge variant="destructive" className="flex justify-center">
                 Meta
               </Badge>

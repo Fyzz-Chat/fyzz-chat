@@ -16,7 +16,7 @@ export async function status(): Promise<Status> {
       anthropic,
       google: true,
       xai: true,
-      meta: fireworks,
+      llama: fireworks,
       deepseek: fireworks,
       qwen: fireworks,
       other: fireworks,

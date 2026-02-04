@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, Check, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
-import React, { memo, use, useEffect } from "react";
+import React, { memo, use, useEffect, useMemo } from "react";
 import { KeyHandler } from "@/components/key-handler";
 import { TemporaryChatSwitch } from "@/components/temporary-chat-switch";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ import { useStableId } from "@/hooks/use-stable-id";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
-import { featureIcons, getProviderIcon, providerIcons } from "@/lib/providers";
+import { featureIcons, getProviderIcon } from "@/lib/providers";
 import { useUpdateConversationModel } from "@/lib/queries/conversations";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,7 @@ import { useModelStore } from "@/stores/model-store";
 import { useUIStore } from "@/stores/ui-store";
 import type { Feature, PublicModel, PublicProvider } from "@/types/provider";
 import type { Status } from "@/types/status";
+import { ModelSelectorLogo } from "./ai-elements/model-selector";
 
 function ModelMenu() {
   const pathname = usePathname();
@@ -75,7 +76,10 @@ function ModelMenu() {
   const setDefaultModel = useModelStore((state) => state.setDefaultModel);
   const providers = useModelStore((state) => state.providers);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const providerIcon = getProviderIcon(providers, model?.id);
+  const ProviderIcon = useMemo(
+    () => getProviderIcon(providers, model?.id),
+    [providers, model?.id]
+  );
 
   useEffect(() => {
     if (pathname === "/chat" && !isLoading && (defaultModel || isError)) {
@@ -129,11 +133,7 @@ function ModelMenu() {
       <Drawer open={modelMenuOpen} onOpenChange={setModelMenuOpen}>
         <DrawerTrigger asChild className="md:hidden">
           <Button variant="outline" size="icon" className="size-9">
-            {providerIcon &&
-              React.createElement(
-                providerIcons[providerIcon as keyof typeof providerIcons],
-                { size: 16 }
-              )}
+            {ProviderIcon}
           </Button>
         </DrawerTrigger>
         <DrawerContent>
@@ -199,10 +199,7 @@ function StatusList({
               key={`${provider.id}-${provider.name}`}
               heading={
                 <div className="flex items-center gap-2">
-                  {React.createElement(
-                    providerIcons[provider.icon as keyof typeof providerIcons],
-                    { size: 16 }
-                  )}
+                  <ModelSelectorLogo provider={provider.id} />
                   {provider.name}
                   {!status?.providers?.[provider.id] && (
                     <Tooltip>

@@ -192,7 +192,7 @@ function filterProviders(): Provider[] {
     if (provider.id === "xai" && !xaiConfigured) {
       return false;
     }
-    if (provider.id === "meta" && !fireworksConfigured) {
+    if (provider.id === "llama" && !fireworksConfigured) {
       return false;
     }
     if (provider.id === "deepseek" && !fireworksConfigured) {
@@ -701,7 +701,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "meta",
+    id: "llama",
     name: "Meta",
     icon: "meta",
     models: [

@@ -1,8 +1,8 @@
 "use client";
 
-import { Loader2, MessageSquare, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import type React from "react";
-import { createElement, memo, use, useMemo, useState } from "react";
+import { memo, use, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { FastLink } from "@/components/v3/fast-link";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { getProviderIcon, providerIcons } from "@/lib/providers";
+import { getProviderIcon } from "@/lib/providers";
 import {
   useConversations,
   useDeleteConversation,
@@ -187,7 +187,10 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   const providers = useModelStore((state) => state.providers);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const providerIcon = getProviderIcon(providers, chat.model);
+  const ProviderIcon = useMemo(
+    () => getProviderIcon(providers, chat.model),
+    [providers, chat.model]
+  );
   const prefetchConversation = usePrefetchConversation();
 
   const handleDelete = async () => {
@@ -231,14 +234,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
         )}
       >
         <div className="flex w-full items-center gap-2">
-          {providerIcon ? (
-            createElement(providerIcons[providerIcon as keyof typeof providerIcons], {
-              size: 16,
-              className: "shrink-0",
-            })
-          ) : (
-            <MessageSquare size={16} />
-          )}
+          {ProviderIcon}
           <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
           <div className="hidden size-5 group-hover/chat:inline-flex" />
         </div>

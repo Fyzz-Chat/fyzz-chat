@@ -42,7 +42,7 @@ export type ProviderId =
   | "anthropic"
   | "google"
   | "xai"
-  | "meta"
+  | "llama"
   | "deepseek"
   | "qwen"
   | "other"

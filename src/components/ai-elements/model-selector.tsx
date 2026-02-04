@@ -233,7 +233,8 @@ export const ModelSelectorLogo = ({
     alt={`${provider} logo`}
     className={cn("size-3 dark:invert", className)}
     height={12}
-    src={`https://models.dev/logos/${provider}.svg`}
+    // Take logos from https://models.dev/logos/${provider}.svg
+    src={`/logos/${provider}.svg`}
     width={12}
   />
 );

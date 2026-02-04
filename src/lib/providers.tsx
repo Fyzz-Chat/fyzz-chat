@@ -1,4 +1,5 @@
 import { Brain, CodeXml, FileText, Globe, Image } from "lucide-react";
+import { ModelSelectorLogo } from "@/components/ai-elements/model-selector";
 import Anthropic from "@/components/icons/anthropic";
 import DeepSeek from "@/components/icons/deepseek";
 import Google from "@/components/icons/google";
@@ -31,8 +32,8 @@ export const providerIcons = {
 };
 
 export function getProviderIcon(providers: PublicProvider[], modelId: string | null) {
-  if (!modelId) return "openai";
+  if (!modelId) return <ModelSelectorLogo provider="google" />;
 
   const provider = providers.find((p) => p.models.some((m) => m.id === modelId));
-  return provider?.icon;
+  return <ModelSelectorLogo provider={provider?.id || "google"} />;
 }
