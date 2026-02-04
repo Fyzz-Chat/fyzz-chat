@@ -183,7 +183,7 @@ function StatusList({
   return (
     <TooltipProvider delayDuration={0}>
       <Command
-        className="rounded-none md:rounded-md"
+        className="rounded-none md:rounded-t-md"
         defaultValue={selectedModel?.name || ""}
       >
         <CommandInput

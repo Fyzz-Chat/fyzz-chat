@@ -29,22 +29,20 @@ export function TemporaryChatSwitch() {
   }
 
   return (
-    <div>
-      <div className="flex items-center gap-2 bg-popover p-1 text-sm">
-        <Label
-          htmlFor="temporary-chat"
-          className="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5"
-        >
-          <MessageCircleDashed size={16} />
-          <p>{translations.input.modelMenu.temporaryChat}</p>
-          <Switch
-            id="temporary-chat"
-            className="ml-auto"
-            checked={temporaryChat}
-            onCheckedChange={handleCheckedChange}
-          />
-        </Label>
-      </div>
+    <div className="flex items-center gap-2 rounded-md bg-popover p-1 text-sm">
+      <Label
+        htmlFor="temporary-chat"
+        className="flex w-full cursor-pointer items-center gap-2 px-2 py-1.5"
+      >
+        <MessageCircleDashed size={16} />
+        <p>{translations.input.modelMenu.temporaryChat}</p>
+        <Switch
+          id="temporary-chat"
+          className="ml-auto"
+          checked={temporaryChat}
+          onCheckedChange={handleCheckedChange}
+        />
+      </Label>
     </div>
   );
 }
