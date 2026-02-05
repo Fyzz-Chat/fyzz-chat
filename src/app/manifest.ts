@@ -98,10 +98,10 @@ export default function manifest(): ManifestWithExtensions {
         label: "Fyzz.chat mobile interface",
       },
     ], // Background color shown during app load or on splash screens
-    background_color: "#2A2024",
+    background_color: "#1f1f1f",
 
     // Theme color for the browser UI elements (address bar, etc.) when app is open
-    theme_color: "#2A2024",
+    theme_color: "#1f1f1f",
 
     // Preferred screen orientation for the app
     // Options: portrait, landscape, portrait-primary, landscape-primary, etc.
