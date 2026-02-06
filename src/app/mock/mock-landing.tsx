@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
@@ -38,5 +39,9 @@ export default function MockLanding() {
     setInitialFiles,
   ]);
 
-  return null;
+  return (
+    <div className="flex h-full items-end justify-center">
+      <Image src="/icon.svg" alt="Fyzz.chat" width={100} height={100} />
+    </div>
+  );
 }

@@ -50,7 +50,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
                 authorized={isLoggedIn}
               />
             </MockAppSidebar>
-            <SidebarInset className="relative flex flex-col overflow-auto md:pb-4">
+            <SidebarInset className="relative flex flex-col gap-4 overflow-auto md:pb-4">
               <SidebarTrigger className="absolute top-2.5 left-2 z-20 size-8 touch-manipulation p-5" />
               {!isLoggedIn && (
                 <div className="absolute top-2 right-2 z-20">

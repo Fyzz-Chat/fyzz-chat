@@ -294,7 +294,7 @@ export default function MockMessageList({ id }: { id: string }) {
   }, [handleSubmit, handleStop, updateModel, id, setHandlers]);
 
   return (
-    <div className="flex h-[calc(100svh-116px)] flex-col overflow-auto md:h-[calc(100svh-148px)]">
+    <div className="flex h-[calc(100svh-132px)] flex-col overflow-auto md:h-[calc(100svh-164px)]">
       <Conversation>
         <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
         <ConversationContent className="p-0">
