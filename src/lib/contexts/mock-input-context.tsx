@@ -20,6 +20,7 @@ interface MockInputHandlers {
 
 interface MockInputContextType {
   handlersRef: React.RefObject<MockInputHandlers>;
+  browseRef: React.RefObject<boolean>;
   status: ChatStatus;
   setStatus: (status: ChatStatus) => void;
   areFilesUploading: boolean;
@@ -35,6 +36,7 @@ export function MockInputProvider({ children }: { children: ReactNode }) {
       // noop default
     },
   });
+  const browseRef = useRef(false);
   const [status, setStatus] = useState<ChatStatus>("ready");
   const [areFilesUploading, setAreFilesUploading] = useState(false);
 
@@ -45,6 +47,7 @@ export function MockInputProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       handlersRef,
+      browseRef,
       status,
       setStatus,
       areFilesUploading,

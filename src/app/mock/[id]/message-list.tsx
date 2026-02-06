@@ -34,7 +34,7 @@ export default function MockMessageList({ id }: { id: string }) {
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
-  const { setHandlers, setStatus, setAreFilesUploading } = useMockInput();
+  const { setHandlers, setStatus, setAreFilesUploading, browseRef } = useMockInput();
   const addMessage = useAddMessage(id);
   const createConversationOptimistic = useCreateConversationOptimistic();
   const regenerateMessage = useRegenerateMessage();
@@ -95,10 +95,11 @@ export default function MockMessageList({ id }: { id: string }) {
           id,
           model: model.id,
           temporaryChat: false,
+          browse: browseRef.current,
         },
       });
     },
-    [regenerateMessage, regenerate, id, model.id]
+    [regenerateMessage, regenerate, id, model.id, browseRef]
   );
 
   const handleEditMessage = useCallback(
@@ -114,10 +115,11 @@ export default function MockMessageList({ id }: { id: string }) {
           id,
           model: model.id,
           temporaryChat: false,
+          browse: browseRef.current,
         },
       });
     },
-    [regenerateMessage, regenerate, id, model.id]
+    [regenerateMessage, regenerate, id, model.id, browseRef]
   );
 
   const handleSubmit = useCallback(
@@ -171,13 +173,14 @@ export default function MockMessageList({ id }: { id: string }) {
             id,
             model: model.id,
             temporaryChat: false,
+            browse: browseRef.current,
           },
         }
       );
 
       nextMessageId.current = crypto.randomUUID();
     },
-    [id, model.id, sendMessage, addMessage, setAreFilesUploading]
+    [id, model.id, sendMessage, addMessage, setAreFilesUploading, browseRef]
   );
 
   useEffect(() => {

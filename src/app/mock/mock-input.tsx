@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 
 export default function MockInput() {
-  const { handlersRef, status, areFilesUploading } = useMockInput();
+  const { handlersRef, browseRef, status, areFilesUploading } = useMockInput();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
@@ -51,7 +51,14 @@ export default function MockInput() {
     () => models.find((m) => m.id === model.id),
     [models, model.id]
   );
-  const [browse, setBrowse] = useState(false);
+  const [browse, _setBrowse] = useState(false);
+  const setBrowse = useCallback(
+    (value: boolean) => {
+      _setBrowse(value);
+      browseRef.current = value;
+    },
+    [browseRef]
+  );
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
