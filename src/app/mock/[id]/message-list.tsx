@@ -4,46 +4,18 @@ import "katex/dist/katex.min.css";
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { CheckIcon, GlobeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  ModelSelector,
-  ModelSelectorContent,
-  ModelSelectorEmpty,
-  ModelSelectorGroup,
-  ModelSelectorInput,
-  ModelSelectorItem,
-  ModelSelectorList,
-  ModelSelectorLogo,
-  ModelSelectorName,
-  ModelSelectorTrigger,
-} from "@/components/ai-elements/model-selector";
-import {
-  PromptInput,
-  PromptInputActionAddAttachments,
-  PromptInputActionMenu,
-  PromptInputActionMenuContent,
-  PromptInputActionMenuTrigger,
-  PromptInputAttachment,
-  PromptInputAttachments,
-  PromptInputBody,
-  PromptInputButton,
-  PromptInputFooter,
-  type PromptInputMessage,
-  PromptInputProvider,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputTools,
-} from "@/components/ai-elements/prompt-input";
+import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
+import { useMockInput } from "@/lib/contexts/mock-input-context";
 import {
   useAddMessage,
   useConversation,
@@ -51,30 +23,25 @@ import {
   useRegenerateMessage,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
-import { cn, uploadFileParts } from "@/lib/utils";
+import { uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
 export default function MockMessageList({ id }: { id: string }) {
   const router = useRouter();
-  const models = useModelStore((state) => state.availableModels);
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
-  const modelProvider = providers.find((p) => p.models.some((m) => m.id === model.id));
-  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-  const selectedModelData = models.find((m) => m.id === model.id);
+  const { setHandlers, setStatus, setAreFilesUploading } = useMockInput();
   const addMessage = useAddMessage(id);
   const regenerateMessage = useRegenerateMessage();
   const {
     initialMessage,
     initialModel: contextInitialModel,
-    initialBrowse,
     initialFiles,
     setInitialMessage,
     setInitialModel: setContextInitialModel,
-    setInitialBrowse,
     setInitialFiles,
   } = useInitialMessage();
   const isNewConversation = Boolean(initialMessage);
@@ -83,8 +50,6 @@ export default function MockMessageList({ id }: { id: string }) {
     refetchOnMount: !isNewConversation,
   });
   const persistedMessages = persistedMessagesData.data?.messages || [];
-  const [browse, setBrowse] = useState(initialBrowse);
-  const [areFilesUploading, setAreFilesUploading] = useState(false);
   const hasSentInitial = useRef(false);
   const nextMessageId = useRef<string>(crypto.randomUUID());
   const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
@@ -105,11 +70,11 @@ export default function MockMessageList({ id }: { id: string }) {
     },
   });
 
-  const handleStop = () => {
+  const handleStop = useCallback(() => {
     if (status === "streaming") {
       stop();
     }
-  };
+  }, [status, stop]);
 
   const handleRegenerateMessage = useCallback(
     async (messageId: string) => {
@@ -123,11 +88,10 @@ export default function MockMessageList({ id }: { id: string }) {
           id,
           model: model.id,
           temporaryChat: false,
-          browse,
         },
       });
     },
-    [regenerateMessage, regenerate, id, model.id, browse]
+    [regenerateMessage, regenerate, id, model.id]
   );
 
   const handleEditMessage = useCallback(
@@ -143,11 +107,10 @@ export default function MockMessageList({ id }: { id: string }) {
           id,
           model: model.id,
           temporaryChat: false,
-          browse,
         },
       });
     },
-    [regenerateMessage, regenerate, id, model.id, browse]
+    [regenerateMessage, regenerate, id, model.id]
   );
 
   const handleSubmit = useCallback(
@@ -201,14 +164,13 @@ export default function MockMessageList({ id }: { id: string }) {
             id,
             model: model.id,
             temporaryChat: false,
-            browse,
           },
         }
       );
 
       nextMessageId.current = crypto.randomUUID();
     },
-    [id, model.id, browse, sendMessage, addMessage]
+    [id, model.id, sendMessage, addMessage, setAreFilesUploading]
   );
 
   useEffect(() => {
@@ -234,7 +196,6 @@ export default function MockMessageList({ id }: { id: string }) {
     ) {
       hasSentInitial.current = true;
       handleSubmit({ text: initialMessage, files: initialFiles });
-      setInitialBrowse(false);
       setInitialMessage(null);
       setInitialFiles([]);
       setAreFilesUploading(false);
@@ -243,9 +204,9 @@ export default function MockMessageList({ id }: { id: string }) {
     initialMessage,
     messages.length,
     handleSubmit,
-    setInitialBrowse,
     setInitialMessage,
     setInitialFiles,
+    setAreFilesUploading,
     initialFiles,
     model.id,
     providers.length,
@@ -302,8 +263,22 @@ export default function MockMessageList({ id }: { id: string }) {
     router,
   ]);
 
+  useEffect(() => {
+    setStatus(status);
+  }, [status, setStatus]);
+
+  useEffect(() => {
+    setHandlers({
+      onSubmit: handleSubmit,
+      onStop: handleStop,
+      onModelChange: (_, modelId) => {
+        updateModel.mutateAsync({ conversationId: id, model: modelId });
+      },
+    });
+  }, [handleSubmit, handleStop, updateModel, id, setHandlers]);
+
   return (
-    <div className="flex h-svh flex-col gap-4 md:py-4">
+    <div className="flex h-[calc(100svh-116px)] flex-col overflow-auto md:h-[calc(100svh-148px)]">
       <Conversation>
         <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
         <ConversationContent className="p-0">
@@ -319,104 +294,6 @@ export default function MockMessageList({ id }: { id: string }) {
         <ConversationScrollButton />
         <div className="absolute bottom-0 h-2 w-full bg-linear-to-t from-background to-transparent" />
       </Conversation>
-
-      <PromptInputProvider>
-        <ChatLayoutWrapper>
-          <PromptInput
-            globalDrop
-            multiple
-            blocked={["streaming", "submitted"].includes(status)}
-            onSubmit={handleSubmit}
-            accept={model?.extensions?.join(",")}
-            maxFileSize={1024 * 1024 * 20} // 20MB
-            className="md:px-4"
-          >
-            <PromptInputAttachments>
-              {(attachment) => (
-                <PromptInputAttachment
-                  data={attachment}
-                  isUploading={areFilesUploading}
-                />
-              )}
-            </PromptInputAttachments>
-            <PromptInputBody>
-              <PromptInputTextarea />
-            </PromptInputBody>
-            <PromptInputFooter className="space-x-1">
-              <PromptInputTools className="flex w-full items-center">
-                <PromptInputButton
-                  onClick={() => setBrowse(!browse)}
-                  className="rounded-full"
-                >
-                  <GlobeIcon size={16} className={cn(browse && "text-primary")} />
-                  <span className={cn(browse && "text-primary")}>Search</span>
-                </PromptInputButton>
-                <ModelSelector
-                  onOpenChange={setModelSelectorOpen}
-                  open={modelSelectorOpen}
-                >
-                  <ModelSelectorTrigger asChild>
-                    <PromptInputButton>
-                      {modelProvider?.id && (
-                        <ModelSelectorLogo provider={modelProvider.id} />
-                      )}
-                      {selectedModelData?.name && (
-                        <ModelSelectorName>{selectedModelData.name}</ModelSelectorName>
-                      )}
-                    </PromptInputButton>
-                  </ModelSelectorTrigger>
-                  <ModelSelectorContent>
-                    <ModelSelectorInput placeholder="Search models..." />
-                    <ModelSelectorList>
-                      <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
-                      {providers.map((provider) => (
-                        <ModelSelectorGroup heading={provider.name} key={provider.id}>
-                          {provider.models.map((m) => (
-                            <ModelSelectorItem
-                              key={m.id}
-                              onSelect={() => {
-                                setModel(m.id);
-                                updateModel.mutateAsync({
-                                  conversationId: id,
-                                  model: m.id,
-                                });
-                                setModelSelectorOpen(false);
-                              }}
-                              value={m.id}
-                            >
-                              <ModelSelectorLogo provider={provider.id} />
-                              <ModelSelectorName>{m.name}</ModelSelectorName>
-                              {/* <ModelSelectorLogoGroup>
-                                {model.features.map((feature) => (
-                                  <ModelSelectorLogo key={provider} provider={provider} />
-                                ))}
-                              </ModelSelectorLogoGroup> */}
-                              {model.id === m.id ? (
-                                <CheckIcon className="ml-auto size-4" />
-                              ) : (
-                                <div className="ml-auto size-4" />
-                              )}
-                            </ModelSelectorItem>
-                          ))}
-                        </ModelSelectorGroup>
-                      ))}
-                    </ModelSelectorList>
-                  </ModelSelectorContent>
-                </ModelSelector>
-                {model.extensions?.length > 0 && (
-                  <PromptInputActionMenu>
-                    <PromptInputActionMenuTrigger className="ml-auto" />
-                    <PromptInputActionMenuContent>
-                      <PromptInputActionAddAttachments />
-                    </PromptInputActionMenuContent>
-                  </PromptInputActionMenu>
-                )}
-              </PromptInputTools>
-              <PromptInputSubmit status={status} onClick={handleStop} />
-            </PromptInputFooter>
-          </PromptInput>
-        </ChatLayoutWrapper>
-      </PromptInputProvider>
     </div>
   );
 }
