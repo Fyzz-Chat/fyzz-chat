@@ -15,22 +15,25 @@ import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const cookieStore = await cookies();
+  const userPromise = getUserFromSessionPublic();
+  const conversationsPromise = userPromise.then((user) =>
+    user
+      ? caller.infiniteConversations({ limit: 15, search: "" })
+      : { items: [], nextCursor: undefined }
+  );
+
+  const [cookieStore, user, providers, initialConversationsData] = await Promise.all([
+    cookies(),
+    userPromise,
+    caller.providers(),
+    conversationsPromise,
+  ]);
+
   const sidebarState = cookieStore.get("sidebar:state");
-  const user = await getUserFromSessionPublic();
   const isLoggedIn = Boolean(user);
   const existingSidebarState = sidebarState ? sidebarState.value === "true" : true;
   const defaultOpen = isLoggedIn ? existingSidebarState : false;
   const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
-  const [providers, initialConversationsData] = await Promise.all([
-    caller.providers(),
-    user
-      ? caller.infiniteConversations({
-          limit: 15,
-          search: "",
-        })
-      : { items: [], nextCursor: undefined },
-  ]);
 
   return (
     <InitialMessageProvider>
