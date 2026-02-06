@@ -7,7 +7,6 @@ import { DefaultChatTransport } from "ai";
 import { CheckIcon, GlobeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
@@ -87,7 +86,7 @@ export default function MockMessageList({ id }: { id: string }) {
   const [browse, setBrowse] = useState(initialBrowse);
   const [areFilesUploading, setAreFilesUploading] = useState(false);
   const hasSentInitial = useRef(false);
-  const nextMessageId = useRef<string>(uuidv4());
+  const nextMessageId = useRef<string>(crypto.randomUUID());
   const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
     transport: new DefaultChatTransport({
       api: "/api/mock",
@@ -207,7 +206,7 @@ export default function MockMessageList({ id }: { id: string }) {
         }
       );
 
-      nextMessageId.current = uuidv4();
+      nextMessageId.current = crypto.randomUUID();
     },
     [id, model.id, browse, sendMessage, addMessage]
   );

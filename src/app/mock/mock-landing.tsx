@@ -2,8 +2,7 @@
 
 import { CheckIcon, GlobeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useMemo, useState } from "react";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -45,15 +44,21 @@ export default function MockLanding() {
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
-  const modelProvider = providers.find((p) => p.models.some((m) => m.id === model.id));
+  const modelProvider = useMemo(
+    () => providers.find((p) => p.models.some((m) => m.id === model.id)),
+    [providers, model.id]
+  );
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-  const selectedModelData = models.find((m) => m.id === model.id);
+  const selectedModelData = useMemo(
+    () => models.find((m) => m.id === model.id),
+    [models, model.id]
+  );
   const [browse, setBrowse] = useState(false);
 
   const handleSubmit = (message: PromptInputMessage) => {
     if (!message.text) return;
 
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     setInitialMessage(message.text);
     setInitialModel(model.id);
     setInitialBrowse(browse);
