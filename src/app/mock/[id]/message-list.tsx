@@ -5,7 +5,7 @@ import "katex/dist/katex.min.css";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
@@ -19,6 +19,7 @@ import { useMockInput } from "@/lib/contexts/mock-input-context";
 import {
   useAddMessage,
   useConversation,
+  useCreateConversationOptimistic,
   useMessages,
   useRegenerateMessage,
   useUpdateConversationModel,
@@ -35,6 +36,7 @@ export default function MockMessageList({ id }: { id: string }) {
   const updateModel = useUpdateConversationModel();
   const { setHandlers, setStatus, setAreFilesUploading } = useMockInput();
   const addMessage = useAddMessage(id);
+  const createConversationOptimistic = useCreateConversationOptimistic();
   const regenerateMessage = useRegenerateMessage();
   const {
     initialMessage,
@@ -52,6 +54,11 @@ export default function MockMessageList({ id }: { id: string }) {
   const persistedMessages = persistedMessagesData.data?.messages || [];
   const hasSentInitial = useRef(false);
   const nextMessageId = useRef<string>(crypto.randomUUID());
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
     transport: new DefaultChatTransport({
       api: "/api/mock",
@@ -195,6 +202,13 @@ export default function MockMessageList({ id }: { id: string }) {
       providers.length > 0
     ) {
       hasSentInitial.current = true;
+      createConversationOptimistic.mutateAsync({
+        id,
+        title: "New Chat",
+        model: model.id,
+        messages: [],
+        lastMessageAt: new Date(),
+      });
       handleSubmit({ text: initialMessage, files: initialFiles });
       setInitialMessage(null);
       setInitialFiles([]);
@@ -204,12 +218,14 @@ export default function MockMessageList({ id }: { id: string }) {
     initialMessage,
     messages.length,
     handleSubmit,
+    createConversationOptimistic,
     setInitialMessage,
     setInitialFiles,
     setAreFilesUploading,
     initialFiles,
     model.id,
     providers.length,
+    id,
   ]);
 
   const streamingMessages = useMemo(() => {
@@ -283,7 +299,8 @@ export default function MockMessageList({ id }: { id: string }) {
         <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
-            {persistedMessages.length === 0 && streamingMessages.length === 0 ? null : (
+            {!mounted ||
+            (persistedMessages.length === 0 && streamingMessages.length === 0) ? null : (
               <Fragment>
                 {existingMessagesList}
                 {streamingMessagesList}

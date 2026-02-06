@@ -362,6 +362,28 @@ export function useCreateConversationOptimistic() {
         messages: conversation.messages,
         hasMore: false,
       });
+
+      const queries = queryClient.getQueriesData(
+        trpc.infiniteConversations.infiniteQueryFilter()
+      );
+      queries.forEach(([queryKey]) => {
+        queryClient.setQueryData(
+          queryKey,
+          (old: ConversationsInfiniteData | undefined) => {
+            if (!old) return old;
+            return {
+              ...old,
+              pages: [
+                {
+                  items: [conversation, ...(old.pages[0]?.items || [])],
+                  nextCursor: old.pages[0]?.nextCursor,
+                },
+                ...old.pages.slice(1),
+              ],
+            };
+          }
+        );
+      });
     },
   });
 }
