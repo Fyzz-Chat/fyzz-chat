@@ -1,6 +1,9 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import MockMessageList from "@/app/mock/[id]/message-list";
 
-export default async function MockPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function MockPage() {
+  const { id } = useParams<{ id: string }>();
   return <MockMessageList id={id} />;
 }
