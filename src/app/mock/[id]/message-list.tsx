@@ -77,11 +77,16 @@ export default function MockMessageList({ id }: { id: string }) {
     },
   });
 
+  const stopRef = useRef(stop);
+  stopRef.current = stop;
+  const regenerateRef = useRef(regenerate);
+  regenerateRef.current = regenerate;
+  const sendMessageRef = useRef(sendMessage);
+  sendMessageRef.current = sendMessage;
+
   const handleStop = useCallback(() => {
-    if (status === "streaming") {
-      stop();
-    }
-  }, [status, stop]);
+    stopRef.current();
+  }, []);
 
   const handleRegenerateMessage = useCallback(
     async (messageId: string) => {
@@ -89,7 +94,7 @@ export default function MockMessageList({ id }: { id: string }) {
         messageId,
         conversationId: id,
       });
-      await regenerate({
+      await regenerateRef.current({
         messageId,
         body: {
           id,
@@ -99,7 +104,7 @@ export default function MockMessageList({ id }: { id: string }) {
         },
       });
     },
-    [regenerateMessage, regenerate, id, model.id, browseRef]
+    [regenerateMessage, id, model.id, browseRef]
   );
 
   const handleEditMessage = useCallback(
@@ -109,7 +114,7 @@ export default function MockMessageList({ id }: { id: string }) {
         conversationId: id,
         newContent,
       });
-      await regenerate({
+      await regenerateRef.current({
         messageId,
         body: {
           id,
@@ -119,7 +124,7 @@ export default function MockMessageList({ id }: { id: string }) {
         },
       });
     },
-    [regenerateMessage, regenerate, id, model.id, browseRef]
+    [regenerateMessage, id, model.id, browseRef]
   );
 
   const handleSubmit = useCallback(
@@ -160,7 +165,7 @@ export default function MockMessageList({ id }: { id: string }) {
         message: newMessage,
       });
 
-      sendMessage(
+      sendMessageRef.current(
         {
           ...message,
           metadata: {
@@ -180,7 +185,7 @@ export default function MockMessageList({ id }: { id: string }) {
 
       nextMessageId.current = crypto.randomUUID();
     },
-    [id, model.id, sendMessage, addMessage, setAreFilesUploading, browseRef]
+    [id, model.id, addMessage, setAreFilesUploading, browseRef]
   );
 
   useEffect(() => {
