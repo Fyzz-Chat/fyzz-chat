@@ -62,7 +62,7 @@ export default function MockLanding() {
   };
 
   return (
-    <div className="flex h-full items-center justify-center p-4">
+    <div className="flex h-svh items-center justify-center p-4">
       <div className="w-full max-w-3xl">
         <PromptInputProvider>
           <PromptInput

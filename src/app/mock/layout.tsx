@@ -1,19 +1,61 @@
+import "katex/dist/katex.min.css";
+
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
+import { MockAppSidebar } from "@/app/mock/mock-app-sidebar";
+import MockChatSidebar from "@/app/mock/mock-chat-sidebar";
+import AuthPopup from "@/components/auth/auth-popup";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
 import { EnterHandler, EscapeHandler } from "@/components/key-handler";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import conf from "@/lib/config";
 import { InitialMessageProvider } from "@/lib/contexts/initial-message-context";
+import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const providers = await caller.providers();
+  const cookieStore = await cookies();
+  const sidebarState = cookieStore.get("sidebar:state");
+  const user = await getUserFromSessionPublic();
+  const isLoggedIn = Boolean(user);
+  const existingSidebarState = sidebarState ? sidebarState.value === "true" : true;
+  const defaultOpen = isLoggedIn ? existingSidebarState : false;
+  const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
+  const [providers, initialConversationsData] = await Promise.all([
+    caller.providers(),
+    user
+      ? caller.infiniteConversations({
+          limit: 15,
+          search: "",
+        })
+      : { items: [], nextCursor: undefined },
+  ]);
 
   return (
     <InitialMessageProvider>
       <EnterHandler />
       <EscapeHandler />
       <ModelStoreInitializer providers={providers} />
-      <ChatLayoutProvider>{children}</ChatLayoutProvider>
+      <ChatLayoutProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <MockAppSidebar>
+            <MockChatSidebar
+              conversations={initialConversationsData}
+              authorized={isLoggedIn}
+            />
+          </MockAppSidebar>
+          <SidebarInset className="relative overflow-auto">
+            <SidebarTrigger className="absolute top-2.5 left-2 z-20 size-8 touch-manipulation p-5" />
+            {!isLoggedIn && (
+              <div className="absolute top-2 right-2 z-20">
+                <AuthPopup anonymousLogin={conf.anonymousLogin} hasGoogle={hasGoogle} />
+              </div>
+            )}
+            {children}
+          </SidebarInset>
+        </SidebarProvider>
+      </ChatLayoutProvider>
     </InitialMessageProvider>
   );
 }

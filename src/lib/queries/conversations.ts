@@ -83,7 +83,11 @@ export function usePrefetchConversation() {
   );
 }
 
-export function useMessages(id: string, initialMessages?: CustomUIMessage[]) {
+export function useMessages(
+  id: string,
+  initialMessages?: CustomUIMessage[],
+  overrides?: { refetchOnMount?: boolean }
+) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
@@ -97,6 +101,7 @@ export function useMessages(id: string, initialMessages?: CustomUIMessage[]) {
   const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
     enabled: !temporaryChat,
     refetchOnWindowFocus: true,
+    refetchOnMount: overrides?.refetchOnMount,
     initialData,
     meta: {
       persist: !temporaryChat,

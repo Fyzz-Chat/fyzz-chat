@@ -45,6 +45,7 @@ import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import {
   useAddMessage,
+  useConversation,
   useMessages,
   useRegenerateMessage,
   useUpdateConversationModel,
@@ -53,15 +54,7 @@ import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
-export default function MockMessageList({
-  id,
-  initialModel,
-  initialMessages,
-}: {
-  id: string;
-  initialModel: string | undefined;
-  initialMessages: CustomUIMessage[];
-}) {
+export default function MockMessageList({ id }: { id: string }) {
   const router = useRouter();
   const models = useModelStore((state) => state.availableModels);
   const providers = useModelStore((state) => state.providers);
@@ -73,8 +66,6 @@ export default function MockMessageList({
   const selectedModelData = models.find((m) => m.id === model.id);
   const addMessage = useAddMessage(id);
   const regenerateMessage = useRegenerateMessage();
-  const persistedMessagesData = useMessages(id, initialMessages);
-  const persistedMessages = persistedMessagesData.data?.messages || [];
   const {
     initialMessage,
     initialModel: contextInitialModel,
@@ -85,6 +76,12 @@ export default function MockMessageList({
     setInitialBrowse,
     setInitialFiles,
   } = useInitialMessage();
+  const isNewConversation = Boolean(initialMessage);
+  const conversationData = useConversation(id);
+  const persistedMessagesData = useMessages(id, isNewConversation ? [] : undefined, {
+    refetchOnMount: !isNewConversation,
+  });
+  const persistedMessages = persistedMessagesData.data?.messages || [];
   const [browse, setBrowse] = useState(initialBrowse);
   const [areFilesUploading, setAreFilesUploading] = useState(false);
   const hasSentInitial = useRef(false);
@@ -214,12 +211,17 @@ export default function MockMessageList({
   );
 
   useEffect(() => {
-    const modelToUse = initialModel || contextInitialModel;
+    const modelToUse = conversationData.data?.model || contextInitialModel;
     if (modelToUse) {
       setModel(modelToUse);
       setContextInitialModel(null);
     }
-  }, [initialModel, contextInitialModel, setModel, setContextInitialModel]);
+  }, [
+    conversationData.data?.model,
+    contextInitialModel,
+    setModel,
+    setContextInitialModel,
+  ]);
 
   useEffect(() => {
     if (
@@ -284,12 +286,20 @@ export default function MockMessageList({
   useEffect(() => {
     if (
       !hasSentInitial.current &&
+      !persistedMessagesData.isPending &&
+      !conversationData.isPending &&
       streamingMessages.length === 0 &&
       persistedMessages.length === 0
     ) {
       router.push("/mock");
     }
-  }, [streamingMessages.length, persistedMessages.length, router]);
+  }, [
+    persistedMessagesData.isPending,
+    conversationData.isPending,
+    streamingMessages.length,
+    persistedMessages.length,
+    router,
+  ]);
 
   return (
     <div className="flex h-svh flex-col gap-4 md:py-4">
@@ -297,7 +307,7 @@ export default function MockMessageList({
         <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
-            {messages.length === 0 ? null : (
+            {persistedMessages.length === 0 && streamingMessages.length === 0 ? null : (
               <Fragment>
                 {existingMessagesList}
                 {streamingMessagesList}

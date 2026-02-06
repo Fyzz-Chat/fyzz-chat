@@ -15,7 +15,7 @@ export default function ModelStoreInitializer({
   const { data } = useQuery(
     trpc.providers.queryOptions(undefined, {
       initialData: providers,
-      refetchOnMount: true,
+      refetchOnMount: false,
       refetchOnReconnect: true,
       refetchOnWindowFocus: true,
     })
