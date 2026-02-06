@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageIcon, type LucideIcon, MessageSquare, Sparkles, Zap } from "lucide-react";
+import Image from "next/image";
 import { useContext } from "react";
 import { ModelSelectorLogo } from "@/components/ai-elements/model-selector";
 import { Button } from "@/components/ui/button";
@@ -86,14 +87,16 @@ export default function AuthPopup({
         <DialogTrigger asChild>
           <Button>Log in</Button>
         </DialogTrigger>
-        <DialogContent className="max-w-4xl gap-0 p-0">
+        <DialogContent className="max-w-4xl gap-0 overflow-hidden p-0">
           <div className="grid md:grid-cols-2">
-            <div className="bg-linear-to-br from-primary/10 via-primary/5 to-background p-10">
+            <div className="relative bg-linear-to-r from-[#3B82F6]/10 via-[#3B82F6]/5 to-transparent p-10">
+              {/* Blue decorative accent */}
               <div className="flex h-full flex-col justify-start space-y-8">
-                <div className="flex flex-col justify-center gap-2">
-                  <h3 className="font-semibold text-2xl text-foreground">
-                    Welcome to Fyzz
-                  </h3>
+                <div className="flex flex-col justify-center gap-3">
+                  <div>
+                    <h3 className="font-semibold text-foreground text-xl">Welcome to</h3>
+                    <Image src="/icon.svg" alt="Fyzz.chat" width={90} height={40} />
+                  </div>
                   <p className="text-muted-foreground text-sm">
                     Your all-in-one AI chat platform
                   </p>
@@ -118,8 +121,8 @@ export default function AuthPopup({
                 <div className="space-y-6">
                   {FEATURES.map((feature) => (
                     <div key={feature.title} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <feature.icon className="h-5 w-5 text-primary" />
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]/10">
+                        <feature.icon className="h-5 w-5 text-[#3B82F6]" />
                       </div>
                       <div>
                         <h4 className="mb-1 font-medium text-foreground text-sm">

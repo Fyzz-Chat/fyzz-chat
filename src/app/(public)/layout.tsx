@@ -46,8 +46,7 @@ export default async function Layout({
           href="/chat"
           className="mr-auto flex items-center gap-2 whitespace-pre font-medium text-lg"
         >
-          <Image src="/icon.svg" alt="Fyzz.chat" width={30} height={30} />
-          Fyzz.chat
+          <Image src="/icon.svg" alt="Fyzz.chat" width={70} height={40} />
         </Link>
         <Suspense fallback={<Skeleton className="h-10 w-28" />}>
           <HeaderItems />
