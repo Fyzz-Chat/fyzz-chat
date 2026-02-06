@@ -1,5 +1,7 @@
 "use client";
 
+import "katex/dist/katex.min.css";
+
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { CheckIcon, GlobeIcon } from "lucide-react";

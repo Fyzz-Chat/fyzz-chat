@@ -1,5 +1,3 @@
-import "katex/dist/katex.min.css";
-
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { MockAppSidebar } from "@/app/mock/mock-app-sidebar";
