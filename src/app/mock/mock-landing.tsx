@@ -13,7 +13,12 @@ export default function MockLanding() {
   const { setInitialMessage, setInitialModel, setInitialBrowse, setInitialFiles } =
     useInitialMessage();
   const model = useModelStore((state) => state.model);
+  const setDefaultModel = useModelStore((state) => state.setDefaultModel);
   const { setHandlers, setStatus } = useMockInput();
+
+  useEffect(() => {
+    setDefaultModel();
+  }, [setDefaultModel]);
 
   useEffect(() => {
     setStatus("ready");
