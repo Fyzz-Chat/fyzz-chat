@@ -15,6 +15,7 @@ import {
 } from "@/components/ai-elements/conversation";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
+import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useMockInput } from "@/lib/contexts/mock-input-context";
 import {
@@ -25,12 +26,13 @@ import {
   useRegenerateMessage,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
-import { uploadFileParts } from "@/lib/utils";
+import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
 export default function MockMessageList({ id }: { id: string }) {
   const router = useRouter();
+  const { layout } = useChatLayout();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
@@ -305,7 +307,12 @@ export default function MockMessageList({ id }: { id: string }) {
   return (
     <div className="flex h-[calc(100svh-132px)] flex-col overflow-auto md:h-[calc(100svh-164px)]">
       <Conversation>
-        <div className="absolute top-0 h-2 w-full bg-linear-to-b from-background to-transparent" />
+        <div
+          className={cn(
+            "absolute top-0 left-1/2 h-2 w-full -translate-x-1/2 bg-linear-to-b from-background to-transparent",
+            layout === "compact" ? "max-w-2xl" : "max-w-5xl"
+          )}
+        />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
             {!mounted ||
@@ -318,7 +325,12 @@ export default function MockMessageList({ id }: { id: string }) {
           </ChatLayoutWrapper>
         </ConversationContent>
         <ConversationScrollButton />
-        <div className="absolute bottom-0 h-2 w-full bg-linear-to-t from-background to-transparent" />
+        <div
+          className={cn(
+            "absolute bottom-0 left-1/2 h-2 w-full -translate-x-1/2 bg-linear-to-t from-background to-transparent",
+            layout === "compact" ? "max-w-164 md:max-w-160" : "max-w-244 md:max-w-240"
+          )}
+        />
       </Conversation>
     </div>
   );

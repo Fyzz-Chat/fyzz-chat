@@ -16,8 +16,8 @@ export function ChatLayoutWrapper({
   return (
     <div
       className={cn(
-        "mx-auto",
-        layout === "compact" ? "w-full lg:max-w-2xl" : "w-full max-w-5xl",
+        "mx-auto w-full",
+        layout === "compact" ? "lg:max-w-2xl" : "max-w-5xl",
         className
       )}
     >
