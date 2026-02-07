@@ -147,7 +147,7 @@ export default function InputForm({ className }: Readonly<{ className?: string }
     const textParam = searchParams.get("text");
 
     if (textParam && location.pathname === "/chat" && !input.trim()) {
-      setInput(decodeURIComponent(textParam));
+      setInput(textParam);
     }
   }, [location.search, location.pathname, input, setInput]);
 

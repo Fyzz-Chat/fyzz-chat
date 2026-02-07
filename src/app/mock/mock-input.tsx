@@ -63,7 +63,7 @@ export default function MockInput() {
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
-      handlersRef.current.onSubmit(message);
+      return handlersRef.current.onSubmit(message);
     },
     [handlersRef]
   );

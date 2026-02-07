@@ -45,6 +45,13 @@ export const InlineCitationCardTrigger = ({
       {sources[0] ? (
         <>
           {new URL(sources[0]).hostname} {sources.length > 1 && `+${sources.length - 1}`}
+          {(() => {
+            try {
+              return new URL(sources[0]).hostname;
+            } catch {
+              return "source";
+            }
+          })()} {sources.length > 1 && `+${sources.length - 1}`}
         </>
       ) : (
         "unknown"
@@ -235,7 +242,7 @@ export const InlineCitationSource = ({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="truncate break-all text-muted-foreground text-xs"
+        className="block truncate break-all text-muted-foreground text-xs"
       >
         {url}
       </a>

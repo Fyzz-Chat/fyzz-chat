@@ -32,6 +32,7 @@ export function FastLink({
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
     if (!isTouchDevice() && e.isTrusted && e.detail !== 0) {
       e.preventDefault();
+      return;
     }
     onClick?.(e);
   }

@@ -92,17 +92,20 @@ export async function saveMessage(
   const userId = await getUserIdFromSession();
 
   return prisma.$transaction(async (tx) => {
+    const content = getMessageContent(message);
+    const { id, role, parts, metadata } = message;
     const newMessage = await tx.message.create({
       data: {
-        ...message,
-        content: getMessageContent(message),
-        parts: message.parts as InputJsonValue,
+        id,
+        role,
+        content,
+        parts: parts as InputJsonValue,
         conversationId,
         promptTokens,
         completionTokens,
         metadata: {
-          ...message.metadata,
-          content: getMessageContent(message),
+          ...metadata,
+          content,
         } as InputJsonValue,
       },
     });

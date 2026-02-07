@@ -10,12 +10,19 @@ export default function MessageCopyAction({ message }: { message: CustomUIMessag
   const [isCopied, setIsCopied] = useState(false);
 
   function handleCopy() {
-    setIsCopied(true);
     const textContent = message.parts.find(
       (part): part is TextUIPart => part.type === "text"
     )?.text;
-    navigator.clipboard.writeText(textContent || "");
-    setTimeout(() => setIsCopied(false), 1500);
+    if (!navigator.clipboard.writeText) {
+      return;
+    }
+    try {
+      navigator.clipboard.writeText(textContent ?? "");
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500);
+    } catch {
+      setIsCopied(false);
+    }
   }
 
   return (

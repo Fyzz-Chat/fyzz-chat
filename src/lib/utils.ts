@@ -212,6 +212,9 @@ export function fileToFileUIPart(file: File, key: string): FileUIPart {
 
 export async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
   const response = await fetch(fileUIPart.url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch file for upload");
+  }
   const blob = await response.blob();
   const file = new File([blob], fileUIPart.filename || "file", {
     type: fileUIPart.mediaType,

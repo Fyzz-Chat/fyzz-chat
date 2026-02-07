@@ -80,7 +80,17 @@ export function CitationInline({
                 >
                   <InlineCitationSource
                     title={source.title}
-                    url={`${source.url}?utm_source=fyzz.chat&utm_medium=referral&utm_campaign=citation`}
+                    url={(() => {
+                      try {
+                        const url = new URL(source.url);
+                        url.searchParams.set("utm_source", "fyzz.chat");
+                        url.searchParams.set("utm_medium", "referral");
+                        url.searchParams.set("utm_campaign", "citation");
+                        return url.toString();
+                      } catch {
+                        return source.url;
+                      }
+                    })()}
                   />
                 </InlineCitationCarouselItem>
               ))}

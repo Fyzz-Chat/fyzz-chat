@@ -95,39 +95,47 @@ export default function MockMessageList({ id }: { id: string }) {
 
   const handleRegenerateMessage = useCallback(
     async (messageId: string) => {
-      await regenerateMessage.mutateAsync({
-        messageId,
-        conversationId: id,
-      });
-      await regenerateRef.current({
-        messageId,
-        body: {
-          id,
-          model: model.id,
-          temporaryChat: false,
-          browse: browseRef.current,
-        },
-      });
+      try {
+        await regenerateMessage.mutateAsync({
+          messageId,
+          conversationId: id,
+        });
+        await regenerateRef.current({
+          messageId,
+          body: {
+            id,
+            model: model.id,
+            temporaryChat: false,
+            browse: browseRef.current,
+          },
+        });
+      } catch {
+        // Regeneration failed - user can retry
+      }
     },
     [regenerateMessage, id, model.id, browseRef]
   );
 
   const handleEditMessage = useCallback(
     async (messageId: string, newContent: string) => {
-      await regenerateMessage.mutateAsync({
-        messageId,
-        conversationId: id,
-        newContent,
-      });
-      await regenerateRef.current({
-        messageId,
-        body: {
-          id,
-          model: model.id,
-          temporaryChat: false,
-          browse: browseRef.current,
-        },
-      });
+      try {
+        await regenerateMessage.mutateAsync({
+          messageId,
+          conversationId: id,
+          newContent,
+        });
+        await regenerateRef.current({
+          messageId,
+          body: {
+            id,
+            model: model.id,
+            temporaryChat: false,
+            browse: browseRef.current,
+          },
+        });
+      } catch {
+        // Editing failed - user can retry
+      }
     },
     [regenerateMessage, id, model.id, browseRef]
   );
@@ -207,26 +215,33 @@ export default function MockMessageList({ id }: { id: string }) {
   ]);
 
   useEffect(() => {
-    if (
-      initialMessage &&
-      messages.length === 0 &&
-      !hasSentInitial.current &&
-      model.id &&
-      providers.length > 0
-    ) {
-      hasSentInitial.current = true;
-      createConversationOptimistic.mutateAsync({
-        id,
-        title: "New Chat",
-        model: model.id,
-        messages: [],
-        lastMessageAt: new Date(),
-      });
-      handleSubmit({ text: initialMessage, files: initialFiles });
-      setInitialMessage(null);
-      setInitialFiles([]);
-      setAreFilesUploading(false);
-    }
+    const sendInitial = async () => {
+      if (
+        initialMessage &&
+        messages.length === 0 &&
+        !hasSentInitial.current &&
+        model.id &&
+        providers.length > 0
+      ) {
+        hasSentInitial.current = true;
+        try {
+          await createConversationOptimistic.mutateAsync({
+            id,
+            title: "New Chat",
+            model: model.id,
+            messages: [],
+            lastMessageAt: new Date(),
+          });
+          await handleSubmit({ text: initialMessage, files: initialFiles });
+          setInitialMessage(null);
+          setInitialFiles([]);
+          setAreFilesUploading(false);
+        } catch {
+          hasSentInitial.current = false;
+        }
+      }
+    };
+    sendInitial();
   }, [
     initialMessage,
     messages.length,
@@ -276,6 +291,7 @@ export default function MockMessageList({ id }: { id: string }) {
 
   useEffect(() => {
     if (
+      !initialMessage &&
       !hasSentInitial.current &&
       !persistedMessagesData.isPending &&
       !conversationData.isPending &&
@@ -285,6 +301,7 @@ export default function MockMessageList({ id }: { id: string }) {
       router.push("/mock");
     }
   }, [
+    initialMessage,
     persistedMessagesData.isPending,
     conversationData.isPending,
     streamingMessages.length,

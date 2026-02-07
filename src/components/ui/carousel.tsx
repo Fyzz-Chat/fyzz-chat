@@ -105,6 +105,7 @@ const Carousel = React.forwardRef<
       api.on("select", onSelect);
 
       return () => {
+        api?.off("reInit", onSelect);
         api?.off("select", onSelect);
       };
     }, [api, onSelect]);
@@ -126,8 +127,6 @@ const Carousel = React.forwardRef<
           ref={ref}
           onKeyDownCapture={handleKeyDown}
           className={cn("relative", className)}
-          aria-label="region"
-          aria-roledescription="carousel"
           {...props}
         >
           {children}

@@ -87,11 +87,13 @@ export default function MockChatSidebar({
     searchQuery
   );
 
-  const allConversations = data?.pages.flatMap((page) => page.items) || [];
-  const groupedConversations = useMemo(
-    () => groupConversationsByTime(allConversations as PartialConversation[]),
-    [allConversations]
-  );
+  const { allConversations, groupedConversations } = useMemo(() => {
+    const all = data?.pages.flatMap((page) => page.items) ?? [];
+    return {
+      allConversations: all,
+      groupedConversations: groupConversationsByTime(all),
+    };
+  }, [data?.pages]);
 
   const { ref } = useInView({
     onChange: (inView) => {

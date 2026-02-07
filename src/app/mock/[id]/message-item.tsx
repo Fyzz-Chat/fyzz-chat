@@ -56,6 +56,7 @@ function MessageItem({
 }) {
   const model = useModelStore((state) => state.getModel(message.metadata?.model));
   const renderCount = useRef(0);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   renderCount.current += 1;
 
   const [isEditing, setIsEditing] = useState(false);
@@ -114,7 +115,7 @@ function MessageItem({
   useEffect(() => {
     if (!isEditing) return;
 
-    const textarea = document.getElementById("edit-message") as HTMLTextAreaElement;
+    const textarea = editTextareaRef.current;
     if (textarea) {
       textarea.focus();
       textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
@@ -143,7 +144,9 @@ function MessageItem({
           ))}
         </MessageAttachments>
       )}
-      {message.parts.length < 2 && message.role === "assistant" && <TypingIndicator />}
+      {isStreaming && message.parts.length < 2 && message.role === "assistant" && (
+        <TypingIndicator />
+      )}
       {message.parts.map((part, i) => {
         switch (part.type) {
           case "text": {
@@ -154,7 +157,7 @@ function MessageItem({
                   className="min-w-[calc(max(70%,300px))] p-0!"
                 >
                   <textarea
-                    id="edit-message"
+                    ref={editTextareaRef}
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
                     className="w-full resize-none rounded-md bg-secondary px-4 py-3 text-sm focus-visible:outline-hidden"

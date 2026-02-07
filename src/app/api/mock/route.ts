@@ -263,7 +263,10 @@ export async function POST(req: NextRequest) {
         };
       }
     },
-    onError: (error) => JSON.stringify(error),
+    onError: (error) => {
+      logger.error(error instanceof Error ? error.message : "Unknown error");
+      return "An unexpected error occurred.";
+    },
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage, isAborted }) => {
       after(async () => {
@@ -323,7 +326,9 @@ async function getTools(
     tools.memory = memoryTool;
   }
 
-  tools.readUrl = readUrlTool;
+  if (search) {
+    tools.readUrl = readUrlTool;
+  }
 
   const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);
