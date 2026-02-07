@@ -74,8 +74,14 @@ export function CitationInline({
             </InlineCitationCarouselHeader>
             <InlineCitationCarouselContent>
               {resolvedSources.map((source) => (
-                <InlineCitationCarouselItem key={source.sourceId}>
-                  <InlineCitationSource title={source.title} url={source.url} />
+                <InlineCitationCarouselItem
+                  key={source.sourceId}
+                  className="min-w-0 overflow-hidden"
+                >
+                  <InlineCitationSource
+                    title={source.title}
+                    url={`${source.url}?utm_source=fyzz.chat&utm_medium=referral&utm_campaign=citation`}
+                  />
                 </InlineCitationCarouselItem>
               ))}
             </InlineCitationCarouselContent>
