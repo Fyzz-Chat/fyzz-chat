@@ -58,8 +58,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
                 </div>
               )}
               <div className="flex-1">{children}</div>
-              <MockInput />
-              <Pad />
+              <Pad>
+                <MockInput />
+              </Pad>
             </SidebarInset>
           </SidebarProvider>
         </ChatLayoutProvider>

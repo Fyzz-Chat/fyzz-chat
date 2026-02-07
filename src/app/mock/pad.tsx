@@ -1,14 +1,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
-export default function Pad() {
+export default function Pad({ children }: { children: ReactNode }) {
   const params = useParams<{ id: string }>();
   const id = params.id;
 
-  if (id) {
-    return null;
-  }
-
-  return <div className="flex-1" />;
+  return (
+    <div
+      className={cn(
+        id
+          ? "absolute right-0 bottom-0 left-0 md:bottom-4"
+          : "relative flex flex-1 items-start"
+      )}
+    >
+      {children}
+    </div>
+  );
 }

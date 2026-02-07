@@ -82,7 +82,7 @@ export default function MockInput() {
 
   return (
     <PromptInputProvider>
-      <ChatLayoutWrapper>
+      <ChatLayoutWrapper className="bg-background">
         <PromptInput
           globalDrop
           multiple
