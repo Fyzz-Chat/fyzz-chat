@@ -32,12 +32,13 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
-import { useMockInput } from "@/lib/contexts/mock-input-context";
+import { useMockInput, useMockInputStatus } from "@/lib/contexts/mock-input-context";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 
 export default function MockInput() {
-  const { handlersRef, browseRef, status, areFilesUploading } = useMockInput();
+  const { handlersRef, browseRef } = useMockInput();
+  const { status, areFilesUploading } = useMockInputStatus();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);

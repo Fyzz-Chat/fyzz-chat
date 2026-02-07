@@ -5,7 +5,7 @@ import "katex/dist/katex.min.css";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
@@ -57,19 +57,21 @@ export default function MockMessageList({ id }: { id: string }) {
   const persistedMessages = persistedMessagesData.data?.messages || [];
   const hasSentInitial = useRef(false);
   const nextMessageId = useRef<string>(uuidv4());
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/mock",
+        prepareSendMessagesRequest({ id, messages, body }) {
+          const messagesToSend = body?.temporaryChat ? messages : [messages.at(-1)];
+          return { body: { id, messages: messagesToSend, ...body } };
+        },
+      }),
+    []
+  );
+
   const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
-    transport: new DefaultChatTransport({
-      api: "/api/mock",
-      prepareSendMessagesRequest({ id, messages, body }) {
-        const messagesToSend = body?.temporaryChat ? messages : [messages.at(-1)];
-        return { body: { id, messages: messagesToSend, ...body } };
-      },
-    }),
+    transport,
     id,
     generateId: () => nextMessageId.current,
     messages: persistedMessages,
@@ -315,8 +317,7 @@ export default function MockMessageList({ id }: { id: string }) {
         />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
-            {!mounted ||
-            (persistedMessages.length === 0 && streamingMessages.length === 0) ? null : (
+            {persistedMessages.length === 0 && streamingMessages.length === 0 ? null : (
               <Fragment>
                 {existingMessagesList}
                 {streamingMessagesList}

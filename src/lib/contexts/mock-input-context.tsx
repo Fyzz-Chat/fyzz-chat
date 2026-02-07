@@ -21,14 +21,20 @@ interface MockInputHandlers {
 interface MockInputContextType {
   handlersRef: React.RefObject<MockInputHandlers>;
   browseRef: React.RefObject<boolean>;
-  status: ChatStatus;
   setStatus: (status: ChatStatus) => void;
-  areFilesUploading: boolean;
   setAreFilesUploading: (uploading: boolean) => void;
   setHandlers: (handlers: MockInputHandlers) => void;
 }
 
+interface MockInputStatusContextType {
+  status: ChatStatus;
+  areFilesUploading: boolean;
+}
+
 const MockInputContext = createContext<MockInputContextType | undefined>(undefined);
+const MockInputStatusContext = createContext<MockInputStatusContextType | undefined>(
+  undefined
+);
 
 export function MockInputProvider({ children }: { children: ReactNode }) {
   const handlersRef = useRef<MockInputHandlers>({
@@ -44,26 +50,46 @@ export function MockInputProvider({ children }: { children: ReactNode }) {
     handlersRef.current = handlers;
   }, []);
 
-  const value = useMemo(
+  const stableValue = useMemo(
     () => ({
       handlersRef,
       browseRef,
-      status,
       setStatus,
-      areFilesUploading,
       setAreFilesUploading,
       setHandlers,
     }),
-    [status, areFilesUploading, setHandlers]
+    [setHandlers]
   );
 
-  return <MockInputContext.Provider value={value}>{children}</MockInputContext.Provider>;
+  const statusValue = useMemo(
+    () => ({
+      status,
+      areFilesUploading,
+    }),
+    [status, areFilesUploading]
+  );
+
+  return (
+    <MockInputContext.Provider value={stableValue}>
+      <MockInputStatusContext.Provider value={statusValue}>
+        {children}
+      </MockInputStatusContext.Provider>
+    </MockInputContext.Provider>
+  );
 }
 
 export function useMockInput() {
   const context = useContext(MockInputContext);
   if (context === undefined) {
     throw new Error("useMockInput must be used within a MockInputProvider");
+  }
+  return context;
+}
+
+export function useMockInputStatus() {
+  const context = useContext(MockInputStatusContext);
+  if (context === undefined) {
+    throw new Error("useMockInputStatus must be used within a MockInputProvider");
   }
   return context;
 }
