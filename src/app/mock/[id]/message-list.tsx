@@ -6,6 +6,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
@@ -53,7 +54,7 @@ export default function MockMessageList({ id }: { id: string }) {
   });
   const persistedMessages = persistedMessagesData.data?.messages || [];
   const hasSentInitial = useRef(false);
-  const nextMessageId = useRef<string>(crypto.randomUUID());
+  const nextMessageId = useRef<string>(uuidv4());
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -183,7 +184,7 @@ export default function MockMessageList({ id }: { id: string }) {
         }
       );
 
-      nextMessageId.current = crypto.randomUUID();
+      nextMessageId.current = uuidv4();
     },
     [id, model.id, addMessage, setAreFilesUploading, browseRef]
   );

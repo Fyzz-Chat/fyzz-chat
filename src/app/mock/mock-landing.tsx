@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useMockInput } from "@/lib/contexts/mock-input-context";
@@ -25,7 +26,7 @@ export default function MockLanding() {
     setHandlers({
       onSubmit: (message: PromptInputMessage) => {
         if (!message.text) return;
-        const id = crypto.randomUUID();
+        const id = uuidv4();
         setInitialMessage(message.text);
         setInitialModel(model.id);
         setInitialBrowse(false);
