@@ -224,6 +224,16 @@ function MessageItem({
               </Tool>
             );
           }
+          case "tool-web_search": {
+            return (
+              <Tool key={`${message.id}-tool-search_web-${i}`}>
+                <ToolHeader type="tool-search_web" state={part.state} />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                </ToolContent>
+              </Tool>
+            );
+          }
           case "dynamic-tool": {
             return (
               <Tool key={`${message.id}-${part.toolName}-${i}`}>
