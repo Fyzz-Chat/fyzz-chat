@@ -1,6 +1,6 @@
 "use client";
 
-import type { FileUIPart, ToolUIPart } from "ai";
+import type { FileUIPart, SourceUrlUIPart, ToolUIPart } from "ai";
 import { Check, Pencil, X } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageCopyAction from "@/app/mock/[id]/message-copy-action";
@@ -74,6 +74,11 @@ function MessageItem({
 
   const attachments: FileUIPart[] = useMemo(() => {
     return message.parts.filter((part): part is FileUIPart => part.type === "file");
+  }, [message.parts]);
+  const sourceUrls: SourceUrlUIPart[] = useMemo(() => {
+    return message.parts.filter(
+      (part): part is SourceUrlUIPart => part.type === "source-url"
+    );
   }, [message.parts]);
 
   const textContent = useMemo(() => {
@@ -163,6 +168,7 @@ function MessageItem({
                 <MessageResponse
                   mode={isStreaming ? "streaming" : "static"}
                   isAnimating={isStreaming}
+                  sources={sourceUrls}
                 >
                   {part.text}
                 </MessageResponse>

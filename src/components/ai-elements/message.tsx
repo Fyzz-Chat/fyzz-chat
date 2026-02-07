@@ -1,10 +1,11 @@
 "use client";
 
-import type { FileUIPart, UIMessage } from "ai";
+import type { FileUIPart, SourceUrlUIPart, UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon, PaperclipIcon, XIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
-import { createContext, memo, useContext, useEffect, useState } from "react";
+import { createContext, memo, useContext, useEffect, useMemo, useState } from "react";
 import { Streamdown } from "streamdown";
+import { CitationInline } from "@/components/chat/citation-inline";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import {
@@ -14,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import rehypeCitations from "@/lib/utils/rehype-citations";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage["role"];
@@ -284,16 +286,37 @@ export const MessageBranchPage = ({ className, ...props }: MessageBranchPageProp
   );
 };
 
-export type MessageResponseProps = ComponentProps<typeof Streamdown>;
+export type MessageResponseProps = ComponentProps<typeof Streamdown> & {
+  sources?: SourceUrlUIPart[];
+};
 
 export const MessageResponse = memo(
-  ({ className, ...props }: MessageResponseProps) => (
-    <Streamdown
-      className={cn("size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0", className)}
-      {...props}
-    />
-  ),
-  (prevProps, nextProps) => prevProps.children === nextProps.children
+  ({ className, sources, ...props }: MessageResponseProps) => {
+    const citationComponents = useMemo(() => {
+      if (!sources || sources.length === 0) return undefined;
+      return {
+        cite: (citeProps: HTMLAttributes<HTMLElement>) => (
+          <CitationInline sources={sources} {...citeProps} />
+        ),
+      };
+    }, [sources]);
+
+    return (
+      <Streamdown
+        className={cn(
+          "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+          className
+        )}
+        {...(citationComponents && {
+          rehypePlugins: [rehypeCitations],
+          components: citationComponents,
+        })}
+        {...props}
+      />
+    );
+  },
+  (prevProps, nextProps) =>
+    prevProps.children === nextProps.children && prevProps.sources === nextProps.sources
 );
 
 MessageResponse.displayName = "MessageResponse";
