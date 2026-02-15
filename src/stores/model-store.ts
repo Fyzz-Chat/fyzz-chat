@@ -34,10 +34,14 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
   setProviders: (providers: PublicProvider[]) => {
     const availableModels = providers.flatMap((provider) => provider.models);
     const geminiFlashLiteId = findGeminiId(availableModels);
+    const currentId = get().model?.id;
+    const preserveCurrent = currentId && availableModels.some((m) => m.id === currentId);
     set({
       providers,
       availableModels,
-      model: getModelById(availableModels, geminiFlashLiteId || availableModels[0]?.id),
+      model: preserveCurrent
+        ? getModelById(availableModels, currentId)
+        : getModelById(availableModels, geminiFlashLiteId || availableModels[0]?.id),
     });
   },
   getModel: (modelId?: string) =>

@@ -5,17 +5,16 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
-import { useMockInput } from "@/lib/contexts/mock-input-context";
 import { useModelStore } from "@/stores/model-store";
 
-export default function MockLanding() {
+export default function ChatLanding() {
   const router = useRouter();
   const { setInitialMessage, setInitialModel, setInitialBrowse, setInitialFiles } =
     useInitialMessage();
-  const model = useModelStore((state) => state.model);
   const setDefaultModel = useModelStore((state) => state.setDefaultModel);
-  const { setHandlers, setStatus } = useMockInput();
+  const { setHandlers, setStatus, browseRef } = useChatInput();
 
   useEffect(() => {
     setDefaultModel();
@@ -27,15 +26,20 @@ export default function MockLanding() {
       onSubmit: (message: PromptInputMessage) => {
         if (!message.text) return;
         const id = uuidv4();
+        const currentModel = useModelStore.getState().model;
+        const modelId = currentModel?.id;
         setInitialMessage(message.text);
-        setInitialModel(model.id);
-        setInitialBrowse(false);
+        if (modelId) {
+          setInitialModel(modelId);
+        } else {
+          setInitialModel(null);
+        }
+        setInitialBrowse(browseRef.current);
         setInitialFiles(message.files || []);
-        router.push(`/mock/${id}`);
+        router.push(`/chat/${id}`);
       },
     });
   }, [
-    model.id,
     router,
     setHandlers,
     setStatus,
@@ -43,6 +47,7 @@ export default function MockLanding() {
     setInitialModel,
     setInitialBrowse,
     setInitialFiles,
+    browseRef,
   ]);
 
   return (

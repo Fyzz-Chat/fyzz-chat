@@ -7,7 +7,6 @@ import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import MessageItem from "@/app/mock/[id]/message-item";
 import {
   Conversation,
   ConversationContent,
@@ -15,9 +14,10 @@ import {
 } from "@/components/ai-elements/conversation";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
+import MessageItem from "@/components/chat/message-item";
+import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
-import { useMockInput } from "@/lib/contexts/mock-input-context";
 import {
   useAddMessage,
   useConversation,
@@ -30,14 +30,14 @@ import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
-export default function MockMessageList({ id }: { id: string }) {
+export default function ChatMessageList({ id }: { id: string }) {
   const router = useRouter();
   const { layout } = useChatLayout();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
-  const { setHandlers, setStatus, setAreFilesUploading, browseRef } = useMockInput();
+  const { setHandlers, setStatus, setAreFilesUploading, browseRef } = useChatInput();
   const addMessage = useAddMessage(id);
   const createConversationOptimistic = useCreateConversationOptimistic();
   const regenerateMessage = useRegenerateMessage();
@@ -61,7 +61,7 @@ export default function MockMessageList({ id }: { id: string }) {
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
-        api: "/api/mock",
+        api: "/api/chat",
         prepareSendMessagesRequest({ id, messages, body }) {
           const messagesToSend = body?.temporaryChat ? messages : [messages.at(-1)];
           return { body: { id, messages: messagesToSend, ...body } };
@@ -203,13 +203,15 @@ export default function MockMessageList({ id }: { id: string }) {
 
   useEffect(() => {
     const modelToUse = conversationData.data?.model || contextInitialModel;
-    if (modelToUse) {
+    const canResolveModel = providers.length > 0;
+    if (modelToUse && canResolveModel) {
       setModel(modelToUse);
       setContextInitialModel(null);
     }
   }, [
     conversationData.data?.model,
     contextInitialModel,
+    providers.length,
     setModel,
     setContextInitialModel,
   ]);
@@ -298,7 +300,7 @@ export default function MockMessageList({ id }: { id: string }) {
       streamingMessages.length === 0 &&
       persistedMessages.length === 0
     ) {
-      router.push("/mock");
+      router.push("/chat");
     }
   }, [
     initialMessage,

@@ -12,32 +12,32 @@ import {
 } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 
-interface MockInputHandlers {
+interface ChatInputHandlers {
   onSubmit: (message: PromptInputMessage) => void;
   onStop?: () => void;
   onModelChange?: (conversationId: string, modelId: string) => void;
 }
 
-interface MockInputContextType {
-  handlersRef: React.RefObject<MockInputHandlers>;
+interface ChatInputContextType {
+  handlersRef: React.RefObject<ChatInputHandlers>;
   browseRef: React.RefObject<boolean>;
   setStatus: (status: ChatStatus) => void;
   setAreFilesUploading: (uploading: boolean) => void;
-  setHandlers: (handlers: MockInputHandlers) => void;
+  setHandlers: (handlers: ChatInputHandlers) => void;
 }
 
-interface MockInputStatusContextType {
+interface ChatInputStatusContextType {
   status: ChatStatus;
   areFilesUploading: boolean;
 }
 
-const MockInputContext = createContext<MockInputContextType | undefined>(undefined);
-const MockInputStatusContext = createContext<MockInputStatusContextType | undefined>(
+const ChatInputContext = createContext<ChatInputContextType | undefined>(undefined);
+const ChatInputStatusContext = createContext<ChatInputStatusContextType | undefined>(
   undefined
 );
 
-export function MockInputProvider({ children }: { children: ReactNode }) {
-  const handlersRef = useRef<MockInputHandlers>({
+export function ChatInputProvider({ children }: { children: ReactNode }) {
+  const handlersRef = useRef<ChatInputHandlers>({
     onSubmit: () => {
       // noop default
     },
@@ -46,7 +46,7 @@ export function MockInputProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<ChatStatus>("ready");
   const [areFilesUploading, setAreFilesUploading] = useState(false);
 
-  const setHandlers = useCallback((handlers: MockInputHandlers) => {
+  const setHandlers = useCallback((handlers: ChatInputHandlers) => {
     handlersRef.current = handlers;
   }, []);
 
@@ -70,26 +70,26 @@ export function MockInputProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <MockInputContext.Provider value={stableValue}>
-      <MockInputStatusContext.Provider value={statusValue}>
+    <ChatInputContext.Provider value={stableValue}>
+      <ChatInputStatusContext.Provider value={statusValue}>
         {children}
-      </MockInputStatusContext.Provider>
-    </MockInputContext.Provider>
+      </ChatInputStatusContext.Provider>
+    </ChatInputContext.Provider>
   );
 }
 
-export function useMockInput() {
-  const context = useContext(MockInputContext);
+export function useChatInput() {
+  const context = useContext(ChatInputContext);
   if (context === undefined) {
-    throw new Error("useMockInput must be used within a MockInputProvider");
+    throw new Error("useChatInput must be used within a ChatInputProvider");
   }
   return context;
 }
 
-export function useMockInputStatus() {
-  const context = useContext(MockInputStatusContext);
+export function useChatInputStatus() {
+  const context = useContext(ChatInputStatusContext);
   if (context === undefined) {
-    throw new Error("useMockInputStatus must be used within a MockInputProvider");
+    throw new Error("useChatInputStatus must be used within a ChatInputProvider");
   }
   return context;
 }

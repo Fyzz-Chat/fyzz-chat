@@ -3,8 +3,6 @@
 import type { FileUIPart, SourceUrlUIPart, ToolUIPart } from "ai";
 import { Check, Pencil, X } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import MessageCopyAction from "@/app/mock/[id]/message-copy-action";
-import MessageRegenerateAction from "@/app/mock/[id]/message-regenerate-action";
 import {
   Message,
   MessageAction,
@@ -28,6 +26,8 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/components/ai-elements/tool";
+import MessageCopyAction from "@/components/chat/message-copy-action";
+import MessageRegenerateAction from "@/components/chat/message-regenerate-action";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
@@ -62,16 +62,6 @@ function MessageItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-
-  // if (renderCount.current === 1) {
-  //   console.log(
-  //     `[MessageItem] ✅ FIRST render - ID: ${message.id.slice(0, 8)}, Role: ${message.role}, Streaming: ${isStreaming}`
-  //   );
-  // } else {
-  //   console.log(
-  //     `[MessageItem] 🔄 Re-render #${renderCount.current} - ID: ${message.id.slice(0, 8)} (This should ONLY be streaming messages!)`
-  //   );
-  // }
 
   const attachments: FileUIPart[] = useMemo(() => {
     return message.parts.filter((part): part is FileUIPart => part.type === "file");

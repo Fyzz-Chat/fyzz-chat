@@ -30,15 +30,11 @@ import {
   logDuration,
   mapFileParts,
 } from "@/lib/backend/utils";
-import {
-  appendMessageToConversation,
-  hasDefaultTitle,
-  lockConversation,
-  unlockConversation,
-} from "@/lib/dao/conversations";
+import { appendMessageToConversation, hasDefaultTitle } from "@/lib/dao/conversations";
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession, type SessionUser } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
+import prisma from "@/lib/prisma/prisma";
 import {
   closeMcpClients,
   getMcpClients,
@@ -49,6 +45,46 @@ import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
 
 export const maxDuration = 55;
+
+async function getOrCreateConversation(
+  id: string,
+  userId: string,
+  modelId: string
+): Promise<
+  | { conversation: { id: string; userId: string; model: string }; error?: never }
+  | { conversation: null; error: string }
+> {
+  const existing = await prisma.conversation.findUnique({
+    where: { id },
+    select: { id: true, userId: true, model: true },
+  });
+
+  if (existing) {
+    if (existing.userId !== userId) {
+      return { conversation: null, error: "unauthorized" };
+    }
+    return { conversation: existing };
+  }
+
+  try {
+    const newConversation = await prisma.conversation.create({
+      data: { id, title: "New Chat", model: modelId, userId },
+    });
+    return { conversation: newConversation };
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
+      const retry = await prisma.conversation.findUnique({ where: { id } });
+      if (!retry) {
+        throw error;
+      }
+      if (retry?.userId !== userId) {
+        return { conversation: null, error: "unauthorized" };
+      }
+      return { conversation: retry };
+    }
+    throw error;
+  }
+}
 
 export async function POST(req: NextRequest) {
   const start = performance.now();
@@ -71,28 +107,29 @@ export async function POST(req: NextRequest) {
     );
 
     if (existingMessages.length === 0) {
-      throw new Error("Cannot send an empty message to a new conversation.");
+      return new Response("Cannot send an empty message to a new conversation.", {
+        status: 400,
+      });
     }
   } else {
-    const conversationMessages = await caller.messages({ id });
+    const getOrCreate = await getOrCreateConversation(id, user.id, modelId);
 
-    logDuration(start, "Conversation fetched");
-
-    existingMessages = conversationMessages.messages;
-
-    const lock = await acquireConversationLock(id);
-
-    if (!lock) {
-      return new Response("conversation_locked", { status: 400 });
+    if (getOrCreate.error) {
+      return new Response(getOrCreate.error, { status: 403 });
     }
 
-    if (newMessage && hasTextPart(newMessage)) {
+    logDuration(start, "Conversation fetched or created");
+
+    const conversationMessages = await caller.messages({ id });
+    existingMessages = conversationMessages.messages;
+    const isRegeneratedMessage = existingMessages.find((m) => m.id === newMessage.id);
+
+    if (newMessage && hasTextPart(newMessage) && !isRegeneratedMessage) {
       await appendMessageToConversation(newMessage, id);
 
       const mappedMessage = mapFileParts(newMessage, user.id, id);
       existingMessages = [...existingMessages, mappedMessage];
     } else if (existingMessages.length === 0) {
-      await unlockConversation(id);
       throw new Error("Cannot send an empty message to a new conversation.");
     }
   }
@@ -113,7 +150,12 @@ export async function POST(req: NextRequest) {
       logger.error(error);
 
       if (error instanceof McpClientInitError) {
-        return new NextResponse(error.cause as string, { status: 502 });
+        return new NextResponse(
+          typeof error.cause === "string"
+            ? error.cause
+            : "MCP client initialization failed",
+          { status: 502 }
+        );
       }
     }
   }
@@ -132,13 +174,14 @@ export async function POST(req: NextRequest) {
   abortController.abortIn(maxDuration - 5);
 
   const reasoning = createReasoningTimer();
+  let conversationEnded = false;
 
   async function endConversation() {
-    if (temporaryChat) {
+    if (temporaryChat || conversationEnded) {
       return;
     }
+    conversationEnded = true;
 
-    await unlockConversation(id);
     await closeMcpClients(mcpClients);
     abortController.cancelAbort();
 
@@ -232,7 +275,10 @@ export async function POST(req: NextRequest) {
         };
       }
     },
-    onError: (error) => JSON.stringify(error),
+    onError: (error) => {
+      logger.error(error instanceof Error ? error.message : "Unknown error");
+      return "An unexpected error occurred.";
+    },
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage, isAborted }) => {
       after(async () => {
@@ -281,18 +327,6 @@ export async function POST(req: NextRequest) {
   });
 }
 
-async function acquireConversationLock(conversationId: string): Promise<boolean> {
-  for (let i = 0; i < 15; i++) {
-    const locked = await lockConversation(conversationId);
-    if (locked) {
-      return true;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-  logger.error("Failed to acquire conversation lock");
-  return false;
-}
-
 async function getTools(
   user: SessionUser,
   modelId: string,
@@ -304,7 +338,9 @@ async function getTools(
     tools.memory = memoryTool;
   }
 
-  tools.readUrl = readUrlTool;
+  if (search) {
+    tools.readUrl = readUrlTool;
+  }
 
   const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);
