@@ -65,19 +65,19 @@ const FEATURES: Feature[] = [
   },
 ];
 
-type AuthPopupProps = {
+type AuthPopupProps = Readonly<{
   anonymousLogin?: boolean;
   hasGoogle?: boolean;
   title?: string;
   description?: string;
-};
+}>;
 
 export default function AuthPopup({
   anonymousLogin = false,
   hasGoogle = false,
   title = "Log in or sign up",
   description = "Claude, ChatGPT, Gemini, Perplexity, and more, all in one place, just a few clicks away",
-}: Readonly<AuthPopupProps>) {
+}: AuthPopupProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { dialogOpen, setDialogOpen } = useContext(AuthContext);
 

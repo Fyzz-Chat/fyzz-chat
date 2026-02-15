@@ -8,11 +8,11 @@ export function KeyHandler({
   keyString,
   handler,
   dependencies = [],
-}: {
+}: Readonly<{
   keyString: string;
   handler: () => void;
   dependencies?: unknown[];
-}) {
+}>) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check if the user is currently typing in an input field

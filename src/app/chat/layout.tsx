@@ -21,7 +21,7 @@ import { InitialMessageProvider } from "@/lib/contexts/initial-message-context";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
 
-export default async function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
   const userPromise = getUserFromSessionPublic();
   const conversationsPromise = userPromise.then((user) =>
     user

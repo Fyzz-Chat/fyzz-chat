@@ -48,12 +48,12 @@ function MessageItem({
   isStreaming = false,
   onRegenerate,
   onEdit,
-}: {
+}: Readonly<{
   message: CustomUIMessage;
   isStreaming?: boolean;
   onRegenerate?: (messageId: string) => Promise<void>;
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
-}) {
+}>) {
   const model = useModelStore((state) => state.getModel(message.metadata?.model));
   const renderCount = useRef(0);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);

@@ -15,9 +15,9 @@ import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 
-type Props = {
+type Props = Readonly<{
   params: Promise<{ token: string }>;
-};
+}>;
 
 export async function generateMetadata(
   { params }: Props,
@@ -52,9 +52,9 @@ export async function generateMetadata(
 
 export default async function SharePage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ token: string }>;
-}) {
+}>) {
   const { token } = await params;
 
   const tokenData = jwt.verify(token, conf.jwtSecret) as { messageId: string };

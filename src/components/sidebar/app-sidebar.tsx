@@ -22,7 +22,7 @@ import {
 import { getVersion } from "@/lib/backend/utils";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 
-export async function AppSidebar({ children }: { children: ReactNode }) {
+export async function AppSidebar({ children }: Readonly<{ children: ReactNode }>) {
   const version = getVersion();
   const user = await getUserFromSessionPublic();
 

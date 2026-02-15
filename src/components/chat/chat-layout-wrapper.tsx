@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 export function ChatLayoutWrapper({
   children,
   className,
-}: {
+}: Readonly<{
   children: ReactNode;
   className?: string;
-}) {
+}>) {
   const { layout } = useChatLayout();
 
   return (
