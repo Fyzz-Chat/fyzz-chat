@@ -354,6 +354,13 @@ export function useCreateConversationOptimistic() {
 
   return useMutation({
     mutationFn: async (conversation: PartialConversation) => {
+      // Cancel in-flight queries to prevent them from overwriting optimistic data
+      // (e.g. the conversation query returning null before the DB row is created)
+      await queryClient.cancelQueries(
+        trpc.conversation.queryFilter({ id: conversation.id })
+      );
+      await queryClient.cancelQueries(trpc.messages.queryFilter({ id: conversation.id }));
+
       queryClient.setQueryData(
         trpc.conversation.queryKey({ id: conversation.id }),
         conversation
