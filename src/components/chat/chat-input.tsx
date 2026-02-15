@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, GlobeIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useMemo, useState } from "react";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -33,8 +33,19 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
-import { cn } from "@/lib/utils";
+import { cn, debounce } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+
+const INPUT_STORAGE_KEY = "fyzz-input-content";
+
+function getPersistedInput() {
+  if (typeof localStorage === "undefined") return "";
+  return localStorage.getItem(INPUT_STORAGE_KEY) || "";
+}
+
+const persistInput = debounce((input: string) => {
+  localStorage.setItem(INPUT_STORAGE_KEY, input);
+}, 1000);
 
 export default function ChatInput() {
   const { handlersRef, browseRef } = useChatInput();
@@ -52,6 +63,7 @@ export default function ChatInput() {
     () => models.find((m) => m.id === model.id),
     [models, model.id]
   );
+  const [initialInput] = useState(getPersistedInput);
   const [browse, _setBrowse] = useState(false);
   const setBrowse = useCallback(
     (value: boolean) => {
@@ -61,8 +73,13 @@ export default function ChatInput() {
     [browseRef]
   );
 
+  const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    persistInput(e.currentTarget.value);
+  }, []);
+
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
+      localStorage.removeItem(INPUT_STORAGE_KEY);
       return handlersRef.current.onSubmit(message);
     },
     [handlersRef]
@@ -82,7 +99,7 @@ export default function ChatInput() {
   );
 
   return (
-    <PromptInputProvider>
+    <PromptInputProvider initialInput={initialInput}>
       <ChatLayoutWrapper className="bg-background">
         <PromptInput
           globalDrop
@@ -99,7 +116,10 @@ export default function ChatInput() {
             )}
           </PromptInputAttachments>
           <PromptInputBody>
-            <PromptInputTextarea placeholder="Type a message to start..." />
+            <PromptInputTextarea
+              placeholder="Type a message to start..."
+              onChange={handleInputChange}
+            />
           </PromptInputBody>
           <PromptInputFooter className="space-x-1">
             <PromptInputTools className="flex w-full items-center">
