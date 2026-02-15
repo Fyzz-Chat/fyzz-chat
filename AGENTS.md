@@ -1,3 +1,41 @@
+This application is a unified chatbot platform that allows users to chat with AI models from
+any of the configured providers.
+
+## Architecture
+
+The application is built with the following stack:
+- [Catalyst](https://github.com/kovrichard/catalyst) for the core framework. This includes:
+    * Bun.js
+    * Prisma
+    * Next.js
+    * Tailwind CSS
+    * Shadcn UI
+    * tRPC
+    * Husky
+    * Biome
+    * Better Auth
+    * Zod
+    * Winston
+- [Vercel AI SDK](https://ai-sdk.dev/docs/introduction) for accessing the AI models.
+
+Folder structure:
+
+```bash
+src/                      # Source root
+  app/                    # Next.js app directory
+  components/             # Next.js components
+  components/ui/          # Shadcn UI components
+  components/ai-elements/ # AI elements components
+  hooks/                  # React hooks
+  lib/                    # Library functions
+  stores/                 # React stores
+  types/                  # TypeScript types
+```
+
+By default, rely on preinstalled Shadcn UI components and AI elements. If you cannot find a
+matching component, use the `shadcn` or the `ai-elements` MCP tools to find and install the
+missing component.
+
 ## Coding guidelines
 
 - DO NOT write docstrings for functions or classes unless explicitly asked to do so.
