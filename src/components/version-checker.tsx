@@ -59,7 +59,7 @@ export function VersionChecker() {
         action: {
           label: "Reload",
           onClick: () => {
-            window.location.reload();
+            globalThis.location.reload();
           },
         },
         duration: Infinity,
