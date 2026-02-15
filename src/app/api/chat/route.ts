@@ -30,11 +30,14 @@ import {
   logDuration,
   mapFileParts,
 } from "@/lib/backend/utils";
-import { appendMessageToConversation, hasDefaultTitle } from "@/lib/dao/conversations";
+import {
+  appendMessageToConversation,
+  getOrCreateConversation,
+  hasDefaultTitle,
+} from "@/lib/dao/conversations";
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession, type SessionUser } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import prisma from "@/lib/prisma/prisma";
 import {
   closeMcpClients,
   getMcpClients,
@@ -45,53 +48,6 @@ import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
 
 export const maxDuration = 55;
-
-async function getOrCreateConversation(
-  id: string,
-  userId: string,
-  modelId: string
-): Promise<
-  | { conversation: { id: string; userId: string; model: string }; error?: never }
-  | { conversation: null; error: string }
-> {
-  const existing = await prisma.conversation.findUnique({
-    where: { id },
-    select: { id: true, userId: true, model: true },
-  });
-
-  if (existing) {
-    if (existing.userId !== userId) {
-      return { conversation: null, error: "unauthorized" };
-    }
-    if (existing.model !== modelId) {
-      const updated = await prisma.conversation.update({
-        where: { id },
-        data: { model: modelId },
-      });
-      return { conversation: updated };
-    }
-    return { conversation: existing };
-  }
-
-  try {
-    const newConversation = await prisma.conversation.create({
-      data: { id, title: "New Chat", model: modelId, userId },
-    });
-    return { conversation: newConversation };
-  } catch (error: unknown) {
-    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
-      const retry = await prisma.conversation.findUnique({ where: { id } });
-      if (!retry) {
-        throw error;
-      }
-      if (retry?.userId !== userId) {
-        return { conversation: null, error: "unauthorized" };
-      }
-      return { conversation: retry };
-    }
-    throw error;
-  }
-}
 
 export async function POST(req: NextRequest) {
   const start = performance.now();
