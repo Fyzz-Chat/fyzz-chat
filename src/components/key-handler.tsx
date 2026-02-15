@@ -1,7 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 export function KeyHandler({
   keyString,
@@ -38,10 +38,10 @@ export function KeyHandler({
 }
 
 export function HomeHandler() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function handler() {
-    navigate("/chat");
+    router.push("/chat");
     document.getElementById("message-input")?.focus();
   }
 
