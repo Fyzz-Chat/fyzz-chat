@@ -34,7 +34,14 @@ import { cn } from "@/lib/utils";
 
 const ModelSelectorContext = createContext<{ isDesktop: boolean }>({ isDesktop: true });
 
-export type ModelSelectorProps = ComponentProps<typeof Dialog>;
+type DialogRootProps = ComponentProps<typeof Dialog>;
+type DrawerRootProps = ComponentProps<typeof Drawer>;
+type DialogTriggerProps = ComponentProps<typeof DialogTrigger>;
+type DrawerTriggerProps = ComponentProps<typeof DrawerTrigger>;
+type DialogContentProps = ComponentProps<typeof DialogContent>;
+type DrawerContentProps = ComponentProps<typeof DrawerContent>;
+
+export type ModelSelectorProps = DialogRootProps & DrawerRootProps;
 
 export const ModelSelector = ({ children, ...props }: ModelSelectorProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -52,22 +59,26 @@ export const ModelSelector = ({ children, ...props }: ModelSelectorProps) => {
   return (
     <ModelSelectorContext.Provider value={contextValue}>
       {isDesktop ? (
-        <Dialog {...props}>{children}</Dialog>
+        <Dialog {...(props as DialogRootProps)}>{children}</Dialog>
       ) : (
-        <Drawer {...props}>{children}</Drawer>
+        <Drawer {...(props as DrawerRootProps)}>{children}</Drawer>
       )}
     </ModelSelectorContext.Provider>
   );
 };
 
-export type ModelSelectorTriggerProps = ComponentProps<typeof DialogTrigger>;
+export type ModelSelectorTriggerProps = DialogTriggerProps & DrawerTriggerProps;
 
 export const ModelSelectorTrigger = (props: ModelSelectorTriggerProps) => {
   const { isDesktop } = useContext(ModelSelectorContext);
-  return isDesktop ? <DialogTrigger {...props} /> : <DrawerTrigger {...props} />;
+  return isDesktop ? (
+    <DialogTrigger {...(props as DialogTriggerProps)} />
+  ) : (
+    <DrawerTrigger {...(props as DrawerTriggerProps)} />
+  );
 };
 
-export type ModelSelectorContentProps = ComponentProps<typeof DialogContent> & {
+export type ModelSelectorContentProps = (DialogContentProps & DrawerContentProps) & {
   title?: ReactNode;
   description?: string;
 };
@@ -88,7 +99,7 @@ export const ModelSelectorContent = ({
           "outline! border-none! p-0 outline-border! outline-solid!",
           className
         )}
-        {...props}
+        {...(props as DialogContentProps)}
       >
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
@@ -102,7 +113,7 @@ export const ModelSelectorContent = ({
   }
 
   return (
-    <DrawerContent className={className} {...props}>
+    <DrawerContent className={className} {...(props as DrawerContentProps)}>
       <DrawerHeader className="sr-only">
         <DrawerTitle>{title}</DrawerTitle>
         <DrawerDescription>{description}</DrawerDescription>

@@ -63,6 +63,13 @@ async function getOrCreateConversation(
     if (existing.userId !== userId) {
       return { conversation: null, error: "unauthorized" };
     }
+    if (existing.model !== modelId) {
+      const updated = await prisma.conversation.update({
+        where: { id },
+        data: { model: modelId },
+      });
+      return { conversation: updated };
+    }
     return { conversation: existing };
   }
 
@@ -130,7 +137,9 @@ export async function POST(req: NextRequest) {
       const mappedMessage = mapFileParts(newMessage, user.id, id);
       existingMessages = [...existingMessages, mappedMessage];
     } else if (existingMessages.length === 0) {
-      throw new Error("Cannot send an empty message to a new conversation.");
+      return new Response("Cannot send an empty message to a new conversation.", {
+        status: 400,
+      });
     }
   }
 

@@ -9,15 +9,15 @@ import type { CustomUIMessage } from "@/types/chat";
 export default function MessageCopyAction({ message }: { message: CustomUIMessage }) {
   const [isCopied, setIsCopied] = useState(false);
 
-  function handleCopy() {
+  async function handleCopy() {
     const textContent = message.parts.find(
       (part): part is TextUIPart => part.type === "text"
     )?.text;
-    if (!navigator.clipboard.writeText) {
+    if (!navigator.clipboard?.writeText) {
       return;
     }
     try {
-      navigator.clipboard.writeText(textContent ?? "");
+      await navigator.clipboard.writeText(textContent ?? "");
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 1500);
     } catch {
