@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useUIStore } from "@/stores/ui-store";
 
 export function KeyHandler({
   keyString,
@@ -42,18 +43,31 @@ export function HomeHandler() {
 
   function handler() {
     router.push("/chat");
-    document.getElementById("message-input")?.focus();
+    focusInput();
   }
 
   return <KeyHandler keyString="n" handler={handler} />;
 }
 
-function handler() {
-  document.getElementById("message-input")?.focus();
+export function ModelMenuHandler() {
+  const setModelMenuOpen = useUIStore((state) => state.setModelMenuOpen);
+
+  function handler() {
+    setModelMenuOpen((open) => !open);
+  }
+
+  return <KeyHandler keyString="m" handler={handler} dependencies={[setModelMenuOpen]} />;
+}
+
+function focusInput() {
+  const el = document.getElementById("message-input") as HTMLTextAreaElement | null;
+  if (!el) return;
+  el.focus();
+  el.selectionStart = el.selectionEnd = el.value.length;
 }
 
 export function EnterHandler() {
-  return <KeyHandler keyString="Enter" handler={handler} />;
+  return <KeyHandler keyString="Enter" handler={focusInput} />;
 }
 
 export function EscapeHandler() {

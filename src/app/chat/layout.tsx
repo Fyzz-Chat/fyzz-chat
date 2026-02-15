@@ -5,9 +5,15 @@ import ChatInput from "@/components/chat/chat-input";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
 import Pad from "@/components/chat/pad";
-import { EnterHandler, EscapeHandler } from "@/components/key-handler";
+import {
+  EnterHandler,
+  EscapeHandler,
+  HomeHandler,
+  ModelMenuHandler,
+} from "@/components/key-handler";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import ChatSidebar from "@/components/sidebar/chat-sidebar";
+import { HelpDialog } from "@/components/sidebar/help-dialog";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import conf from "@/lib/config";
 import { ChatInputProvider } from "@/lib/contexts/chat-input-context";
@@ -41,6 +47,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
       <ChatInputProvider>
         <EnterHandler />
         <EscapeHandler />
+        <HomeHandler />
+        <ModelMenuHandler />
+        <HelpDialog />
         <ModelStoreInitializer providers={providers} />
         <ChatLayoutProvider>
           <SidebarProvider defaultOpen={defaultOpen}>

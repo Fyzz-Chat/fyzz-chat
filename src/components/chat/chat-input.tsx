@@ -35,6 +35,7 @@ import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
 import { cn, debounce } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+import { useUIStore } from "@/stores/ui-store";
 
 const INPUT_STORAGE_KEY = "fyzz-input-content";
 
@@ -57,7 +58,8 @@ export default function ChatInput() {
     () => providers.find((p) => p.models.some((m) => m.id === model.id)),
     [providers, model.id]
   );
-  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
+  const modelSelectorOpen = useUIStore((state) => state.modelMenuOpen);
+  const setModelSelectorOpen = useUIStore((state) => state.setModelMenuOpen);
   const models = useModelStore((state) => state.availableModels);
   const selectedModelData = useMemo(
     () => models.find((m) => m.id === model.id),
@@ -95,7 +97,7 @@ export default function ChatInput() {
       handlersRef.current.onModelChange?.("", modelId);
       setModelSelectorOpen(false);
     },
-    [setModel, handlersRef]
+    [setModel, handlersRef, setModelSelectorOpen]
   );
 
   return (
