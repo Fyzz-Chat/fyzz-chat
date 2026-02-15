@@ -8,14 +8,14 @@ export default function AuthCard({
   ctaQuestion,
   ctaText,
   ctaLink,
-}: {
+}: Readonly<{
   title: string;
   description: string;
   children: ReactNode;
   ctaQuestion: string;
   ctaText: string;
   ctaLink: string;
-}) {
+}>) {
   return (
     <div className="flex w-full max-w-[400px] flex-col items-center justify-center gap-8">
       <div className="space-y-2 text-center">

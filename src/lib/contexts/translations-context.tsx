@@ -20,10 +20,10 @@ export function useTranslations() {
 export function TranslationsProvider({
   children,
   translationsPromise,
-}: {
+}: Readonly<{
   children: ReactNode;
   translationsPromise: Promise<Translations>;
-}) {
+}>) {
   const value = useMemo(() => ({ translationsPromise }), [translationsPromise]);
 
   return (

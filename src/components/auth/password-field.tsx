@@ -16,7 +16,7 @@ import type {
 
 type FormData = LoginFormData | RegisterFormData | UpdatePasswordFormData;
 
-type PasswordFieldProps<T extends FormData> = {
+type PasswordFieldProps<T extends FormData> = Readonly<{
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
   fieldName?: "password" | "currentPassword" | "newPassword" | "confirmPassword";
@@ -24,7 +24,7 @@ type PasswordFieldProps<T extends FormData> = {
   autoFocus?: boolean;
   autoComplete?: "current-password" | "new-password";
   label?: string;
-};
+}>;
 
 export default function PasswordField<T extends FormData>({
   register,

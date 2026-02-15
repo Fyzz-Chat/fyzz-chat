@@ -19,11 +19,11 @@ export default function EmailField<T extends FormData>({
   register,
   errors,
   autoFocus = false,
-}: {
+}: Readonly<{
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
   autoFocus?: boolean;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 

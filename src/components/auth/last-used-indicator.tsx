@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 export default function LastUsedIndicator({
   provider,
   className,
-}: {
+}: Readonly<{
   provider: string;
   className?: string;
-}) {
+}>) {
   const lastMethod = getLastUsedLoginMethod();
   const [rendered, setRendered] = useState(false);
 

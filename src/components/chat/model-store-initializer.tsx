@@ -8,9 +8,9 @@ import type { PublicProvider } from "@/types/provider";
 
 export default function ModelStoreInitializer({
   providers,
-}: {
+}: Readonly<{
   providers?: PublicProvider[];
-}) {
+}>) {
   const trpc = useTRPC();
   const { data } = useQuery(
     trpc.providers.queryOptions(undefined, {

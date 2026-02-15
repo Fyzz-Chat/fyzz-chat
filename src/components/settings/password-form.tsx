@@ -12,7 +12,9 @@ import { changePassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { type UpdatePasswordFormData, updatePasswordSchema } from "@/types/auth";
 
-export default function PasswordForm({ hasPassword }: { hasPassword?: boolean }) {
+export default function PasswordForm({
+  hasPassword,
+}: Readonly<{ hasPassword?: boolean }>) {
   const [isTransitionPending, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);

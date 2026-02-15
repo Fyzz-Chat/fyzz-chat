@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 export default function ViewTransitionWrapper({
   children,
   className,
-}: {
+}: Readonly<{
   children: ReactNode;
   className?: string;
-}) {
+}>) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

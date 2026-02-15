@@ -18,7 +18,7 @@ const InitialMessageContext = createContext<InitialMessageContextType | undefine
   undefined
 );
 
-export function InitialMessageProvider({ children }: { children: ReactNode }) {
+export function InitialMessageProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [initialMessage, setInitialMessage] = useState<string | null>(null);
   const [initialModel, setInitialModel] = useState<string | null>(null);
   const [initialBrowse, setInitialBrowse] = useState(false);

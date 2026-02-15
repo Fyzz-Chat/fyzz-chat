@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 
-export default function PasswordResetForm({ token }: { token: string }) {
+export default function PasswordResetForm({ token }: Readonly<{ token: string }>) {
   const [isPending, setIsPending] = useState(false);
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);

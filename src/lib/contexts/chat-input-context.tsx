@@ -36,7 +36,7 @@ const ChatInputStatusContext = createContext<ChatInputStatusContextType | undefi
   undefined
 );
 
-export function ChatInputProvider({ children }: { children: ReactNode }) {
+export function ChatInputProvider({ children }: Readonly<{ children: ReactNode }>) {
   const handlersRef = useRef<ChatInputHandlers>({
     onSubmit: () => {
       // noop default

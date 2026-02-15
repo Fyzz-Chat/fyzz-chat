@@ -6,7 +6,7 @@ import { AuthProvider } from "@/lib/contexts/auth-context";
 import { TranslationsProvider } from "@/lib/contexts/translations-context";
 import { TRPCReactProvider } from "@/lib/trpc/client";
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({ children }: Readonly<{ children: ReactNode }>) {
   const translationsPromise = getTranslations();
 
   return (

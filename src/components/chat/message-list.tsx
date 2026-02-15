@@ -30,7 +30,7 @@ import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 
-export default function ChatMessageList({ id }: { id: string }) {
+export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const router = useRouter();
   const { layout } = useChatLayout();
   const providers = useModelStore((state) => state.providers);

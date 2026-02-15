@@ -18,11 +18,13 @@ import { badgeVariants } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-type CitationInlineProps = HTMLAttributes<HTMLElement> & {
-  sources: SourceUrlUIPart[];
-  "data-indices"?: string;
-  node?: unknown;
-};
+type CitationInlineProps = Readonly<
+  HTMLAttributes<HTMLElement> & {
+    sources: SourceUrlUIPart[];
+    "data-indices"?: string;
+    node?: unknown;
+  }
+>;
 
 export function CitationInline({
   sources,

@@ -1,4 +1,4 @@
-export default function OtherIcon({ size = 16 }: { size?: number }) {
+export default function OtherIcon({ size = 16 }: Readonly<{ size?: number }>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,10 +1,10 @@
 export default function Perplexity({
   size = 16,
   className,
-}: {
+}: Readonly<{
   size?: number;
   className?: string;
-}) {
+}>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

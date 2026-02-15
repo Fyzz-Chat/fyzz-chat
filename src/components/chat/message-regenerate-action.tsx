@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 export default function MessageRegenerateAction({
   messageId,
   onRegenerate,
-}: {
+}: Readonly<{
   messageId: string;
   onRegenerate?: (messageId: string) => Promise<void>;
-}) {
+}>) {
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   async function handleRegenerate() {

@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export default function Pad({ children }: { children: ReactNode }) {
+export default function Pad({ children }: Readonly<{ children: ReactNode }>) {
   const params = useParams<{ id: string }>();
   const id = params.id;
 

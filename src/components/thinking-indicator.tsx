@@ -9,11 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-interface ThinkingIndicatorProps {
-  reasoning: string;
-}
-
-export function ThinkingIndicator({ reasoning }: ThinkingIndicatorProps) {
+export function ThinkingIndicator({ reasoning }: Readonly<{ reasoning: string }>) {
   const [isReasoning, setIsReasoning] = useState(true);
   const prevReasoningRef = useRef(reasoning);
   const timeoutRef = useRef<NodeJS.Timeout>(null);

@@ -10,7 +10,7 @@ const PROVIDER_TITLES: Record<string, string> = {
   google: "Continue with Google",
 };
 
-export default function OAuthForm({ provider }: { provider: string }) {
+export default function OAuthForm({ provider }: Readonly<{ provider: string }>) {
   const [isLoading, setIsLoading] = useState(false);
   const title = PROVIDER_TITLES[provider] ?? provider;
 

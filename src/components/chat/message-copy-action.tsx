@@ -6,7 +6,9 @@ import { useState } from "react";
 import { MessageAction } from "@/components/ai-elements/message";
 import type { CustomUIMessage } from "@/types/chat";
 
-export default function MessageCopyAction({ message }: { message: CustomUIMessage }) {
+export default function MessageCopyAction({
+  message,
+}: Readonly<{ message: CustomUIMessage }>) {
   const [isCopied, setIsCopied] = useState(false);
 
   async function handleCopy() {
