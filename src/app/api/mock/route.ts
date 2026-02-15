@@ -74,6 +74,9 @@ async function getOrCreateConversation(
   } catch (error: unknown) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       const retry = await prisma.conversation.findUnique({ where: { id } });
+      if (!retry) {
+        throw error;
+      }
       if (retry?.userId !== userId) {
         return { conversation: null, error: "unauthorized" };
       }
@@ -104,7 +107,9 @@ export async function POST(req: NextRequest) {
     );
 
     if (existingMessages.length === 0) {
-      throw new Error("Cannot send an empty message to a new conversation.");
+      return new Response("Cannot send an empty message to a new conversation.", {
+        status: 400,
+      });
     }
   } else {
     const getOrCreate = await getOrCreateConversation(id, user.id, modelId);
@@ -145,7 +150,12 @@ export async function POST(req: NextRequest) {
       logger.error(error);
 
       if (error instanceof McpClientInitError) {
-        return new NextResponse(error.cause as string, { status: 502 });
+        return new NextResponse(
+          typeof error.cause === "string"
+            ? error.cause
+            : "MCP client initialization failed",
+          { status: 502 }
+        );
       }
     }
   }
@@ -164,11 +174,13 @@ export async function POST(req: NextRequest) {
   abortController.abortIn(maxDuration - 5);
 
   const reasoning = createReasoningTimer();
+  let conversationEnded = false;
 
   async function endConversation() {
-    if (temporaryChat) {
+    if (temporaryChat || conversationEnded) {
       return;
     }
+    conversationEnded = true;
 
     await closeMcpClients(mcpClients);
     abortController.cancelAbort();

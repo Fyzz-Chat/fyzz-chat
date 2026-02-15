@@ -23,7 +23,8 @@ import { getVersion } from "@/lib/backend/utils";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 
 export async function MockAppSidebar({ children }: { children: ReactNode }) {
-  const [user, version] = await Promise.all([getUserFromSessionPublic(), getVersion()]);
+  const version = getVersion();
+  const user = await getUserFromSessionPublic();
 
   return (
     <>

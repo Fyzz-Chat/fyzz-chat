@@ -248,9 +248,17 @@ export function mapMessages(
   const mappedMessages = messages.map((message: PartialMessage) => {
     const parts = safeParse(message.parts, []);
 
+    const metadataResult = metadataSchema.safeParse(message.metadata);
+    const metadata = metadataResult.success
+      ? metadataResult.data
+      : {
+          content: message.content ?? undefined,
+          createdAt: message.createdAt ?? new Date(),
+        };
+
     return {
       ...message,
-      metadata: metadataSchema.parse(message.metadata),
+      metadata,
       parts: mapFileParts(userId, conversationId, parts),
     };
   });

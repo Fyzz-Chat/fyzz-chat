@@ -318,10 +318,13 @@ export default function MockMessageList({ id }: { id: string }) {
       onSubmit: handleSubmit,
       onStop: handleStop,
       onModelChange: (_, modelId) => {
-        updateModel.mutateAsync({ conversationId: id, model: modelId });
+        const previousModel = model.id;
+        updateModel.mutateAsync({ conversationId: id, model: modelId }).catch(() => {
+          setModel(previousModel);
+        });
       },
     });
-  }, [handleSubmit, handleStop, updateModel, id, setHandlers]);
+  }, [handleSubmit, handleStop, updateModel, id, setHandlers, model.id, setModel]);
 
   return (
     <div className="flex h-[calc(100svh-132px)] flex-col overflow-auto md:h-[calc(100svh-164px)]">

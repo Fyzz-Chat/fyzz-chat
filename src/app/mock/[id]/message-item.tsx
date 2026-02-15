@@ -256,7 +256,9 @@ function MessageItem({
               <Tool open key={`${message.id}-tool-image_generation-${i}`}>
                 <ToolHeader type="tool-image_generation" state={part.state} />
                 <ToolContent>
-                  <ImageFilePart url={`data:image/png;base64,${output?.result}`} />
+                  {output?.result && (
+                    <ImageFilePart url={`data:image/png;base64,${output?.result}`} />
+                  )}
                 </ToolContent>
               </Tool>
             );

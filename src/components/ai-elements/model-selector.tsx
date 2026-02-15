@@ -223,21 +223,32 @@ export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src" | "alt"> 
     | string;
 };
 
+const FALLBACK_LOGO = "/logos/other.svg";
+
 export const ModelSelectorLogo = ({
   provider,
   className,
   ...props
-}: ModelSelectorLogoProps) => (
-  <img
-    {...props}
-    alt={`${provider} logo`}
-    className={cn("size-3 dark:invert", className)}
-    height={12}
-    // Take logos from https://models.dev/logos/${provider}.svg
-    src={`/logos/${provider}.svg`}
-    width={12}
-  />
-);
+}: ModelSelectorLogoProps) => {
+  // Take logos from https://models.dev/logos/${provider}.svg
+  const [src, setSrc] = useState(`/logos/${provider}.svg`);
+
+  useEffect(() => {
+    setSrc(`/logos/${provider}.svg`);
+  }, [provider]);
+
+  return (
+    <img
+      {...props}
+      alt={`${provider} logo`}
+      className={cn("size-3 dark:invert", className)}
+      height={12}
+      onError={() => setSrc(FALLBACK_LOGO)}
+      src={src}
+      width={12}
+    />
+  );
+};
 
 export type ModelSelectorLogoGroupProps = ComponentProps<"div">;
 
