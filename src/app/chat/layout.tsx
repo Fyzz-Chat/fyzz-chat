@@ -1,3 +1,4 @@
+import { Github } from "lucide-react";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import AuthPopup from "@/components/auth/auth-popup";
@@ -61,11 +62,20 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
             </AppSidebar>
             <SidebarInset className="relative flex flex-col gap-4 overflow-auto md:pb-4">
               <SidebarTrigger className="absolute top-2.5 left-2 z-20 size-8 touch-manipulation p-5" />
-              {!isLoggedIn && (
-                <div className="absolute top-2 right-2 z-20">
+              <div className="absolute top-2 right-2 z-20 flex items-center gap-1">
+                {!isLoggedIn && (
                   <AuthPopup anonymousLogin={conf.anonymousLogin} hasGoogle={hasGoogle} />
-                </div>
-              )}
+                )}
+                <a
+                  href="https://github.com/Fyzz-Chat/fyzz-chat"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Star us on GitHub"
+                  className="rounded-full p-2 text-muted-foreground/50 transition-colors hover:text-foreground"
+                >
+                  <Github className="size-5" />
+                </a>
+              </div>
               <div className="flex-1">{children}</div>
               <Pad>
                 <ChatInput />
