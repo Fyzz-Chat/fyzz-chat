@@ -52,7 +52,7 @@ export default function PasswordResetForm({ token }: Readonly<{ token: string }>
           type="password"
           id="password"
           name="password"
-          placeholder="****************"
+          placeholder="Enter your password"
           required
         />
       </div>
@@ -64,7 +64,7 @@ export default function PasswordResetForm({ token }: Readonly<{ token: string }>
           type="password"
           id="confirm-password"
           name="confirm-password"
-          placeholder="****************"
+          placeholder="Confirm password"
           required
         />
       </div>

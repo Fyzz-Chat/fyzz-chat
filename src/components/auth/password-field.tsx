@@ -58,7 +58,7 @@ export default function PasswordField<T extends FormData>({
       <Input
         type="password"
         id={fieldName}
-        placeholder="****************"
+        placeholder="Enter your password"
         autoComplete={autoComplete}
         autoFocus={autoFocus}
         {...register(fieldName as never)}
