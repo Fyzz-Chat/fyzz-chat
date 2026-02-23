@@ -31,18 +31,21 @@ export async function AppSidebar({ children }: Readonly<{ children: ReactNode }>
       <Sidebar variant="inset">
         <SidebarHeader>
           <div className="flex w-full items-center justify-between gap-2">
-            <FastLink href="/chat" className="flex items-center justify-start gap-2">
-              <Image src="/icon.svg" alt="Fyzz.chat" width={24} height={24} />
-              <p className="font-bold text-md">Fyzz.chat</p>
-            </FastLink>
-            <a
-              href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mr-auto text-muted-foreground text-xs"
-            >
-              {version}
-            </a>
+            <div className="flex gap-2">
+              <FastLink href="/chat" className="flex items-center justify-start gap-2">
+                <Image src="/icon.svg" alt="Fyzz.chat" width={55} height={24} />
+              </FastLink>
+              <div className="flex place-items-end">
+                <a
+                  href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mr-autotext-muted-foreground text-xs"
+                >
+                  {version}
+                </a>
+              </div>
+            </div>
             <NewChatButton />
           </div>
           <div className="flex items-center pt-2">
