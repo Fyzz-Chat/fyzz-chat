@@ -1,9 +1,9 @@
 "use client";
 
 import { ImageIcon, type LucideIcon, MessageSquare, Sparkles, Zap } from "lucide-react";
-import Image from "next/image";
 import { useContext } from "react";
 import { ModelSelectorLogo } from "@/components/ai-elements/model-selector";
+import { FyzzLogo } from "@/components/fyzz-logo";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -95,7 +95,7 @@ export default function AuthPopup({
                 <div className="flex flex-col justify-center gap-3">
                   <div>
                     <h3 className="font-semibold text-foreground text-xl">Welcome to</h3>
-                    <Image src="/icon.svg" alt="Fyzz.chat" width={90} height={40} />
+                    <FyzzLogo width={70} height={40} />
                   </div>
                   <p className="text-muted-foreground text-sm">
                     Your all-in-one AI chat platform

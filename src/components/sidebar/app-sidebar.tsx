@@ -1,8 +1,8 @@
 import { ChevronsUpDown } from "lucide-react";
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { FastLink } from "@/components/fast-link";
+import { FyzzLogo } from "@/components/fyzz-logo";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
@@ -33,7 +33,7 @@ export async function AppSidebar({ children }: Readonly<{ children: ReactNode }>
           <div className="flex w-full items-center justify-between gap-2">
             <div className="flex gap-2">
               <FastLink href="/chat" className="flex items-center justify-start gap-2">
-                <Image src="/icon.svg" alt="Fyzz.chat" width={55} height={24} />
+                <FyzzLogo width={50} height={24} />
               </FastLink>
               <div className="flex place-items-end">
                 <a

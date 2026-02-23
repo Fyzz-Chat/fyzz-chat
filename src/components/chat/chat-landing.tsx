@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import { FyzzLogo } from "@/components/fyzz-logo";
 import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useModelStore } from "@/stores/model-store";
@@ -52,7 +52,7 @@ export default function ChatLanding() {
 
   return (
     <div className="flex h-full items-end justify-center">
-      <Image src="/icon.svg" alt="Fyzz.chat" width={100} height={100} />
+      <FyzzLogo width={90} height={44} />
     </div>
   );
 }
