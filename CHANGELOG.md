@@ -1,3 +1,57 @@
+# [0.18.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.17.0...v0.18.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* add back browse param ([831eae0](https://github.com/Fyzz-Chat/fyzz-chat/commit/831eae034b8f5cb8d3f7a07ae431ce7503a017e3))
+* add back help menu ([5a01bc9](https://github.com/Fyzz-Chat/fyzz-chat/commit/5a01bc92887cfde5619809af11d23e93cb6a3ac3))
+* address code review comments ([c15ca71](https://github.com/Fyzz-Chat/fyzz-chat/commit/c15ca710a43a964dc620720371462e0d9c77c60a))
+* address code review comments ([13598f5](https://github.com/Fyzz-Chat/fyzz-chat/commit/13598f5044f7d7af2916cb26c334b3425639d6bf))
+* **chat-layout:** add missing use client directive ([8259b91](https://github.com/Fyzz-Chat/fyzz-chat/commit/8259b91b4ed3e1f2d3c899dea00208b7eaf2f357))
+* **conversation:** adjust fade out width ([bd74321](https://github.com/Fyzz-Chat/fyzz-chat/commit/bd7432159b94b432bdbc7b9a60be1005e95dd1bd))
+* **input:** make file upload work again ([164226b](https://github.com/Fyzz-Chat/fyzz-chat/commit/164226bef968d1a6eca34db2f7a582f77889b168))
+* **kimi:** use correct model id ([98036cf](https://github.com/Fyzz-Chat/fyzz-chat/commit/98036cf10ec047aa77367819f29d510be5e0d50e))
+* logo dark and light theme ([fe2fd50](https://github.com/Fyzz-Chat/fyzz-chat/commit/fe2fd5063a5b1dfecf995ad893072186321351f2))
+* **message-item:** use streaming param ([bb41419](https://github.com/Fyzz-Chat/fyzz-chat/commit/bb4141921dbe66523ad3f6fe298e4f87b10d2600))
+* **message-list:** send metadata correctly ([ae5c997](https://github.com/Fyzz-Chat/fyzz-chat/commit/ae5c997c6f2c71f0a4d87376ae19fd79760ee047))
+* **message:** auto grow edited message input ([e661105](https://github.com/Fyzz-Chat/fyzz-chat/commit/e661105cadf76d4e7f0b1529b960fcd472893223))
+* **message:** change back to uuid v4 ([b52492f](https://github.com/Fyzz-Chat/fyzz-chat/commit/b52492fce85068a4c2e5e7a7434e72009efb4a7d))
+* **message:** make assistant messages copyable ([ba5fa26](https://github.com/Fyzz-Chat/fyzz-chat/commit/ba5fa26679e7ff78441a7cb89fcd37ac0ae225f1))
+* **messages:** send every message for temporary chats ([456a307](https://github.com/Fyzz-Chat/fyzz-chat/commit/456a307894301d774bf08086715c1337eaa78321))
+* **model-selector:** do not render on server ([fe92fcd](https://github.com/Fyzz-Chat/fyzz-chat/commit/fe92fcdbc4adcd3bb509401546ee7f9e60841df0))
+* **prompt-input:** enable closing attach menu on click ([ca502a8](https://github.com/Fyzz-Chat/fyzz-chat/commit/ca502a8e7b5a54c6f73c04db9e134e7e7f3f0931))
+* **prompt-input:** limit available extensions ([9149689](https://github.com/Fyzz-Chat/fyzz-chat/commit/914968980209a4a235bca77f6ca6db374ffc1dff))
+* reset model to default on new page ([c81eec5](https://github.com/Fyzz-Chat/fyzz-chat/commit/c81eec56cc56eb020839ffbc8c44319811fce564))
+* **sidebar:** update sidebar with new item instantly ([d0e6d36](https://github.com/Fyzz-Chat/fyzz-chat/commit/d0e6d36c06fa5e4633d6ea7d6dfb3530b0484ae0))
+
+
+### Features
+
+* add back claude.md as link to agents.md ([635a40b](https://github.com/Fyzz-Chat/fyzz-chat/commit/635a40bb075e3a43135dda40c19e0a07c1891a45))
+* add back mcp configs as links to .agent mcp config ([64bbeb4](https://github.com/Fyzz-Chat/fyzz-chat/commit/64bbeb46764b8288988d9db9ca18a3cbff1d94e0))
+* add empty loading tsx to new endpoints ([2c14ad9](https://github.com/Fyzz-Chat/fyzz-chat/commit/2c14ad9d23204d27e48e2adfd9272d79d98cf091))
+* add github icon button ([3801c97](https://github.com/Fyzz-Chat/fyzz-chat/commit/3801c97f28d2cefffae8066a885c00aa370b99e8))
+* add inline citations ([7271a80](https://github.com/Fyzz-Chat/fyzz-chat/commit/7271a809ec024ace8c61ca778349ff3105b5b30e))
+* add option to block sending input ([776a3a6](https://github.com/Fyzz-Chat/fyzz-chat/commit/776a3a68f14cdce50c7d43c5cbf0e89bf3bb411b))
+* add react scan ([e123b99](https://github.com/Fyzz-Chat/fyzz-chat/commit/e123b99282d16befae0e1c6e2f24c1569e608742))
+* add sidebar to new endpoint ([6038eeb](https://github.com/Fyzz-Chat/fyzz-chat/commit/6038eeb725a9e3d9a9c419feb3ed2dad2066afda))
+* change color schema ([6a3fa11](https://github.com/Fyzz-Chat/fyzz-chat/commit/6a3fa11873cde56dd12a367cac6807e32ceae0e4))
+* change logo ([6189865](https://github.com/Fyzz-Chat/fyzz-chat/commit/618986542fa1404042b14acfbdf8da13db7aeb5e))
+* **citation:** add utm tags ([a5eaffd](https://github.com/Fyzz-Chat/fyzz-chat/commit/a5eaffdd1a99819ef357786b16852827879db85d))
+* enable file uploads on mock input ([014f385](https://github.com/Fyzz-Chat/fyzz-chat/commit/014f38586197ce9aeddc88e936f272cc55e542f2))
+* **input:** limit file size to 20MB ([eb5bfde](https://github.com/Fyzz-Chat/fyzz-chat/commit/eb5bfde6ce6f1bf5d08bebfa3b16e99b93175ef4))
+* introduce Kimi K2.5 ([a48d72b](https://github.com/Fyzz-Chat/fyzz-chat/commit/a48d72b88440eaeb650dbd740c033cdbee26f41e))
+* make new input field navigable with keyboard ([8bcfa92](https://github.com/Fyzz-Chat/fyzz-chat/commit/8bcfa92a84bc95652afd53fb9ce88ca8307afa9b))
+* **message:** add MessageCopyAction component for copying messages ([bc8ec3a](https://github.com/Fyzz-Chat/fyzz-chat/commit/bc8ec3acbaf58ffa9d793b524b503182f23c177d))
+* **messages:** show model name ([0b069c0](https://github.com/Fyzz-Chat/fyzz-chat/commit/0b069c052a26df68d7a3e9f52ba3153be2911987))
+* **mock:** add file upload support ([8400ef0](https://github.com/Fyzz-Chat/fyzz-chat/commit/8400ef0cf67fbaedf8ba77d0e4c836b3737fd78d))
+* **mock:** add message editing ([e003481](https://github.com/Fyzz-Chat/fyzz-chat/commit/e003481a1db41f0612c3bc316bf95db1cc4b0f7b))
+* **mock:** add message regeneration ([9c868bf](https://github.com/Fyzz-Chat/fyzz-chat/commit/9c868bfcde2be4f385aca0bf1d5232d1b68f3da2))
+* **mock:** add root endpoint and navigation to new chat pages ([48f8812](https://github.com/Fyzz-Chat/fyzz-chat/commit/48f8812ca1b182b3cabe50546b8b483dfffd9f26))
+* **providers:** add glm 5 ([3026177](https://github.com/Fyzz-Chat/fyzz-chat/commit/3026177fdec938a4c1dde6e7575b8893652e128f))
+* **providers:** add sonnet and opus 4.6 ([8f8e712](https://github.com/Fyzz-Chat/fyzz-chat/commit/8f8e71286da365c6ec946993679a63ee76f130ab))
+* **providers:** update deepseek models ([4e67f63](https://github.com/Fyzz-Chat/fyzz-chat/commit/4e67f63f0a6b5a0a8379189f0ec15beeb7f19255))
+
 # [0.17.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.16.2...v0.17.0) (2026-01-27)
 
 
