@@ -51,7 +51,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         <HomeHandler />
         <ModelMenuHandler />
         <HelpDialog />
-        <ModelStoreInitializer providers={providers} />
+        <ModelStoreInitializer providers={providers} defaultModel={user?.defaultModel} />
         <ChatLayoutProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar>

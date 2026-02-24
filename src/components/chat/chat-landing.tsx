@@ -14,11 +14,12 @@ export default function ChatLanding() {
   const { setInitialMessage, setInitialModel, setInitialBrowse, setInitialFiles } =
     useInitialMessage();
   const setDefaultModel = useModelStore((state) => state.setDefaultModel);
+  const userDefaultModelId = useModelStore((state) => state.userDefaultModelId);
   const { setHandlers, setStatus, browseRef } = useChatInput();
 
   useEffect(() => {
-    setDefaultModel();
-  }, [setDefaultModel]);
+    setDefaultModel(userDefaultModelId);
+  }, [setDefaultModel, userDefaultModelId]);
 
   useEffect(() => {
     setStatus("ready");

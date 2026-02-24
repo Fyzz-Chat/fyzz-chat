@@ -11,6 +11,8 @@ interface ModelStore {
   setProviders: (providers: PublicProvider[]) => void;
   getModel: (modelId?: string) => PublicModel;
   setDefaultModel: (modelId?: string) => void;
+  userDefaultModelId: string | undefined;
+  setUserDefaultModelId: (modelId: string | undefined) => void;
 }
 
 function getModelById(models: PublicModel[], modelId: string): PublicModel {
@@ -24,6 +26,8 @@ function findGeminiId(models: PublicModel[]): string | undefined {
 export const useModelStore = create<ModelStore>()((set, get) => ({
   model: {} as PublicModel,
   temporaryChat: false,
+  userDefaultModelId: undefined,
+  setUserDefaultModelId: (modelId) => set({ userDefaultModelId: modelId }),
   setModel: (modelId: string) =>
     set((state) => ({
       model: getModelById(state.availableModels, modelId),
