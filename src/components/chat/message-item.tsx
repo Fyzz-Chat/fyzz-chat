@@ -150,8 +150,7 @@ function MessageItem({
                     ref={editTextareaRef}
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
-                    className="w-full resize-none rounded-md bg-secondary px-4 py-3 text-sm focus-visible:outline-hidden"
-                    rows={Math.min(editedContent.split("\n").length, 10)}
+                    className="field-sizing-content max-h-96 w-full resize-none rounded-md bg-secondary px-4 py-3 text-sm focus-visible:outline-hidden"
                   />
                 </MessageContent>
               );
