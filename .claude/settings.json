@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun .agents/hooks/check-write.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun .agents/hooks/type-check.ts"
+          }
+        ]
+      }
+    ]
+  }
+}
