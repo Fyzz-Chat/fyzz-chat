@@ -23,7 +23,7 @@ const themes = [
   },
 ];
 
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({ className }: Readonly<{ className?: string }>) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

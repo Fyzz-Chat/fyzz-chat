@@ -5,14 +5,12 @@ import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
-import { getMessageContent } from "@/lib/utils";
 import {
   type ConversationPage,
   type CustomUIMessage,
   metadataSchema,
   type PartialMessage,
 } from "@/types/chat";
-import type { ImageGenerationOutput } from "@/types/tools";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();
@@ -30,6 +28,53 @@ export async function getConversation(id: string) {
   });
 
   return conversation;
+}
+
+export async function getOrCreateConversation(
+  id: string,
+  userId: string,
+  modelId: string
+): Promise<
+  | { conversation: { id: string; userId: string; model: string }; error?: never }
+  | { conversation: null; error: string }
+> {
+  const existing = await prisma.conversation.findUnique({
+    where: { id },
+    select: { id: true, userId: true, model: true },
+  });
+
+  if (existing) {
+    if (existing.userId !== userId) {
+      return { conversation: null, error: "unauthorized" };
+    }
+    if (existing.model !== modelId) {
+      const updated = await prisma.conversation.update({
+        where: { id },
+        data: { model: modelId },
+      });
+      return { conversation: updated };
+    }
+    return { conversation: existing };
+  }
+
+  try {
+    const newConversation = await prisma.conversation.create({
+      data: { id, title: "New Chat", model: modelId, userId },
+    });
+    return { conversation: newConversation };
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
+      const retry = await prisma.conversation.findUnique({ where: { id } });
+      if (!retry) {
+        throw error;
+      }
+      if (retry?.userId !== userId) {
+        return { conversation: null, error: "unauthorized" };
+      }
+      return { conversation: retry };
+    }
+    throw error;
+  }
 }
 
 export async function getConversationsByCursor(
@@ -127,6 +172,18 @@ export async function getConversationsByCursor(
   };
 }
 
+export async function hasDefaultTitle(conversationId: string): Promise<boolean> {
+  const userId = await getUserIdFromSession();
+  const conversation = await prisma.conversation.findUnique({
+    where: {
+      id: conversationId,
+      userId,
+    },
+  });
+
+  return conversation?.title === null || conversation?.title === "New Chat";
+}
+
 export async function appendMessageToConversation(
   message: CustomUIMessage,
   conversationId: string
@@ -137,7 +194,7 @@ export async function appendMessageToConversation(
     const createdMessage = await tx.message.create({
       data: {
         ...message,
-        content: getMessageContent(message),
+        content: message.metadata?.content,
         parts: message.parts as InputJsonValue,
         conversationId,
       },
@@ -238,57 +295,41 @@ export function mapMessages(
   const mappedMessages = messages.map((message: PartialMessage) => {
     const parts = safeParse(message.parts, []);
 
+    const metadataResult = metadataSchema.safeParse(message.metadata);
+    const metadata = metadataResult.success
+      ? metadataResult.data
+      : {
+          content: message.content ?? undefined,
+          createdAt: message.createdAt ?? new Date(),
+        };
+
     return {
       ...message,
-      metadata: metadataSchema.parse(message.metadata),
-      parts: filterParts(userId, conversationId, parts),
+      metadata,
+      parts: mapFileParts(userId, conversationId, parts),
     };
   });
 
   return mappedMessages;
 }
 
-function filterParts(
+function mapFileParts(
   userId: string,
   conversationId: string,
   parts: CustomUIMessage["parts"]
 ) {
-  return parts
-    .filter((part) => {
-      if (part.type.startsWith("tool-")) {
-        return (
-          part.type === "tool-memory" ||
-          part.type === "tool-image_generation" ||
-          part.type === "tool-readUrl" ||
-          part.type === "tool-code_interpreter"
-        );
-      } else {
-        return true;
-      }
-    })
-    .map((part) => {
-      if (part.type === "tool-image_generation" && part.state === "output-available") {
-        const output = part.output as ImageGenerationOutput;
+  return parts.map((part) => {
+    if (part.type === "file" && !part.url.startsWith("data:")) {
+      const key = `${userId}/${conversationId}`;
 
-        return {
-          ...part,
-          output,
-          // output: {
-          //   ...output,
-          //   image: getFileUrlSigned(`${userId}/${conversationId}`, output.url ?? ""),
-          // },
-        };
-      } else if (part.type === "file" && !part.url.startsWith("data:")) {
-        const key = `${userId}/${conversationId}`;
-
-        return {
-          ...part,
-          url: getFileUrlSigned(key, part.url),
-        };
-      } else {
-        return part;
-      }
-    });
+      return {
+        ...part,
+        url: getFileUrlSigned(key, part.url),
+      };
+    } else {
+      return part;
+    }
+  });
 }
 
 export async function public_getConversationUntilMessage(messageId: string) {
@@ -327,7 +368,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
           createdAt: true,
           role: true,
           parts: true,
-          reasoningDurations: true,
+          metadata: true,
         },
       },
     },

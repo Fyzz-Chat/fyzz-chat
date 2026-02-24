@@ -26,10 +26,8 @@ export async function getMessages(
         id: true,
         content: true,
         role: true,
-        model: true,
         parts: true,
         metadata: true,
-        reasoningDurations: true,
         createdAt: true,
       },
       orderBy: {
@@ -66,10 +64,8 @@ export async function getMessages(
       id: true,
       content: true,
       role: true,
-      model: true,
       parts: true,
       metadata: true,
-      reasoningDurations: true,
       createdAt: true,
     },
     orderBy: {
@@ -89,28 +85,27 @@ export async function getMessages(
 
 export async function saveMessage(
   message: CustomUIMessage,
-  reasoningDurations: { id: string; ms: number }[],
   conversationId: string,
-  model: string,
   promptTokens: number,
   completionTokens: number
 ) {
   const userId = await getUserIdFromSession();
 
   return prisma.$transaction(async (tx) => {
+    const content = getMessageContent(message);
+    const { id, role, parts, metadata } = message;
     const newMessage = await tx.message.create({
       data: {
-        ...message,
-        content: getMessageContent(message),
-        parts: message.parts as InputJsonValue,
+        id,
+        role,
+        content,
+        parts: parts as InputJsonValue,
         conversationId,
-        model,
         promptTokens,
         completionTokens,
-        reasoningDurations,
         metadata: {
-          ...message.metadata,
-          content: getMessageContent(message),
+          ...metadata,
+          content,
         } as InputJsonValue,
       },
     });

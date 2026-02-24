@@ -9,7 +9,7 @@ import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { signOut } from "@/lib/auth-client";
 import { QUERY_CACHE_KEY } from "@/lib/trpc/client";
 
-export function SignOut({ buttonText }: { buttonText: string }) {
+export function SignOut({ buttonText }: Readonly<{ buttonText: string }>) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();

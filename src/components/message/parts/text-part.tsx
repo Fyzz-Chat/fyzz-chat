@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export default function TextPart({ children }: { children: ReactNode }) {
+export default function TextPart({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <div
       className="wrap-break-word w-fit whitespace-pre-wrap rounded-lg border bg-card p-4 text-card-foreground"

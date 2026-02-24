@@ -18,11 +18,11 @@ export default function ImageFilePart({
   url,
   name = "",
   mediaType = "image/png",
-}: {
+}: Readonly<{
   url: string;
   name?: string;
   mediaType?: string;
-}) {
+}>) {
   const isBase64Image = url.startsWith("data:image");
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);

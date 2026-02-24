@@ -1,4 +1,4 @@
-export default function IconViewportWide({ size = 24 }: { size?: number }) {
+export default function IconViewportWide({ size = 24 }: Readonly<{ size?: number }>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -70,8 +70,6 @@ model Message {
   parts              Json?
   metadata           Json         @default("{}")
   content            String?
-  reasoningDurations Json?        @map("reasoning_durations")
-  model              String?
   promptTokens       Int?         @default(0) @map("prompt_tokens")
   completionTokens   Int?         @default(0) @map("completion_tokens")
   conversationId     String       @map("conversation_id")

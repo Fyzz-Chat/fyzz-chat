@@ -13,11 +13,11 @@ export default function NameField({
   register,
   errors,
   autoFocus = false,
-}: {
+}: Readonly<{
   register: UseFormRegister<RegisterFormData>;
   errors: FieldErrors<RegisterFormData>;
   autoFocus?: boolean;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
 

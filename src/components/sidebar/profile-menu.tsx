@@ -19,11 +19,11 @@ export default function ProfileMenu({
   userName,
   userEmail,
   userImage,
-}: {
+}: Readonly<{
   userName: string;
   userEmail: string;
   userImage?: string;
-}) {
+}>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const setHelpOpen = useUIStore((state) => state.setHelpOpen);

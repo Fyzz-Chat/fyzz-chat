@@ -192,7 +192,16 @@ function filterProviders(): Provider[] {
     if (provider.id === "xai" && !xaiConfigured) {
       return false;
     }
-    if (provider.id === "fireworks" && !fireworksConfigured) {
+    if (provider.id === "llama" && !fireworksConfigured) {
+      return false;
+    }
+    if (provider.id === "deepseek" && !fireworksConfigured) {
+      return false;
+    }
+    if (provider.id === "qwen" && !fireworksConfigured) {
+      return false;
+    }
+    if (provider.id === "other" && !fireworksConfigured) {
       return false;
     }
     if (provider.id === "perplexity" && !perplexityConfigured) {
@@ -692,7 +701,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "llama",
     name: "Meta",
     icon: "meta",
     models: [
@@ -708,7 +717,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "deepseek",
     name: "DeepSeek",
     icon: "deepseek",
     models: [
@@ -731,7 +740,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "qwen",
     name: "Qwen",
     icon: "qwen",
     models: [
@@ -746,7 +755,7 @@ const providers: Provider[] = [
     ],
   },
   {
-    id: "fireworks",
+    id: "other",
     name: "Other",
     icon: "other",
     models: [
@@ -757,6 +766,15 @@ const providers: Provider[] = [
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
+        cost: 1,
+      },
+      {
+        id: "accounts/fireworks/models/kimi-k2p5",
+        name: "Kimi K2.5",
+        features: [reasoning],
+        provider: wrappedModel(fireworks),
+        tools: true,
+        extensions: [...imageTypes],
         cost: 1,
       },
     ],

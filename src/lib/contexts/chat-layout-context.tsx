@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import type { ChatLayout } from "@/types/chat";
 
 const CHAT_LAYOUT_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -27,21 +34,17 @@ export function ChatLayoutContextProvider({
   children: ReactNode;
   defaultLayout?: ChatLayout;
 }>) {
-  const [layout, _setLayout] = useState<ChatLayout>(defaultLayout);
+  const [layout, setLayout] = useState<ChatLayout>(defaultLayout);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: Need further investigation
-  const setLayout = useCallback(
-    (layout: ChatLayout) => {
-      // biome-ignore lint/suspicious/noDocumentCookie: TODO: Need further investigation
-      document.cookie = `fyzz-chat-layout=${layout}; path=/; max-age=${CHAT_LAYOUT_COOKIE_MAX_AGE}`;
-      _setLayout(layout);
-    },
-    [layout, _setLayout]
-  );
+  const _setLayout = useCallback((layout: ChatLayout) => {
+    // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not supported in all browsers
+    document.cookie = `fyzz-chat-layout=${layout}; path=/; max-age=${CHAT_LAYOUT_COOKIE_MAX_AGE}`;
+    setLayout(layout);
+  }, []);
+
+  const value = useMemo(() => ({ layout, setLayout: _setLayout }), [layout, _setLayout]);
 
   return (
-    <ChatLayoutContext.Provider value={{ layout, setLayout }}>
-      {children}
-    </ChatLayoutContext.Provider>
+    <ChatLayoutContext.Provider value={value}>{children}</ChatLayoutContext.Provider>
   );
 }

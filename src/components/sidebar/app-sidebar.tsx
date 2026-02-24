@@ -1,7 +1,8 @@
 import { ChevronsUpDown } from "lucide-react";
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { SignInButton } from "@/components/auth/sign-in-button";
+import { FastLink } from "@/components/fast-link";
+import { FyzzLogo } from "@/components/fyzz-logo";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
 import { SearchField } from "@/components/sidebar/search-field";
@@ -18,30 +19,32 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { FastLink } from "@/components/v3/fast-link";
 import { getVersion } from "@/lib/backend/utils";
 import { getUserFromSessionPublic } from "@/lib/dao/users";
 
-export async function AppSidebar({ children }: { children: ReactNode }) {
-  const [user, version] = await Promise.all([getUserFromSessionPublic(), getVersion()]);
+export async function AppSidebar({ children }: Readonly<{ children: ReactNode }>) {
+  const version = getVersion();
+  const user = await getUserFromSessionPublic();
 
   return (
     <>
       <Sidebar variant="inset">
         <SidebarHeader>
-          <div className="flex w-full items-center justify-between">
-            <div className="flex w-full items-end gap-2">
-              <FastLink to="/chat" className="flex items-center justify-start gap-2">
-                <Image src="/icon.svg" alt="Fyzz.chat" width={50} height={40} />
+          <div className="flex w-full items-center justify-between gap-2">
+            <div className="flex gap-2">
+              <FastLink href="/chat" className="flex items-center justify-start gap-2">
+                <FyzzLogo width={50} height={24} />
               </FastLink>
-              <a
-                href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mr-auto text-muted-foreground text-xs"
-              >
-                {version}
-              </a>
+              <div className="flex place-items-end">
+                <a
+                  href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mr-autotext-muted-foreground text-xs"
+                >
+                  {version}
+                </a>
+              </div>
             </div>
             <NewChatButton />
           </div>
@@ -66,7 +69,7 @@ export async function AppSidebar({ children }: { children: ReactNode }) {
                       className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     >
                       <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={user?.image || ""} alt={user?.name} />
+                        <AvatarImage src={user?.image || ""} alt={user?.name || "U"} />
                         <AvatarFallback className="rounded-lg">
                           {user?.name
                             ?.split(" ")

@@ -32,8 +32,8 @@ import {
 } from "@/lib/backend/utils";
 import {
   appendMessageToConversation,
-  lockConversation,
-  unlockConversation,
+  getOrCreateConversation,
+  hasDefaultTitle,
 } from "@/lib/dao/conversations";
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession, type SessionUser } from "@/lib/dao/users";
@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid model", { status: 400 });
   }
 
-  let existingConversation: { id: string; title: string; model: string } | null = null;
   let existingMessages: CustomUIMessage[] = [];
 
   if (temporaryChat) {
@@ -71,33 +70,32 @@ export async function POST(req: NextRequest) {
     );
 
     if (existingMessages.length === 0) {
-      throw new Error("Cannot send an empty message to a new conversation.");
+      return new Response("Cannot send an empty message to a new conversation.", {
+        status: 400,
+      });
     }
   } else {
-    const [conversation, conversationMessages] = await Promise.all([
-      caller.conversation({ id }),
-      caller.messages({ id }),
-    ]);
+    const getOrCreate = await getOrCreateConversation(id, user.id, modelId);
 
-    logDuration(start, "Conversation fetched");
-
-    existingConversation = conversation;
-    existingMessages = conversationMessages.messages;
-
-    const lock = await acquireConversationLock(id);
-
-    if (!lock) {
-      return new Response("conversation_locked", { status: 400 });
+    if (getOrCreate.error) {
+      return new Response(getOrCreate.error, { status: 403 });
     }
 
-    if (newMessage && hasTextPart(newMessage)) {
+    logDuration(start, "Conversation fetched or created");
+
+    const conversationMessages = await caller.messages({ id });
+    existingMessages = conversationMessages.messages;
+    const isRegeneratedMessage = existingMessages.find((m) => m.id === newMessage.id);
+
+    if (newMessage && hasTextPart(newMessage) && !isRegeneratedMessage) {
       await appendMessageToConversation(newMessage, id);
 
       const mappedMessage = mapFileParts(newMessage, user.id, id);
       existingMessages = [...existingMessages, mappedMessage];
     } else if (existingMessages.length === 0) {
-      await unlockConversation(id);
-      throw new Error("Cannot send an empty message to a new conversation.");
+      return new Response("Cannot send an empty message to a new conversation.", {
+        status: 400,
+      });
     }
   }
 
@@ -117,7 +115,12 @@ export async function POST(req: NextRequest) {
       logger.error(error);
 
       if (error instanceof McpClientInitError) {
-        return new NextResponse(error.cause as string, { status: 502 });
+        return new NextResponse(
+          typeof error.cause === "string"
+            ? error.cause
+            : "MCP client initialization failed",
+          { status: 502 }
+        );
       }
     }
   }
@@ -136,13 +139,14 @@ export async function POST(req: NextRequest) {
   abortController.abortIn(maxDuration - 5);
 
   const reasoning = createReasoningTimer();
+  let conversationEnded = false;
 
   async function endConversation() {
-    if (temporaryChat) {
+    if (temporaryChat || conversationEnded) {
       return;
     }
+    conversationEnded = true;
 
-    await unlockConversation(id);
     await closeMcpClients(mcpClients);
     abortController.cancelAbort();
 
@@ -236,17 +240,20 @@ export async function POST(req: NextRequest) {
         };
       }
     },
-    onError: (error) => JSON.stringify(error),
+    onError: (error) => {
+      logger.error(error instanceof Error ? error.message : "Unknown error");
+      return "An unexpected error occurred.";
+    },
     generateMessageId: () => uuidv4(),
     onFinish: async ({ messages, responseMessage, isAborted }) => {
       after(async () => {
-        const reasoningDurations = reasoning.finish();
         if (temporaryChat) {
           return;
         }
 
         try {
-          if (existingConversation?.title === "New Chat") {
+          if (await hasDefaultTitle(id)) {
+            logger.debug(`Updating conversation title for ${id}`);
             await updateConversationTitle(id, messages);
           }
 
@@ -276,36 +283,13 @@ export async function POST(req: NextRequest) {
             await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
           }
 
-          // const messageWithFiles = await uploadMedia(user.id, id, lastMessage);
-          // File data URLs are not supported yet in Gemini Image Gen models
-          const messageWithFiles = lastMessage;
-
-          await saveMessage(
-            messageWithFiles,
-            reasoningDurations,
-            id,
-            modelId,
-            0,
-            usage?.outputTokens || 0
-          );
+          await saveMessage(lastMessage, id, 0, usage?.outputTokens || 0);
         } finally {
           await endConversation();
         }
       });
     },
   });
-}
-
-async function acquireConversationLock(conversationId: string): Promise<boolean> {
-  for (let i = 0; i < 15; i++) {
-    const locked = await lockConversation(conversationId);
-    if (locked) {
-      return true;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-  logger.error("Failed to acquire conversation lock");
-  return false;
 }
 
 async function getTools(
@@ -319,7 +303,9 @@ async function getTools(
     tools.memory = memoryTool;
   }
 
-  tools.readUrl = readUrlTool;
+  if (search) {
+    tools.readUrl = readUrlTool;
+  }
 
   const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);

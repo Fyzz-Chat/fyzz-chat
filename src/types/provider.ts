@@ -42,7 +42,10 @@ export type ProviderId =
   | "anthropic"
   | "google"
   | "xai"
-  | "fireworks"
+  | "llama"
+  | "deepseek"
+  | "qwen"
+  | "other"
   | "perplexity";
 
 export type Provider = {

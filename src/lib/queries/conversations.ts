@@ -7,7 +7,6 @@ import {
 } from "@tanstack/react-query";
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
 import { useCallback } from "react";
-import { useStableId } from "@/hooks/use-stable-id";
 import {
   deleteConversation,
   saveConversation,
@@ -84,12 +83,26 @@ export function usePrefetchConversation() {
   );
 }
 
-export function useMessages(id: string) {
+export function useMessages(
+  id: string,
+  initialMessages?: CustomUIMessage[],
+  overrides?: { refetchOnMount?: boolean }
+) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
+  const initialData = initialMessages
+    ? {
+        messages: initialMessages,
+        hasMore: false,
+      }
+    : undefined;
+
   const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
     enabled: !temporaryChat,
+    refetchOnWindowFocus: true,
+    refetchOnMount: overrides?.refetchOnMount,
+    initialData,
     meta: {
       persist: !temporaryChat,
     },
@@ -174,31 +187,21 @@ export function useDeleteConversation() {
   });
 }
 
-export function useAddMessage() {
+export function useAddMessage(id: string) {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
-  const conversationId = useStableId();
+  const conversationId = id;
 
   return useMutation({
-    mutationFn: async ({
-      message,
-    }: {
-      message: CustomUIMessage & { model?: string };
-    }) => {
-      // Optimistically update the cache
-      const optimisticMessage = {
-        ...message,
-        createdAt: new Date(),
-      };
-
+    mutationFn: async ({ message }: { message: CustomUIMessage }) => {
       // Update conversation detail cache
       queryClient.setQueryData(
         trpc.messages.queryKey({ id: conversationId }),
         (old: MessagesData | undefined) => {
-          if (!old) return { messages: [optimisticMessage], hasMore: false };
+          if (!old) return { messages: [message], hasMore: false };
           return {
             ...old,
-            messages: [...(old.messages || []), optimisticMessage],
+            messages: [...(old.messages || []), message],
           };
         }
       );
@@ -220,7 +223,7 @@ export function useAddMessage() {
                   conv.id === conversationId
                     ? {
                         ...conv,
-                        messages: [...(conv.messages || []), optimisticMessage],
+                        messages: [...(conv.messages || []), message],
                       }
                     : conv
                 ),
@@ -230,7 +233,7 @@ export function useAddMessage() {
         );
       });
 
-      return optimisticMessage;
+      return message;
     },
     onError: (_) => {
       // Revert optimistic updates on error
@@ -351,6 +354,13 @@ export function useCreateConversationOptimistic() {
 
   return useMutation({
     mutationFn: async (conversation: PartialConversation) => {
+      // Cancel in-flight queries to prevent them from overwriting optimistic data
+      // (e.g. the conversation query returning null before the DB row is created)
+      await queryClient.cancelQueries(
+        trpc.conversation.queryFilter({ id: conversation.id })
+      );
+      await queryClient.cancelQueries(trpc.messages.queryFilter({ id: conversation.id }));
+
       queryClient.setQueryData(
         trpc.conversation.queryKey({ id: conversation.id }),
         conversation
@@ -358,6 +368,28 @@ export function useCreateConversationOptimistic() {
       queryClient.setQueryData(trpc.messages.queryKey({ id: conversation.id }), {
         messages: conversation.messages,
         hasMore: false,
+      });
+
+      const queries = queryClient.getQueriesData(
+        trpc.infiniteConversations.infiniteQueryFilter()
+      );
+      queries.forEach(([queryKey]) => {
+        queryClient.setQueryData(
+          queryKey,
+          (old: ConversationsInfiniteData | undefined) => {
+            if (!old) return old;
+            return {
+              ...old,
+              pages: [
+                {
+                  items: [conversation, ...(old.pages[0]?.items || [])],
+                  nextCursor: old.pages[0]?.nextCursor,
+                },
+                ...old.pages.slice(1),
+              ],
+            };
+          }
+        );
       });
     },
   });

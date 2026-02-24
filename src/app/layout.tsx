@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   title: metaTitle,
   description: metaDescription,
   icons: {
-    icon: "/icon.svg",
+    icon: "/favicon.svg",
     apple: "/apple-icon.png",
   },
   creator: "Richard Kovacs",

@@ -29,12 +29,12 @@ export default function MemoryForm({
   memory,
   memoryEnabled,
   providers,
-}: {
+}: Readonly<{
   defaultModel?: string;
   memory?: string;
   memoryEnabled: boolean;
   providers: PublicProvider[];
-}) {
+}>) {
   const [isPending, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);

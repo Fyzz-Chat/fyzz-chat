@@ -1,3 +1,5 @@
+"use client";
+
 import { use } from "react";
 import { KeyHandler } from "@/components/key-handler";
 import {

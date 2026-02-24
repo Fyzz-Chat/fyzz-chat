@@ -100,6 +100,58 @@ export function isFileList(value: unknown): value is FileList {
   );
 }
 
+export async function getFileId(fileUIPart: FileUIPart): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(fileUIPart.url);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+
+  return hashHex;
+}
+
+export async function uploadFileParts(
+  conversationId: string,
+  fileUIParts: FileUIPart[]
+): Promise<FileUIPart[]> {
+  const uploadUrls = await standaloneTrpc.getUploadUrls.query({
+    conversationId,
+    count: fileUIParts.length,
+    fileIds: await Promise.all(
+      fileUIParts.map(async (fileUIPart) => {
+        return await getFileId(fileUIPart);
+      })
+    ),
+  });
+
+  const uploadedFiles = await Promise.all(
+    fileUIParts.map(async (fileUIPart, index) => {
+      const { key, url } = uploadUrls[index];
+      if (!url) {
+        return fileUIPart;
+      }
+
+      const response = await fetch(url, {
+        method: "PUT",
+        body: await fileUIPartToFile(fileUIPart),
+        headers: {
+          "Content-Type": fileUIPart.mediaType,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      return {
+        ...fileUIPart,
+        url: key,
+      };
+    })
+  );
+
+  return uploadedFiles;
+}
+
 export async function uploadFiles(
   conversationId: string,
   fileList?: FileList | FileUIPart[]
@@ -158,6 +210,19 @@ export function fileToFileUIPart(file: File, key: string): FileUIPart {
   };
 }
 
+export async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
+  const response = await fetch(fileUIPart.url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch file for upload");
+  }
+  const blob = await response.blob();
+  const file = new File([blob], fileUIPart.filename || "file", {
+    type: fileUIPart.mediaType,
+  });
+
+  return file;
+}
+
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -170,7 +235,7 @@ export function fileToBase64(file: File): Promise<string> {
 }
 
 export function getMessageContent(message: CustomUIMessage): string {
-  if (message.metadata?.content) {
+  if (message?.metadata?.content) {
     return message.metadata.content;
   }
 

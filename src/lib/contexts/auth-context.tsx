@@ -9,7 +9,7 @@ export const AuthContext = createContext({
   },
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const value = useMemo(() => ({ dialogOpen, setDialogOpen }), [dialogOpen]);
 

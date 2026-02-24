@@ -94,15 +94,14 @@ export async function deleteConversation(conversationId: string) {
     },
   });
 
-  const attachments = conversation?.messages
-    .flatMap((message) => {
+  const attachments =
+    conversation?.messages?.flatMap((message) => {
       const parts = message.parts as Array<{ type: string; url: string }> | undefined;
       return (
         parts?.filter((part) => part.type === "file" && !part.url.startsWith("data:")) ??
         []
       );
-    })
-    .filter(Boolean);
+    }) ?? [];
 
   if (attachments && attachments.length > 0) {
     await Promise.all(attachments.map((attachment) => deleteFile(attachment.url)));

@@ -21,15 +21,15 @@ const emailSchema = z.object({
 
 type EmailFormData = z.infer<typeof emailSchema>;
 
-type AuthInitialStepProps = {
+type AuthInitialStepProps = Readonly<{
   anonymousLogin?: boolean;
   hasGoogle?: boolean;
-};
+}>;
 
 export default function AuthInitialStep({
   anonymousLogin = false,
   hasGoogle = false,
-}: Readonly<AuthInitialStepProps>) {
+}: AuthInitialStepProps) {
   const router = useRouter();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);

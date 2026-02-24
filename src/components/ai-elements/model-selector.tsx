@@ -1,4 +1,7 @@
+"use client";
+
 import type { ComponentProps, ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   Command,
   CommandDialog,
@@ -13,39 +16,114 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 
-export type ModelSelectorProps = ComponentProps<typeof Dialog>;
+const ModelSelectorContext = createContext<{ isDesktop: boolean }>({ isDesktop: true });
 
-export const ModelSelector = (props: ModelSelectorProps) => <Dialog {...props} />;
+type DialogRootProps = ComponentProps<typeof Dialog>;
+type DrawerRootProps = ComponentProps<typeof Drawer>;
+type DialogTriggerProps = ComponentProps<typeof DialogTrigger>;
+type DrawerTriggerProps = ComponentProps<typeof DrawerTrigger>;
+type DialogContentProps = ComponentProps<typeof DialogContent>;
+type DrawerContentProps = ComponentProps<typeof DrawerContent>;
 
-export type ModelSelectorTriggerProps = ComponentProps<typeof DialogTrigger>;
+export type ModelSelectorProps = DialogRootProps & DrawerRootProps;
 
-export const ModelSelectorTrigger = (props: ModelSelectorTriggerProps) => (
-  <DialogTrigger {...props} />
-);
+export const ModelSelector = ({ children, ...props }: ModelSelectorProps) => {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const contextValue = useMemo(() => ({ isDesktop }), [isDesktop]);
+  const [rendered, setRendered] = useState(false);
 
-export type ModelSelectorContentProps = ComponentProps<typeof DialogContent> & {
+  useEffect(() => {
+    setRendered(true);
+  }, []);
+
+  if (!rendered) {
+    return null;
+  }
+
+  return (
+    <ModelSelectorContext.Provider value={contextValue}>
+      {isDesktop ? (
+        <Dialog {...(props as DialogRootProps)}>{children}</Dialog>
+      ) : (
+        <Drawer {...(props as DrawerRootProps)}>{children}</Drawer>
+      )}
+    </ModelSelectorContext.Provider>
+  );
+};
+
+export type ModelSelectorTriggerProps = DialogTriggerProps & DrawerTriggerProps;
+
+export const ModelSelectorTrigger = (props: ModelSelectorTriggerProps) => {
+  const { isDesktop } = useContext(ModelSelectorContext);
+  return isDesktop ? (
+    <DialogTrigger {...(props as DialogTriggerProps)} />
+  ) : (
+    <DrawerTrigger {...(props as DrawerTriggerProps)} />
+  );
+};
+
+export type ModelSelectorContentProps = (DialogContentProps & DrawerContentProps) & {
   title?: ReactNode;
+  description?: string;
 };
 
 export const ModelSelectorContent = ({
   className,
   children,
   title = "Model Selector",
+  description = "Select a model to use for your conversation.",
   ...props
-}: ModelSelectorContentProps) => (
-  <DialogContent
-    className={cn("outline! border-none! p-0 outline-border! outline-solid!", className)}
-    {...props}
-  >
-    <DialogTitle className="sr-only">{title}</DialogTitle>
-    <Command className="**:data-[slot=command-input-wrapper]:h-auto">{children}</Command>
-  </DialogContent>
-);
+}: ModelSelectorContentProps) => {
+  const { isDesktop } = useContext(ModelSelectorContext);
+
+  if (isDesktop) {
+    return (
+      <DialogContent
+        className={cn(
+          "outline! border-none! p-0 outline-border! outline-solid!",
+          className
+        )}
+        {...(props as DialogContentProps)}
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <Command className="**:data-[slot=command-input-wrapper]:h-auto">
+          {children}
+        </Command>
+      </DialogContent>
+    );
+  }
+
+  return (
+    <DrawerContent className={className} {...(props as DrawerContentProps)}>
+      <DrawerHeader className="sr-only">
+        <DrawerTitle>{title}</DrawerTitle>
+        <DrawerDescription>{description}</DrawerDescription>
+      </DrawerHeader>
+      <Command className="mt-4 rounded-b-none border-t **:data-[slot=command-input-wrapper]:h-auto">
+        {children}
+      </Command>
+    </DrawerContent>
+  );
+};
 
 export type ModelSelectorDialogProps = ComponentProps<typeof CommandDialog>;
 
@@ -156,20 +234,32 @@ export type ModelSelectorLogoProps = Omit<ComponentProps<"img">, "src" | "alt"> 
     | string;
 };
 
+const FALLBACK_LOGO = "/logos/other.svg";
+
 export const ModelSelectorLogo = ({
   provider,
   className,
   ...props
-}: ModelSelectorLogoProps) => (
-  <img
-    {...props}
-    alt={`${provider} logo`}
-    className={cn("size-3 dark:invert", className)}
-    height={12}
-    src={`https://models.dev/logos/${provider}.svg`}
-    width={12}
-  />
-);
+}: ModelSelectorLogoProps) => {
+  // Take logos from https://models.dev/logos/${provider}.svg
+  const [src, setSrc] = useState(`/logos/${provider}.svg`);
+
+  useEffect(() => {
+    setSrc(`/logos/${provider}.svg`);
+  }, [provider]);
+
+  return (
+    <img
+      {...props}
+      alt={`${provider} logo`}
+      className={cn("size-3 dark:invert", className)}
+      height={12}
+      onError={() => setSrc(FALLBACK_LOGO)}
+      src={src}
+      width={12}
+    />
+  );
+};
 
 export type ModelSelectorLogoGroupProps = ComponentProps<"div">;
 

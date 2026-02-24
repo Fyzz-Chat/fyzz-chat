@@ -1,9 +1,9 @@
 "use client";
 
 import { ImageIcon, type LucideIcon, MessageSquare, Sparkles, Zap } from "lucide-react";
-import Image from "next/image";
 import { useContext } from "react";
 import { ModelSelectorLogo } from "@/components/ai-elements/model-selector";
+import { FyzzLogo } from "@/components/fyzz-logo";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -65,19 +65,19 @@ const FEATURES: Feature[] = [
   },
 ];
 
-type AuthPopupProps = {
+type AuthPopupProps = Readonly<{
   anonymousLogin?: boolean;
   hasGoogle?: boolean;
   title?: string;
   description?: string;
-};
+}>;
 
 export default function AuthPopup({
   anonymousLogin = false,
   hasGoogle = false,
   title = "Log in or sign up",
   description = "Claude, ChatGPT, Gemini, Perplexity, and more, all in one place, just a few clicks away",
-}: Readonly<AuthPopupProps>) {
+}: AuthPopupProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { dialogOpen, setDialogOpen } = useContext(AuthContext);
 
@@ -95,7 +95,7 @@ export default function AuthPopup({
                 <div className="flex flex-col justify-center gap-3">
                   <div>
                     <h3 className="font-semibold text-foreground text-xl">Welcome to</h3>
-                    <Image src="/icon.svg" alt="Fyzz.chat" width={90} height={40} />
+                    <FyzzLogo width={70} height={40} />
                   </div>
                   <p className="text-muted-foreground text-sm">
                     Your all-in-one AI chat platform

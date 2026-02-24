@@ -25,17 +25,11 @@ export class EmailNotConfiguredError extends Error {
   }
 }
 
-type SendResetPasswordEmailProps = {
-  to: string;
-  name: string;
-  url: string;
-};
-
 export async function sendResetPasswordEmail({
   to,
   name,
   url,
-}: SendResetPasswordEmailProps) {
+}: Readonly<{ to: string; name: string; url: string }>) {
   if (!client) {
     const errorMessage = "Email client not configured.";
     logger.error(errorMessage);

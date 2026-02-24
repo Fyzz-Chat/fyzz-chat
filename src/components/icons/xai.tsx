@@ -1,10 +1,10 @@
 export default function XAI({
   size = 16,
   className,
-}: {
+}: Readonly<{
   size?: number;
   className?: string;
-}) {
+}>) {
   return (
     <svg
       width={size}

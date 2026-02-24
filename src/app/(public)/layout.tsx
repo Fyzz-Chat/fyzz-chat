@@ -1,10 +1,10 @@
 import { headers } from "next/headers";
-import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 import { Suspense } from "react";
 import { auth } from "@/auth";
 import CatalystBadge from "@/components/footer/catalyst-badge";
+import { FyzzLogo } from "@/components/fyzz-logo";
 import GitHub from "@/components/icons/github";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,7 +46,7 @@ export default async function Layout({
           href="/chat"
           className="mr-auto flex items-center gap-2 whitespace-pre font-medium text-lg"
         >
-          <Image src="/icon.svg" alt="Fyzz.chat" width={70} height={40} />
+          <FyzzLogo width={70} height={40} />
         </Link>
         <Suspense fallback={<Skeleton className="h-10 w-28" />}>
           <HeaderItems />

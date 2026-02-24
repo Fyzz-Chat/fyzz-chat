@@ -1,11 +1,12 @@
 "use client";
 
-import { Loader2, MessageSquare, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import type React from "react";
-import { createElement, memo, use, useMemo, useState } from "react";
+import { memo, use, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { FastLink } from "@/components/fast-link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,9 +24,8 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
-import { FastLink } from "@/components/v3/fast-link";
 import { useTranslations } from "@/lib/contexts/translations-context";
-import { getProviderIcon, providerIcons } from "@/lib/providers";
+import { getProviderIcon } from "@/lib/providers";
 import {
   useConversations,
   useDeleteConversation,
@@ -87,13 +87,14 @@ export default function ChatSidebar({
     searchQuery
   );
 
-  const allConversations = data?.pages.flatMap((page) => page.items) || [];
-  const groupedConversations = useMemo(
-    () => groupConversationsByTime(allConversations as PartialConversation[]),
-    [allConversations]
-  );
+  const { allConversations, groupedConversations } = useMemo(() => {
+    const all = data?.pages.flatMap((page) => page.items) ?? [];
+    return {
+      allConversations: all,
+      groupedConversations: groupConversationsByTime(all),
+    };
+  }, [data?.pages]);
 
-  // Setup intersection observer for infinite scroll using react-intersection-observer
   const { ref } = useInView({
     onChange: (inView) => {
       if (inView && hasNextPage && !isFetchingNextPage) {
@@ -165,7 +166,6 @@ export default function ChatSidebar({
           </div>
         </div>
       )}
-      {/* Intersection observer target */}
       {hasNextPage && <div ref={ref} className="h-4 w-full pb-4" />}
       {allConversations.length === 0 && searchQuery && (
         <SidebarGroup>
@@ -179,15 +179,18 @@ export default function ChatSidebar({
 }
 
 function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
-  const { id } = useParams();
-  const currentId = id as string;
+  const params = useParams();
+  const currentId = params.id as string;
 
   const deleteConversation = useDeleteConversation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const providers = useModelStore((state) => state.providers);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const providerIcon = getProviderIcon(providers, chat.model);
+  const ProviderIcon = useMemo(
+    () => getProviderIcon(providers, chat.model),
+    [providers, chat.model]
+  );
   const prefetchConversation = usePrefetchConversation();
 
   const handleDelete = async () => {
@@ -197,7 +200,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
         conversationId: chat.id,
       });
       if (currentId === chat.id) {
-        navigate("/chat");
+        router.push("/chat");
       }
       setIsModalOpen(false);
     } catch (_) {
@@ -208,7 +211,6 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   };
 
   const handleModalOpenChange = (open: boolean) => {
-    // Prevent modal from closing while delete operation is in progress
     if (!open && isDeleting) {
       return;
     }
@@ -216,14 +218,14 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default AlertDialogAction behavior
+    e.preventDefault();
     handleDelete();
   };
 
   return (
     <div className="group/chat relative">
       <FastLink
-        to={`/chat/${chat.id}`}
+        href={`/chat/${chat.id}`}
         prefetchFunction={() => prefetchConversation(chat.id)}
         className={cn(
           "flex w-full flex-col items-start gap-1 rounded-lg p-3 text-left text-sm transition-colors",
@@ -231,14 +233,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
         )}
       >
         <div className="flex w-full items-center gap-2">
-          {providerIcon ? (
-            createElement(providerIcons[providerIcon as keyof typeof providerIcons], {
-              size: 16,
-              className: "shrink-0",
-            })
-          ) : (
-            <MessageSquare size={16} />
-          )}
+          {ProviderIcon}
           <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
           <div className="hidden size-5 group-hover/chat:inline-flex" />
         </div>

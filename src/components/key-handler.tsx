@@ -1,17 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useUIStore } from "@/stores/ui-store";
 
 export function KeyHandler({
   keyString,
   handler,
   dependencies = [],
-}: {
+}: Readonly<{
   keyString: string;
   handler: () => void;
   dependencies?: unknown[];
-}) {
+}>) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check if the user is currently typing in an input field
@@ -38,21 +39,35 @@ export function KeyHandler({
 }
 
 export function HomeHandler() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function handler() {
-    navigate("/chat");
-    document.getElementById("message-input")?.focus();
+    router.push("/chat");
+    focusInput();
   }
 
   return <KeyHandler keyString="n" handler={handler} />;
 }
 
-export function EnterHandler() {
+export function ModelMenuHandler() {
+  const setModelMenuOpen = useUIStore((state) => state.setModelMenuOpen);
+
   function handler() {
-    document.getElementById("message-input")?.focus();
+    setModelMenuOpen((open) => !open);
   }
-  return <KeyHandler keyString="Enter" handler={handler} />;
+
+  return <KeyHandler keyString="m" handler={handler} dependencies={[setModelMenuOpen]} />;
+}
+
+function focusInput() {
+  const el = document.getElementById("message-input") as HTMLTextAreaElement | null;
+  if (!el) return;
+  el.focus();
+  el.selectionStart = el.selectionEnd = el.value.length;
+}
+
+export function EnterHandler() {
+  return <KeyHandler keyString="Enter" handler={focusInput} />;
 }
 
 export function EscapeHandler() {

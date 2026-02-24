@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/lib/auth-client";
 import { useTranslations } from "@/lib/contexts/translations-context";
 
-export default function PasswordResetForm({ token }: { token: string }) {
+export default function PasswordResetForm({ token }: Readonly<{ token: string }>) {
   const [isPending, setIsPending] = useState(false);
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -52,7 +52,7 @@ export default function PasswordResetForm({ token }: { token: string }) {
           type="password"
           id="password"
           name="password"
-          placeholder="****************"
+          placeholder="Enter your password"
           required
         />
       </div>
@@ -64,7 +64,7 @@ export default function PasswordResetForm({ token }: { token: string }) {
           type="password"
           id="confirm-password"
           name="confirm-password"
-          placeholder="****************"
+          placeholder="Confirm password"
           required
         />
       </div>

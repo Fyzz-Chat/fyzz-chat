@@ -10,7 +10,7 @@ export const metadataSchema = z.object({
   reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).optional(),
 });
 
-type CustomMetadata = z.infer<typeof metadataSchema>;
+export type CustomMetadata = z.infer<typeof metadataSchema>;
 
 export type CustomUIMessage = UIMessage<CustomMetadata>;
 

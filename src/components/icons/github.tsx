@@ -1,4 +1,4 @@
-export default function GitHub({ size = 16 }: { size?: number }) {
+export default function GitHub({ size = 16 }: Readonly<{ size?: number }>) {
   return (
     <svg
       width={size}

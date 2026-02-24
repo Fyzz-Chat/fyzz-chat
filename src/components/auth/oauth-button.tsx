@@ -10,11 +10,11 @@ export default function OAuthButton({
   provider,
   title,
   isLoading,
-}: {
+}: Readonly<{
   provider: string;
   title: string;
   isLoading?: boolean;
-}) {
+}>) {
   return (
     <Button
       type="submit"

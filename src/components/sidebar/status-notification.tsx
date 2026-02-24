@@ -43,9 +43,19 @@ export default function StatusNotification() {
                 Perplexity
               </Badge>
             )}
-            {!status.providers.fireworks && (
+            {!status.providers.llama && (
               <Badge variant="destructive" className="flex justify-center">
-                Fireworks
+                Meta
+              </Badge>
+            )}
+            {!status.providers.deepseek && (
+              <Badge variant="destructive" className="flex justify-center">
+                DeepSeek
+              </Badge>
+            )}
+            {!status.providers.qwen && (
+              <Badge variant="destructive" className="flex justify-center">
+                Qwen
               </Badge>
             )}
           </div>
