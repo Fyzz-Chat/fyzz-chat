@@ -796,6 +796,15 @@ const providers: Provider[] = [
         extensions: [...imageTypes],
         cost: 1,
       },
+      {
+        id: "accounts/fireworks/models/glm-5",
+        name: "GLM 5",
+        features: [reasoning],
+        provider: wrappedModel(fireworks),
+        tools: true,
+        extensions: [],
+        cost: 1,
+      },
     ],
   },
   {
