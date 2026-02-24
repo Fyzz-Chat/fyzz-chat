@@ -748,8 +748,9 @@ const providers: Provider[] = [
         cost: 1,
       },
       {
-        id: "accounts/fireworks/models/deepseek-v3p1-terminus",
-        name: "DeepSeek V3.1 Terminus",
+        id: "accounts/fireworks/models/deepseek-v3p2",
+        name: "DeepSeek V3.2",
+        features: [reasoning],
         provider: wrappedModel(fireworks),
         tools: true,
         extensions: [],
