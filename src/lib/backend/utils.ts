@@ -6,7 +6,7 @@ import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getModelPublic } from "@/lib/backend/providers";
 import { logger } from "@/lib/logger";
 import type { CustomUIMessage } from "@/types/chat";
-import { pdfType } from "@/types/provider";
+import { pdfType, tabularType, videoType } from "@/types/provider";
 
 export function filterMessages(messages: CustomUIMessage[], modelId: string) {
   const model = getModelPublic(modelId);
@@ -14,6 +14,10 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
     extension.startsWith("image/")
   );
   const pdfSupport = model?.extensions?.some((extension) => extension === pdfType);
+  const videoSupport = model?.extensions?.some((extension) => extension === videoType);
+  const tabularSupport = model?.extensions?.some(
+    (extension) => extension === tabularType
+  );
   const anthropicModel = model?.id.startsWith("claude") || false;
 
   return messages.map((message: CustomUIMessage) => ({
@@ -38,6 +42,22 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
       }
 
       if (!pdfSupport && part.type === "file" && part.mediaType?.startsWith(pdfType)) {
+        return false;
+      }
+
+      if (
+        !videoSupport &&
+        part.type === "file" &&
+        part.mediaType?.startsWith(videoType)
+      ) {
+        return false;
+      }
+
+      if (
+        !tabularSupport &&
+        part.type === "file" &&
+        part.mediaType?.startsWith(tabularType)
+      ) {
         return false;
       }
 

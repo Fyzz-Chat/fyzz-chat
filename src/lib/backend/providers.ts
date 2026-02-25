@@ -29,6 +29,7 @@ import {
   type PublicModel,
   type PublicProvider,
   pdfType,
+  tabularType,
   videoType,
 } from "@/types/provider";
 
@@ -591,7 +592,7 @@ const providers: Provider[] = [
         features: [search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, pdfType, videoType],
+        extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 1,
       },
       {
@@ -600,7 +601,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedGoogle,
         tools: false,
-        extensions: [...imageTypes],
+        extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 1,
       },
       {
@@ -609,7 +610,7 @@ const providers: Provider[] = [
         features: [reasoning, search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, pdfType, videoType],
+        extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 2,
       },
       {
@@ -618,7 +619,7 @@ const providers: Provider[] = [
         features: [reasoning, search],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, pdfType],
+        extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 1,
       },
       {
@@ -627,7 +628,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedGoogle,
         tools: true,
-        extensions: [...imageTypes, pdfType],
+        extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 4,
       },
       {

@@ -21,7 +21,10 @@ export const pdfType: PDFType = "application/pdf";
 export type VideoType = "video/mp4";
 export const videoType: VideoType = "video/mp4";
 
-export type ExtensionType = ImageType | PDFType | VideoType;
+export type TabularType = "text/csv";
+export const tabularType: TabularType = "text/csv";
+
+export type ExtensionType = ImageType | PDFType | VideoType | TabularType;
 
 export type Model = {
   id: string;
