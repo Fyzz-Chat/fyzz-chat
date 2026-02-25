@@ -54,7 +54,7 @@ export async function updateConversationTitle(
   conversationId: string,
   messages: CustomUIMessage[]
 ) {
-  const modelId = "gpt-4o-mini";
+  const modelId = "gpt-5-nano";
   const filteredMessages = filterMessages(messages, modelId);
   const { text } = await generateText({
     model: openai(modelId),
