@@ -22,4 +22,6 @@ async function ping() {
   }
 }
 
-await ping();
+if (process.env.DISABLE_TELEMETRY !== "true") {
+  await ping();
+}
