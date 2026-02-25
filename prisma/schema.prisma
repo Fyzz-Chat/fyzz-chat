@@ -81,6 +81,14 @@ model Message {
   @@map("messages")
 }
 
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
 // Better Auth tables
 model Session {
   id        String   @id @default(cuid())
