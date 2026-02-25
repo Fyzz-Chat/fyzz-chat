@@ -1,3 +1,16 @@
+# [0.19.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.18.0...v0.19.0) (2026-02-25)
+
+
+### Bug Fixes
+
+* make default model work ([4bab929](https://github.com/Fyzz-Chat/fyzz-chat/commit/4bab92920f837ace17eb7deac6dca9dfd1ba416a))
+
+
+### Features
+
+* add agent hooks ([e5420b3](https://github.com/Fyzz-Chat/fyzz-chat/commit/e5420b328b01031850c8576e98083347b93cd5e4))
+* add csv and video support to gemini models ([fdba4e6](https://github.com/Fyzz-Chat/fyzz-chat/commit/fdba4e689b1a34593184211ac86b162ccf26d824))
+
 # [0.18.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.17.0...v0.18.0) (2026-02-24)
 
 
