@@ -131,7 +131,9 @@ export function getProviderTools(modelId: string, search: boolean) {
     isOpenAIModel &&
     modelId !== "gpt-5-codex" &&
     modelId !== "gpt-5.1-codex" &&
-    modelId !== "o3-mini";
+    modelId !== "o3-mini" &&
+    modelId !== "gpt-5.2-codex" &&
+    modelId !== "gpt-5.3-codex";
 
   const supportsOpenAIImageGeneration =
     isOpenAIModel && getModelPublic(modelId)?.features?.includes(images);
@@ -273,121 +275,6 @@ const images: Feature = {
 
 const providers: Provider[] = [
   {
-    id: "azure",
-    name: "OpenAI",
-    icon: "openai",
-    models: [
-      {
-        id: "gpt-4.1-mini",
-        name: "GPT-4.1 mini",
-        features: [images],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: imageTypes,
-        cost: 1,
-      },
-      {
-        id: "gpt-4.1",
-        name: "GPT-4.1",
-        features: [images],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: imageTypes,
-        cost: 2,
-      },
-      {
-        id: "gpt-5-nano",
-        name: "GPT-5 nano",
-        features: [reasoning, search, coding],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 1,
-      },
-      {
-        id: "gpt-5-mini",
-        name: "GPT-5 mini",
-        features: [reasoning, search, coding],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 1,
-      },
-      {
-        id: "gpt-5",
-        name: "GPT-5",
-        features: [reasoning, search, coding],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 2,
-      },
-      {
-        id: "gpt-5-codex",
-        name: "GPT-5 Codex",
-        features: [reasoning, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
-        tools: true,
-        extensions: imageTypes,
-        cost: 2,
-      },
-      {
-        id: "gpt-5.1",
-        name: "GPT-5.1",
-        features: [reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 2,
-      },
-      {
-        id: "gpt-5.1-codex",
-        name: "GPT-5.1 Codex",
-        features: [reasoning, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
-        tools: true,
-        extensions: imageTypes,
-        cost: 2,
-      },
-      {
-        id: "gpt-5.2",
-        name: "GPT-5.2",
-        features: [reasoning, search, coding],
-        provider: wrappedModel(openai), // TODO: Change to azure when available
-        tools: true,
-        extensions: [...imageTypes, pdfType],
-        cost: 3,
-      },
-      {
-        id: "o3-mini",
-        name: "o3-mini",
-        features: [reasoning],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: [],
-        cost: 1,
-      },
-      {
-        id: "o4-mini",
-        name: "o4-mini",
-        features: [reasoning],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: imageTypes,
-        cost: 1,
-      },
-      {
-        id: "o3",
-        name: "o3",
-        features: [reasoning],
-        provider: wrappedModel(azure),
-        tools: true,
-        extensions: imageTypes,
-        cost: 2,
-      },
-    ],
-  },
-  {
     id: "openai",
     name: "OpenAI",
     icon: "openai",
@@ -471,6 +358,24 @@ const providers: Provider[] = [
         provider: wrappedModel(openai),
         tools: true,
         extensions: [...imageTypes, pdfType],
+        cost: 3,
+      },
+      {
+        id: "gpt-5.2-codex",
+        name: "GPT-5.2 Codex",
+        features: [reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: imageTypes,
+        cost: 3,
+      },
+      {
+        id: "gpt-5.3-codex",
+        name: "GPT-5.3 Codex",
+        features: [reasoning],
+        provider: wrappedModel(openai),
+        tools: true,
+        extensions: imageTypes,
         cost: 3,
       },
       {
