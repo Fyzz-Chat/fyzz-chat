@@ -83,6 +83,6 @@ jobs:
 
       - name: Migrate database
         run: |
-          bun run db:migrate
+          bun run db:deploy
         env:
           DIRECT_DATABASE_URL: ${{ secrets.DATABASE_URL_STAGE }}
