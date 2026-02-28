@@ -1,34 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import {
+  OPENAI_CODE_INTERPRETER_DENYLIST,
+  OPENAI_REASONING_MODELS,
+  TOOLS_DISABLED_MODELS,
+  XAI_CHAT_MODELS,
+  XAI_RESPONSES_MODELS,
+} from "./providers.policy.fixtures";
 import { restoreProviderTestEnv, setupProviderTestEnv } from "./providers.test-utils";
 import type { CustomMetadata, CustomUIMessage } from "../src/types/chat";
 
 let getModelRuntime: typeof import("../src/lib/backend/providers").getModelRuntime;
-
-const XAI_RESPONSES_MODELS = [
-  "grok-4-0709",
-  "grok-4-fast-non-reasoning",
-  "grok-4-1-fast-non-reasoning",
-] as const;
-
-const XAI_CHAT_MODELS = ["grok-3", "grok-code-fast-1"] as const;
-
-const OPENAI_CODE_INTERPRETER_DENYLIST = [
-  "gpt-5-codex",
-  "gpt-5.1-codex",
-  "gpt-5.2-codex",
-  "gpt-5.3-codex",
-  "o3-mini",
-] as const;
-
-const TOOLS_DISABLED_MODELS = [
-  "gemini-2.5-flash-lite",
-  "gemini-2.5-flash-image",
-  "gemma-3-27b-it",
-  "sonar",
-  "sonar-pro",
-] as const;
-
-const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
 
 const XAI_RESPONSES_THREADING_OPTIONS = {
   store: true,

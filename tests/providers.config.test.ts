@@ -1,4 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import {
+  OPENAI_CODE_INTERPRETER_DENYLIST,
+  OPENAI_IMAGE_GENERATION_MODELS,
+  XAI_SEARCH_TOOLS_MODELS,
+} from "./providers.policy.fixtures";
 import { restoreProviderTestEnv, setupProviderTestEnv } from "./providers.test-utils";
 import type { ProviderId, RuntimePreset } from "../src/types/provider";
 
@@ -229,29 +234,19 @@ describe("providers config invariants", () => {
       .filter((model) => model.capabilities?.supportsCodeInterpreter === false)
       .map((model) => model.id)
       .sort();
-    expect(codeInterpreterDenied).toEqual([
-      "gpt-5-codex",
-      "gpt-5.1-codex",
-      "gpt-5.2-codex",
-      "gpt-5.3-codex",
-      "o3-mini",
-    ]);
+    expect(codeInterpreterDenied).toEqual([...OPENAI_CODE_INTERPRETER_DENYLIST].sort());
 
     const imageGenerationEnabled = models
       .filter((model) => model.capabilities?.supportsImageGeneration === true)
       .map((model) => model.id)
       .sort();
-    expect(imageGenerationEnabled).toEqual(["gpt-4.1", "gpt-4.1-mini"]);
+    expect(imageGenerationEnabled).toEqual([...OPENAI_IMAGE_GENERATION_MODELS].sort());
 
     const xaiSearchToolsEnabled = models
       .filter((model) => model.capabilities?.supportsXaiSearchTools === true)
       .map((model) => model.id)
       .sort();
-    expect(xaiSearchToolsEnabled).toEqual([
-      "grok-4-0709",
-      "grok-4-1-fast-non-reasoning",
-      "grok-4-fast-non-reasoning",
-    ]);
+    expect(xaiSearchToolsEnabled).toEqual([...XAI_SEARCH_TOOLS_MODELS].sort());
   });
 
   it("respects provider availability env matrix", async () => {
