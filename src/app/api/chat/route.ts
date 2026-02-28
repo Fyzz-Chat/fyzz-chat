@@ -14,14 +14,7 @@ import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
-import {
-  getAnthropicProviderOptions,
-  getGoogleProviderOptions,
-  getModel,
-  getOpenaiProviderOptions,
-  getProviderTools,
-  getXaiProviderOptions,
-} from "@/lib/backend/providers";
+import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
@@ -47,7 +40,7 @@ import {
 } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
-import type { ConversationState } from "@/types/provider";
+import type { ConversationState, ModelRuntime } from "@/types/provider";
 
 export const maxDuration = 55;
 
@@ -58,7 +51,8 @@ export async function POST(req: NextRequest) {
 
   const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages.at(-1);
-  const { model, supportsTools, conversationState } = getModel(modelId, browse);
+  const runtime = getModelRuntime(modelId, browse);
+  const { model, supportsTools, conversationState } = runtime;
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
@@ -108,7 +102,7 @@ export async function POST(req: NextRequest) {
 
   if (supportsTools && !temporaryChat) {
     try {
-      const toolsResult = await getTools(user, modelId, browse);
+      const toolsResult = await getTools(user, browse, runtime);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
 
@@ -172,12 +166,7 @@ export async function POST(req: NextRequest) {
       delayInMs: 10,
     }),
     tools,
-    providerOptions: {
-      anthropic: getAnthropicProviderOptions(modelId),
-      openai: getOpenaiProviderOptions(modelId),
-      google: getGoogleProviderOptions(modelId),
-      xai: getXaiProviderOptions(conversationState, previousResponseId),
-    },
+    providerOptions: runtime.getProviderOptions({ previousResponseId }),
     abortSignal: abortController.signal,
     onAbort: async () => {
       logger.info(`Stream aborted for user: ${user.id}`);
@@ -312,10 +301,14 @@ export async function POST(req: NextRequest) {
 
 async function getTools(
   user: SessionUser,
-  modelId: string,
-  search: boolean
+  search: boolean,
+  runtime: ModelRuntime
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
-  const providerTools = getProviderTools(modelId, search);
+  const providerTools = runtime.getProviderTools(search);
+
+  if (runtime.conversationState === "provider-response-id") {
+    return { tools: providerTools, mcpClients: [] };
+  }
 
   const tools: { [key: string]: Tool } = {};
 

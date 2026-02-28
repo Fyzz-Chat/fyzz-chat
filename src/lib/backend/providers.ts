@@ -92,15 +92,6 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
   };
 }
 
-export function getModel(modelId: string, browse: boolean) {
-  const runtime = getModelRuntime(modelId, browse);
-  return {
-    model: runtime.model,
-    supportsTools: runtime.supportsTools,
-    conversationState: runtime.conversationState,
-  };
-}
-
 export function getAnthropicProviderOptions(modelId: string): AnthropicProviderOptions {
   return {
     thinking: isThinkingModel(modelId, "anthropic")

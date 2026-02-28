@@ -1,3 +1,4 @@
+import type { SharedV3ProviderOptions } from "@ai-sdk/provider";
 import type { LanguageModel, Tool } from "ai";
 
 export type Feature = {
@@ -45,7 +46,7 @@ export type ModelRuntime = {
   conversationState: ConversationState;
   getProviderOptions: (options: {
     previousResponseId?: string;
-  }) => Record<string, unknown>;
+  }) => SharedV3ProviderOptions;
   getProviderTools: (search: boolean) => { [key: string]: Tool };
 };
 
