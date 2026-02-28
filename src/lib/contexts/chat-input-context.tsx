@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import type { ReasoningEffort } from "@/types/provider";
 
 interface ChatInputHandlers {
   onSubmit: (message: PromptInputMessage) => void;
@@ -21,6 +22,7 @@ interface ChatInputHandlers {
 interface ChatInputContextType {
   handlersRef: React.RefObject<ChatInputHandlers>;
   browseRef: React.RefObject<boolean>;
+  reasoningEffortRef: React.RefObject<ReasoningEffort | undefined>;
   setStatus: (status: ChatStatus) => void;
   setAreFilesUploading: (uploading: boolean) => void;
   setHandlers: (handlers: ChatInputHandlers) => void;
@@ -43,6 +45,7 @@ export function ChatInputProvider({ children }: Readonly<{ children: ReactNode }
     },
   });
   const browseRef = useRef(true);
+  const reasoningEffortRef = useRef<ReasoningEffort | undefined>(undefined);
   const [status, setStatus] = useState<ChatStatus>("ready");
   const [areFilesUploading, setAreFilesUploading] = useState(false);
 
@@ -54,6 +57,7 @@ export function ChatInputProvider({ children }: Readonly<{ children: ReactNode }
     () => ({
       handlersRef,
       browseRef,
+      reasoningEffortRef,
       setStatus,
       setAreFilesUploading,
       setHandlers,

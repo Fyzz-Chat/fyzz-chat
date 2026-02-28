@@ -64,6 +64,12 @@ export default function ChatInput() {
   );
   const [initialInput] = useState(getPersistedInput);
 
+  const supportsReasoning = useMemo(
+    () =>
+      selectedModelData?.features?.some((feature) => feature.icon === "brain") ?? false,
+    [selectedModelData]
+  );
+
   const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     persistInput(e.currentTarget.value);
   }, []);
@@ -116,6 +122,7 @@ export default function ChatInput() {
             <PromptInputTools className="flex w-full items-center">
               <ChatSettingsMenu
                 supportsAttachments={0 < (model.extensions?.length || 0)}
+                supportsReasoning={supportsReasoning}
               />
               <ModelSelector onOpenChange={setModelSelectorOpen} open={modelSelectorOpen}>
                 <ModelSelectorTrigger asChild>

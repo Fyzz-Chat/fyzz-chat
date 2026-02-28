@@ -34,6 +34,7 @@ import { logger } from "@/lib/logger";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import { type CustomUIMessage, metadataSchema } from "@/types/chat";
+import type { ReasoningEffort } from "@/types/provider";
 
 export const maxDuration = 55;
 
@@ -43,6 +44,7 @@ const chatRequestEnvelopeSchema = z.object({
   messages: z.unknown(),
   browse: z.boolean().default(false),
   temporaryChat: z.boolean().default(false),
+  reasoningEffort: z.enum(["low", "medium", "high"]).optional(),
 });
 
 async function validateRequestBody(body: unknown): Promise<
@@ -54,6 +56,7 @@ async function validateRequestBody(body: unknown): Promise<
         messages: CustomUIMessage[];
         browse: boolean;
         temporaryChat: boolean;
+        reasoningEffort?: ReasoningEffort;
       };
     }
   | {
@@ -341,7 +344,7 @@ export async function POST(req: NextRequest) {
 
   const { id, model: modelId, browse, temporaryChat, messages } = parsedRequest.data;
   const newMessage = messages.at(-1);
-  const runtime = getModelRuntime(modelId, browse);
+  const runtime = getModelRuntime(modelId, browse, parsedRequest.data.reasoningEffort);
   const { model } = runtime;
 
   if (!model) {

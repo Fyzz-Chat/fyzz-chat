@@ -40,7 +40,8 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
-  const { setHandlers, setStatus, setAreFilesUploading, browseRef } = useChatInput();
+  const { setHandlers, setStatus, setAreFilesUploading, browseRef, reasoningEffortRef } =
+    useChatInput();
   const addMessage = useAddMessage(id);
   const createConversationOptimistic = useCreateConversationOptimistic();
   const regenerateMessage = useRegenerateMessage();
@@ -117,13 +118,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             model: model.id,
             temporaryChat: false,
             browse: browseRef.current,
+            reasoningEffort: reasoningEffortRef.current,
           },
         });
       } catch {
         // Regeneration failed - user can retry
       }
     },
-    [regenerateMessage, id, model.id, browseRef]
+    [regenerateMessage, id, model.id, browseRef, reasoningEffortRef]
   );
 
   const handleEditMessage = useCallback(
@@ -141,13 +143,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             model: model.id,
             temporaryChat: false,
             browse: browseRef.current,
+            reasoningEffort: reasoningEffortRef.current,
           },
         });
       } catch {
         // Editing failed - user can retry
       }
     },
-    [regenerateMessage, id, model.id, browseRef]
+    [regenerateMessage, id, model.id, browseRef, reasoningEffortRef]
   );
 
   const handleSubmit = useCallback(
@@ -202,13 +205,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             model: model.id,
             temporaryChat: false,
             browse: browseRef.current,
+            reasoningEffort: reasoningEffortRef.current,
           },
         }
       );
 
       nextMessageId.current = uuidv4();
     },
-    [id, model.id, addMessage, setAreFilesUploading, browseRef]
+    [id, model.id, addMessage, setAreFilesUploading, browseRef, reasoningEffortRef]
   );
 
   useEffect(() => {

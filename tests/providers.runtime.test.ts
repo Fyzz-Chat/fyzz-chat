@@ -148,6 +148,53 @@ describe("providers runtime behavior", () => {
       messages.slice(-16).map((message) => message.id)
     );
   });
+
+  it("applies requested reasoning effort only for reasoning-capable models", () => {
+    const messages = [
+      createMessage("user-1", "user"),
+      createMessage("assistant-1", "assistant", {
+        createdAt: new Date(),
+        providerResponseId: "resp-1",
+      }),
+      createMessage("user-2", "user"),
+    ];
+
+    const openaiReasoning = getModelRuntime("gpt-5", false, "high");
+    expect(openaiReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
+      reasoningEffort: "high",
+      reasoningSummary: "detailed",
+    });
+
+    const xaiReasoning = getModelRuntime("grok-4-0709", false, "medium");
+    expect(xaiReasoning.getProviderOptionsFromHistory(messages).xai).toEqual({
+      store: true,
+      previousResponseId: "resp-1",
+      reasoningEffort: "medium",
+    });
+
+    const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", false, "low");
+    expect(anthropicReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
+      thinking: { type: "enabled", budgetTokens: 5000 },
+      effort: "low",
+    });
+
+    const googleReasoning = getModelRuntime("gemini-3.1-pro-preview", false, "medium");
+    expect(googleReasoning.getProviderOptionsFromHistory(messages).google).toEqual({
+      thinkingConfig: {
+        thinkingLevel: "medium",
+        includeThoughts: true,
+      },
+    });
+
+    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", false, "high");
+    expect(openaiNonReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
+      reasoningEffort: undefined,
+      reasoningSummary: undefined,
+    });
+
+    const googleNonReasoning = getModelRuntime("gemini-3-pro-preview", false, "high");
+    expect(googleNonReasoning.getProviderOptionsFromHistory(messages).google).toEqual({});
+  });
 });
 
 describe("critical model policy: runtime classification", () => {
@@ -213,11 +260,11 @@ describe("critical model policy: provider options", () => {
     });
 
     expect(
-      getModelRuntime("gemini-3.1-pro-preview", true).getProviderOptionsFromHistory(messages)
+      getModelRuntime("gemini-3.1-pro-preview", true, "medium").getProviderOptionsFromHistory(messages)
         .google
     ).toEqual({
       thinkingConfig: {
-        thinkingBudget: 8192,
+        thinkingLevel: "medium",
         includeThoughts: true,
       },
     });

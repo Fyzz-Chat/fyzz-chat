@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, GlobeIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import { BrainIcon, CheckIcon, GlobeIcon, PaperclipIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   PromptInputButton,
@@ -20,18 +20,50 @@ import { Separator } from "@/components/ui/separator";
 import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
+import type { ReasoningEffort } from "@/types/provider";
+
+const REASONING_EFFORTS: ReasoningEffort[] = ["low", "medium", "high"];
+
+function ReasoningBars({
+  className,
+  effort,
+}: Readonly<{ className?: string; effort: ReasoningEffort }>) {
+  const activeBars = effort === "high" ? 3 : effort === "medium" ? 2 : 1;
+
+  return (
+    <div className={cn("flex items-end gap-1", className)}>
+      {[0, 1, 2].map((index) => (
+        <span
+          className={cn(
+            "w-1.5 rounded-xs bg-muted-foreground/30",
+            index === 0 && "h-2",
+            index === 1 && "h-3",
+            index === 2 && "h-4",
+            index < activeBars && "bg-[#3B82F6]"
+          )}
+          key={index}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function ChatSettingsMenu({
   supportsAttachments,
+  supportsReasoning,
 }: Readonly<{
   supportsAttachments: boolean;
+  supportsReasoning: boolean;
 }>) {
   const attachments = usePromptInputAttachments();
-  const { browseRef } = useChatInput();
+  const { browseRef, reasoningEffortRef } = useChatInput();
   const isDesktop = useMediaQuery("(min-width: 640px)");
   const [open, setOpen] = useState(false);
   const [rendered, setRendered] = useState(false);
   const [browse, setBrowse] = useState(browseRef.current);
+  const [reasoningEffort, setReasoningEffort] = useState<ReasoningEffort>(
+    reasoningEffortRef.current || "low"
+  );
 
   useEffect(() => {
     setRendered(true);
@@ -41,10 +73,20 @@ export default function ChatSettingsMenu({
     browseRef.current = browse;
   }, [browse, browseRef]);
 
+  useEffect(() => {
+    reasoningEffortRef.current = supportsReasoning ? reasoningEffort : undefined;
+  }, [reasoningEffort, supportsReasoning, reasoningEffortRef]);
+
   const handleAttachClick = useCallback(() => {
     attachments.openFileDialog();
     setOpen(false);
   }, [attachments]);
+
+  const cycleReasoningEffort = useCallback(() => {
+    const currentIndex = REASONING_EFFORTS.indexOf(reasoningEffort);
+    const nextIndex = currentIndex >= REASONING_EFFORTS.length - 1 ? 0 : currentIndex + 1;
+    setReasoningEffort(REASONING_EFFORTS[nextIndex] || "low");
+  }, [reasoningEffort]);
 
   const menuContent = (
     <div className="flex flex-col gap-1">
@@ -79,6 +121,19 @@ export default function ChatSettingsMenu({
           {browse ? <CheckIcon className="size-4" /> : <span className="size-4" />}
         </div>
       </Button>
+
+      {supportsReasoning ? (
+        <Button
+          className="w-full justify-between rounded-[8px]"
+          onClick={cycleReasoningEffort}
+          type="button"
+          variant="ghost"
+        >
+          <BrainIcon className="size-4" />
+          <span className="capitalize">Reasoning: {reasoningEffort}</span>
+          <ReasoningBars className="ml-auto" effort={reasoningEffort} />
+        </Button>
+      ) : null}
     </div>
   );
 

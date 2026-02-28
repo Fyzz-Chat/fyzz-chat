@@ -28,6 +28,7 @@ export const tabularType: TabularType = "text/csv";
 
 export type ExtensionType = ImageType | PDFType | VideoType | TabularType;
 export type RuntimePreset = "chat" | "responses";
+export type ReasoningEffort = "low" | "medium" | "high";
 
 export type ModelCapabilities = {
   supportsCodeInterpreter?: boolean;

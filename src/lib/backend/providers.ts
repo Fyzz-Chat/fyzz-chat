@@ -31,6 +31,7 @@ import {
   type PublicModel,
   type PublicProvider,
   pdfType,
+  type ReasoningEffort,
   type RuntimePreset,
   tabularType,
   videoType,
@@ -69,7 +70,11 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
     .find((model) => model.id === modelId);
 }
 
-export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime {
+export function getModelRuntime(
+  modelId: string,
+  browse: boolean,
+  reasoningEffort?: ReasoningEffort
+): ModelRuntime {
   const runtimeModel = filterProviders()
     .flatMap((provider) =>
       provider.models.map((model) => ({
@@ -87,6 +92,8 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
     providerId,
     model: { id, provider, tools, runtimePreset, capabilities },
   } = runtimeModel;
+  const hasReasoning = runtimeModel.model.features?.includes(reasoning) ?? false;
+  const selectedReasoningEffort = hasReasoning ? reasoningEffort : undefined;
 
   return {
     model: provider(id, browse),
@@ -97,10 +104,14 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
     getProviderOptionsFromHistory: (messages) => {
       const previousResponseId = getPreviousResponseId(messages);
       return {
-        anthropic: getAnthropicProviderOptions(modelId),
-        openai: getOpenaiProviderOptions(modelId),
-        google: getGoogleProviderOptions(modelId),
-        xai: getXaiProviderOptions(runtimePreset, previousResponseId),
+        anthropic: getAnthropicProviderOptions(modelId, selectedReasoningEffort),
+        openai: getOpenaiProviderOptions(modelId, selectedReasoningEffort),
+        google: getGoogleProviderOptions(modelId, selectedReasoningEffort),
+        xai: getXaiProviderOptions(
+          runtimePreset,
+          previousResponseId,
+          selectedReasoningEffort
+        ),
       };
     },
     decorateAssistantMetadata: ({ metadata, responseId }) =>
@@ -163,35 +174,43 @@ function decorateAssistantMetadata(
   };
 }
 
-export function getAnthropicProviderOptions(modelId: string): AnthropicProviderOptions {
+export function getAnthropicProviderOptions(
+  modelId: string,
+  reasoningEffort?: ReasoningEffort
+): AnthropicProviderOptions {
   return {
     thinking: isThinkingModel(modelId, "anthropic")
       ? { type: "enabled", budgetTokens: 5000 }
       : { type: "disabled" },
+    effort: isThinkingModel(modelId, "anthropic") ? reasoningEffort : undefined,
   };
 }
 
 export function getOpenaiProviderOptions(
-  modelId: string
+  modelId: string,
+  reasoningEffort?: ReasoningEffort
 ): OpenAIResponsesProviderOptions {
   const provider = azureConfigured ? "azure" : openaiConfiguredAzureNot ? "openai" : "";
 
   return {
-    reasoningEffort: isThinkingModel(modelId, provider) ? "low" : undefined,
+    reasoningEffort: isThinkingModel(modelId, provider)
+      ? reasoningEffort || "low"
+      : undefined,
     reasoningSummary: isThinkingModel(modelId, provider) ? "detailed" : undefined,
   };
 }
 
 export function getGoogleProviderOptions(
-  modelId: string
+  modelId: string,
+  reasoningEffort?: ReasoningEffort
 ): GoogleGenerativeAIProviderOptions {
   const thinkingModel = isThinkingModel(modelId, "google");
 
   return thinkingModel
     ? {
         thinkingConfig: {
-          thinkingBudget: 8192,
           includeThoughts: true,
+          ...(reasoningEffort ? { thinkingLevel: reasoningEffort } : {}),
         },
       }
     : {};
@@ -199,7 +218,8 @@ export function getGoogleProviderOptions(
 
 export function getXaiProviderOptions(
   runtimePreset: RuntimePreset,
-  previousResponseId?: string
+  previousResponseId?: string,
+  reasoningEffort?: ReasoningEffort
 ): XaiResponsesProviderOptions {
   if (runtimePreset !== "responses") {
     return {};
@@ -208,6 +228,7 @@ export function getXaiProviderOptions(
   return {
     store: true,
     previousResponseId,
+    reasoningEffort,
   };
 }
 
@@ -659,7 +680,7 @@ const providers: Provider[] = [
       {
         id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
-        features: [reasoning, search],
+        features: [search],
         provider: wrappedGoogle,
         tools: true,
         runtimePreset: "chat",
