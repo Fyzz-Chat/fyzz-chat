@@ -91,7 +91,6 @@
     "html-to-text": "9.0.5",
     "idb-keyval": "6.2.2",
     "javascript-time-ago": "2.5.12",
-    "jsdom": "28.1.0",
     "jsonwebtoken": "9.0.3",
     "lucide-react": "0.563.0",
     "nanoid": "5.1.6",
