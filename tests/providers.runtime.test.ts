@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import {
+  FIREWORKS_NON_REASONING_MODELS,
+  FIREWORKS_REASONING_MODELS,
   OPENAI_CODE_INTERPRETER_DENYLIST,
   OPENAI_REASONING_MODELS,
   TOOLS_DISABLED_MODELS,
@@ -271,6 +273,30 @@ describe("critical model policy: provider options", () => {
     expect(
       getModelRuntime("gemini-3-pro-preview", true).getProviderOptionsFromHistory(messages).google
     ).toEqual({});
+
+    for (const modelId of FIREWORKS_REASONING_MODELS) {
+      expect(
+        getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).fireworks
+      ).toEqual({
+        thinking: { type: "enabled", budgetTokens: 8192 },
+        reasoningHistory: "preserved",
+      });
+    }
+
+    expect(
+      getModelRuntime("accounts/fireworks/models/deepseek-v3p2", true, "medium")
+        .getProviderOptionsFromHistory(messages)
+        .fireworks
+    ).toEqual({
+      thinking: { type: "enabled", budgetTokens: 4096 },
+      reasoningHistory: "preserved",
+    });
+
+    for (const modelId of FIREWORKS_NON_REASONING_MODELS) {
+      expect(
+        getModelRuntime(modelId, true, "high").getProviderOptionsFromHistory(messages).fireworks
+      ).toEqual({});
+    }
   });
 });
 

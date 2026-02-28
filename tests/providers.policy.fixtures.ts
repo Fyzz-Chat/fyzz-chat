@@ -18,6 +18,18 @@ export const OPENAI_IMAGE_GENERATION_MODELS = ["gpt-4.1", "gpt-4.1-mini"] as con
 
 export const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
 
+export const FIREWORKS_REASONING_MODELS = [
+  "accounts/fireworks/models/deepseek-v3p2",
+  "accounts/fireworks/models/gpt-oss-120b",
+  "accounts/fireworks/models/kimi-k2p5",
+  "accounts/fireworks/models/glm-5",
+] as const;
+
+export const FIREWORKS_NON_REASONING_MODELS = [
+  "accounts/fireworks/models/deepseek-v3p1",
+  "accounts/fireworks/models/llama4-maverick-instruct-basic",
+] as const;
+
 export const TOOLS_DISABLED_MODELS = [
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash-image",

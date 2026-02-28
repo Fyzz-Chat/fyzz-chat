@@ -111,7 +111,11 @@ export function getModelRuntime(
           previousResponseId,
           selectedReasoningEffort
         ),
-        fireworks: getFireworksProviderOptions(modelId, selectedReasoningEffort),
+        fireworks: getFireworksProviderOptions(
+          modelId,
+          providerId,
+          selectedReasoningEffort
+        ),
       };
     },
     decorateAssistantMetadata: ({ metadata, responseId }) =>
@@ -234,9 +238,20 @@ export function getXaiProviderOptions(
 
 export function getFireworksProviderOptions(
   modelId: string,
+  providerId: Provider["id"],
   reasoningEffort?: ReasoningEffort
 ): FireworksLanguageModelOptions {
-  const thinkingModel = isThinkingModel(modelId, "fireworks");
+  const fireworksBackedProvider =
+    providerId === "llama" ||
+    providerId === "deepseek" ||
+    providerId === "qwen" ||
+    providerId === "other";
+
+  if (!fireworksBackedProvider) {
+    return {};
+  }
+
+  const thinkingModel = isThinkingModel(modelId, providerId);
   const budgetTokens =
     reasoningEffort === "low" ? 1024 : reasoningEffort === "medium" ? 4096 : 8192;
 
