@@ -23,7 +23,6 @@ import {
 } from "ai";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
-  type ConversationState,
   type Feature,
   imageTypes,
   type ModelRuntime,
@@ -31,7 +30,7 @@ import {
   type PublicModel,
   type PublicProvider,
   pdfType,
-  type ToolMode,
+  type RuntimePreset,
   tabularType,
   videoType,
 } from "@/types/provider";
@@ -78,27 +77,25 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
   }
 
   const { id, provider, tools } = model;
-  const conversationState = model.conversationState ?? "client-history";
-  const toolMode: ToolMode =
-    conversationState === "provider-response-id" ? "provider-only" : "hybrid";
+  const runtimePreset = model.runtimePreset ?? "chat";
 
   return {
     model: provider(id, browse),
     supportsTools: tools,
-    toolMode,
+    runtimePreset,
     selectInputMessages: (messages) =>
-      resolveMessagesForConversationState(messages, conversationState),
+      resolveMessagesForRuntimePreset(messages, runtimePreset),
     getProviderOptionsFromHistory: (messages) => {
       const previousResponseId = getPreviousResponseId(messages);
       return {
         anthropic: getAnthropicProviderOptions(modelId),
         openai: getOpenaiProviderOptions(modelId),
         google: getGoogleProviderOptions(modelId),
-        xai: getXaiProviderOptions(conversationState, previousResponseId),
+        xai: getXaiProviderOptions(runtimePreset, previousResponseId),
       };
     },
     decorateAssistantMetadata: ({ metadata, responseId }) =>
-      decorateAssistantMetadata(metadata, conversationState, responseId),
+      decorateAssistantMetadata(metadata, runtimePreset, responseId),
     getProviderTools: (search) => getProviderTools(modelId, search),
   };
 }
@@ -113,11 +110,11 @@ function getPreviousResponseId(messages: CustomUIMessage[]): string | undefined 
     )?.metadata?.providerResponseId;
 }
 
-function resolveMessagesForConversationState(
+function resolveMessagesForRuntimePreset(
   messages: CustomUIMessage[],
-  conversationState: ConversationState
+  runtimePreset: RuntimePreset
 ) {
-  if (conversationState !== "provider-response-id") {
+  if (runtimePreset !== "responses") {
     return messages;
   }
 
@@ -130,7 +127,7 @@ function resolveMessagesForConversationState(
 
 function decorateAssistantMetadata(
   metadata: CustomMetadata | undefined,
-  conversationState: ConversationState,
+  runtimePreset: RuntimePreset,
   responseId?: string
 ): CustomMetadata {
   const metadataWithTimestamp = {
@@ -138,7 +135,7 @@ function decorateAssistantMetadata(
     ...metadata,
   };
 
-  if (conversationState !== "provider-response-id" || !responseId) {
+  if (runtimePreset !== "responses" || !responseId) {
     return metadataWithTimestamp;
   }
 
@@ -183,10 +180,10 @@ export function getGoogleProviderOptions(
 }
 
 export function getXaiProviderOptions(
-  conversationState: ConversationState,
+  runtimePreset: RuntimePreset,
   previousResponseId?: string
 ): XaiResponsesProviderOptions {
-  if (conversationState !== "provider-response-id") {
+  if (runtimePreset !== "responses") {
     return {};
   }
 
@@ -214,8 +211,7 @@ export function getProviderTools(modelId: string, search: boolean) {
     (provider) =>
       provider.id === "xai" && provider.models.some((model) => model.id === modelId)
   );
-  const responsesModel =
-    getModelPublic(modelId)?.conversationState === "provider-response-id";
+  const responsesModel = getModelPublic(modelId)?.runtimePreset === "responses";
   const supportsOpenAICodeInterpreter =
     isOpenAIModel &&
     modelId !== "gpt-5-codex" &&
@@ -691,7 +687,7 @@ const providers: Provider[] = [
         features: [reasoning],
         provider: wrappedResponsesModel(xai),
         tools: true,
-        conversationState: "provider-response-id",
+        runtimePreset: "responses",
         extensions: imageTypes,
         cost: 3,
       },
@@ -701,7 +697,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedResponsesModel(xai),
         tools: true,
-        conversationState: "provider-response-id",
+        runtimePreset: "responses",
         extensions: [...imageTypes, pdfType, videoType],
         cost: 1,
       },
@@ -720,7 +716,7 @@ const providers: Provider[] = [
         features: [],
         provider: wrappedResponsesModel(xai),
         tools: true,
-        conversationState: "provider-response-id",
+        runtimePreset: "responses",
         extensions: [...imageTypes],
         cost: 1,
       },

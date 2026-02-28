@@ -47,7 +47,7 @@ function createMessage(
 describe("model runtime smoke tests", () => {
   it("uses provider-only runtime behavior for xAI responses models", async () => {
     const runtime = getModelRuntime("grok-4-1-fast-non-reasoning", true);
-    expect(runtime.toolMode).toBe("provider-only");
+    expect(runtime.runtimePreset).toBe("responses");
 
     const messages = [
       createMessage("user-1", "user"),
@@ -82,7 +82,7 @@ describe("model runtime smoke tests", () => {
 
   it("uses hybrid runtime behavior for normal chat models", () => {
     const runtime = getModelRuntime("gpt-4.1-mini", false);
-    expect(runtime.toolMode).toBe("hybrid");
+    expect(runtime.runtimePreset).toBe("chat");
 
     const messages = [
       createMessage("user-1", "user"),
