@@ -26,6 +26,48 @@ import type {
   PartialConversation,
 } from "@/types/chat";
 
+function prependConversationToFirstPage(
+  old: ConversationsInfiniteData,
+  conversation: PartialConversation
+): ConversationsInfiniteData {
+  return {
+    ...old,
+    pages: [
+      {
+        items: [conversation, ...(old.pages[0]?.items || [])],
+        nextCursor: old.pages[0]?.nextCursor,
+      },
+      ...old.pages.slice(1),
+    ],
+  };
+}
+
+function updateInfiniteConversationCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  updater: (old: ConversationsInfiniteData) => ConversationsInfiniteData,
+  options?: { skipFilteredSearch?: boolean }
+) {
+  const queries = queryClient.getQueriesData(
+    trpc.infiniteConversations.infiniteQueryFilter()
+  );
+
+  queries.forEach(([queryKey]) => {
+    if (options?.skipFilteredSearch) {
+      const keyPart = Array.isArray(queryKey) ? queryKey[1] : undefined;
+      const input = (keyPart as { input?: { search?: string } } | undefined)?.input;
+      if (input?.search) {
+        return;
+      }
+    }
+
+    queryClient.setQueryData(queryKey, (old: ConversationsInfiniteData | undefined) => {
+      if (!old) return old;
+      return updater(old);
+    });
+  });
+}
+
 export function useConversations(
   conversations: ConversationPage,
   authorized: boolean,
@@ -162,27 +204,15 @@ export function useDeleteConversation() {
     mutationFn: ({ conversationId }: { conversationId: string }) =>
       deleteConversation(conversationId),
     onSuccess: (_, { conversationId }) => {
-      // Update tRPC infinite conversation caches
-      const queries = queryClient.getQueriesData(
-        trpc.infiniteConversations.infiniteQueryFilter()
-      );
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(
-          queryKey,
-          (old: ConversationsInfiniteData | undefined) => {
-            if (!old) return old;
-            return {
-              ...old,
-              pages: old.pages.map((page) => ({
-                ...page,
-                items: page.items.filter(
-                  (conv: PartialConversation) => conv.id !== conversationId
-                ),
-              })),
-            };
-          }
-        );
-      });
+      updateInfiniteConversationCaches(queryClient, trpc, (old) => ({
+        ...old,
+        pages: old.pages.map((page) => ({
+          ...page,
+          items: page.items.filter(
+            (conv: PartialConversation) => conv.id !== conversationId
+          ),
+        })),
+      }));
     },
   });
 }
@@ -201,37 +231,25 @@ export function useAddMessage(id: string) {
           if (!old) return { messages: [message], hasMore: false };
           return {
             ...old,
-            messages: [...(old.messages || []), message],
+            messages: [...old.messages, message],
           };
         }
       );
 
-      // Update tRPC infinite conversation caches
-      const queries = queryClient.getQueriesData(
-        trpc.infiniteConversations.infiniteQueryFilter()
-      );
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(
-          queryKey,
-          (old: ConversationsInfiniteData | undefined) => {
-            if (!old) return old;
-            return {
-              ...old,
-              pages: old.pages.map((page) => ({
-                ...page,
-                items: page.items.map((conv: PartialConversation) =>
-                  conv.id === conversationId
-                    ? {
-                        ...conv,
-                        messages: [...(conv.messages || []), message],
-                      }
-                    : conv
-                ),
-              })),
-            };
-          }
-        );
-      });
+      updateInfiniteConversationCaches(queryClient, trpc, (old) => ({
+        ...old,
+        pages: old.pages.map((page) => ({
+          ...page,
+          items: page.items.map((conv: PartialConversation) =>
+            conv.id === conversationId
+              ? {
+                  ...conv,
+                  messages: [...conv.messages, message],
+                }
+              : conv
+          ),
+        })),
+      }));
 
       return message;
     },
@@ -306,34 +324,12 @@ export function useCreateConversation() {
           hasMore: false,
         });
 
-        // Get all tRPC infinite conversation queries
-        const queries = queryClient.getQueriesData(
-          trpc.infiniteConversations.infiniteQueryFilter()
+        updateInfiniteConversationCaches(
+          queryClient,
+          trpc,
+          (old) => prependConversationToFirstPage(old, newConversation),
+          { skipFilteredSearch: true }
         );
-        queries.forEach(([queryKey]) => {
-          const key = queryKey;
-          // Only update unfiltered list optimistically (no search param)
-          const input = (key[1] as { input?: { search?: string } } | undefined)?.input;
-          if (input?.search) {
-            return; // Skip filtered queries
-          }
-          queryClient.setQueryData(
-            queryKey,
-            (old: ConversationsInfiniteData | undefined) => {
-              if (!old) return old;
-              return {
-                ...old,
-                pages: [
-                  {
-                    items: [newConversation, ...(old.pages[0]?.items || [])],
-                    nextCursor: old.pages[0]?.nextCursor,
-                  },
-                  ...old.pages.slice(1),
-                ],
-              };
-            }
-          );
-        });
       }
     },
     onError: (error, newConversation) => {
@@ -370,27 +366,9 @@ export function useCreateConversationOptimistic() {
         hasMore: false,
       });
 
-      const queries = queryClient.getQueriesData(
-        trpc.infiniteConversations.infiniteQueryFilter()
+      updateInfiniteConversationCaches(queryClient, trpc, (old) =>
+        prependConversationToFirstPage(old, conversation)
       );
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(
-          queryKey,
-          (old: ConversationsInfiniteData | undefined) => {
-            if (!old) return old;
-            return {
-              ...old,
-              pages: [
-                {
-                  items: [conversation, ...(old.pages[0]?.items || [])],
-                  nextCursor: old.pages[0]?.nextCursor,
-                },
-                ...old.pages.slice(1),
-              ],
-            };
-          }
-        );
-      });
     },
   });
 }
