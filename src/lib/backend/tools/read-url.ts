@@ -1,14 +1,11 @@
-import { RecursiveUrlLoader } from "@langchain/community/document_loaders/web/recursive_url";
 import { tool } from "ai";
-import { compile } from "html-to-text";
+import * as cheerio from "cheerio";
 import { z } from "zod";
 
 const toolDescription = `
 This tool can read the content of a URL and return it as text.
 Use this tool when you need to fetch and analyze content from web pages.
 `;
-
-const compiledConvert = compile({ wordwrap: null });
 
 export const readUrlTool = tool({
   description: toolDescription,
@@ -17,13 +14,13 @@ export const readUrlTool = tool({
   }),
   execute: async ({ url }) => {
     try {
-      const loader = new RecursiveUrlLoader(url, {
-        extractor: compiledConvert,
-        maxDepth: 1,
-      });
+      const response = await fetch(url);
+      const html = await response.text();
+      const $ = cheerio.load(html);
 
-      const docs = await loader.load();
-      const content = docs[0].pageContent;
+      $("script").remove();
+      $("style").remove();
+      const content = $("body").text().trim();
 
       return content;
     } catch (error) {
