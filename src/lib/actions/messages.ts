@@ -42,6 +42,7 @@ export async function deleteMessageChainAfter(
         id: conversationId,
         userId,
       },
+      // TODO[SEQ_CUTOVER]: Remove createdAt fallback branch after sequence is non-null everywhere in prod.
       ...(message.sequence === null
         ? {
             createdAt: {

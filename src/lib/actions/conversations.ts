@@ -129,6 +129,7 @@ export async function shareConversationUntilLatestMessage(
         userId: user,
       },
     },
+    // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
     orderBy: [{ createdAt: "desc" }, { sequence: "desc" }, { id: "desc" }],
   });
 

@@ -139,6 +139,7 @@ export async function getConversationsByCursor(
           metadata: true,
         },
         take: 1,
+        // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
         orderBy: [{ createdAt: "desc" }, { sequence: "desc" }, { id: "desc" }],
       },
     },
@@ -420,6 +421,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
     select: {
       title: true,
       messages: {
+        // TODO[SEQ_CUTOVER]: Remove createdAt fallback branch after sequence is non-null everywhere in prod.
         where:
           message.sequence === null
             ? {
@@ -442,6 +444,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
                   },
                 ],
               },
+        // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
         orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
         select: {
           id: true,

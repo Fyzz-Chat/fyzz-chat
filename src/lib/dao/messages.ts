@@ -33,6 +33,7 @@ export async function getMessages(
         sequence: true,
         createdAt: true,
       },
+      // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
       orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
     });
 
@@ -70,6 +71,7 @@ export async function getMessages(
       sequence: true,
       createdAt: true,
     },
+    // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
     orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
     skip,
     take,
