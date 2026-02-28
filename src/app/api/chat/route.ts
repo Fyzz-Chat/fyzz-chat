@@ -12,12 +12,15 @@ import { after, type NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
+import {
+  buildToolsForRuntime,
+  getPreviousResponseId,
+  resolveMessagesForRuntime,
+} from "@/lib/backend/model-runtime";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
-import { memoryTool } from "@/lib/backend/tools/memory";
-import { readUrlTool } from "@/lib/backend/tools/read-url";
 import {
   filterMessages,
   hasTextPart,
@@ -30,17 +33,11 @@ import {
   hasDefaultTitle,
 } from "@/lib/dao/conversations";
 import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
-import { getUserFromSession, type SessionUser } from "@/lib/dao/users";
+import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import {
-  closeMcpClients,
-  getMcpClients,
-  getMcpTools,
-  McpClientInitError,
-} from "@/lib/services/mcp";
+import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
-import type { ConversationState, ModelRuntime } from "@/types/provider";
 
 export const maxDuration = 55;
 
@@ -102,7 +99,7 @@ export async function POST(req: NextRequest) {
 
   if (supportsTools && !temporaryChat) {
     try {
-      const toolsResult = await getTools(user, browse, runtime);
+      const toolsResult = await buildToolsForRuntime(user, browse, runtime);
       tools = toolsResult.tools;
       mcpClients = toolsResult.mcpClients;
 
@@ -152,10 +149,7 @@ export async function POST(req: NextRequest) {
   logDuration(start, "Streaming started");
 
   const previousResponseId = getPreviousResponseId(existingMessages);
-  const messagesForModel = getMessagesForConversationState(
-    filteredMessages,
-    conversationState
-  );
+  const messagesForModel = resolveMessagesForRuntime(filteredMessages, conversationState);
 
   const result = streamText({
     model,
@@ -297,62 +291,4 @@ export async function POST(req: NextRequest) {
       });
     },
   });
-}
-
-async function getTools(
-  user: SessionUser,
-  search: boolean,
-  runtime: ModelRuntime
-): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
-  const providerTools = runtime.getProviderTools(search);
-
-  if (runtime.conversationState === "provider-response-id") {
-    return { tools: providerTools, mcpClients: [] };
-  }
-
-  const tools: { [key: string]: Tool } = {};
-
-  if (user.memoryEnabled) {
-    tools.memory = memoryTool;
-  }
-
-  if (search) {
-    tools.readUrl = readUrlTool;
-  }
-
-  Object.assign(tools, providerTools);
-
-  const mcpClients = await getMcpClients();
-
-  if (mcpClients) {
-    const mcpTools = await getMcpTools(mcpClients);
-    Object.assign(tools, mcpTools);
-  }
-
-  return { tools, mcpClients };
-}
-
-function getPreviousResponseId(messages: CustomUIMessage[]): string | undefined {
-  return [...messages]
-    .reverse()
-    .find(
-      (message) =>
-        message.role === "assistant" &&
-        typeof message.metadata?.providerResponseId === "string"
-    )?.metadata?.providerResponseId;
-}
-
-function getMessagesForConversationState(
-  messages: CustomUIMessage[],
-  conversationState: ConversationState
-) {
-  if (conversationState !== "provider-response-id") {
-    return messages;
-  }
-
-  const latestUserMessage = [...messages]
-    .reverse()
-    .find((message) => message.role === "user");
-
-  return latestUserMessage ? [latestUserMessage] : messages.slice(-1);
 }
