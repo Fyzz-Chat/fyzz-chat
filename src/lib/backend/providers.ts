@@ -31,6 +31,7 @@ import {
   type PublicModel,
   type PublicProvider,
   pdfType,
+  type ToolMode,
   tabularType,
   videoType,
 } from "@/types/provider";
@@ -78,11 +79,13 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
 
   const { id, provider, tools } = model;
   const conversationState = model.conversationState ?? "client-history";
+  const toolMode: ToolMode =
+    conversationState === "provider-response-id" ? "provider-only" : "hybrid";
 
   return {
     model: provider(id, browse),
     supportsTools: tools,
-    conversationState,
+    toolMode,
     selectInputMessages: (messages) =>
       resolveMessagesForConversationState(messages, conversationState),
     getProviderOptionsFromHistory: (messages) => {

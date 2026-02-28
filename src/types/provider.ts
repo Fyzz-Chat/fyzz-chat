@@ -28,6 +28,7 @@ export const tabularType: TabularType = "text/csv";
 
 export type ExtensionType = ImageType | PDFType | VideoType | TabularType;
 export type ConversationState = "client-history" | "provider-response-id";
+export type ToolMode = "hybrid" | "provider-only";
 
 export type Model = {
   id: string;
@@ -44,7 +45,7 @@ export type Model = {
 export type ModelRuntime = {
   model: LanguageModel;
   supportsTools: boolean;
-  conversationState: ConversationState;
+  toolMode: ToolMode;
   selectInputMessages: (messages: CustomUIMessage[]) => CustomUIMessage[];
   getProviderOptionsFromHistory: (messages: CustomUIMessage[]) => SharedV3ProviderOptions;
   decorateAssistantMetadata: (options: {
