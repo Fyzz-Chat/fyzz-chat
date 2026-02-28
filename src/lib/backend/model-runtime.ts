@@ -14,10 +14,6 @@ export async function buildToolsForRuntime(
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
   const providerTools = runtime.getProviderTools(search);
 
-  if (runtime.runtimePreset === "responses") {
-    return { tools: providerTools, mcpClients: [] };
-  }
-
   const tools: { [key: string]: Tool } = {};
 
   if (user.memoryEnabled) {
