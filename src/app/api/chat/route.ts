@@ -104,6 +104,51 @@ async function loadConversationMessages({
   return { messages: existingMessages };
 }
 
+async function loadToolsForRequest({
+  runtime,
+  user,
+  browse,
+  temporaryChat,
+  start,
+}: {
+  runtime: ReturnType<typeof getModelRuntime>;
+  user: Awaited<ReturnType<typeof getUserFromSession>>;
+  browse: boolean;
+  temporaryChat: boolean;
+  start: number;
+}): Promise<{
+  tools: { [key: string]: Tool };
+  mcpClients: MCPClient[];
+  errorResponse?: NextResponse;
+}> {
+  if (!runtime.supportsTools || temporaryChat) {
+    return { tools: {}, mcpClients: [] };
+  }
+
+  try {
+    const toolsResult = await buildToolsForRuntime(user, browse, runtime);
+    logDuration(start, "Tools fetched");
+    return toolsResult;
+  } catch (error) {
+    logger.error(error);
+
+    if (error instanceof McpClientInitError) {
+      return {
+        tools: {},
+        mcpClients: [],
+        errorResponse: new NextResponse(
+          typeof error.cause === "string"
+            ? error.cause
+            : "MCP client initialization failed",
+          { status: 502 }
+        ),
+      };
+    }
+
+    return { tools: {}, mcpClients: [] };
+  }
+}
+
 export async function POST(req: NextRequest) {
   const start = performance.now();
   const user = await getUserFromSession();
@@ -112,7 +157,7 @@ export async function POST(req: NextRequest) {
   const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages.at(-1);
   const runtime = getModelRuntime(modelId, browse);
-  const { model, supportsTools } = runtime;
+  const { model } = runtime;
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
@@ -135,29 +180,18 @@ export async function POST(req: NextRequest) {
   const existingMessages = conversationState.messages || [];
   const filteredMessages = filterMessages(existingMessages, modelId);
 
-  let tools: { [key: string]: Tool } = {};
-  let mcpClients: MCPClient[] = [];
+  const toolsState = await loadToolsForRequest({
+    runtime,
+    user,
+    browse,
+    temporaryChat,
+    start,
+  });
 
-  if (supportsTools && !temporaryChat) {
-    try {
-      const toolsResult = await buildToolsForRuntime(user, browse, runtime);
-      tools = toolsResult.tools;
-      mcpClients = toolsResult.mcpClients;
-
-      logDuration(start, "Tools fetched");
-    } catch (error) {
-      logger.error(error);
-
-      if (error instanceof McpClientInitError) {
-        return new NextResponse(
-          typeof error.cause === "string"
-            ? error.cause
-            : "MCP client initialization failed",
-          { status: 502 }
-        );
-      }
-    }
+  if (toolsState.errorResponse) {
+    return toolsState.errorResponse;
   }
+  const { tools, mcpClients } = toolsState;
 
   const extendedSystemPrompt = await buildSystemPromptWithMemory({
     baseSystemPrompt: systemPrompt,
