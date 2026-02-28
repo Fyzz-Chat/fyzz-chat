@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
+import { isUniqueConstraintViolation } from "@/lib/backend/utils";
 import { mapMessages } from "@/lib/dao/conversations";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
@@ -83,45 +84,65 @@ export async function getMessages(
   };
 }
 
-export async function saveMessage(
+export async function ensureMessageSaved(
   message: CustomUIMessage,
   conversationId: string,
   promptTokens: number,
   completionTokens: number
 ) {
   const userId = await getUserIdFromSession();
+  const { id, role, parts, metadata } = message;
+  const content = getMessageContent(message);
 
-  return prisma.$transaction(async (tx) => {
-    const content = getMessageContent(message);
-    const { id, role, parts, metadata } = message;
-    const newMessage = await tx.message.create({
-      data: {
-        id,
-        role,
-        content,
-        parts: parts as InputJsonValue,
-        conversationId,
-        promptTokens,
-        completionTokens,
-        metadata: {
-          ...metadata,
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const newMessage = await tx.message.create({
+        data: {
+          id,
+          role,
           content,
-        } as InputJsonValue,
-      },
+          parts: parts as InputJsonValue,
+          conversationId,
+          promptTokens,
+          completionTokens,
+          metadata: {
+            ...metadata,
+            content,
+          } as InputJsonValue,
+        },
+      });
+
+      await tx.conversation.update({
+        where: {
+          id: conversationId,
+          userId,
+        },
+        data: {
+          lastMessageAt: new Date(),
+        },
+      });
+
+      return newMessage;
+    });
+  } catch (error) {
+    if (!isUniqueConstraintViolation(error)) {
+      throw error;
+    }
+
+    const existingMessage = await prisma.message.findUnique({
+      where: { id },
     });
 
-    await tx.conversation.update({
-      where: {
-        id: conversationId,
-        userId,
-      },
-      data: {
-        lastMessageAt: new Date(),
-      },
-    });
+    if (!existingMessage) {
+      throw error;
+    }
 
-    return newMessage;
-  });
+    if (existingMessage.conversationId !== conversationId) {
+      throw new Error(`Message ${id} already exists in a different conversation.`);
+    }
+
+    return existingMessage;
+  }
 }
 
 export async function saveTokenUsage(

@@ -26,11 +26,11 @@ import {
   mapFileParts,
 } from "@/lib/backend/utils";
 import {
-  appendMessageToConversation,
+  ensureMessageAppended,
   getOrCreateConversation,
   hasDefaultTitle,
 } from "@/lib/dao/conversations";
-import { saveMessage, saveTokenUsage } from "@/lib/dao/messages";
+import { ensureMessageSaved, saveTokenUsage } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
@@ -91,7 +91,7 @@ async function loadConversationMessages({
     existingMessages.some((existingMessage) => existingMessage.id === newMessage.id);
 
   if (newMessage && hasInputPart(newMessage) && !isRegeneratedMessage) {
-    await appendMessageToConversation(newMessage, id);
+    await ensureMessageAppended(newMessage, id);
 
     const mappedMessage = mapFileParts(newMessage, userId, id);
     existingMessages = [...existingMessages, mappedMessage];
@@ -244,7 +244,7 @@ async function persistStreamResult({
     }
   }
 
-  await saveMessage(lastMessage, conversationId, 0, usage?.outputTokens || 0);
+  await ensureMessageSaved(lastMessage, conversationId, 0, usage?.outputTokens || 0);
 
   if (lastUserMessage) {
     try {

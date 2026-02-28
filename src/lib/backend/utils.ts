@@ -71,6 +71,15 @@ export function logDuration(start: number, message: string) {
   logger.debug(`${message}: ${(after - start).toFixed(2)}ms`);
 }
 
+export function isUniqueConstraintViolation(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "P2002"
+  );
+}
+
 export function getVersion() {
   const packageJson = JSON.parse(
     readFileSync(join(process.cwd(), "package.json"), "utf8")

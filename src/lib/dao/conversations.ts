@@ -2,6 +2,7 @@ import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { getFileUrlSigned } from "@/lib/aws/s3";
+import { isUniqueConstraintViolation } from "@/lib/backend/utils";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -185,7 +186,7 @@ export async function hasDefaultTitle(conversationId: string): Promise<boolean> 
   return conversation?.title === null || conversation?.title === "New Chat";
 }
 
-export async function appendMessageToConversation(
+export async function ensureMessageAppended(
   message: CustomUIMessage,
   conversationId: string
 ): Promise<CustomUIMessage[]> {
@@ -193,34 +194,54 @@ export async function appendMessageToConversation(
   const content = getMessageContent(message);
   const { id, role, parts, metadata } = message;
 
-  const newMessage = await prisma.$transaction(async (tx) => {
-    const createdMessage = await tx.message.create({
-      data: {
-        id,
-        role,
-        content,
-        parts: parts as InputJsonValue,
-        metadata: {
-          ...metadata,
+  try {
+    const newMessage = await prisma.$transaction(async (tx) => {
+      const createdMessage = await tx.message.create({
+        data: {
+          id,
+          role,
           content,
-        } as InputJsonValue,
-        conversationId,
-      },
+          parts: parts as InputJsonValue,
+          metadata: {
+            ...metadata,
+            content,
+          } as InputJsonValue,
+          conversationId,
+        },
+      });
+
+      await tx.conversation.update({
+        where: {
+          id: conversationId,
+          userId,
+        },
+        data: {
+          lastMessageAt: new Date(),
+        },
+      });
+      return createdMessage;
     });
 
-    await tx.conversation.update({
-      where: {
-        id: conversationId,
-        userId,
-      },
-      data: {
-        lastMessageAt: new Date(),
-      },
-    });
-    return createdMessage;
-  });
+    return mapMessages(userId, conversationId, [newMessage]);
+  } catch (error) {
+    if (!isUniqueConstraintViolation(error)) {
+      throw error;
+    }
 
-  return mapMessages(userId, conversationId, [newMessage]);
+    const existingMessage = await prisma.message.findUnique({
+      where: { id },
+    });
+
+    if (!existingMessage) {
+      throw error;
+    }
+
+    if (existingMessage.conversationId !== conversationId) {
+      throw new Error(`Message ${id} already exists in a different conversation.`);
+    }
+
+    return mapMessages(userId, conversationId, [existingMessage]);
+  }
 }
 
 export async function lockConversation(conversationId: string): Promise<boolean> {
