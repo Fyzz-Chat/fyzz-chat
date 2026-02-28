@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": "bun .agents/hooks/type-check.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun .agents/hooks/test.ts"
           }
         ]
       }

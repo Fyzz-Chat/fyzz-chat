@@ -7,6 +7,9 @@
       },
       {
         "command": "bun .agents/hooks/type-check.ts"
+      },
+      {
+        "command": "bun .agents/hooks/test.ts"
       }
     ]
   }
