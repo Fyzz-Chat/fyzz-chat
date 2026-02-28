@@ -30,7 +30,7 @@ import {
   getOrCreateConversation,
   hasDefaultTitle,
 } from "@/lib/dao/conversations";
-import { ensureMessageSaved, saveTokenUsage } from "@/lib/dao/messages";
+import { ensureMessageSaved, ensureTokenUsageSaved } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
@@ -247,11 +247,7 @@ async function persistStreamResult({
   await ensureMessageSaved(lastMessage, conversationId, 0, usage?.outputTokens || 0);
 
   if (lastUserMessage) {
-    try {
-      await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
-    } catch (error) {
-      logger.error(error);
-    }
+    await ensureTokenUsageSaved(lastUserMessage.id, usage?.inputTokens || 0, 0);
   }
 
   try {

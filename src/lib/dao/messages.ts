@@ -4,6 +4,7 @@ import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { isUniqueConstraintViolation } from "@/lib/backend/utils";
 import { mapMessages } from "@/lib/dao/conversations";
 import { getUserIdFromSession } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
 import type { CustomUIMessage } from "@/types/chat";
@@ -145,23 +146,27 @@ export async function ensureMessageSaved(
   }
 }
 
-export async function saveTokenUsage(
+export async function ensureTokenUsageSaved(
   messageId: string,
   promptTokens: number,
   completionTokens: number
 ) {
   const userId = await getUserIdFromSession();
 
-  await prisma.message.update({
-    where: {
-      id: messageId,
-      conversation: {
-        userId,
+  try {
+    await prisma.message.update({
+      where: {
+        id: messageId,
+        conversation: {
+          userId,
+        },
       },
-    },
-    data: {
-      promptTokens,
-      completionTokens,
-    },
-  });
+      data: {
+        promptTokens,
+        completionTokens,
+      },
+    });
+  } catch (error) {
+    logger.error(error);
+  }
 }
