@@ -3,6 +3,7 @@
 import "server-only";
 
 import { getUserIdFromSession } from "@/lib/dao/users";
+import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 
 export async function deleteMessageChainAfter(
@@ -24,6 +25,15 @@ export async function deleteMessageChainAfter(
 
   if (!message) {
     throw new Error("Message not found");
+  }
+
+  if (message.sequence === null) {
+    logger.warn({
+      message:
+        "Using createdAt fallback for deleteMessageChainAfter because sequence is null.",
+      conversationId,
+      messageId,
+    });
   }
 
   await prisma.message.deleteMany({

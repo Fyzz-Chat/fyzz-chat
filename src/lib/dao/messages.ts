@@ -95,6 +95,16 @@ export async function ensureMessageSaved(
   const maxAttempts = 3;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    if (attempt > 1) {
+      logger.warn({
+        message: "Retrying sequence allocation for message save.",
+        conversationId,
+        messageId: id,
+        attempt,
+        maxAttempts,
+      });
+    }
+
     try {
       return await prisma.$transaction(async (tx) => {
         const sequenceAggregate = await tx.message.aggregate({
@@ -149,6 +159,12 @@ export async function ensureMessageSaved(
       }
 
       if (maxAttempts <= attempt) {
+        logger.error({
+          message: "Sequence allocation retries exhausted while saving message.",
+          conversationId,
+          messageId: id,
+          maxAttempts,
+        });
         throw error;
       }
     }
