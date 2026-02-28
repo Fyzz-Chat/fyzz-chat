@@ -3,6 +3,11 @@ import "server-only";
 import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { mapDbMessagesToUiMessages, safeParseJson } from "@/lib/backend/message-mapper";
 import { isUniqueConstraintViolation } from "@/lib/backend/utils";
+import {
+  MESSAGE_ORDER_ASC,
+  MESSAGE_ORDER_DESC,
+  whereMessagesUpToAnchor,
+} from "@/lib/dao/message-order";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -138,8 +143,7 @@ export async function getConversationsByCursor(
           metadata: true,
         },
         take: 1,
-        // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
-        orderBy: [{ createdAt: "desc" }, { sequence: "desc" }, { id: "desc" }],
+        orderBy: MESSAGE_ORDER_DESC,
       },
     },
     orderBy: [
@@ -375,31 +379,8 @@ export async function public_getConversationUntilMessage(messageId: string) {
     select: {
       title: true,
       messages: {
-        // TODO[SEQ_CUTOVER]: Remove createdAt fallback branch after sequence is non-null everywhere in prod.
-        where:
-          message.sequence === null
-            ? {
-                createdAt: {
-                  lte: message.createdAt,
-                },
-              }
-            : {
-                OR: [
-                  {
-                    sequence: {
-                      lte: message.sequence,
-                    },
-                  },
-                  {
-                    sequence: null,
-                    createdAt: {
-                      lte: message.createdAt,
-                    },
-                  },
-                ],
-              },
-        // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
-        orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
+        where: whereMessagesUpToAnchor(message),
+        orderBy: MESSAGE_ORDER_ASC,
         select: {
           id: true,
           content: true,

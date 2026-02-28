@@ -3,6 +3,7 @@ import "server-only";
 import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { isUniqueConstraintViolation } from "@/lib/backend/utils";
+import { MESSAGE_ORDER_ASC } from "@/lib/dao/message-order";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -33,8 +34,7 @@ export async function getMessages(
         sequence: true,
         createdAt: true,
       },
-      // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
-      orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
+      orderBy: MESSAGE_ORDER_ASC,
     });
 
     return {
@@ -71,8 +71,7 @@ export async function getMessages(
       sequence: true,
       createdAt: true,
     },
-    // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
-    orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
+    orderBy: MESSAGE_ORDER_ASC,
     skip,
     take,
   });
