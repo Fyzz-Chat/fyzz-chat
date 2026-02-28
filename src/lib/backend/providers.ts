@@ -25,6 +25,7 @@ import {
   type ConversationState,
   type Feature,
   imageTypes,
+  type ModelRuntime,
   type Provider,
   type PublicModel,
   type PublicProvider,
@@ -65,7 +66,7 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
     .find((model) => model.id === modelId);
 }
 
-export function getModel(modelId: string, browse: boolean) {
+export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime {
   const model = filterProviders()
     .flatMap((provider) => provider.models)
     .find((model) => model.id === modelId);
@@ -75,11 +76,28 @@ export function getModel(modelId: string, browse: boolean) {
   }
 
   const { id, provider, tools } = model;
+  const conversationState = model.conversationState ?? "client-history";
 
   return {
     model: provider(id, browse),
     supportsTools: tools,
-    conversationState: model.conversationState ?? "client-history",
+    conversationState,
+    getProviderOptions: ({ previousResponseId }) => ({
+      anthropic: getAnthropicProviderOptions(modelId),
+      openai: getOpenaiProviderOptions(modelId),
+      google: getGoogleProviderOptions(modelId),
+      xai: getXaiProviderOptions(conversationState, previousResponseId),
+    }),
+    getProviderTools: (search) => getProviderTools(modelId, search),
+  };
+}
+
+export function getModel(modelId: string, browse: boolean) {
+  const runtime = getModelRuntime(modelId, browse);
+  return {
+    model: runtime.model,
+    supportsTools: runtime.supportsTools,
+    conversationState: runtime.conversationState,
   };
 }
 

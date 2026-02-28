@@ -1,4 +1,4 @@
-import type { LanguageModel } from "ai";
+import type { LanguageModel, Tool } from "ai";
 
 export type Feature = {
   name: string;
@@ -37,6 +37,16 @@ export type Model = {
   conversationState?: ConversationState;
   extensions: ExtensionType[];
   cost: number;
+};
+
+export type ModelRuntime = {
+  model: LanguageModel;
+  supportsTools: boolean;
+  conversationState: ConversationState;
+  getProviderOptions: (options: {
+    previousResponseId?: string;
+  }) => Record<string, unknown>;
+  getProviderTools: (search: boolean) => { [key: string]: Tool };
 };
 
 export type PublicModel = Omit<Model, "provider">;
