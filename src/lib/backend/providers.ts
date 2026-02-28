@@ -68,16 +68,23 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
 }
 
 export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime {
-  const model = filterProviders()
-    .flatMap((provider) => provider.models)
-    .find((model) => model.id === modelId);
+  const runtimeModel = filterProviders()
+    .flatMap((provider) =>
+      provider.models.map((model) => ({
+        providerId: provider.id,
+        model,
+      }))
+    )
+    .find(({ model }) => model.id === modelId);
 
-  if (!model) {
+  if (!runtimeModel) {
     throw new Error(`Model ${modelId} not found`);
   }
 
-  const { id, provider, tools } = model;
-  const runtimePreset = model.runtimePreset;
+  const {
+    providerId,
+    model: { id, provider, tools, runtimePreset, features },
+  } = runtimeModel;
 
   return {
     model: provider(id, browse),
@@ -96,7 +103,14 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
     },
     decorateAssistantMetadata: ({ metadata, responseId }) =>
       decorateAssistantMetadata(metadata, runtimePreset, responseId),
-    getProviderTools: (search) => getProviderTools(modelId, search),
+    getProviderTools: (search) =>
+      getProviderTools({
+        providerId,
+        modelId: id,
+        runtimePreset,
+        search,
+        features,
+      }),
   };
 }
 
@@ -193,25 +207,23 @@ export function getXaiProviderOptions(
   };
 }
 
-export function getProviderTools(modelId: string, search: boolean) {
-  const isOpenAIModel = providers.some(
-    (provider) =>
-      (provider.id === "openai" || provider.id === "azure") &&
-      provider.models.some((model) => model.id === modelId)
-  );
-  const isAnthropicModel = providers.some(
-    (provider) =>
-      provider.id === "anthropic" && provider.models.some((model) => model.id === modelId)
-  );
-  const isGoogleModel = providers.some(
-    (provider) =>
-      provider.id === "google" && provider.models.some((model) => model.id === modelId)
-  );
-  const isXaiModel = providers.some(
-    (provider) =>
-      provider.id === "xai" && provider.models.some((model) => model.id === modelId)
-  );
-  const responsesModel = getModelPublic(modelId)?.runtimePreset === "responses";
+export function getProviderTools({
+  providerId,
+  modelId,
+  runtimePreset,
+  search,
+  features,
+}: {
+  providerId: Provider["id"];
+  modelId: string;
+  runtimePreset: RuntimePreset;
+  search: boolean;
+  features?: Feature[];
+}) {
+  const isOpenAIModel = providerId === "openai" || providerId === "azure";
+  const isAnthropicModel = providerId === "anthropic";
+  const isGoogleModel = providerId === "google";
+  const isXaiModel = providerId === "xai";
   const supportsOpenAICodeInterpreter =
     isOpenAIModel &&
     modelId !== "gpt-5-codex" &&
@@ -220,8 +232,7 @@ export function getProviderTools(modelId: string, search: boolean) {
     modelId !== "gpt-5.2-codex" &&
     modelId !== "gpt-5.3-codex";
 
-  const supportsOpenAIImageGeneration =
-    isOpenAIModel && getModelPublic(modelId)?.features?.includes(images);
+  const supportsOpenAIImageGeneration = isOpenAIModel && features?.includes(images);
 
   const tools: ToolSet = {};
 
@@ -249,7 +260,7 @@ export function getProviderTools(modelId: string, search: boolean) {
     if (search) {
       tools.google_search = google.tools.googleSearch({}) as Tool;
     }
-  } else if (isXaiModel && responsesModel) {
+  } else if (isXaiModel && runtimePreset === "responses") {
     if (search) {
       tools.x_search = xai.tools.xSearch() as Tool;
       tools.web_search = xai.tools.webSearch() as Tool;
