@@ -139,9 +139,7 @@ export async function getConversationsByCursor(
           metadata: true,
         },
         take: 1,
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: [{ createdAt: "desc" }, { sequence: "desc" }, { id: "desc" }],
       },
     },
     orderBy: [
@@ -193,55 +191,68 @@ export async function ensureMessageAppended(
   const userId = await getUserIdFromSession();
   const content = getMessageContent(message);
   const { id, role, parts, metadata } = message;
+  const maxAttempts = 3;
 
-  try {
-    const newMessage = await prisma.$transaction(async (tx) => {
-      const createdMessage = await tx.message.create({
-        data: {
-          id,
-          role,
-          content,
-          parts: parts as InputJsonValue,
-          metadata: {
-            ...metadata,
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const newMessage = await prisma.$transaction(async (tx) => {
+        const sequenceAggregate = await tx.message.aggregate({
+          where: { conversationId },
+          _max: { sequence: true },
+        });
+        const nextSequence = (sequenceAggregate._max.sequence ?? 0) + 1;
+
+        const createdMessage = await tx.message.create({
+          data: {
+            id,
+            role,
             content,
-          } as InputJsonValue,
-          conversationId,
-        },
+            parts: parts as InputJsonValue,
+            metadata: {
+              ...metadata,
+              content,
+            } as InputJsonValue,
+            conversationId,
+            sequence: nextSequence,
+          },
+        });
+
+        await tx.conversation.update({
+          where: {
+            id: conversationId,
+            userId,
+          },
+          data: {
+            lastMessageAt: new Date(),
+          },
+        });
+        return createdMessage;
       });
 
-      await tx.conversation.update({
-        where: {
-          id: conversationId,
-          userId,
-        },
-        data: {
-          lastMessageAt: new Date(),
-        },
+      return mapMessages(userId, conversationId, [newMessage]);
+    } catch (error) {
+      if (!isUniqueConstraintViolation(error)) {
+        throw error;
+      }
+
+      const existingMessage = await prisma.message.findUnique({
+        where: { id },
       });
-      return createdMessage;
-    });
 
-    return mapMessages(userId, conversationId, [newMessage]);
-  } catch (error) {
-    if (!isUniqueConstraintViolation(error)) {
-      throw error;
+      if (existingMessage) {
+        if (existingMessage.conversationId !== conversationId) {
+          throw new Error(`Message ${id} already exists in a different conversation.`);
+        }
+        return mapMessages(userId, conversationId, [existingMessage]);
+      }
+
+      if (maxAttempts <= attempt) {
+        throw error;
+      }
     }
-
-    const existingMessage = await prisma.message.findUnique({
-      where: { id },
-    });
-
-    if (!existingMessage) {
-      throw error;
-    }
-
-    if (existingMessage.conversationId !== conversationId) {
-      throw new Error(`Message ${id} already exists in a different conversation.`);
-    }
-
-    return mapMessages(userId, conversationId, [existingMessage]);
   }
+
+  throw new Error(`Could not append message ${id} after ${maxAttempts} attempts.`);
 }
 
 export async function lockConversation(conversationId: string): Promise<boolean> {
@@ -369,6 +380,7 @@ export async function public_getConversationUntilMessage(messageId: string) {
     select: {
       conversationId: true,
       createdAt: true,
+      sequence: true,
     },
   });
 
@@ -383,14 +395,29 @@ export async function public_getConversationUntilMessage(messageId: string) {
     select: {
       title: true,
       messages: {
-        where: {
-          createdAt: {
-            lte: message.createdAt,
-          },
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
+        where:
+          message.sequence === null
+            ? {
+                createdAt: {
+                  lte: message.createdAt,
+                },
+              }
+            : {
+                OR: [
+                  {
+                    sequence: {
+                      lte: message.sequence,
+                    },
+                  },
+                  {
+                    sequence: null,
+                    createdAt: {
+                      lte: message.createdAt,
+                    },
+                  },
+                ],
+              },
+        orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
         select: {
           id: true,
           content: true,

@@ -129,9 +129,7 @@ export async function shareConversationUntilLatestMessage(
         userId: user,
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [{ createdAt: "desc" }, { sequence: "desc" }, { id: "desc" }],
   });
 
   if (!message) {

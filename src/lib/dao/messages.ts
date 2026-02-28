@@ -30,11 +30,10 @@ export async function getMessages(
         role: true,
         parts: true,
         metadata: true,
+        sequence: true,
         createdAt: true,
       },
-      orderBy: {
-        createdAt: "asc",
-      },
+      orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
     });
 
     return {
@@ -68,11 +67,10 @@ export async function getMessages(
       role: true,
       parts: true,
       metadata: true,
+      sequence: true,
       createdAt: true,
     },
-    orderBy: {
-      createdAt: "asc",
-    },
+    orderBy: [{ createdAt: "asc" }, { sequence: "asc" }, { id: "asc" }],
     skip,
     take,
   });
@@ -94,56 +92,69 @@ export async function ensureMessageSaved(
   const userId = await getUserIdFromSession();
   const { id, role, parts, metadata } = message;
   const content = getMessageContent(message);
+  const maxAttempts = 3;
 
-  try {
-    return await prisma.$transaction(async (tx) => {
-      const newMessage = await tx.message.create({
-        data: {
-          id,
-          role,
-          content,
-          parts: parts as InputJsonValue,
-          conversationId,
-          promptTokens,
-          completionTokens,
-          metadata: {
-            ...metadata,
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        const sequenceAggregate = await tx.message.aggregate({
+          where: { conversationId },
+          _max: { sequence: true },
+        });
+        const nextSequence = (sequenceAggregate._max.sequence ?? 0) + 1;
+
+        const newMessage = await tx.message.create({
+          data: {
+            id,
+            role,
             content,
-          } as InputJsonValue,
-        },
+            parts: parts as InputJsonValue,
+            conversationId,
+            sequence: nextSequence,
+            promptTokens,
+            completionTokens,
+            metadata: {
+              ...metadata,
+              content,
+            } as InputJsonValue,
+          },
+        });
+
+        await tx.conversation.update({
+          where: {
+            id: conversationId,
+            userId,
+          },
+          data: {
+            lastMessageAt: new Date(),
+          },
+        });
+
+        return newMessage;
+      });
+    } catch (error) {
+      if (!isUniqueConstraintViolation(error)) {
+        throw error;
+      }
+
+      const existingMessage = await prisma.message.findUnique({
+        where: { id },
       });
 
-      await tx.conversation.update({
-        where: {
-          id: conversationId,
-          userId,
-        },
-        data: {
-          lastMessageAt: new Date(),
-        },
-      });
+      if (existingMessage) {
+        if (existingMessage.conversationId !== conversationId) {
+          throw new Error(`Message ${id} already exists in a different conversation.`);
+        }
+        return existingMessage;
+      }
 
-      return newMessage;
-    });
-  } catch (error) {
-    if (!isUniqueConstraintViolation(error)) {
-      throw error;
+      if (maxAttempts <= attempt) {
+        throw error;
+      }
     }
-
-    const existingMessage = await prisma.message.findUnique({
-      where: { id },
-    });
-
-    if (!existingMessage) {
-      throw error;
-    }
-
-    if (existingMessage.conversationId !== conversationId) {
-      throw new Error(`Message ${id} already exists in a different conversation.`);
-    }
-
-    return existingMessage;
   }
+
+  throw new Error(`Could not persist message ${id} after ${maxAttempts} attempts.`);
 }
 
 export async function ensureTokenUsageSaved(

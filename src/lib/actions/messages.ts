@@ -32,9 +32,27 @@ export async function deleteMessageChainAfter(
         id: conversationId,
         userId,
       },
-      createdAt: {
-        gt: message.createdAt,
-      },
+      ...(message.sequence === null
+        ? {
+            createdAt: {
+              gt: message.createdAt,
+            },
+          }
+        : {
+            OR: [
+              {
+                sequence: {
+                  gt: message.sequence,
+                },
+              },
+              {
+                sequence: null,
+                createdAt: {
+                  gt: message.createdAt,
+                },
+              },
+            ],
+          }),
     },
   });
 
