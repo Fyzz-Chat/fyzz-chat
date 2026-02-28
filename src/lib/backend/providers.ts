@@ -6,7 +6,11 @@ import {
   anthropic,
 } from "@ai-sdk/anthropic";
 import type { AzureOpenAIProvider } from "@ai-sdk/azure";
-import { type FireworksProvider, fireworks } from "@ai-sdk/fireworks";
+import {
+  type FireworksLanguageModelOptions,
+  type FireworksProvider,
+  fireworks,
+} from "@ai-sdk/fireworks";
 import { type GoogleGenerativeAIProviderOptions, google } from "@ai-sdk/google";
 import {
   type OpenAIProvider,
@@ -15,12 +19,7 @@ import {
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
 import { type XaiProvider, type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
-import {
-  extractReasoningMiddleware,
-  type Tool,
-  type ToolSet,
-  wrapLanguageModel,
-} from "ai";
+import type { Tool, ToolSet } from "ai";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
   type Feature,
@@ -112,6 +111,7 @@ export function getModelRuntime(
           previousResponseId,
           selectedReasoningEffort
         ),
+        fireworks: getFireworksProviderOptions(modelId, selectedReasoningEffort),
       };
     },
     decorateAssistantMetadata: ({ metadata, responseId }) =>
@@ -230,6 +230,22 @@ export function getXaiProviderOptions(
     previousResponseId,
     reasoningEffort,
   };
+}
+
+export function getFireworksProviderOptions(
+  modelId: string,
+  reasoningEffort?: ReasoningEffort
+): FireworksLanguageModelOptions {
+  const thinkingModel = isThinkingModel(modelId, "fireworks");
+  const budgetTokens =
+    reasoningEffort === "low" ? 1024 : reasoningEffort === "medium" ? 4096 : 8192;
+
+  return thinkingModel
+    ? {
+        thinking: { type: "enabled", budgetTokens },
+        reasoningHistory: "preserved",
+      }
+    : {};
 }
 
 export function getProviderTools({
@@ -374,13 +390,6 @@ function wrappedModel(
 function wrappedResponsesModel(provider: XaiProvider) {
   return (model: string, _browse: boolean) => provider.responses(model);
 }
-
-const _reasoningFireworks = (model: string, _browse: boolean) => {
-  return wrapLanguageModel({
-    model: fireworks(model),
-    middleware: extractReasoningMiddleware({ tagName: "think" }),
-  });
-};
 
 const reasoning: Feature = {
   name: "Reasoning",

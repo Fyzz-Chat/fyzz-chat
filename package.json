@@ -35,7 +35,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "3.0.2",
     "@ai-sdk/azure": "3.0.2",
-    "@ai-sdk/fireworks": "2.0.2",
+    "@ai-sdk/fireworks": "2.0.36",
     "@ai-sdk/google": "3.0.2",
     "@ai-sdk/mcp": "1.0.2",
     "@ai-sdk/openai": "3.0.2",
