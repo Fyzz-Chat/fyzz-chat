@@ -3,6 +3,7 @@ import {
   convertToModelMessages,
   hasToolCall,
   type LanguageModelUsage,
+  safeValidateUIMessages,
   smoothStream,
   stepCountIs,
   streamText,
@@ -10,6 +11,7 @@ import {
 } from "ai";
 import { after, type NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import { mapMessageFilePartsForRead } from "@/lib/backend/message-mapper";
@@ -31,9 +33,66 @@ import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
-import type { CustomUIMessage } from "@/types/chat";
+import { type CustomUIMessage, metadataSchema } from "@/types/chat";
 
 export const maxDuration = 55;
+
+const chatRequestEnvelopeSchema = z.object({
+  id: z.string().min(1),
+  model: z.string().min(1),
+  messages: z.unknown(),
+  browse: z.boolean().default(false),
+  temporaryChat: z.boolean().default(false),
+});
+
+async function validateRequestBody(body: unknown): Promise<
+  | {
+      success: true;
+      data: {
+        id: string;
+        model: string;
+        messages: CustomUIMessage[];
+        browse: boolean;
+        temporaryChat: boolean;
+      };
+    }
+  | {
+      success: false;
+      error: string;
+      details: unknown;
+    }
+> {
+  const parsedEnvelope = chatRequestEnvelopeSchema.safeParse(body);
+
+  if (!parsedEnvelope.success) {
+    return {
+      success: false,
+      error: "Invalid request body",
+      details: parsedEnvelope.error.issues,
+    };
+  }
+
+  const validatedMessages = await safeValidateUIMessages<CustomUIMessage>({
+    messages: parsedEnvelope.data.messages,
+    metadataSchema: metadataSchema.optional(),
+  });
+
+  if (!validatedMessages.success) {
+    return {
+      success: false,
+      error: "Invalid request body",
+      details: validatedMessages.error,
+    };
+  }
+
+  return {
+    success: true,
+    data: {
+      ...parsedEnvelope.data,
+      messages: validatedMessages.data,
+    },
+  };
+}
 
 function createEmptyConversationResponse() {
   return new Response("Cannot send an empty message to a new conversation.", {
@@ -261,8 +320,27 @@ export async function POST(req: NextRequest) {
   const user = await getUserFromSession();
   logDuration(start, "User fetched");
 
-  const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
-  const newMessage: CustomUIMessage = messages.at(-1);
+  let body: unknown;
+
+  try {
+    body = await req.json();
+  } catch (_error) {
+    return new Response("Invalid JSON body", { status: 400 });
+  }
+
+  const parsedRequest = await validateRequestBody(body);
+
+  if (!parsedRequest.success) {
+    logger.warn({
+      message: "Invalid chat request payload.",
+      errors: parsedRequest.details,
+      userId: user.id,
+    });
+    return new Response(parsedRequest.error, { status: 400 });
+  }
+
+  const { id, model: modelId, browse, temporaryChat, messages } = parsedRequest.data;
+  const newMessage = messages.at(-1);
   const runtime = getModelRuntime(modelId, browse);
   const { model } = runtime;
 
