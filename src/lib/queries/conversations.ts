@@ -68,6 +68,25 @@ function updateInfiniteConversationCaches(
   });
 }
 
+function invalidateConversationCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string
+) {
+  queryClient.invalidateQueries(trpc.conversation.queryFilter({ id: conversationId }));
+  queryClient.invalidateQueries(trpc.messages.queryFilter({ id: conversationId }));
+  queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
+}
+
+async function cancelConversationQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string
+) {
+  await queryClient.cancelQueries(trpc.conversation.queryFilter({ id: conversationId }));
+  await queryClient.cancelQueries(trpc.messages.queryFilter({ id: conversationId }));
+}
+
 export function useConversations(
   conversations: ConversationPage,
   authorized: boolean,
@@ -254,12 +273,7 @@ export function useAddMessage(id: string) {
       return message;
     },
     onError: (_) => {
-      // Revert optimistic updates on error
-      queryClient.invalidateQueries(
-        trpc.conversation.queryFilter({ id: conversationId })
-      );
-      queryClient.invalidateQueries(trpc.messages.queryFilter({ id: conversationId }));
-      queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
+      invalidateConversationCaches(queryClient, trpc, conversationId);
     },
   });
 }
@@ -334,13 +348,7 @@ export function useCreateConversation() {
     },
     onError: (error, newConversation) => {
       console.error("Error creating conversation:", error);
-      queryClient.invalidateQueries(
-        trpc.conversation.queryFilter({ id: newConversation.id })
-      );
-      queryClient.invalidateQueries(
-        trpc.messages.queryFilter({ id: newConversation.id })
-      );
-      queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
+      invalidateConversationCaches(queryClient, trpc, newConversation.id);
     },
   });
 }
@@ -350,12 +358,7 @@ export function useCreateConversationOptimistic() {
 
   return useMutation({
     mutationFn: async (conversation: PartialConversation) => {
-      // Cancel in-flight queries to prevent them from overwriting optimistic data
-      // (e.g. the conversation query returning null before the DB row is created)
-      await queryClient.cancelQueries(
-        trpc.conversation.queryFilter({ id: conversation.id })
-      );
-      await queryClient.cancelQueries(trpc.messages.queryFilter({ id: conversation.id }));
+      await cancelConversationQueries(queryClient, trpc, conversation.id);
 
       queryClient.setQueryData(
         trpc.conversation.queryKey({ id: conversation.id }),
