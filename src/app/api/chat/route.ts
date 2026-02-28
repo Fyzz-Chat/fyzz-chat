@@ -21,7 +21,7 @@ import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import {
   filterMessages,
-  hasTextPart,
+  hasInputPart,
   logDuration,
   mapFileParts,
 } from "@/lib/backend/utils";
@@ -90,7 +90,7 @@ async function loadConversationMessages({
     newMessage !== undefined &&
     existingMessages.some((existingMessage) => existingMessage.id === newMessage.id);
 
-  if (newMessage && hasTextPart(newMessage) && !isRegeneratedMessage) {
+  if (newMessage && hasInputPart(newMessage) && !isRegeneratedMessage) {
     await appendMessageToConversation(newMessage, id);
 
     const mappedMessage = mapFileParts(newMessage, userId, id);

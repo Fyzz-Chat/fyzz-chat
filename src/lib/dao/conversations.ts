@@ -5,6 +5,7 @@ import { getFileUrlSigned } from "@/lib/aws/s3";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
+import { getMessageContent } from "@/lib/utils";
 import {
   type ConversationPage,
   type CustomUIMessage,
@@ -189,13 +190,20 @@ export async function appendMessageToConversation(
   conversationId: string
 ): Promise<CustomUIMessage[]> {
   const userId = await getUserIdFromSession();
+  const content = getMessageContent(message);
+  const { id, role, parts, metadata } = message;
 
   const newMessage = await prisma.$transaction(async (tx) => {
     const createdMessage = await tx.message.create({
       data: {
-        ...message,
-        content: message.metadata?.content,
-        parts: message.parts as InputJsonValue,
+        id,
+        role,
+        content,
+        parts: parts as InputJsonValue,
+        metadata: {
+          ...metadata,
+          content,
+        } as InputJsonValue,
         conversationId,
       },
     });

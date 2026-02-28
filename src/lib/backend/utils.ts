@@ -83,6 +83,16 @@ export function hasTextPart(message: CustomUIMessage) {
   return message.parts?.some((part) => part.type === "text" && part.text);
 }
 
+export function hasInputPart(message: CustomUIMessage) {
+  return message.parts?.some((part) => {
+    if (part.type === "text") {
+      return part.text.trim().length > 0;
+    }
+
+    return part.type === "file";
+  });
+}
+
 export function mapFileParts(
   message: CustomUIMessage,
   userId: string,
