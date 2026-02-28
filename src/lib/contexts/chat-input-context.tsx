@@ -42,7 +42,7 @@ export function ChatInputProvider({ children }: Readonly<{ children: ReactNode }
       // noop default
     },
   });
-  const browseRef = useRef(false);
+  const browseRef = useRef(true);
   const [status, setStatus] = useState<ChatStatus>("ready");
   const [areFilesUploading, setAreFilesUploading] = useState(false);
 

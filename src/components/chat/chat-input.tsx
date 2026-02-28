@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, GlobeIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
 import {
   ModelSelector,
@@ -16,10 +16,6 @@ import {
 } from "@/components/ai-elements/model-selector";
 import {
   PromptInput,
-  PromptInputActionAddAttachments,
-  PromptInputActionMenu,
-  PromptInputActionMenuContent,
-  PromptInputActionMenuTrigger,
   PromptInputAttachment,
   PromptInputAttachments,
   PromptInputBody,
@@ -32,8 +28,9 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
+import ChatSettingsMenu from "@/components/chat/chat-settings-menu";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
-import { cn, debounce } from "@/lib/utils";
+import { debounce } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useUIStore } from "@/stores/ui-store";
 
@@ -49,7 +46,7 @@ const persistInput = debounce((input: string) => {
 }, 1000);
 
 export default function ChatInput() {
-  const { handlersRef, browseRef } = useChatInput();
+  const { handlersRef } = useChatInput();
   const { status, areFilesUploading } = useChatInputStatus();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
@@ -66,14 +63,6 @@ export default function ChatInput() {
     [models, model.id]
   );
   const [initialInput] = useState(getPersistedInput);
-  const [browse, _setBrowse] = useState(false);
-  const setBrowse = useCallback(
-    (value: boolean) => {
-      _setBrowse(value);
-      browseRef.current = value;
-    },
-    [browseRef]
-  );
 
   const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     persistInput(e.currentTarget.value);
@@ -125,13 +114,9 @@ export default function ChatInput() {
           </PromptInputBody>
           <PromptInputFooter className="space-x-1">
             <PromptInputTools className="flex w-full items-center">
-              <PromptInputButton
-                onClick={() => setBrowse(!browse)}
-                className="rounded-full"
-              >
-                <GlobeIcon size={16} className={cn(browse && "text-primary")} />
-                <span className={cn(browse && "text-primary")}>Search</span>
-              </PromptInputButton>
+              <ChatSettingsMenu
+                supportsAttachments={0 < (model.extensions?.length || 0)}
+              />
               <ModelSelector onOpenChange={setModelSelectorOpen} open={modelSelectorOpen}>
                 <ModelSelectorTrigger asChild>
                   <PromptInputButton>
@@ -149,15 +134,15 @@ export default function ChatInput() {
                     <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
                     {providers.map((provider) => (
                       <ModelSelectorGroup heading={provider.name} key={provider.id}>
-                        {provider.models.map((m) => (
+                        {provider.models.map((providerModel) => (
                           <ModelSelectorItem
-                            key={m.id}
-                            onSelect={() => handleModelSelect(m.id)}
-                            value={m.id}
+                            key={providerModel.id}
+                            onSelect={() => handleModelSelect(providerModel.id)}
+                            value={providerModel.id}
                           >
                             <ModelSelectorLogo provider={provider.id} />
-                            <ModelSelectorName>{m.name}</ModelSelectorName>
-                            {model.id === m.id ? (
+                            <ModelSelectorName>{providerModel.name}</ModelSelectorName>
+                            {model.id === providerModel.id ? (
                               <CheckIcon className="ml-auto size-4" />
                             ) : (
                               <div className="ml-auto size-4" />
@@ -169,14 +154,6 @@ export default function ChatInput() {
                   </ModelSelectorList>
                 </ModelSelectorContent>
               </ModelSelector>
-              {model.extensions?.length > 0 && (
-                <PromptInputActionMenu>
-                  <PromptInputActionMenuTrigger className="ml-auto" />
-                  <PromptInputActionMenuContent>
-                    <PromptInputActionAddAttachments />
-                  </PromptInputActionMenuContent>
-                </PromptInputActionMenu>
-              )}
             </PromptInputTools>
             <PromptInputSubmit status={status} onClick={handleStop} />
           </PromptInputFooter>
