@@ -25,6 +25,7 @@ import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
   type Feature,
   imageTypes,
+  type ModelCapabilities,
   type ModelRuntime,
   type Provider,
   type PublicModel,
@@ -83,7 +84,7 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
 
   const {
     providerId,
-    model: { id, provider, tools, runtimePreset, features },
+    model: { id, provider, tools, runtimePreset, capabilities },
   } = runtimeModel;
 
   return {
@@ -106,10 +107,8 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
     getProviderTools: (search) =>
       getProviderTools({
         providerId,
-        modelId: id,
-        runtimePreset,
         search,
-        features,
+        capabilities,
       }),
   };
 }
@@ -209,30 +208,25 @@ export function getXaiProviderOptions(
 
 export function getProviderTools({
   providerId,
-  modelId,
-  runtimePreset,
   search,
-  features,
+  capabilities,
 }: {
   providerId: Provider["id"];
-  modelId: string;
-  runtimePreset: RuntimePreset;
   search: boolean;
-  features?: Feature[];
+  capabilities?: ModelCapabilities;
 }) {
   const isOpenAIModel = providerId === "openai" || providerId === "azure";
   const isAnthropicModel = providerId === "anthropic";
   const isGoogleModel = providerId === "google";
   const isXaiModel = providerId === "xai";
+  const resolvedCapabilities = resolveToolCapabilities(providerId, capabilities);
   const supportsOpenAICodeInterpreter =
-    isOpenAIModel &&
-    modelId !== "gpt-5-codex" &&
-    modelId !== "gpt-5.1-codex" &&
-    modelId !== "o3-mini" &&
-    modelId !== "gpt-5.2-codex" &&
-    modelId !== "gpt-5.3-codex";
+    isOpenAIModel && resolvedCapabilities.supportsCodeInterpreter;
 
-  const supportsOpenAIImageGeneration = isOpenAIModel && features?.includes(images);
+  const supportsOpenAIImageGeneration =
+    isOpenAIModel && resolvedCapabilities.supportsImageGeneration;
+  const supportsXaiSearchTools =
+    isXaiModel && resolvedCapabilities.supportsXaiSearchTools;
 
   const tools: ToolSet = {};
 
@@ -260,7 +254,7 @@ export function getProviderTools({
     if (search) {
       tools.google_search = google.tools.googleSearch({}) as Tool;
     }
-  } else if (isXaiModel && runtimePreset === "responses") {
+  } else if (supportsXaiSearchTools) {
     if (search) {
       tools.x_search = xai.tools.xSearch() as Tool;
       tools.web_search = xai.tools.webSearch() as Tool;
@@ -268,6 +262,26 @@ export function getProviderTools({
   }
 
   return tools;
+}
+
+function resolveToolCapabilities(
+  providerId: Provider["id"],
+  capabilities?: ModelCapabilities
+): Required<ModelCapabilities> {
+  const defaults: Required<ModelCapabilities> = {
+    supportsCodeInterpreter: false,
+    supportsImageGeneration: false,
+    supportsXaiSearchTools: false,
+  };
+
+  if (providerId === "openai" || providerId === "azure") {
+    defaults.supportsCodeInterpreter = true;
+  }
+
+  return {
+    ...defaults,
+    ...capabilities,
+  };
 }
 
 function isThinkingModel(modelId: string, providerId: string) {
@@ -385,6 +399,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: imageTypes,
         cost: 1,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-4.1",
@@ -395,6 +410,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: imageTypes,
         cost: 2,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-5-nano",
@@ -435,6 +451,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: imageTypes,
         cost: 2,
+        capabilities: { supportsCodeInterpreter: false },
       },
       {
         id: "gpt-5.1",
@@ -455,6 +472,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: imageTypes,
         cost: 2,
+        capabilities: { supportsCodeInterpreter: false },
       },
       {
         id: "gpt-5.2",
@@ -475,6 +493,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: imageTypes,
         cost: 3,
+        capabilities: { supportsCodeInterpreter: false },
       },
       {
         id: "gpt-5.3-codex",
@@ -485,6 +504,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: imageTypes,
         cost: 3,
+        capabilities: { supportsCodeInterpreter: false },
       },
       {
         id: "o3-mini",
@@ -495,6 +515,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [],
         cost: 1,
+        capabilities: { supportsCodeInterpreter: false },
       },
       {
         id: "o4-mini",
@@ -733,6 +754,7 @@ const providers: Provider[] = [
         runtimePreset: "responses",
         extensions: imageTypes,
         cost: 3,
+        capabilities: { supportsXaiSearchTools: true },
       },
       {
         id: "grok-4-fast-non-reasoning",
@@ -743,6 +765,7 @@ const providers: Provider[] = [
         runtimePreset: "responses",
         extensions: [...imageTypes, pdfType, videoType],
         cost: 1,
+        capabilities: { supportsXaiSearchTools: true },
       },
       {
         id: "grok-code-fast-1",
@@ -763,6 +786,7 @@ const providers: Provider[] = [
         runtimePreset: "responses",
         extensions: [...imageTypes],
         cost: 1,
+        capabilities: { supportsXaiSearchTools: true },
       },
     ],
   },

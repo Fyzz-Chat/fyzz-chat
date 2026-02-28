@@ -29,6 +29,12 @@ export const tabularType: TabularType = "text/csv";
 export type ExtensionType = ImageType | PDFType | VideoType | TabularType;
 export type RuntimePreset = "chat" | "responses";
 
+export type ModelCapabilities = {
+  supportsCodeInterpreter?: boolean;
+  supportsImageGeneration?: boolean;
+  supportsXaiSearchTools?: boolean;
+};
+
 export type Model = {
   id: string;
   name: string;
@@ -39,6 +45,7 @@ export type Model = {
   runtimePreset: RuntimePreset;
   extensions: ExtensionType[];
   cost: number;
+  capabilities?: ModelCapabilities;
 };
 
 export type ModelRuntime = {

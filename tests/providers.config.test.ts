@@ -222,6 +222,38 @@ describe("providers config invariants", () => {
     expect(catalogShape).toEqual(expectedCatalogShape);
   });
 
+  it("keeps critical capability flags exact", () => {
+    const models = getProvidersPublic().flatMap((provider) => provider.models);
+
+    const codeInterpreterDenied = models
+      .filter((model) => model.capabilities?.supportsCodeInterpreter === false)
+      .map((model) => model.id)
+      .sort();
+    expect(codeInterpreterDenied).toEqual([
+      "gpt-5-codex",
+      "gpt-5.1-codex",
+      "gpt-5.2-codex",
+      "gpt-5.3-codex",
+      "o3-mini",
+    ]);
+
+    const imageGenerationEnabled = models
+      .filter((model) => model.capabilities?.supportsImageGeneration === true)
+      .map((model) => model.id)
+      .sort();
+    expect(imageGenerationEnabled).toEqual(["gpt-4.1", "gpt-4.1-mini"]);
+
+    const xaiSearchToolsEnabled = models
+      .filter((model) => model.capabilities?.supportsXaiSearchTools === true)
+      .map((model) => model.id)
+      .sort();
+    expect(xaiSearchToolsEnabled).toEqual([
+      "grok-4-0709",
+      "grok-4-1-fast-non-reasoning",
+      "grok-4-fast-non-reasoning",
+    ]);
+  });
+
   it("respects provider availability env matrix", async () => {
     const allAvailable = await getProviderIdsForEnv("all-enabled", {});
     expect(allAvailable).toEqual([
