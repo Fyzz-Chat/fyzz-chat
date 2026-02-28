@@ -99,6 +99,24 @@ function setConversationMessagesCache(
   });
 }
 
+function updateConversationMessageCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string,
+  updater: (old: MessagesData) => MessagesData
+) {
+  const queries = queryClient.getQueriesData(
+    trpc.messages.queryFilter({ id: conversationId })
+  );
+
+  queries.forEach(([queryKey]) => {
+    queryClient.setQueryData(queryKey, (old: MessagesData | undefined) => {
+      if (!old) return old;
+      return updater(old);
+    });
+  });
+}
+
 export function useConversations(
   conversations: ConversationPage,
   authorized: boolean,
@@ -159,7 +177,7 @@ export function usePrefetchConversation() {
 export function useMessages(
   id: string,
   initialMessages?: CustomUIMessage[],
-  overrides?: { refetchOnMount?: boolean }
+  overrides?: { refetchOnMount?: boolean; page?: number; limit?: number }
 ) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
@@ -181,7 +199,10 @@ export function useMessages(
     },
   };
 
-  const myQuery = trpc.messages.queryOptions({ id }, options);
+  const myQuery = trpc.messages.queryOptions(
+    { id, page: overrides?.page, limit: overrides?.limit },
+    options
+  );
 
   return useQuery(myQuery);
 }
@@ -255,17 +276,16 @@ export function useAddMessage(id: string) {
 
   return useMutation({
     mutationFn: async ({ message }: { message: CustomUIMessage }) => {
-      // Update conversation detail cache
-      queryClient.setQueryData(
-        trpc.messages.queryKey({ id: conversationId }),
-        (old: MessagesData | undefined) => {
-          if (!old) return { messages: [message], hasMore: false };
-          return {
-            ...old,
-            messages: [...old.messages, message],
-          };
+      updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => {
+        if (old.messages.some((existing) => existing.id === message.id)) {
+          return old;
         }
-      );
+
+        return {
+          ...old,
+          messages: [...old.messages, message],
+        };
+      });
 
       updateInfiniteConversationCaches(queryClient, trpc, (old) => ({
         ...old,
@@ -312,22 +332,17 @@ export function useRegenerateMessage() {
       return deleteMessageChainAfter(messageId, conversationId, newContent);
     },
     onSuccess: (_, { conversationId, messageId, newContent }) => {
-      queryClient.setQueryData(
-        trpc.messages.queryKey({ id: conversationId }),
-        (old: MessagesData | undefined) => {
-          if (!old) return old;
-
-          const filteredMessages = filterMessagesUpToAnchor(
-            old.messages,
-            messageId,
-            newContent
-          );
-          return {
-            messages: filteredMessages,
-            hasMore: old.hasMore,
-          };
-        }
-      );
+      updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => {
+        const filteredMessages = filterMessagesUpToAnchor(
+          old.messages,
+          messageId,
+          newContent
+        );
+        return {
+          messages: filteredMessages,
+          hasMore: old.hasMore,
+        };
+      });
     },
   });
 }

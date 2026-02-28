@@ -5,7 +5,7 @@ import "katex/dist/katex.min.css";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   Conversation,
@@ -15,6 +15,7 @@ import {
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import MessageItem from "@/components/chat/message-item";
+import { Button } from "@/components/ui/button";
 import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
@@ -29,6 +30,8 @@ import {
 import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
+
+const MESSAGE_WINDOW_SIZE = 16;
 
 export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const router = useRouter();
@@ -51,10 +54,17 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   } = useInitialMessage();
   const isNewConversation = Boolean(initialMessage);
   const conversationData = useConversation(id);
+  const [persistedWindowLimit, setPersistedWindowLimit] = useState(MESSAGE_WINDOW_SIZE);
+
   const persistedMessagesData = useMessages(id, isNewConversation ? [] : undefined, {
     refetchOnMount: !isNewConversation,
+    page: 1,
+    limit: persistedWindowLimit,
   });
   const persistedMessages = persistedMessagesData.data?.messages || [];
+  const hasMorePersistedMessages = Boolean(persistedMessagesData.data?.hasMore);
+  const isLoadingOlderMessages =
+    persistedMessagesData.isFetching && !persistedMessagesData.isPending;
   const hasSentInitial = useRef(false);
   const nextMessageId = useRef<string>(uuidv4());
 
@@ -263,6 +273,24 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     return messages.filter((msg) => !persistedIds.has(msg.id));
   }, [messages, persistedMessages]);
 
+  const activeStreamingAssistantId = useMemo(() => {
+    if (status !== "streaming" && status !== "submitted") {
+      return null;
+    }
+
+    return (
+      [...messages].reverse().find((message) => message.role === "assistant")?.id ?? null
+    );
+  }, [messages, status]);
+
+  const loadOlderMessages = useCallback(() => {
+    if (!hasMorePersistedMessages || isLoadingOlderMessages) {
+      return;
+    }
+
+    setPersistedWindowLimit((currentLimit) => currentLimit + MESSAGE_WINDOW_SIZE);
+  }, [hasMorePersistedMessages, isLoadingOlderMessages]);
+
   const existingMessagesList = useMemo(
     () =>
       persistedMessages.map((message) => (
@@ -283,12 +311,17 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         <MessageItem
           key={message.id}
           message={message}
-          isStreaming={true}
+          isStreaming={message.id === activeStreamingAssistantId}
           onRegenerate={handleRegenerateMessage}
           onEdit={handleEditMessage}
         />
       )),
-    [streamingMessages, handleRegenerateMessage, handleEditMessage]
+    [
+      streamingMessages,
+      activeStreamingAssistantId,
+      handleRegenerateMessage,
+      handleEditMessage,
+    ]
   );
 
   useEffect(() => {
@@ -339,6 +372,20 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         />
         <ConversationContent className="p-0">
           <ChatLayoutWrapper className="p-4 md:p-8">
+            {persistedMessages.length > 0 && hasMorePersistedMessages ? (
+              <div className="mb-4 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={loadOlderMessages}
+                  disabled={isLoadingOlderMessages}
+                >
+                  {isLoadingOlderMessages
+                    ? "Loading older messages..."
+                    : "Load older messages"}
+                </Button>
+              </div>
+            ) : null}
             {persistedMessages.length === 0 && streamingMessages.length === 0 ? null : (
               <Fragment>
                 {existingMessagesList}
