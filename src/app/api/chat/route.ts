@@ -218,11 +218,6 @@ async function persistStreamResult({
     responseId: response.id,
   });
 
-  if (await hasDefaultTitle(conversationId)) {
-    logger.debug(`Updating conversation title for ${conversationId}`);
-    await updateConversationTitle(conversationId, messages);
-  }
-
   const lastMessage = responseMessage;
   const lastUserMessage = messages.at(-2);
 
@@ -241,15 +236,32 @@ async function persistStreamResult({
   let usage: LanguageModelUsage | undefined;
 
   if (!isAborted) {
-    usage = await result.usage;
-    logger.debug(JSON.stringify(usage));
-  }
-
-  if (lastUserMessage) {
-    await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
+    try {
+      usage = await result.usage;
+      logger.debug(JSON.stringify(usage));
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   await saveMessage(lastMessage, conversationId, 0, usage?.outputTokens || 0);
+
+  if (lastUserMessage) {
+    try {
+      await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
+    } catch (error) {
+      logger.error(error);
+    }
+  }
+
+  try {
+    if (await hasDefaultTitle(conversationId)) {
+      logger.debug(`Updating conversation title for ${conversationId}`);
+      await updateConversationTitle(conversationId, messages);
+    }
+  } catch (error) {
+    logger.error(error);
+  }
 }
 
 export async function POST(req: NextRequest) {
