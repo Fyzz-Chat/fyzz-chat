@@ -48,6 +48,7 @@ const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
 const xaiConfigured = process.env.XAI_API_KEY !== undefined;
 const fireworksConfigured = process.env.FIREWORKS_API_KEY !== undefined;
 const perplexityConfigured = process.env.PERPLEXITY_API_KEY !== undefined;
+const CHAT_INPUT_WINDOW_SIZE = 16;
 
 export function getProvidersPublic(): PublicProvider[] {
   return filterProviders().map((provider) => ({
@@ -127,15 +128,19 @@ function resolveMessagesForRuntimePreset(
   messages: CustomUIMessage[],
   runtimePreset: RuntimePreset
 ) {
-  if (runtimePreset !== "responses") {
-    return messages;
+  if (runtimePreset === "chat") {
+    return messages.slice(-CHAT_INPUT_WINDOW_SIZE);
   }
 
-  const latestUserMessage = [...messages]
-    .reverse()
-    .find((message) => message.role === "user");
+  if (runtimePreset === "responses") {
+    const latestUserMessage = [...messages]
+      .reverse()
+      .find((message) => message.role === "user");
 
-  return latestUserMessage ? [latestUserMessage] : messages.slice(-1);
+    return latestUserMessage ? [latestUserMessage] : messages.slice(-1);
+  }
+
+  return messages;
 }
 
 function decorateAssistantMetadata(

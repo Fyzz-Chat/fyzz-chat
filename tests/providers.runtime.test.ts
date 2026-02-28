@@ -125,6 +125,29 @@ describe("providers runtime behavior", () => {
     expect(responseMetadata.providerResponseId).toBeUndefined();
     expect(responseMetadata.createdAt).toBeInstanceOf(Date);
   });
+
+  it("limits chat runtime input history to the latest 16 messages", () => {
+    const runtime = getModelRuntime("gpt-4.1-mini", false);
+    expect(runtime.runtimePreset).toBe("chat");
+
+    const messages = Array.from({ length: 20 }, (_, index) =>
+      createMessage(
+        `message-${index + 1}`,
+        index % 2 === 0 ? "user" : "assistant",
+        index % 2 === 1
+          ? {
+              createdAt: new Date(),
+            }
+          : undefined
+      )
+    );
+
+    const selectedMessages = runtime.selectInputMessages(messages);
+    expect(selectedMessages).toHaveLength(16);
+    expect(selectedMessages.map((message) => message.id)).toEqual(
+      messages.slice(-16).map((message) => message.id)
+    );
+  });
 });
 
 describe("critical model policy: runtime classification", () => {
