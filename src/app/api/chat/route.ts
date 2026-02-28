@@ -39,6 +39,71 @@ import type { CustomUIMessage } from "@/types/chat";
 
 export const maxDuration = 55;
 
+function createEmptyConversationResponse() {
+  return new Response("Cannot send an empty message to a new conversation.", {
+    status: 400,
+  });
+}
+
+async function loadConversationMessages({
+  id,
+  userId,
+  modelId,
+  incomingMessages,
+  newMessage,
+  temporaryChat,
+  start,
+}: {
+  id: string;
+  userId: string;
+  modelId: string;
+  incomingMessages: CustomUIMessage[];
+  newMessage: CustomUIMessage | undefined;
+  temporaryChat: boolean;
+  start: number;
+}): Promise<{ messages?: CustomUIMessage[]; errorResponse?: Response }> {
+  if (temporaryChat) {
+    const mappedMessages = (incomingMessages || []).map((message: CustomUIMessage) =>
+      mapFileParts(message, userId, id)
+    );
+
+    if (mappedMessages.length === 0) {
+      return { errorResponse: createEmptyConversationResponse() };
+    }
+
+    return { messages: mappedMessages };
+  }
+
+  const getOrCreate = await getOrCreateConversation(id, userId, modelId);
+
+  if (getOrCreate.error) {
+    return {
+      errorResponse: new Response(getOrCreate.error, { status: 403 }),
+    };
+  }
+
+  logDuration(start, "Conversation fetched or created");
+
+  const conversationMessages = await caller.messages({ id });
+  let existingMessages = conversationMessages.messages;
+  const isRegeneratedMessage =
+    newMessage !== undefined &&
+    existingMessages.some((existingMessage) => existingMessage.id === newMessage.id);
+
+  if (newMessage && hasTextPart(newMessage) && !isRegeneratedMessage) {
+    await appendMessageToConversation(newMessage, id);
+
+    const mappedMessage = mapFileParts(newMessage, userId, id);
+    existingMessages = [...existingMessages, mappedMessage];
+  }
+
+  if (existingMessages.length === 0) {
+    return { errorResponse: createEmptyConversationResponse() };
+  }
+
+  return { messages: existingMessages };
+}
+
 export async function POST(req: NextRequest) {
   const start = performance.now();
   const user = await getUserFromSession();
@@ -53,43 +118,21 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid model", { status: 400 });
   }
 
-  let existingMessages: CustomUIMessage[] = [];
+  const conversationState = await loadConversationMessages({
+    id,
+    userId: user.id,
+    modelId,
+    incomingMessages: messages,
+    newMessage,
+    temporaryChat,
+    start,
+  });
 
-  if (temporaryChat) {
-    existingMessages = (messages || []).map((message: CustomUIMessage) =>
-      mapFileParts(message, user.id, id)
-    );
-
-    if (existingMessages.length === 0) {
-      return new Response("Cannot send an empty message to a new conversation.", {
-        status: 400,
-      });
-    }
-  } else {
-    const getOrCreate = await getOrCreateConversation(id, user.id, modelId);
-
-    if (getOrCreate.error) {
-      return new Response(getOrCreate.error, { status: 403 });
-    }
-
-    logDuration(start, "Conversation fetched or created");
-
-    const conversationMessages = await caller.messages({ id });
-    existingMessages = conversationMessages.messages;
-    const isRegeneratedMessage = existingMessages.find((m) => m.id === newMessage.id);
-
-    if (newMessage && hasTextPart(newMessage) && !isRegeneratedMessage) {
-      await appendMessageToConversation(newMessage, id);
-
-      const mappedMessage = mapFileParts(newMessage, user.id, id);
-      existingMessages = [...existingMessages, mappedMessage];
-    } else if (existingMessages.length === 0) {
-      return new Response("Cannot send an empty message to a new conversation.", {
-        status: 400,
-      });
-    }
+  if (conversationState.errorResponse) {
+    return conversationState.errorResponse;
   }
 
+  const existingMessages = conversationState.messages || [];
   const filteredMessages = filterMessages(existingMessages, modelId);
 
   let tools: { [key: string]: Tool } = {};
