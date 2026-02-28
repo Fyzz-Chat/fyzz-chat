@@ -149,6 +149,54 @@ async function loadToolsForRequest({
   }
 }
 
+function createMessageMetadataHandler({
+  start,
+  modelId,
+  reasoning,
+}: {
+  start: number;
+  modelId: string;
+  reasoning: ReturnType<typeof createReasoningTimer>;
+}) {
+  return ({ part }: { part: { type: string; id?: string } }) => {
+    if (part.type === "start") {
+      logDuration(start, "Response started");
+
+      return {
+        model: modelId,
+        content: "",
+        createdAt: new Date(),
+        reasoningDurations: [],
+      };
+    }
+
+    if (part.type === "reasoning-start" && part.id) {
+      reasoning.startBlock(part.id);
+    }
+
+    if (part.type === "reasoning-end" && part.id) {
+      const finishedBlock = reasoning.finishBlock(part.id);
+      if (finishedBlock) {
+        return {
+          model: modelId,
+          content: "",
+          createdAt: new Date(),
+          reasoningDurations: reasoning.durations,
+        };
+      }
+    }
+
+    if (part.type === "finish") {
+      return {
+        model: modelId,
+        content: "",
+        createdAt: new Date(),
+        reasoningDurations: reasoning.finish(),
+      };
+    }
+  };
+}
+
 export async function POST(req: NextRequest) {
   const start = performance.now();
   const user = await getUserFromSession();
@@ -267,43 +315,7 @@ export async function POST(req: NextRequest) {
     sendReasoning: true,
     sendSources: true,
     originalMessages: existingMessages,
-    messageMetadata: ({ part }) => {
-      if (part.type === "start") {
-        logDuration(start, "Response started");
-
-        return {
-          model: modelId,
-          content: "",
-          createdAt: new Date(),
-          reasoningDurations: [],
-        };
-      }
-
-      if (part.type === "reasoning-start") {
-        reasoning.startBlock(part.id);
-      }
-
-      if (part.type === "reasoning-end") {
-        const finishedBlock = reasoning.finishBlock(part.id);
-        if (finishedBlock) {
-          return {
-            model: modelId,
-            content: "",
-            createdAt: new Date(),
-            reasoningDurations: reasoning.durations,
-          };
-        }
-      }
-
-      if (part.type === "finish") {
-        return {
-          model: modelId,
-          content: "",
-          createdAt: new Date(),
-          reasoningDurations: reasoning.finish(),
-        };
-      }
-    },
+    messageMetadata: createMessageMetadataHandler({ start, modelId, reasoning }),
     onError: (error) => {
       logger.error(error instanceof Error ? error.message : "Unknown error");
       return "An unexpected error occurred.";
