@@ -70,6 +70,7 @@ model Message {
   parts              Json?
   metadata           Json         @default("{}")
   content            String?
+  sequence           Int?
   promptTokens       Int?         @default(0) @map("prompt_tokens")
   completionTokens   Int?         @default(0) @map("completion_tokens")
   conversationId     String       @map("conversation_id")
@@ -78,6 +79,8 @@ model Message {
   updatedAt          DateTime     @updatedAt @map("updated_at")
 
   @@index([conversationId, createdAt])
+  @@index([conversationId, sequence])
+  @@unique([conversationId, sequence])
   @@map("messages")
 }
 
