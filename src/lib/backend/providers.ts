@@ -21,6 +21,7 @@ import {
   type ToolSet,
   wrapLanguageModel,
 } from "ai";
+import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
   type ConversationState,
   type Feature,
@@ -82,13 +83,65 @@ export function getModelRuntime(modelId: string, browse: boolean): ModelRuntime 
     model: provider(id, browse),
     supportsTools: tools,
     conversationState,
-    getProviderOptions: ({ previousResponseId }) => ({
-      anthropic: getAnthropicProviderOptions(modelId),
-      openai: getOpenaiProviderOptions(modelId),
-      google: getGoogleProviderOptions(modelId),
-      xai: getXaiProviderOptions(conversationState, previousResponseId),
-    }),
+    selectInputMessages: (messages) =>
+      resolveMessagesForConversationState(messages, conversationState),
+    getProviderOptionsFromHistory: (messages) => {
+      const previousResponseId = getPreviousResponseId(messages);
+      return {
+        anthropic: getAnthropicProviderOptions(modelId),
+        openai: getOpenaiProviderOptions(modelId),
+        google: getGoogleProviderOptions(modelId),
+        xai: getXaiProviderOptions(conversationState, previousResponseId),
+      };
+    },
+    decorateAssistantMetadata: ({ metadata, responseId }) =>
+      decorateAssistantMetadata(metadata, conversationState, responseId),
     getProviderTools: (search) => getProviderTools(modelId, search),
+  };
+}
+
+function getPreviousResponseId(messages: CustomUIMessage[]): string | undefined {
+  return [...messages]
+    .reverse()
+    .find(
+      (message) =>
+        message.role === "assistant" &&
+        typeof message.metadata?.providerResponseId === "string"
+    )?.metadata?.providerResponseId;
+}
+
+function resolveMessagesForConversationState(
+  messages: CustomUIMessage[],
+  conversationState: ConversationState
+) {
+  if (conversationState !== "provider-response-id") {
+    return messages;
+  }
+
+  const latestUserMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === "user");
+
+  return latestUserMessage ? [latestUserMessage] : messages.slice(-1);
+}
+
+function decorateAssistantMetadata(
+  metadata: CustomMetadata | undefined,
+  conversationState: ConversationState,
+  responseId?: string
+): CustomMetadata {
+  const metadataWithTimestamp = {
+    createdAt: metadata?.createdAt ?? new Date(),
+    ...metadata,
+  };
+
+  if (conversationState !== "provider-response-id" || !responseId) {
+    return metadataWithTimestamp;
+  }
+
+  return {
+    ...metadataWithTimestamp,
+    providerResponseId: responseId,
   };
 }
 

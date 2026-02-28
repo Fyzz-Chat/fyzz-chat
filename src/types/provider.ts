@@ -1,5 +1,6 @@
 import type { SharedV3ProviderOptions } from "@ai-sdk/provider";
 import type { LanguageModel, Tool } from "ai";
+import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 
 export type Feature = {
   name: string;
@@ -44,9 +45,12 @@ export type ModelRuntime = {
   model: LanguageModel;
   supportsTools: boolean;
   conversationState: ConversationState;
-  getProviderOptions: (options: {
-    previousResponseId?: string;
-  }) => SharedV3ProviderOptions;
+  selectInputMessages: (messages: CustomUIMessage[]) => CustomUIMessage[];
+  getProviderOptionsFromHistory: (messages: CustomUIMessage[]) => SharedV3ProviderOptions;
+  decorateAssistantMetadata: (options: {
+    metadata: CustomMetadata | undefined;
+    responseId?: string;
+  }) => CustomMetadata;
   getProviderTools: (search: boolean) => { [key: string]: Tool };
 };
 

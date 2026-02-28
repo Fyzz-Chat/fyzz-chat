@@ -5,33 +5,7 @@ import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
 import type { SessionUser } from "@/lib/dao/users";
 import { getMcpClients, getMcpTools } from "@/lib/services/mcp";
-import type { CustomUIMessage } from "@/types/chat";
-import type { ConversationState, ModelRuntime } from "@/types/provider";
-
-export function getPreviousResponseId(messages: CustomUIMessage[]): string | undefined {
-  return [...messages]
-    .reverse()
-    .find(
-      (message) =>
-        message.role === "assistant" &&
-        typeof message.metadata?.providerResponseId === "string"
-    )?.metadata?.providerResponseId;
-}
-
-export function resolveMessagesForRuntime(
-  messages: CustomUIMessage[],
-  conversationState: ConversationState
-) {
-  if (conversationState !== "provider-response-id") {
-    return messages;
-  }
-
-  const latestUserMessage = [...messages]
-    .reverse()
-    .find((message) => message.role === "user");
-
-  return latestUserMessage ? [latestUserMessage] : messages.slice(-1);
-}
+import type { ModelRuntime } from "@/types/provider";
 
 export async function buildToolsForRuntime(
   user: SessionUser,

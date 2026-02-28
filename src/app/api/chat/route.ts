@@ -15,8 +15,6 @@ import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import {
   buildSystemPromptWithMemory,
   buildToolsForRuntime,
-  getPreviousResponseId,
-  resolveMessagesForRuntime,
 } from "@/lib/backend/model-runtime";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
@@ -49,7 +47,7 @@ export async function POST(req: NextRequest) {
   const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages.at(-1);
   const runtime = getModelRuntime(modelId, browse);
-  const { model, supportsTools, conversationState } = runtime;
+  const { model, supportsTools } = runtime;
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
@@ -146,8 +144,7 @@ export async function POST(req: NextRequest) {
 
   logDuration(start, "Streaming started");
 
-  const previousResponseId = getPreviousResponseId(existingMessages);
-  const messagesForModel = resolveMessagesForRuntime(filteredMessages, conversationState);
+  const messagesForModel = runtime.selectInputMessages(filteredMessages);
 
   const result = streamText({
     model,
@@ -158,7 +155,7 @@ export async function POST(req: NextRequest) {
       delayInMs: 10,
     }),
     tools,
-    providerOptions: runtime.getProviderOptions({ previousResponseId }),
+    providerOptions: runtime.getProviderOptionsFromHistory(existingMessages),
     abortSignal: abortController.signal,
     onAbort: async () => {
       logger.info(`Stream aborted for user: ${user.id}`);
@@ -242,14 +239,11 @@ export async function POST(req: NextRequest) {
         }
 
         try {
-          if (conversationState === "provider-response-id") {
-            const response = await result.response;
-            responseMessage.metadata = {
-              createdAt: responseMessage.metadata?.createdAt ?? new Date(),
-              ...responseMessage.metadata,
-              providerResponseId: response.id,
-            };
-          }
+          const response = await result.response;
+          responseMessage.metadata = runtime.decorateAssistantMetadata({
+            metadata: responseMessage.metadata,
+            responseId: response.id,
+          });
 
           if (await hasDefaultTitle(id)) {
             logger.debug(`Updating conversation title for ${id}`);
