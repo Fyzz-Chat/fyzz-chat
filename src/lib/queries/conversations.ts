@@ -87,6 +87,18 @@ async function cancelConversationQueries(
   await queryClient.cancelQueries(trpc.messages.queryFilter({ id: conversationId }));
 }
 
+function setConversationMessagesCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string,
+  messages: CustomUIMessage[]
+) {
+  queryClient.setQueryData(trpc.messages.queryKey({ id: conversationId }), {
+    messages,
+    hasMore: false,
+  });
+}
+
 export function useConversations(
   conversations: ConversationPage,
   authorized: boolean,
@@ -333,10 +345,12 @@ export function useCreateConversation() {
           trpc.conversation.queryKey({ id: newConversation.id }),
           newConversation
         );
-        queryClient.setQueryData(trpc.messages.queryKey({ id: newConversation.id }), {
-          messages: newConversation.messages,
-          hasMore: false,
-        });
+        setConversationMessagesCache(
+          queryClient,
+          trpc,
+          newConversation.id,
+          newConversation.messages
+        );
 
         updateInfiniteConversationCaches(
           queryClient,
@@ -364,10 +378,12 @@ export function useCreateConversationOptimistic() {
         trpc.conversation.queryKey({ id: conversation.id }),
         conversation
       );
-      queryClient.setQueryData(trpc.messages.queryKey({ id: conversation.id }), {
-        messages: conversation.messages,
-        hasMore: false,
-      });
+      setConversationMessagesCache(
+        queryClient,
+        trpc,
+        conversation.id,
+        conversation.messages
+      );
 
       updateInfiniteConversationCaches(queryClient, trpc, (old) =>
         prependConversationToFirstPage(old, conversation)
