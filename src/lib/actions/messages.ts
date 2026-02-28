@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { whereMessagesAfterAnchor } from "@/lib/dao/message-order";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -42,28 +43,7 @@ export async function deleteMessageChainAfter(
         id: conversationId,
         userId,
       },
-      // TODO[SEQ_CUTOVER]: Remove createdAt fallback branch after sequence is non-null everywhere in prod.
-      ...(message.sequence === null
-        ? {
-            createdAt: {
-              gt: message.createdAt,
-            },
-          }
-        : {
-            OR: [
-              {
-                sequence: {
-                  gt: message.sequence,
-                },
-              },
-              {
-                sequence: null,
-                createdAt: {
-                  gt: message.createdAt,
-                },
-              },
-            ],
-          }),
+      ...whereMessagesAfterAnchor(message),
     },
   });
 

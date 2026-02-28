@@ -9,6 +9,7 @@ import { deleteFile } from "@/lib/aws/s3";
 import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { filterMessages } from "@/lib/backend/utils";
 import conf from "@/lib/config";
+import { MESSAGE_ORDER_DESC } from "@/lib/dao/message-order";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -133,8 +134,7 @@ export async function shareConversationUntilLatestMessage(
         userId: user,
       },
     },
-    // TODO[SEQ_CUTOVER]: Switch to sequence-first ordering once sequence is non-null everywhere in prod.
-    orderBy: [{ createdAt: "desc" }, { sequence: "desc" }, { id: "desc" }],
+    orderBy: MESSAGE_ORDER_DESC,
   });
 
   if (!message) {
