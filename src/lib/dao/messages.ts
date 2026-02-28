@@ -1,8 +1,8 @@
 import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
+import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { isUniqueConstraintViolation } from "@/lib/backend/utils";
-import { mapMessages } from "@/lib/dao/conversations";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -38,7 +38,7 @@ export async function getMessages(
     });
 
     return {
-      messages: mapMessages(userId, conversationId, messages),
+      messages: mapDbMessagesToUiMessages(userId, conversationId, messages),
       hasMore: false,
     };
   }
@@ -80,7 +80,7 @@ export async function getMessages(
   const hasMore = skip > 0;
 
   return {
-    messages: mapMessages(userId, conversationId, messages),
+    messages: mapDbMessagesToUiMessages(userId, conversationId, messages),
     hasMore,
   };
 }

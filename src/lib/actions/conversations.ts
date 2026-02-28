@@ -6,9 +6,9 @@ import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, generateText } from "ai";
 import jwt from "jsonwebtoken";
 import { deleteFile } from "@/lib/aws/s3";
+import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { filterMessages } from "@/lib/backend/utils";
 import conf from "@/lib/config";
-import { mapMessages } from "@/lib/dao/conversations";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -35,7 +35,11 @@ export async function saveConversation(conversation: PartialConversation) {
 
   return {
     ...newConversation,
-    messages: mapMessages(userId, newConversation.id, newConversation.messages),
+    messages: mapDbMessagesToUiMessages(
+      userId,
+      newConversation.id,
+      newConversation.messages
+    ),
   };
 }
 

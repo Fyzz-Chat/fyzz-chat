@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
-import { getFileUrlSigned } from "@/lib/aws/s3";
+import { mapDbMessagesToUiMessages, safeParseJson } from "@/lib/backend/message-mapper";
 import { isUniqueConstraintViolation } from "@/lib/backend/utils";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
@@ -11,7 +11,6 @@ import {
   type ConversationPage,
   type CustomUIMessage,
   metadataSchema,
-  type PartialMessage,
 } from "@/types/chat";
 
 export async function getConversation(id: string) {
@@ -165,7 +164,7 @@ export async function getConversationsByCursor(
       ...item,
       messages: item.messages.map((message) => ({
         ...message,
-        parts: safeParse(message.parts, []),
+        parts: safeParseJson(message.parts, []),
         metadata: metadataSchema.parse(message.metadata),
       })),
     })),
@@ -240,7 +239,7 @@ export async function ensureMessageAppended(
         return createdMessage;
       });
 
-      return mapMessages(userId, conversationId, [newMessage]);
+      return mapDbMessagesToUiMessages(userId, conversationId, [newMessage]);
     } catch (error) {
       if (!isUniqueConstraintViolation(error)) {
         throw error;
@@ -254,7 +253,7 @@ export async function ensureMessageAppended(
         if (existingMessage.conversationId !== conversationId) {
           throw new Error(`Message ${id} already exists in a different conversation.`);
         }
-        return mapMessages(userId, conversationId, [existingMessage]);
+        return mapDbMessagesToUiMessages(userId, conversationId, [existingMessage]);
       }
 
       if (maxAttempts <= attempt) {
@@ -344,51 +343,6 @@ export async function isConversationLocked(conversationId: string): Promise<bool
   return !!conversation;
 }
 
-export function mapMessages(
-  userId: string,
-  conversationId: string,
-  messages: PartialMessage[]
-): CustomUIMessage[] {
-  const mappedMessages = messages.map((message: PartialMessage) => {
-    const parts = safeParse(message.parts, []);
-
-    const metadataResult = metadataSchema.safeParse(message.metadata);
-    const metadata = metadataResult.success
-      ? metadataResult.data
-      : {
-          content: message.content ?? undefined,
-          createdAt: message.createdAt ?? new Date(),
-        };
-
-    return {
-      ...message,
-      metadata,
-      parts: mapFileParts(userId, conversationId, parts),
-    };
-  });
-
-  return mappedMessages;
-}
-
-function mapFileParts(
-  userId: string,
-  conversationId: string,
-  parts: CustomUIMessage["parts"]
-) {
-  return parts.map((part) => {
-    if (part.type === "file" && !part.url.startsWith("data:")) {
-      const key = `${userId}/${conversationId}`;
-
-      return {
-        ...part,
-        url: getFileUrlSigned(key, part.url),
-      };
-    } else {
-      return part;
-    }
-  });
-}
-
 export async function public_getConversationUntilMessage(messageId: string) {
   const message = await prisma.message.findUnique({
     where: {
@@ -464,35 +418,4 @@ export async function public_getConversationUntilMessage(messageId: string) {
       ...message,
     })),
   };
-}
-
-/**
- * Safely parse JSON strings that might be corrupted, null, or invalid
- * @param jsonString - The string to parse or already parsed object
- * @param fallback - The fallback value to return if parsing fails
- * @returns Parsed JSON or fallback value
- */
-function safeParse<T>(jsonString: unknown, fallback: T): T {
-  // Handle null or undefined
-  if (jsonString == null) {
-    return fallback;
-  }
-
-  // If it's already an object/array (not a string), return it as-is
-  if (typeof jsonString !== "string") {
-    return jsonString as T;
-  }
-
-  // Handle empty string
-  if (jsonString.trim() === "") {
-    return fallback;
-  }
-
-  try {
-    const parsed = JSON.parse(jsonString);
-    return parsed;
-  } catch (error) {
-    logger.error(`Failed to parse JSON: ${jsonString}`, error);
-    return fallback;
-  }
 }

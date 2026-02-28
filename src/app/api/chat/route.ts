@@ -12,6 +12,7 @@ import { after, type NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
+import { mapMessageFilePartsForRead } from "@/lib/backend/message-mapper";
 import {
   buildSystemPromptWithMemory,
   buildToolsForRuntime,
@@ -19,12 +20,7 @@ import {
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
-import {
-  filterMessages,
-  hasInputPart,
-  logDuration,
-  mapFileParts,
-} from "@/lib/backend/utils";
+import { filterMessages, hasInputPart, logDuration } from "@/lib/backend/utils";
 import {
   ensureMessageAppended,
   getOrCreateConversation,
@@ -64,7 +60,7 @@ async function loadConversationMessages({
 }): Promise<{ messages?: CustomUIMessage[]; errorResponse?: Response }> {
   if (temporaryChat) {
     const mappedMessages = (incomingMessages || []).map((message: CustomUIMessage) =>
-      mapFileParts(message, userId, id)
+      mapMessageFilePartsForRead(userId, id, message)
     );
 
     if (mappedMessages.length === 0) {
@@ -93,7 +89,7 @@ async function loadConversationMessages({
   if (newMessage && hasInputPart(newMessage) && !isRegeneratedMessage) {
     await ensureMessageAppended(newMessage, id);
 
-    const mappedMessage = mapFileParts(newMessage, userId, id);
+    const mappedMessage = mapMessageFilePartsForRead(userId, id, newMessage);
     existingMessages = [...existingMessages, mappedMessage];
   }
 
