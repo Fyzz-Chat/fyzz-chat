@@ -36,7 +36,7 @@ export type Model = {
   free?: boolean;
   provider: (model: string, browse: boolean) => LanguageModel;
   tools: boolean;
-  runtimePreset?: RuntimePreset;
+  runtimePreset: RuntimePreset;
   extensions: ExtensionType[];
   cost: number;
 };

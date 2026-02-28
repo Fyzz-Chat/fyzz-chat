@@ -11,6 +11,7 @@ const originalEnv = {
 };
 
 let getModelRuntime: typeof import("../src/lib/backend/providers").getModelRuntime;
+let getProvidersPublic: typeof import("../src/lib/backend/providers").getProvidersPublic;
 
 beforeAll(async () => {
   process.env.OPENAI_API_KEY = "test-openai-key";
@@ -18,7 +19,7 @@ beforeAll(async () => {
   delete process.env.AZURE_API_KEY;
   delete process.env.AZURE_RESOURCE_NAME;
 
-  ({ getModelRuntime } = await import("../src/lib/backend/providers"));
+  ({ getModelRuntime, getProvidersPublic } = await import("../src/lib/backend/providers"));
 });
 
 afterAll(() => {
@@ -45,6 +46,14 @@ function createMessage(
 }
 
 describe("model runtime smoke tests", () => {
+  it("ensures all configured models declare a runtime preset", () => {
+    const models = getProvidersPublic().flatMap((provider) => provider.models);
+    const modelsWithoutPreset = models.filter((model) => model.runtimePreset === undefined);
+
+    expect(models.length).toBeGreaterThan(0);
+    expect(modelsWithoutPreset).toHaveLength(0);
+  });
+
   it("uses provider-only runtime behavior for xAI responses models", async () => {
     const runtime = getModelRuntime("grok-4-1-fast-non-reasoning", true);
     expect(runtime.runtimePreset).toBe("responses");
