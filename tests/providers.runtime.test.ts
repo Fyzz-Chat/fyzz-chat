@@ -89,7 +89,49 @@ describe("providers runtime behavior", () => {
   });
 });
 
-describe("providers options matrix", () => {
+describe("critical model policy: runtime classification", () => {
+  it("keeps runtime preset and supportsTools policy for critical models", () => {
+    const cases: {
+      modelId: string;
+      runtimePreset: "chat" | "responses";
+      supportsTools: boolean;
+    }[] = [
+      { modelId: "grok-4-0709", runtimePreset: "responses", supportsTools: true },
+      {
+        modelId: "grok-4-fast-non-reasoning",
+        runtimePreset: "responses",
+        supportsTools: true,
+      },
+      {
+        modelId: "grok-4-1-fast-non-reasoning",
+        runtimePreset: "responses",
+        supportsTools: true,
+      },
+      { modelId: "grok-3", runtimePreset: "chat", supportsTools: true },
+      { modelId: "grok-code-fast-1", runtimePreset: "chat", supportsTools: true },
+      { modelId: "gpt-5-codex", runtimePreset: "chat", supportsTools: true },
+      { modelId: "gpt-5.1-codex", runtimePreset: "chat", supportsTools: true },
+      { modelId: "gpt-5.2-codex", runtimePreset: "chat", supportsTools: true },
+      { modelId: "gpt-5.3-codex", runtimePreset: "chat", supportsTools: true },
+      { modelId: "o3-mini", runtimePreset: "chat", supportsTools: true },
+      { modelId: "claude-sonnet-4-6", runtimePreset: "chat", supportsTools: true },
+      { modelId: "gemini-3.1-pro-preview", runtimePreset: "chat", supportsTools: true },
+      { modelId: "gemini-2.5-flash-lite", runtimePreset: "chat", supportsTools: false },
+      { modelId: "gemini-2.5-flash-image", runtimePreset: "chat", supportsTools: false },
+      { modelId: "gemma-3-27b-it", runtimePreset: "chat", supportsTools: false },
+      { modelId: "sonar", runtimePreset: "chat", supportsTools: false },
+      { modelId: "sonar-pro", runtimePreset: "chat", supportsTools: false },
+    ];
+
+    for (const testCase of cases) {
+      const runtime = getModelRuntime(testCase.modelId, true);
+      expect(runtime.runtimePreset).toBe(testCase.runtimePreset);
+      expect(runtime.supportsTools).toBe(testCase.supportsTools);
+    }
+  });
+});
+
+describe("critical model policy: provider options", () => {
   const messages = [
     createMessage("user-1", "user"),
     createMessage("assistant-1", "assistant", {
@@ -99,82 +141,122 @@ describe("providers options matrix", () => {
     createMessage("user-2", "user"),
   ];
 
-  it("applies expected provider options per model class", () => {
-    const xaiResponses = getModelRuntime("grok-4-1-fast-non-reasoning", true);
-    const xaiChat = getModelRuntime("grok-3", true);
-    const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", true);
-    const anthropicNonReasoning = getModelRuntime("claude-3-haiku-20240307", true);
-    const googleReasoning = getModelRuntime("gemini-3.1-pro-preview", true);
-    const googleNonReasoning = getModelRuntime("gemini-3-pro-preview", true);
-    const openaiReasoning = getModelRuntime("gpt-5", true);
-    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", true);
+  it("keeps xAI responses threading only on responses models", () => {
+    const xaiResponsesModels = [
+      "grok-4-0709",
+      "grok-4-fast-non-reasoning",
+      "grok-4-1-fast-non-reasoning",
+    ];
 
-    expect(xaiResponses.getProviderOptionsFromHistory(messages).xai).toEqual({
-      store: true,
-      previousResponseId: "resp-1",
-    });
-    expect(xaiChat.getProviderOptionsFromHistory(messages).xai).toEqual({});
+    for (const modelId of xaiResponsesModels) {
+      expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual({
+        store: true,
+        previousResponseId: "resp-1",
+      });
+    }
 
-    expect(anthropicReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
+    const xaiChatModels = ["grok-3", "grok-code-fast-1"];
+
+    for (const modelId of xaiChatModels) {
+      expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual(
+        {}
+      );
+    }
+  });
+
+  it("keeps reasoning provider options for reasoning and non-reasoning models", () => {
+    const openaiReasoningModels = ["gpt-5", "gpt-5-codex"];
+    for (const modelId of openaiReasoningModels) {
+      expect(
+        getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).openai
+      ).toEqual({
+        reasoningEffort: "low",
+        reasoningSummary: "detailed",
+      });
+    }
+
+    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", true).getProviderOptionsFromHistory(
+      messages
+    ).openai;
+    expect(openaiNonReasoning?.reasoningEffort).toBeUndefined();
+    expect(openaiNonReasoning?.reasoningSummary).toBeUndefined();
+
+    expect(
+      getModelRuntime("claude-sonnet-4-6", true).getProviderOptionsFromHistory(messages).anthropic
+    ).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
     });
-    expect(anthropicNonReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
+    expect(
+      getModelRuntime("claude-3-haiku-20240307", true).getProviderOptionsFromHistory(messages)
+        .anthropic
+    ).toEqual({
       thinking: { type: "disabled" },
     });
 
-    expect(googleReasoning.getProviderOptionsFromHistory(messages).google).toEqual({
+    expect(
+      getModelRuntime("gemini-3.1-pro-preview", true).getProviderOptionsFromHistory(messages)
+        .google
+    ).toEqual({
       thinkingConfig: {
         thinkingBudget: 8192,
         includeThoughts: true,
       },
     });
-    expect(googleNonReasoning.getProviderOptionsFromHistory(messages).google).toEqual({});
-
-    const openaiReasoningOptions = openaiReasoning.getProviderOptionsFromHistory(messages).openai;
-    expect(openaiReasoningOptions).toEqual({
-      reasoningEffort: "low",
-      reasoningSummary: "detailed",
-    });
-
-    const openaiNonReasoningOptions =
-      openaiNonReasoning.getProviderOptionsFromHistory(messages).openai;
-    expect(openaiNonReasoningOptions?.reasoningEffort).toBeUndefined();
-    expect(openaiNonReasoningOptions?.reasoningSummary).toBeUndefined();
+    expect(
+      getModelRuntime("gemini-3-pro-preview", true).getProviderOptionsFromHistory(messages).google
+    ).toEqual({});
   });
 });
 
-describe("providers tools matrix", () => {
-  it("returns expected tool keys for representative models", () => {
+describe("critical model policy: tool behavior", () => {
+  it("keeps OpenAI code interpreter denylist intact", () => {
+    const modelsWithoutCodeInterpreter = [
+      "gpt-5-codex",
+      "gpt-5.1-codex",
+      "gpt-5.2-codex",
+      "gpt-5.3-codex",
+      "o3-mini",
+    ];
+
+    for (const modelId of modelsWithoutCodeInterpreter) {
+      expect(getModelRuntime(modelId, true).getProviderTools(true).code_interpreter).toBeUndefined();
+    }
+  });
+
+  it("keeps key cross-provider tool policies", () => {
     const openaiGeneral = getModelRuntime("gpt-4.1-mini", true).getProviderTools(true);
     expect(openaiGeneral.code_interpreter).toBeDefined();
     expect(openaiGeneral.image_generation).toBeDefined();
     expect(openaiGeneral.web_search).toBeDefined();
 
-    const openaiCodex = getModelRuntime("gpt-5-codex", true).getProviderTools(true);
-    expect(openaiCodex.code_interpreter).toBeUndefined();
-    expect(openaiCodex.image_generation).toBeUndefined();
-    expect(openaiCodex.web_search).toBeDefined();
+    const openaiReasoningNoImage = getModelRuntime("gpt-5", true).getProviderTools(true);
+    expect(openaiReasoningNoImage.image_generation).toBeUndefined();
 
-    const openaiNoSearch = getModelRuntime("gpt-4.1-mini", false).getProviderTools(false);
-    expect(openaiNoSearch.web_search).toBeUndefined();
-    expect(openaiNoSearch.code_interpreter).toBeDefined();
-    expect(openaiNoSearch.image_generation).toBeDefined();
-
-    const anthropicSearch = getModelRuntime("claude-sonnet-4-6", true).getProviderTools(true);
-    expect(anthropicSearch.web_search).toBeDefined();
-
-    const googleSearch = getModelRuntime("gemini-3.1-pro-preview", true).getProviderTools(true);
-    expect(googleSearch.google_search).toBeDefined();
-
-    const xaiResponsesSearch = getModelRuntime(
+    const xaiResponsesModels = [
+      "grok-4-0709",
       "grok-4-fast-non-reasoning",
-      true
-    ).getProviderTools(true);
-    expect(xaiResponsesSearch.x_search).toBeDefined();
-    expect(xaiResponsesSearch.web_search).toBeDefined();
+      "grok-4-1-fast-non-reasoning",
+    ];
+    for (const modelId of xaiResponsesModels) {
+      const tools = getModelRuntime(modelId, true).getProviderTools(true);
+      expect(tools.x_search).toBeDefined();
+      expect(tools.web_search).toBeDefined();
+    }
 
-    const xaiChatSearch = getModelRuntime("grok-3", true).getProviderTools(true);
-    expect(xaiChatSearch.x_search).toBeUndefined();
-    expect(xaiChatSearch.web_search).toBeUndefined();
+    const xaiResponsesNoSearch = getModelRuntime("grok-4-1-fast-non-reasoning", false).getProviderTools(
+      false
+    );
+    expect(xaiResponsesNoSearch.x_search).toBeUndefined();
+    expect(xaiResponsesNoSearch.web_search).toBeUndefined();
+
+    const xaiChatModels = ["grok-3", "grok-code-fast-1"];
+    for (const modelId of xaiChatModels) {
+      const tools = getModelRuntime(modelId, true).getProviderTools(true);
+      expect(tools.x_search).toBeUndefined();
+      expect(tools.web_search).toBeUndefined();
+    }
+
+    expect(getModelRuntime("claude-sonnet-4-6", true).getProviderTools(true).web_search).toBeDefined();
+    expect(getModelRuntime("gemini-3.1-pro-preview", true).getProviderTools(true).google_search).toBeDefined();
   });
 });
