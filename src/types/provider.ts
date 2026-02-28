@@ -25,6 +25,7 @@ export type TabularType = "text/csv";
 export const tabularType: TabularType = "text/csv";
 
 export type ExtensionType = ImageType | PDFType | VideoType | TabularType;
+export type ConversationState = "client-history" | "provider-response-id";
 
 export type Model = {
   id: string;
@@ -33,6 +34,7 @@ export type Model = {
   free?: boolean;
   provider: (model: string, browse: boolean) => LanguageModel;
   tools: boolean;
+  conversationState?: ConversationState;
   extensions: ExtensionType[];
   cost: number;
 };

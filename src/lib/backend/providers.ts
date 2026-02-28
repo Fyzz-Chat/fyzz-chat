@@ -6,7 +6,6 @@ import {
   anthropic,
 } from "@ai-sdk/anthropic";
 import type { AzureOpenAIProvider } from "@ai-sdk/azure";
-import { createAzure } from "@ai-sdk/azure";
 import { type FireworksProvider, fireworks } from "@ai-sdk/fireworks";
 import { type GoogleGenerativeAIProviderOptions, google } from "@ai-sdk/google";
 import {
@@ -15,7 +14,7 @@ import {
   openai,
 } from "@ai-sdk/openai";
 import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
-import { type XaiProvider, xai } from "@ai-sdk/xai";
+import { type XaiProvider, type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
 import {
   extractReasoningMiddleware,
   type Tool,
@@ -23,6 +22,7 @@ import {
   wrapLanguageModel,
 } from "ai";
 import {
+  type ConversationState,
   type Feature,
   imageTypes,
   type Provider,
@@ -76,7 +76,11 @@ export function getModel(modelId: string, browse: boolean) {
 
   const { id, provider, tools } = model;
 
-  return { model: provider(id, browse), supportsTools: tools };
+  return {
+    model: provider(id, browse),
+    supportsTools: tools,
+    conversationState: model.conversationState ?? "client-history",
+  };
 }
 
 export function getAnthropicProviderOptions(modelId: string): AnthropicProviderOptions {
@@ -113,6 +117,20 @@ export function getGoogleProviderOptions(
     : {};
 }
 
+export function getXaiProviderOptions(
+  conversationState: ConversationState,
+  previousResponseId?: string
+): XaiResponsesProviderOptions {
+  if (conversationState !== "provider-response-id") {
+    return {};
+  }
+
+  return {
+    store: true,
+    previousResponseId,
+  };
+}
+
 export function getProviderTools(modelId: string, search: boolean) {
   const isOpenAIModel = providers.some(
     (provider) =>
@@ -127,6 +145,12 @@ export function getProviderTools(modelId: string, search: boolean) {
     (provider) =>
       provider.id === "google" && provider.models.some((model) => model.id === modelId)
   );
+  const isXaiModel = providers.some(
+    (provider) =>
+      provider.id === "xai" && provider.models.some((model) => model.id === modelId)
+  );
+  const responsesModel =
+    getModelPublic(modelId)?.conversationState === "provider-response-id";
   const supportsOpenAICodeInterpreter =
     isOpenAIModel &&
     modelId !== "gpt-5-codex" &&
@@ -163,6 +187,11 @@ export function getProviderTools(modelId: string, search: boolean) {
   } else if (isGoogleModel) {
     if (search) {
       tools.google_search = google.tools.googleSearch({}) as Tool;
+    }
+  } else if (isXaiModel && responsesModel) {
+    if (search) {
+      tools.x_search = xai.tools.xSearch() as Tool;
+      tools.web_search = xai.tools.webSearch() as Tool;
     }
   }
 
@@ -214,14 +243,6 @@ function filterProviders(): Provider[] {
   });
 }
 
-const azure = createAzure();
-
-// const azure41 = createAzure({
-//   apiVersion: "2024-12-01-preview",
-//   apiKey: process.env.AZURE_GPT41_API_KEY,
-//   resourceName: process.env.AZURE_GPT41_RESOURCE_NAME,
-// });
-
 function wrappedGoogle(model: string, _browse: boolean) {
   return google(model); //, { useSearchGrounding: browse });
 }
@@ -236,6 +257,10 @@ function wrappedModel(
     | PerplexityProvider
 ) {
   return (model: string, _browse: boolean) => provider(model);
+}
+
+function wrappedResponsesModel(provider: XaiProvider) {
+  return (model: string, _browse: boolean) => provider.responses(model);
 }
 
 const _reasoningFireworks = (model: string, _browse: boolean) => {
@@ -599,8 +624,9 @@ const providers: Provider[] = [
         id: "grok-4-0709",
         name: "Grok 4",
         features: [reasoning],
-        provider: wrappedModel(xai),
+        provider: wrappedResponsesModel(xai),
         tools: true,
+        conversationState: "provider-response-id",
         extensions: imageTypes,
         cost: 3,
       },
@@ -608,8 +634,9 @@ const providers: Provider[] = [
         id: "grok-4-fast-non-reasoning",
         name: "Grok 4 Fast",
         features: [],
-        provider: wrappedModel(xai),
+        provider: wrappedResponsesModel(xai),
         tools: true,
+        conversationState: "provider-response-id",
         extensions: [...imageTypes, pdfType, videoType],
         cost: 1,
       },
@@ -626,8 +653,9 @@ const providers: Provider[] = [
         id: "grok-4-1-fast-non-reasoning",
         name: "Grok 4.1 Fast",
         features: [],
-        provider: wrappedModel(xai),
+        provider: wrappedResponsesModel(xai),
         tools: true,
+        conversationState: "provider-response-id",
         extensions: [...imageTypes],
         cost: 1,
       },

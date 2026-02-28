@@ -6,6 +6,7 @@ import type { Conversation, Message } from "@/lib/prisma/generated/client";
 export const metadataSchema = z.object({
   model: z.string().optional(),
   content: z.string().optional(),
+  providerResponseId: z.string().optional(),
   createdAt: z.coerce.date(),
   reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).optional(),
 });

@@ -20,6 +20,7 @@ import {
   getModel,
   getOpenaiProviderOptions,
   getProviderTools,
+  getXaiProviderOptions,
 } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import { memoryTool } from "@/lib/backend/tools/memory";
@@ -46,6 +47,7 @@ import {
 } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import type { CustomUIMessage } from "@/types/chat";
+import type { ConversationState } from "@/types/provider";
 
 export const maxDuration = 55;
 
@@ -56,7 +58,7 @@ export async function POST(req: NextRequest) {
 
   const { id, messages, model: modelId, browse, temporaryChat } = await req.json();
   const newMessage: CustomUIMessage = messages.at(-1);
-  const { model, supportsTools } = getModel(modelId, browse);
+  const { model, supportsTools, conversationState } = getModel(modelId, browse);
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
@@ -155,9 +157,15 @@ export async function POST(req: NextRequest) {
 
   logDuration(start, "Streaming started");
 
+  const previousResponseId = getPreviousResponseId(existingMessages);
+  const messagesForModel = getMessagesForConversationState(
+    filteredMessages,
+    conversationState
+  );
+
   const result = streamText({
     model,
-    messages: await convertToModelMessages(filteredMessages),
+    messages: await convertToModelMessages(messagesForModel),
     system: extendedSystemPrompt,
     stopWhen: [stepCountIs(5), hasToolCall("generateImage")],
     experimental_transform: smoothStream({
@@ -168,6 +176,7 @@ export async function POST(req: NextRequest) {
       anthropic: getAnthropicProviderOptions(modelId),
       openai: getOpenaiProviderOptions(modelId),
       google: getGoogleProviderOptions(modelId),
+      xai: getXaiProviderOptions(conversationState, previousResponseId),
     },
     abortSignal: abortController.signal,
     onAbort: async () => {
@@ -252,6 +261,15 @@ export async function POST(req: NextRequest) {
         }
 
         try {
+          if (conversationState === "provider-response-id") {
+            const response = await result.response;
+            responseMessage.metadata = {
+              createdAt: responseMessage.metadata?.createdAt ?? new Date(),
+              ...responseMessage.metadata,
+              providerResponseId: response.id,
+            };
+          }
+
           if (await hasDefaultTitle(id)) {
             logger.debug(`Updating conversation title for ${id}`);
             await updateConversationTitle(id, messages);
@@ -297,6 +315,8 @@ async function getTools(
   modelId: string,
   search: boolean
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
+  const providerTools = getProviderTools(modelId, search);
+
   const tools: { [key: string]: Tool } = {};
 
   if (user.memoryEnabled) {
@@ -307,7 +327,6 @@ async function getTools(
     tools.readUrl = readUrlTool;
   }
 
-  const providerTools = getProviderTools(modelId, search);
   Object.assign(tools, providerTools);
 
   const mcpClients = await getMcpClients();
@@ -318,4 +337,29 @@ async function getTools(
   }
 
   return { tools, mcpClients };
+}
+
+function getPreviousResponseId(messages: CustomUIMessage[]): string | undefined {
+  return [...messages]
+    .reverse()
+    .find(
+      (message) =>
+        message.role === "assistant" &&
+        typeof message.metadata?.providerResponseId === "string"
+    )?.metadata?.providerResponseId;
+}
+
+function getMessagesForConversationState(
+  messages: CustomUIMessage[],
+  conversationState: ConversationState
+) {
+  if (conversationState !== "provider-response-id") {
+    return messages;
+  }
+
+  const latestUserMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === "user");
+
+  return latestUserMessage ? [latestUserMessage] : messages.slice(-1);
 }
