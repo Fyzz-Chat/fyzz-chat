@@ -4,6 +4,66 @@ import type { CustomMetadata, CustomUIMessage } from "../src/types/chat";
 
 let getModelRuntime: typeof import("../src/lib/backend/providers").getModelRuntime;
 
+const XAI_RESPONSES_MODELS = [
+  "grok-4-0709",
+  "grok-4-fast-non-reasoning",
+  "grok-4-1-fast-non-reasoning",
+] as const;
+
+const XAI_CHAT_MODELS = ["grok-3", "grok-code-fast-1"] as const;
+
+const OPENAI_CODE_INTERPRETER_DENYLIST = [
+  "gpt-5-codex",
+  "gpt-5.1-codex",
+  "gpt-5.2-codex",
+  "gpt-5.3-codex",
+  "o3-mini",
+] as const;
+
+const TOOLS_DISABLED_MODELS = [
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash-image",
+  "gemma-3-27b-it",
+  "sonar",
+  "sonar-pro",
+] as const;
+
+const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
+
+const XAI_RESPONSES_THREADING_OPTIONS = {
+  store: true,
+  previousResponseId: "resp-1",
+} as const;
+
+const CRITICAL_RUNTIME_CASES: {
+  modelId: string;
+  runtimePreset: "chat" | "responses";
+  supportsTools: boolean;
+}[] = [
+  ...XAI_RESPONSES_MODELS.map((modelId) => ({
+    modelId,
+    runtimePreset: "responses" as const,
+    supportsTools: true,
+  })),
+  ...XAI_CHAT_MODELS.map((modelId) => ({
+    modelId,
+    runtimePreset: "chat" as const,
+    supportsTools: true,
+  })),
+  ...OPENAI_CODE_INTERPRETER_DENYLIST.map((modelId) => ({
+    modelId,
+    runtimePreset: "chat" as const,
+    supportsTools: true,
+  })),
+  { modelId: "claude-sonnet-4-6", runtimePreset: "chat", supportsTools: true },
+  { modelId: "gemini-3.1-pro-preview", runtimePreset: "chat", supportsTools: true },
+  ...TOOLS_DISABLED_MODELS.map((modelId) => ({
+    modelId,
+    runtimePreset: "chat" as const,
+    supportsTools: false,
+  })),
+];
+
 beforeAll(async () => {
   setupProviderTestEnv();
   ({ getModelRuntime } = await import("../src/lib/backend/providers"));
@@ -45,10 +105,7 @@ describe("providers runtime behavior", () => {
     expect(selectedMessages[0]?.id).toBe("user-2");
 
     const providerOptions = runtime.getProviderOptionsFromHistory(messages);
-    expect(providerOptions.xai).toEqual({
-      store: true,
-      previousResponseId: "resp-1",
-    });
+    expect(providerOptions.xai).toEqual(XAI_RESPONSES_THREADING_OPTIONS);
 
     const responseMetadata = runtime.decorateAssistantMetadata({
       metadata: undefined,
@@ -91,39 +148,7 @@ describe("providers runtime behavior", () => {
 
 describe("critical model policy: runtime classification", () => {
   it("keeps runtime preset and supportsTools policy for critical models", () => {
-    const cases: {
-      modelId: string;
-      runtimePreset: "chat" | "responses";
-      supportsTools: boolean;
-    }[] = [
-      { modelId: "grok-4-0709", runtimePreset: "responses", supportsTools: true },
-      {
-        modelId: "grok-4-fast-non-reasoning",
-        runtimePreset: "responses",
-        supportsTools: true,
-      },
-      {
-        modelId: "grok-4-1-fast-non-reasoning",
-        runtimePreset: "responses",
-        supportsTools: true,
-      },
-      { modelId: "grok-3", runtimePreset: "chat", supportsTools: true },
-      { modelId: "grok-code-fast-1", runtimePreset: "chat", supportsTools: true },
-      { modelId: "gpt-5-codex", runtimePreset: "chat", supportsTools: true },
-      { modelId: "gpt-5.1-codex", runtimePreset: "chat", supportsTools: true },
-      { modelId: "gpt-5.2-codex", runtimePreset: "chat", supportsTools: true },
-      { modelId: "gpt-5.3-codex", runtimePreset: "chat", supportsTools: true },
-      { modelId: "o3-mini", runtimePreset: "chat", supportsTools: true },
-      { modelId: "claude-sonnet-4-6", runtimePreset: "chat", supportsTools: true },
-      { modelId: "gemini-3.1-pro-preview", runtimePreset: "chat", supportsTools: true },
-      { modelId: "gemini-2.5-flash-lite", runtimePreset: "chat", supportsTools: false },
-      { modelId: "gemini-2.5-flash-image", runtimePreset: "chat", supportsTools: false },
-      { modelId: "gemma-3-27b-it", runtimePreset: "chat", supportsTools: false },
-      { modelId: "sonar", runtimePreset: "chat", supportsTools: false },
-      { modelId: "sonar-pro", runtimePreset: "chat", supportsTools: false },
-    ];
-
-    for (const testCase of cases) {
+    for (const testCase of CRITICAL_RUNTIME_CASES) {
       const runtime = getModelRuntime(testCase.modelId, true);
       expect(runtime.runtimePreset).toBe(testCase.runtimePreset);
       expect(runtime.supportsTools).toBe(testCase.supportsTools);
@@ -142,22 +167,13 @@ describe("critical model policy: provider options", () => {
   ];
 
   it("keeps xAI responses threading only on responses models", () => {
-    const xaiResponsesModels = [
-      "grok-4-0709",
-      "grok-4-fast-non-reasoning",
-      "grok-4-1-fast-non-reasoning",
-    ];
-
-    for (const modelId of xaiResponsesModels) {
-      expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual({
-        store: true,
-        previousResponseId: "resp-1",
-      });
+    for (const modelId of XAI_RESPONSES_MODELS) {
+      expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual(
+        XAI_RESPONSES_THREADING_OPTIONS
+      );
     }
 
-    const xaiChatModels = ["grok-3", "grok-code-fast-1"];
-
-    for (const modelId of xaiChatModels) {
+    for (const modelId of XAI_CHAT_MODELS) {
       expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual(
         {}
       );
@@ -165,8 +181,7 @@ describe("critical model policy: provider options", () => {
   });
 
   it("keeps reasoning provider options for reasoning and non-reasoning models", () => {
-    const openaiReasoningModels = ["gpt-5", "gpt-5-codex"];
-    for (const modelId of openaiReasoningModels) {
+    for (const modelId of OPENAI_REASONING_MODELS) {
       expect(
         getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).openai
       ).toEqual({
@@ -210,15 +225,7 @@ describe("critical model policy: provider options", () => {
 
 describe("critical model policy: tool behavior", () => {
   it("keeps OpenAI code interpreter denylist intact", () => {
-    const modelsWithoutCodeInterpreter = [
-      "gpt-5-codex",
-      "gpt-5.1-codex",
-      "gpt-5.2-codex",
-      "gpt-5.3-codex",
-      "o3-mini",
-    ];
-
-    for (const modelId of modelsWithoutCodeInterpreter) {
+    for (const modelId of OPENAI_CODE_INTERPRETER_DENYLIST) {
       expect(getModelRuntime(modelId, true).getProviderTools(true).code_interpreter).toBeUndefined();
     }
   });
@@ -232,12 +239,7 @@ describe("critical model policy: tool behavior", () => {
     const openaiReasoningNoImage = getModelRuntime("gpt-5", true).getProviderTools(true);
     expect(openaiReasoningNoImage.image_generation).toBeUndefined();
 
-    const xaiResponsesModels = [
-      "grok-4-0709",
-      "grok-4-fast-non-reasoning",
-      "grok-4-1-fast-non-reasoning",
-    ];
-    for (const modelId of xaiResponsesModels) {
+    for (const modelId of XAI_RESPONSES_MODELS) {
       const tools = getModelRuntime(modelId, true).getProviderTools(true);
       expect(tools.x_search).toBeDefined();
       expect(tools.web_search).toBeDefined();
@@ -249,8 +251,7 @@ describe("critical model policy: tool behavior", () => {
     expect(xaiResponsesNoSearch.x_search).toBeUndefined();
     expect(xaiResponsesNoSearch.web_search).toBeUndefined();
 
-    const xaiChatModels = ["grok-3", "grok-code-fast-1"];
-    for (const modelId of xaiChatModels) {
+    for (const modelId of XAI_CHAT_MODELS) {
       const tools = getModelRuntime(modelId, true).getProviderTools(true);
       expect(tools.x_search).toBeUndefined();
       expect(tools.web_search).toBeUndefined();
