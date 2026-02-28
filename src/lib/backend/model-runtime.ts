@@ -1,5 +1,6 @@
 import type { MCPClient } from "@ai-sdk/mcp";
 import type { Tool } from "ai";
+import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import { memoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
 import type { SessionUser } from "@/lib/dao/users";
@@ -63,4 +64,21 @@ export async function buildToolsForRuntime(
   }
 
   return { tools, mcpClients };
+}
+
+export async function buildSystemPromptWithMemory({
+  baseSystemPrompt,
+  memoryEnabled,
+  temporaryChat,
+}: {
+  baseSystemPrompt: string;
+  memoryEnabled: boolean;
+  temporaryChat: boolean;
+}) {
+  if (!memoryEnabled || temporaryChat) {
+    return baseSystemPrompt;
+  }
+
+  const memoryPrompt = await getMemoryPrompt();
+  return `${baseSystemPrompt}${memoryPrompt}`;
 }

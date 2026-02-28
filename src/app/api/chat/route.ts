@@ -13,11 +13,11 @@ import { v4 as uuidv4 } from "uuid";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import {
+  buildSystemPromptWithMemory,
   buildToolsForRuntime,
   getPreviousResponseId,
   resolveMessagesForRuntime,
 } from "@/lib/backend/model-runtime";
-import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import systemPrompt from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
@@ -118,15 +118,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  let memoryPrompt = "";
-
-  if (user.memoryEnabled && !temporaryChat) {
-    memoryPrompt = await getMemoryPrompt();
-  }
+  const extendedSystemPrompt = await buildSystemPromptWithMemory({
+    baseSystemPrompt: systemPrompt,
+    memoryEnabled: user.memoryEnabled,
+    temporaryChat,
+  });
 
   logDuration(start, "Memory prompt fetched");
-
-  const extendedSystemPrompt = `${systemPrompt}${memoryPrompt}`;
 
   const abortController = new CompositeAbortController(req.signal);
   abortController.abortIn(maxDuration - 5);
