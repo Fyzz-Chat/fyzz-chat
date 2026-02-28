@@ -197,6 +197,61 @@ function createMessageMetadataHandler({
   };
 }
 
+async function persistStreamResult({
+  result,
+  runtime,
+  conversationId,
+  messages,
+  responseMessage,
+  isAborted,
+}: {
+  result: ReturnType<typeof streamText>;
+  runtime: ReturnType<typeof getModelRuntime>;
+  conversationId: string;
+  messages: CustomUIMessage[];
+  responseMessage: CustomUIMessage;
+  isAborted: boolean;
+}) {
+  const response = await result.response;
+  responseMessage.metadata = runtime.decorateAssistantMetadata({
+    metadata: responseMessage.metadata,
+    responseId: response.id,
+  });
+
+  if (await hasDefaultTitle(conversationId)) {
+    logger.debug(`Updating conversation title for ${conversationId}`);
+    await updateConversationTitle(conversationId, messages);
+  }
+
+  const lastMessage = responseMessage;
+  const lastUserMessage = messages.at(-2);
+
+  if (lastUserMessage?.role !== "user") {
+    logger.error({
+      message: "Invalid message order detected before saving.",
+      description:
+        "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
+      conversationId,
+      lastUserMessageRole: lastUserMessage?.role,
+      lastMessageRole: lastMessage?.role,
+      historyLength: messages.length,
+    });
+  }
+
+  let usage: LanguageModelUsage | undefined;
+
+  if (!isAborted) {
+    usage = await result.usage;
+    logger.debug(JSON.stringify(usage));
+  }
+
+  if (lastUserMessage) {
+    await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
+  }
+
+  await saveMessage(lastMessage, conversationId, 0, usage?.outputTokens || 0);
+}
+
 export async function POST(req: NextRequest) {
   const start = performance.now();
   const user = await getUserFromSession();
@@ -328,44 +383,14 @@ export async function POST(req: NextRequest) {
         }
 
         try {
-          const response = await result.response;
-          responseMessage.metadata = runtime.decorateAssistantMetadata({
-            metadata: responseMessage.metadata,
-            responseId: response.id,
+          await persistStreamResult({
+            result,
+            runtime,
+            conversationId: id,
+            messages,
+            responseMessage,
+            isAborted,
           });
-
-          if (await hasDefaultTitle(id)) {
-            logger.debug(`Updating conversation title for ${id}`);
-            await updateConversationTitle(id, messages);
-          }
-
-          const lastMessage = responseMessage;
-          const lastUserMessage = messages.at(-2);
-
-          if (lastUserMessage?.role !== "user") {
-            logger.error({
-              message: "Invalid message order detected before saving.",
-              description:
-                "The message preceding the assistant's response was not from a user. This indicates a corrupted history.",
-              conversationId: id,
-              lastUserMessageRole: lastUserMessage?.role,
-              lastMessageRole: lastMessage?.role,
-              historyLength: messages.length,
-            });
-          }
-
-          let usage: LanguageModelUsage | undefined;
-
-          if (!isAborted) {
-            usage = await result.usage;
-            logger.debug(JSON.stringify(usage));
-          }
-
-          if (lastUserMessage) {
-            await saveTokenUsage(lastUserMessage.id, usage?.inputTokens || 0, 0);
-          }
-
-          await saveMessage(lastMessage, id, 0, usage?.outputTokens || 0);
         } finally {
           await endConversation();
         }
