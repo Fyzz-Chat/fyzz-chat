@@ -1,4 +1,9 @@
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import { getSignedUrl as presignUrl } from "@aws-sdk/s3-request-presigner";
 import conf from "@/lib/config";
@@ -60,4 +65,20 @@ export async function generatePresignedUploadUrl(
   });
 
   return url;
+}
+
+export async function copyFile(sourceKey: string, destinationKey: string) {
+  if (!client) {
+    throw new Error("S3 client not configured");
+  }
+
+  const command = new CopyObjectCommand({
+    Bucket: conf.awsUploadsBucket,
+    CopySource: `${conf.awsUploadsBucket}/${sourceKey}`,
+    Key: destinationKey,
+  });
+
+  const response = await client.send(command);
+
+  return response;
 }
