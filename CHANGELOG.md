@@ -1,3 +1,12 @@
+# [0.21.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.20.0...v0.21.0) (2026-03-01)
+
+
+### Features
+
+* **branching:** add optimistic UI updates ([e157ca9](https://github.com/Fyzz-Chat/fyzz-chat/commit/e157ca9edd3de341d9f882f03ca4e5236793e57e))
+* **branching:** implement file copying ([f0e6452](https://github.com/Fyzz-Chat/fyzz-chat/commit/f0e64523e3f8a44fbe6017ecfa09f8aa3fe3f76a))
+* implement branching logic without file operations ([740a909](https://github.com/Fyzz-Chat/fyzz-chat/commit/740a90968eff8bed3684cefb48b11142176f8c99))
+
 # [0.20.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.19.0...v0.20.0) (2026-03-01)
 
 
