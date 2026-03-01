@@ -79,3 +79,57 @@ export async function public_getShareById(shareId: string) {
 
   return share;
 }
+
+export async function deleteShare(shareId: string) {
+  const user = await getUserIdFromSession();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Verify the share exists and belongs to the user's conversation
+  const share = await prisma.share.findFirst({
+    where: {
+      id: shareId,
+      conversation: {
+        userId: user,
+      },
+    },
+  });
+
+  if (!share) {
+    throw new Error("Share not found or access denied");
+  }
+
+  await prisma.share.delete({
+    where: {
+      id: shareId,
+    },
+  });
+}
+
+export async function getSharesByConversationId(conversationId: string) {
+  const user = await getUserIdFromSession();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const now = new Date();
+  const shares = await prisma.share.findMany({
+    where: {
+      conversationId,
+      conversation: {
+        userId: user,
+      },
+      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+    },
+    select: {
+      id: true,
+      messageId: true,
+      expiresAt: true,
+    },
+  });
+
+  return shares;
+}

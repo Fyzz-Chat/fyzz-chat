@@ -25,11 +25,12 @@ import {
   useCreateConversationOptimistic,
   useMessages,
   useRegenerateMessage,
+  useShares,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
 import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage } from "@/types/chat";
+import type { CustomUIMessage, ShareInfo } from "@/types/chat";
 
 const MESSAGE_WINDOW_SIZE = 16;
 
@@ -57,13 +58,22 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const conversationData = useConversation(id);
   const [persistedWindowLimit, setPersistedWindowLimit] = useState(MESSAGE_WINDOW_SIZE);
 
-  const persistedMessagesData = useMessages(id, isNewConversation ? [] : undefined, {
+  const persistedMessagesData = useMessages(id, {
     refetchOnMount: !isNewConversation,
     page: 1,
     limit: persistedWindowLimit,
   });
   const persistedMessages = persistedMessagesData.data?.messages || [];
   const hasMorePersistedMessages = Boolean(persistedMessagesData.data?.hasMore);
+
+  const { data: sharesData } = useShares(id);
+  const sharesByMessageId = useMemo(() => {
+    const map = new Map<string, ShareInfo>();
+    sharesData?.shares.forEach((share) => {
+      map.set(share.messageId, share);
+    });
+    return map;
+  }, [sharesData]);
   const isLoadingOlderMessages =
     persistedMessagesData.isFetching && !persistedMessagesData.isPending;
   const hasSentInitial = useRef(false);
@@ -302,12 +312,13 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           key={message.id}
           conversationId={id}
           message={message}
+          share={sharesByMessageId.get(message.id)}
           isStreaming={false}
           onRegenerate={handleRegenerateMessage}
           onEdit={handleEditMessage}
         />
       )),
-    [id, persistedMessages, handleRegenerateMessage, handleEditMessage]
+    [id, persistedMessages, sharesByMessageId, handleRegenerateMessage, handleEditMessage]
   );
 
   const streamingMessagesList = useMemo(
@@ -317,6 +328,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           key={message.id}
           conversationId={id}
           message={message}
+          share={sharesByMessageId.get(message.id)}
           isStreaming={message.id === activeStreamingAssistantId}
           onRegenerate={handleRegenerateMessage}
           onEdit={handleEditMessage}
@@ -325,6 +337,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     [
       id,
       streamingMessages,
+      sharesByMessageId,
       activeStreamingAssistantId,
       handleRegenerateMessage,
       handleEditMessage,

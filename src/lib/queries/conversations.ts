@@ -14,6 +14,7 @@ import {
   shareConversationUntilMessage,
 } from "@/lib/actions/conversations";
 import { deleteMessageChainAfter } from "@/lib/actions/messages";
+import { deleteShareAction } from "@/lib/actions/shares";
 import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
@@ -177,24 +178,15 @@ export function usePrefetchConversation() {
 
 export function useMessages(
   id: string,
-  initialMessages?: CustomUIMessage[],
   overrides?: { refetchOnMount?: boolean; page?: number; limit?: number }
 ) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
-  const initialData = initialMessages
-    ? {
-        messages: initialMessages,
-        hasMore: false,
-      }
-    : undefined;
-
   const options: inferReactQueryProcedureOptions<AppRouter>["messages"] = {
     enabled: !temporaryChat,
     refetchOnWindowFocus: true,
     refetchOnMount: overrides?.refetchOnMount,
-    initialData,
     meta: {
       persist: !temporaryChat,
     },
@@ -409,6 +401,9 @@ export function useCreateConversationOptimistic() {
 }
 
 export function useShareConversation() {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
   return useMutation({
     mutationFn: ({
       conversationId,
@@ -419,5 +414,35 @@ export function useShareConversation() {
       messageId: string;
       duration: string;
     }) => shareConversationUntilMessage(conversationId, messageId, duration),
+    onSuccess: () => {
+      // Invalidate shares queries to refresh the share indicators
+      queryClient.invalidateQueries(trpc.shares.queryFilter());
+    },
+  });
+}
+
+export function useShares(conversationId: string) {
+  const trpc = useTRPC();
+
+  return useQuery(
+    trpc.shares.queryOptions(
+      { conversationId },
+      {
+        enabled: Boolean(conversationId),
+      }
+    )
+  );
+}
+
+export function useDeleteShare() {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation({
+    mutationFn: (shareId: string) => deleteShareAction(shareId),
+    onSuccess: () => {
+      // Invalidate all shares queries
+      queryClient.invalidateQueries(trpc.shares.queryFilter());
+    },
   });
 }

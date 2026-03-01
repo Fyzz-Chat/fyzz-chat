@@ -5,6 +5,7 @@ import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
+import { getSharesByConversationId } from "@/lib/dao/shares";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 
@@ -59,6 +60,13 @@ export const appRouter = createTRPCRouter({
       const { limit, cursor, search } = opts.input;
       const { items, nextCursor } = await getConversationsByCursor(limit, cursor, search);
       return { items, nextCursor };
+    }),
+  shares: protectedProcedure
+    .input(z.object({ conversationId: z.string() }))
+    .query(async (opts) => {
+      const { conversationId } = opts.input;
+      const shares = await getSharesByConversationId(conversationId);
+      return { shares };
     }),
 });
 // export type definition of API

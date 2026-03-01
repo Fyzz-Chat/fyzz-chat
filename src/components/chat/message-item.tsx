@@ -31,7 +31,7 @@ import MessageRegenerateAction from "@/components/chat/message-regenerate-action
 import MessageShareAction from "@/components/chat/message-share-action";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage } from "@/types/chat";
+import type { CustomUIMessage, ShareInfo } from "@/types/chat";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 
 function TypingIndicator() {
@@ -47,12 +47,14 @@ function TypingIndicator() {
 function MessageItem({
   message,
   conversationId,
+  share,
   isStreaming = false,
   onRegenerate,
   onEdit,
 }: Readonly<{
   message: CustomUIMessage;
   conversationId: string;
+  share?: ShareInfo;
   isStreaming?: boolean;
   onRegenerate?: (messageId: string) => Promise<void>;
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
@@ -279,7 +281,11 @@ function MessageItem({
           <MessageActions>
             <MessageCopyAction message={message} />
             <MessageRegenerateAction messageId={message.id} onRegenerate={onRegenerate} />
-            <MessageShareAction conversationId={conversationId} messageId={message.id} />
+            <MessageShareAction
+              conversationId={conversationId}
+              messageId={message.id}
+              share={share}
+            />
           </MessageActions>
           <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>
