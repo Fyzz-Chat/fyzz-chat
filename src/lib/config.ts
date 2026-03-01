@@ -32,9 +32,6 @@ const schema = z.object({
   s3Configured: z.boolean().default(false),
   sesConfigured: z.boolean().default(false),
 
-  // JWT
-  jwtSecret: z.string().default(""),
-
   // Turnstile
   turnstileSecretKey: z.string().optional(),
 });
@@ -78,9 +75,6 @@ const envVars = {
     process.env.AWS_SECRET_ACCESS_KEY !== undefined &&
     process.env.AWS_REGION !== undefined &&
     process.env.FROM_EMAIL_ADDRESS !== undefined,
-
-  // JWT
-  jwtSecret: process.env.JWT_SECRET,
 
   // Turnstile
   turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,

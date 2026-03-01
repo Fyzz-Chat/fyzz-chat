@@ -87,10 +87,6 @@ The last two are required to create signed URLs for uploaded files.
 > [!WARNING]
 > If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will be persisted in the database.
 
-Other environment variables
-
-- `JWT_SECRET`: Needed if you want to enable sharing.
-
 #### AWS
 
 Deploy Fyzz Chat to AWS using one of the provided CloudFormation templates in [aws/](aws/). The templates create an ECS cluster with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
