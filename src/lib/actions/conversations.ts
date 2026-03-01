@@ -7,6 +7,7 @@ import { convertToModelMessages, generateText } from "ai";
 import { deleteFile } from "@/lib/aws/s3";
 import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { filterMessages } from "@/lib/backend/utils";
+import { branchConversation } from "@/lib/dao/branching";
 import { createShare } from "@/lib/dao/shares";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
@@ -156,4 +157,12 @@ function addDurationToDate(date: Date, duration: string): Date | null {
   }
 
   return date;
+}
+
+export async function branchConversationAction(
+  conversationId: string,
+  messageId: string
+): Promise<{ newConversationId: string }> {
+  const result = await branchConversation(conversationId, messageId);
+  return result;
 }
