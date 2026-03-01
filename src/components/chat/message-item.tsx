@@ -26,6 +26,7 @@ import {
   ToolInput,
   ToolOutput,
 } from "@/components/ai-elements/tool";
+import MessageBranchAction from "@/components/chat/message-branch-action";
 import MessageCopyAction from "@/components/chat/message-copy-action";
 import MessageRegenerateAction from "@/components/chat/message-regenerate-action";
 import MessageShareAction from "@/components/chat/message-share-action";
@@ -286,6 +287,7 @@ function MessageItem({
               messageId={message.id}
               share={share}
             />
+            <MessageBranchAction conversationId={conversationId} messageId={message.id} />
           </MessageActions>
           <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>
