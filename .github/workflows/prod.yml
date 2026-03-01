@@ -28,14 +28,17 @@ jobs:
       - name: Run test
         run: bun run test
 
-  release-and-build:
+  release:
     needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
       pull-requests: write
-      packages: write
+    outputs:
+      release_commit: ${{ steps.get_commit.outputs.commit }}
+      version_tag: ${{ steps.get_commit.outputs.version_tag }}
+      has_version_tag: ${{ steps.get_commit.outputs.has_version_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,6 +53,42 @@ jobs:
       - name: Install semantic-release globally
         run: npm install -g semantic-release @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/github @semantic-release/npm @semantic-release/release-notes-generator @semantic-release/git
 
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: semantic-release
+
+      - name: Get release commit and version tag
+        id: get_commit
+        run: |
+          RELEASE_COMMIT=$(git rev-parse HEAD)
+          echo "commit=$RELEASE_COMMIT" >> "$GITHUB_OUTPUT"
+          echo "Release commit: $RELEASE_COMMIT"
+
+          git fetch --tags
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            VERSION_TAG=$(git describe --tags --exact-match HEAD)
+            echo "version_tag=$VERSION_TAG" >> "$GITHUB_OUTPUT"
+            echo "has_version_tag=true" >> "$GITHUB_OUTPUT"
+            echo "Found version tag: $VERSION_TAG"
+          else
+            echo "version_tag=" >> "$GITHUB_OUTPUT"
+            echo "has_version_tag=false" >> "$GITHUB_OUTPUT"
+            echo "No version tag found"
+          fi
+
+  build-release:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code at release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.release_commit }}
+          fetch-depth: 0
+
       - name: Login to ghcr.io
         uses: docker/login-action@v3
         with:
@@ -60,27 +99,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Run semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release
-
       - name: Determine Docker Tags
         id: tags
         run: |
           TAGS="${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:latest"
-          MIGRATE_TAGS="${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:migrate-latest"
-
-          git fetch --tags
-          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
-            VERSION_TAG=$(git describe --tags --exact-match HEAD)
+          if [ "${{ needs.release.outputs.has_version_tag }}" = "true" ]; then
+            VERSION_TAG="${{ needs.release.outputs.version_tag }}"
             TAGS="$TAGS,${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:$VERSION_TAG"
-            MIGRATE_TAGS="$MIGRATE_TAGS,${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:migrate-$VERSION_TAG"
-            echo "Found version tag: $VERSION_TAG"
+            echo "Adding version tag: $VERSION_TAG"
           fi
-
           echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
-          echo "migrate_tags=$MIGRATE_TAGS" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -92,6 +120,39 @@ jobs:
           push: true
           tags: ${{ steps.tags.outputs.tags }}
 
+  build-migrate:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code at release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.release_commit }}
+          fetch-depth: 0
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Determine Docker Tags
+        id: tags
+        run: |
+          TAGS="${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:migrate-latest"
+          if [ "${{ needs.release.outputs.has_version_tag }}" = "true" ]; then
+            VERSION_TAG="${{ needs.release.outputs.version_tag }}"
+            TAGS="$TAGS,${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:migrate-$VERSION_TAG"
+            echo "Adding version tag: migrate-$VERSION_TAG"
+          fi
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+
       - name: Build and push migration Docker image
         uses: docker/build-push-action@v6
         with:
@@ -100,10 +161,10 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.tags.outputs.migrate_tags }}
+          tags: ${{ steps.tags.outputs.tags }}
 
   deploy:
-    needs: release-and-build
+    needs: [build-release, build-migrate]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Coolify
