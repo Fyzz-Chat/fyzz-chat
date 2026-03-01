@@ -103,6 +103,7 @@ export async function branchConversation(
         const fileId = partUrlStored.includes("/")
           ? (partUrlStored.split("/").at(-1) ?? "")
           : partUrlStored;
+        if (!fileId) continue;
         const sourceKey = `${userId}/${conversationId}/${fileId}`;
         const destinationKey = `${userId}/${newConversation.id}/${fileId}`;
         fileMappings.push({
@@ -143,11 +144,12 @@ export async function branchConversation(
     return { newConversationId: newConversation.id, messagesWithFiles };
   });
 
-  for (const msgWithFiles of result.messagesWithFiles) {
-    for (const mapping of msgWithFiles.fileMappings) {
-      await copyFile(mapping.sourceKey, mapping.destinationKey);
-    }
+  const copyPromises = result.messagesWithFiles.flatMap((msg) =>
+    msg.fileMappings.map((m) => copyFile(m.sourceKey, m.destinationKey))
+  );
+  await Promise.all(copyPromises);
 
+  const updatePromises = result.messagesWithFiles.map((msgWithFiles) => {
     const updatedParts = msgWithFiles.parts.map((part) => {
       if (part.type === "file" && part.url) {
         const mapping = msgWithFiles.fileMappings.find(
@@ -159,12 +161,12 @@ export async function branchConversation(
       }
       return part;
     });
-
-    await prisma.message.update({
+    return prisma.message.update({
       where: { id: msgWithFiles.messageId },
       data: { parts: updatedParts as InputJsonValue },
     });
-  }
+  });
+  await Promise.all(updatePromises);
 
   return { newConversationId: result.newConversationId };
 }
