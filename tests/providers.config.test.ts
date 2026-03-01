@@ -77,7 +77,6 @@ const expectedCatalogShape: {
       { id: "gemini-2.5-flash-lite", runtimePreset: "chat" },
       { id: "gemini-2.5-pro", runtimePreset: "chat" },
       { id: "gemini-3-flash-preview", runtimePreset: "chat" },
-      { id: "gemini-3-pro-preview", runtimePreset: "chat" },
       { id: "gemini-3.1-pro-preview", runtimePreset: "chat" },
       { id: "gemini-2.5-flash-image", runtimePreset: "chat" },
       { id: "gemma-3-27b-it", runtimePreset: "chat" },
@@ -95,10 +94,6 @@ const expectedCatalogShape: {
     ],
   },
   {
-    id: "llama",
-    models: [{ id: "accounts/fireworks/models/llama4-maverick-instruct-basic", runtimePreset: "chat" }],
-  },
-  {
     id: "deepseek",
     models: [
       { id: "accounts/fireworks/models/deepseek-v3p1", runtimePreset: "chat" },
@@ -108,7 +103,6 @@ const expectedCatalogShape: {
   {
     id: "other",
     models: [
-      { id: "accounts/fireworks/models/gpt-oss-120b", runtimePreset: "chat" },
       { id: "accounts/fireworks/models/kimi-k2p5", runtimePreset: "chat" },
       { id: "accounts/fireworks/models/glm-5", runtimePreset: "chat" },
     ],
@@ -255,7 +249,6 @@ describe("providers config invariants", () => {
       "anthropic",
       "deepseek",
       "google",
-      "llama",
       "openai",
       "other",
       "perplexity",

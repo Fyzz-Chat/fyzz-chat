@@ -41,7 +41,7 @@ export type Model = {
   name: string;
   features?: Feature[];
   free?: boolean;
-  provider: (model: string, browse: boolean) => LanguageModel;
+  provider: (model: string) => LanguageModel;
   tools: boolean;
   runtimePreset: RuntimePreset;
   extensions: ExtensionType[];

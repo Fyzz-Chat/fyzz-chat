@@ -1,24 +1,11 @@
 import "server-only";
 
-import {
-  type AnthropicProvider,
-  type AnthropicProviderOptions,
-  anthropic,
-} from "@ai-sdk/anthropic";
-import type { AzureOpenAIProvider } from "@ai-sdk/azure";
-import {
-  type FireworksLanguageModelOptions,
-  type FireworksProvider,
-  fireworks,
-} from "@ai-sdk/fireworks";
+import { type AnthropicProviderOptions, anthropic } from "@ai-sdk/anthropic";
+import { type FireworksLanguageModelOptions, fireworks } from "@ai-sdk/fireworks";
 import { type GoogleGenerativeAIProviderOptions, google } from "@ai-sdk/google";
-import {
-  type OpenAIProvider,
-  type OpenAIResponsesProviderOptions,
-  openai,
-} from "@ai-sdk/openai";
-import { type PerplexityProvider, perplexity } from "@ai-sdk/perplexity";
-import { type XaiProvider, type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
+import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
+import { perplexity } from "@ai-sdk/perplexity";
+import { type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
 import type { Tool, ToolSet } from "ai";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
@@ -71,7 +58,6 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
 
 export function getModelRuntime(
   modelId: string,
-  browse: boolean,
   reasoningEffort?: ReasoningEffort
 ): ModelRuntime {
   const runtimeModel = filterProviders()
@@ -95,7 +81,7 @@ export function getModelRuntime(
   const selectedReasoningEffort = hasReasoning ? reasoningEffort : undefined;
 
   return {
-    model: provider(id, browse),
+    model: provider(id),
     supportsTools: tools,
     runtimePreset,
     selectInputMessages: (messages) =>
@@ -386,26 +372,6 @@ function filterProviders(): Provider[] {
   });
 }
 
-function wrappedGoogle(model: string, _browse: boolean) {
-  return google(model); //, { useSearchGrounding: browse });
-}
-
-function wrappedModel(
-  provider:
-    | AzureOpenAIProvider
-    | OpenAIProvider
-    | AnthropicProvider
-    | XaiProvider
-    | FireworksProvider
-    | PerplexityProvider
-) {
-  return (model: string, _browse: boolean) => provider(model);
-}
-
-function wrappedResponsesModel(provider: XaiProvider) {
-  return (model: string, _browse: boolean) => provider.responses(model);
-}
-
 const reasoning: Feature = {
   name: "Reasoning",
   description: "Reasoning model",
@@ -444,7 +410,7 @@ const providers: Provider[] = [
         id: "gpt-4.1-mini",
         name: "GPT-4.1 mini",
         features: [images],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -455,7 +421,7 @@ const providers: Provider[] = [
         id: "gpt-4.1",
         name: "GPT-4.1",
         features: [images],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -466,7 +432,7 @@ const providers: Provider[] = [
         id: "gpt-5-nano",
         name: "GPT-5 nano",
         features: [reasoning, search, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -476,7 +442,7 @@ const providers: Provider[] = [
         id: "gpt-5-mini",
         name: "GPT-5 mini",
         features: [reasoning, search, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -486,7 +452,7 @@ const providers: Provider[] = [
         id: "gpt-5",
         name: "GPT-5",
         features: [reasoning, search, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -496,7 +462,7 @@ const providers: Provider[] = [
         id: "gpt-5-codex",
         name: "GPT-5 Codex",
         features: [reasoning, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -507,7 +473,7 @@ const providers: Provider[] = [
         id: "gpt-5.1",
         name: "GPT-5.1",
         features: [reasoning, search, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -517,7 +483,7 @@ const providers: Provider[] = [
         id: "gpt-5.1-codex",
         name: "GPT-5.1 Codex",
         features: [reasoning, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -528,7 +494,7 @@ const providers: Provider[] = [
         id: "gpt-5.2",
         name: "GPT-5.2",
         features: [reasoning, search, coding],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -538,7 +504,7 @@ const providers: Provider[] = [
         id: "gpt-5.2-codex",
         name: "GPT-5.2 Codex",
         features: [reasoning],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -549,7 +515,7 @@ const providers: Provider[] = [
         id: "gpt-5.3-codex",
         name: "GPT-5.3 Codex",
         features: [reasoning],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -560,7 +526,7 @@ const providers: Provider[] = [
         id: "o3-mini",
         name: "o3-mini",
         features: [reasoning],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -571,7 +537,7 @@ const providers: Provider[] = [
         id: "o4-mini",
         name: "o4-mini",
         features: [reasoning],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -581,7 +547,7 @@ const providers: Provider[] = [
         id: "o3",
         name: "o3",
         features: [reasoning],
-        provider: wrappedModel(openai),
+        provider: openai,
         tools: true,
         runtimePreset: "chat",
         extensions: imageTypes,
@@ -598,7 +564,7 @@ const providers: Provider[] = [
         id: "claude-3-haiku-20240307",
         name: "Claude Haiku 3",
         features: [search],
-        provider: wrappedModel(anthropic),
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes],
@@ -608,7 +574,7 @@ const providers: Provider[] = [
         id: "claude-3-5-haiku-20241022",
         name: "Claude Haiku 3.5",
         features: [search],
-        provider: wrappedModel(anthropic),
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -617,8 +583,8 @@ const providers: Provider[] = [
       {
         id: "claude-haiku-4-5-20251001",
         name: "Claude Haiku 4.5",
-        features: [reasoning, search],
-        provider: wrappedModel(anthropic),
+        features: [search],
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -627,8 +593,8 @@ const providers: Provider[] = [
       {
         id: "claude-sonnet-4-20250514",
         name: "Claude Sonnet 4",
-        features: [reasoning, search],
-        provider: wrappedModel(anthropic),
+        features: [search],
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -638,7 +604,7 @@ const providers: Provider[] = [
         id: "claude-sonnet-4-5",
         name: "Claude Sonnet 4.5",
         features: [reasoning, search],
-        provider: wrappedModel(anthropic),
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -648,7 +614,7 @@ const providers: Provider[] = [
         id: "claude-sonnet-4-6",
         name: "Claude Sonnet 4.6",
         features: [reasoning, search],
-        provider: wrappedModel(anthropic),
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -658,7 +624,7 @@ const providers: Provider[] = [
         id: "claude-opus-4-5",
         name: "Claude Opus 4.5",
         features: [reasoning, search],
-        provider: wrappedModel(anthropic),
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -668,7 +634,7 @@ const providers: Provider[] = [
         id: "claude-opus-4-6",
         name: "Claude Opus 4.6",
         features: [reasoning, search],
-        provider: wrappedModel(anthropic),
+        provider: anthropic,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
@@ -685,7 +651,7 @@ const providers: Provider[] = [
         id: "gemini-2.5-flash",
         name: "Gemini 2.5 Flash",
         features: [search],
-        provider: wrappedGoogle,
+        provider: google,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType, videoType, tabularType],
@@ -695,7 +661,7 @@ const providers: Provider[] = [
         id: "gemini-2.5-flash-lite",
         name: "Gemini 2.5 Flash Lite",
         features: [],
-        provider: wrappedGoogle,
+        provider: google,
         tools: false,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType, videoType, tabularType],
@@ -705,7 +671,7 @@ const providers: Provider[] = [
         id: "gemini-2.5-pro",
         name: "Gemini 2.5 Pro",
         features: [search],
-        provider: wrappedGoogle,
+        provider: google,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType, videoType, tabularType],
@@ -715,37 +681,27 @@ const providers: Provider[] = [
         id: "gemini-3-flash-preview",
         name: "Gemini 3 Flash",
         features: [reasoning, search],
-        provider: wrappedGoogle,
+        provider: google,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 1,
       },
       {
-        id: "gemini-3-pro-preview",
-        name: "Gemini 3 Pro",
-        features: [],
-        provider: wrappedGoogle,
+        id: "gemini-3.1-pro-preview",
+        name: "Gemini 3.1 Pro",
+        features: [reasoning, search],
+        provider: google,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType, videoType, tabularType],
         cost: 4,
       },
       {
-        id: "gemini-3.1-pro-preview",
-        name: "Gemini 3.1 Pro",
-        features: [reasoning, search],
-        provider: wrappedGoogle,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, videoType],
-        cost: 4,
-      },
-      {
         id: "gemini-2.5-flash-image",
         name: "Nano Banana",
         features: [images],
-        provider: wrappedGoogle,
+        provider: google,
         tools: false,
         runtimePreset: "chat",
         extensions: [...imageTypes],
@@ -755,7 +711,7 @@ const providers: Provider[] = [
       //   id: "gemini-3-pro-image-preview",
       //   name: "Nano Banana Pro",
       //   features: [images, reasoning],
-      //   provider: wrappedGoogle,
+      //   provider: google,
       //   tools: false,
       //   extensions: [...imageTypes],
       //   cost: 5,
@@ -763,7 +719,7 @@ const providers: Provider[] = [
       {
         id: "gemma-3-27b-it",
         name: "Gemma 3 27B",
-        provider: wrappedGoogle,
+        provider: google,
         tools: false,
         runtimePreset: "chat",
         extensions: [...imageTypes],
@@ -780,7 +736,7 @@ const providers: Provider[] = [
         id: "grok-3-mini",
         name: "Grok 3 mini",
         features: [reasoning],
-        provider: wrappedModel(xai),
+        provider: xai,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -789,7 +745,7 @@ const providers: Provider[] = [
       {
         id: "grok-3",
         name: "Grok 3",
-        provider: wrappedModel(xai),
+        provider: xai,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -799,7 +755,7 @@ const providers: Provider[] = [
         id: "grok-4-0709",
         name: "Grok 4",
         features: [reasoning],
-        provider: wrappedResponsesModel(xai),
+        provider: xai.responses,
         tools: true,
         runtimePreset: "responses",
         extensions: imageTypes,
@@ -810,7 +766,7 @@ const providers: Provider[] = [
         id: "grok-4-fast-non-reasoning",
         name: "Grok 4 Fast",
         features: [],
-        provider: wrappedResponsesModel(xai),
+        provider: xai.responses,
         tools: true,
         runtimePreset: "responses",
         extensions: [...imageTypes, pdfType, videoType],
@@ -821,7 +777,7 @@ const providers: Provider[] = [
         id: "grok-code-fast-1",
         name: "Grok Code Fast 1",
         features: [coding, reasoning],
-        provider: wrappedModel(xai),
+        provider: xai,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -831,29 +787,12 @@ const providers: Provider[] = [
         id: "grok-4-1-fast-non-reasoning",
         name: "Grok 4.1 Fast",
         features: [],
-        provider: wrappedResponsesModel(xai),
+        provider: xai.responses,
         tools: true,
         runtimePreset: "responses",
         extensions: [...imageTypes],
         cost: 1,
         capabilities: { supportsXaiSearchTools: true },
-      },
-    ],
-  },
-  {
-    id: "llama",
-    name: "Meta",
-    icon: "meta",
-    models: [
-      {
-        id: "accounts/fireworks/models/llama4-maverick-instruct-basic",
-        name: "Llama 4 Maverick",
-        features: [],
-        provider: wrappedModel(fireworks),
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes],
-        cost: 1,
       },
     ],
   },
@@ -865,7 +804,7 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/deepseek-v3p1",
         name: "DeepSeek V3.1",
-        provider: wrappedModel(fireworks),
+        provider: fireworks,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -875,7 +814,7 @@ const providers: Provider[] = [
         id: "accounts/fireworks/models/deepseek-v3p2",
         name: "DeepSeek V3.2",
         features: [reasoning],
-        provider: wrappedModel(fireworks),
+        provider: fireworks,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -888,21 +827,21 @@ const providers: Provider[] = [
     name: "Other",
     icon: "other",
     models: [
-      {
-        id: "accounts/fireworks/models/gpt-oss-120b",
-        name: "gpt-oss-120b",
-        features: [reasoning],
-        provider: wrappedModel(fireworks),
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [],
-        cost: 1,
-      },
+      // {
+      //   id: "accounts/fireworks/models/gpt-oss-120b",
+      //   name: "gpt-oss-120b",
+      //   features: [reasoning],
+      //   provider: fireworks,
+      //   tools: true,
+      //   runtimePreset: "chat",
+      //   extensions: [],
+      //   cost: 1,
+      // },
       {
         id: "accounts/fireworks/models/kimi-k2p5",
         name: "Kimi K2.5",
         features: [reasoning],
-        provider: wrappedModel(fireworks),
+        provider: fireworks,
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes],
@@ -912,7 +851,7 @@ const providers: Provider[] = [
         id: "accounts/fireworks/models/glm-5",
         name: "GLM 5",
         features: [reasoning],
-        provider: wrappedModel(fireworks),
+        provider: fireworks,
         tools: true,
         runtimePreset: "chat",
         extensions: [],
@@ -929,7 +868,7 @@ const providers: Provider[] = [
         id: "sonar",
         name: "Sonar",
         features: [search],
-        provider: wrappedModel(perplexity),
+        provider: perplexity,
         tools: false,
         runtimePreset: "chat",
         extensions: [],
@@ -939,7 +878,7 @@ const providers: Provider[] = [
         id: "sonar-pro",
         name: "Sonar Pro",
         features: [search],
-        provider: wrappedModel(perplexity),
+        provider: perplexity,
         tools: false,
         runtimePreset: "chat",
         extensions: [],

@@ -71,7 +71,7 @@ function createMessage(
 
 describe("providers runtime behavior", () => {
   it("uses responses runtime behavior for xAI responses models", () => {
-    const runtime = getModelRuntime("grok-4-1-fast-non-reasoning", true);
+    const runtime = getModelRuntime("grok-4-1-fast-non-reasoning");
     expect(runtime.runtimePreset).toBe("responses");
 
     const messages = [
@@ -99,7 +99,7 @@ describe("providers runtime behavior", () => {
   });
 
   it("uses chat runtime behavior for standard chat models", () => {
-    const runtime = getModelRuntime("gpt-4.1-mini", false);
+    const runtime = getModelRuntime("gpt-4.1-mini");
     expect(runtime.runtimePreset).toBe("chat");
 
     const messages = [
@@ -129,7 +129,7 @@ describe("providers runtime behavior", () => {
   });
 
   it("limits chat runtime input history to the latest 16 messages", () => {
-    const runtime = getModelRuntime("gpt-4.1-mini", false);
+    const runtime = getModelRuntime("gpt-4.1-mini");
     expect(runtime.runtimePreset).toBe("chat");
 
     const messages = Array.from({ length: 20 }, (_, index) =>
@@ -161,26 +161,26 @@ describe("providers runtime behavior", () => {
       createMessage("user-2", "user"),
     ];
 
-    const openaiReasoning = getModelRuntime("gpt-5", false, "high");
+    const openaiReasoning = getModelRuntime("gpt-5", "high");
     expect(openaiReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
       reasoningEffort: "high",
       reasoningSummary: "detailed",
     });
 
-    const xaiReasoning = getModelRuntime("grok-4-0709", false, "medium");
+    const xaiReasoning = getModelRuntime("grok-4-0709", "medium");
     expect(xaiReasoning.getProviderOptionsFromHistory(messages).xai).toEqual({
       store: true,
       previousResponseId: "resp-1",
       reasoningEffort: "medium",
     });
 
-    const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", false, "low");
+    const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", "low");
     expect(anthropicReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
       effort: "low",
     });
 
-    const googleReasoning = getModelRuntime("gemini-3.1-pro-preview", false, "medium");
+    const googleReasoning = getModelRuntime("gemini-3.1-pro-preview", "medium");
     expect(googleReasoning.getProviderOptionsFromHistory(messages).google).toEqual({
       thinkingConfig: {
         thinkingLevel: "medium",
@@ -188,21 +188,18 @@ describe("providers runtime behavior", () => {
       },
     });
 
-    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", false, "high");
+    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", "high");
     expect(openaiNonReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
       reasoningEffort: undefined,
       reasoningSummary: undefined,
     });
-
-    const googleNonReasoning = getModelRuntime("gemini-3-pro-preview", false, "high");
-    expect(googleNonReasoning.getProviderOptionsFromHistory(messages).google).toEqual({});
   });
 });
 
 describe("critical model policy: runtime classification", () => {
   it("keeps runtime preset and supportsTools policy for critical models", () => {
     for (const testCase of CRITICAL_RUNTIME_CASES) {
-      const runtime = getModelRuntime(testCase.modelId, true);
+      const runtime = getModelRuntime(testCase.modelId);
       expect(runtime.runtimePreset).toBe(testCase.runtimePreset);
       expect(runtime.supportsTools).toBe(testCase.supportsTools);
     }
@@ -221,13 +218,13 @@ describe("critical model policy: provider options", () => {
 
   it("keeps xAI responses threading only on responses models", () => {
     for (const modelId of XAI_RESPONSES_MODELS) {
-      expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual(
+      expect(getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai).toEqual(
         XAI_RESPONSES_THREADING_OPTIONS
       );
     }
 
     for (const modelId of XAI_CHAT_MODELS) {
-      expect(getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).xai).toEqual(
+      expect(getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai).toEqual(
         {}
       );
     }
@@ -236,33 +233,33 @@ describe("critical model policy: provider options", () => {
   it("keeps reasoning provider options for reasoning and non-reasoning models", () => {
     for (const modelId of OPENAI_REASONING_MODELS) {
       expect(
-        getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).openai
+        getModelRuntime(modelId).getProviderOptionsFromHistory(messages).openai
       ).toEqual({
         reasoningEffort: "low",
         reasoningSummary: "detailed",
       });
     }
 
-    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", true).getProviderOptionsFromHistory(
+    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini").getProviderOptionsFromHistory(
       messages
     ).openai;
     expect(openaiNonReasoning?.reasoningEffort).toBeUndefined();
     expect(openaiNonReasoning?.reasoningSummary).toBeUndefined();
 
     expect(
-      getModelRuntime("claude-sonnet-4-6", true).getProviderOptionsFromHistory(messages).anthropic
+      getModelRuntime("claude-sonnet-4-6").getProviderOptionsFromHistory(messages).anthropic
     ).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
     });
     expect(
-      getModelRuntime("claude-3-haiku-20240307", true).getProviderOptionsFromHistory(messages)
+      getModelRuntime("claude-3-haiku-20240307").getProviderOptionsFromHistory(messages)
         .anthropic
     ).toEqual({
       thinking: { type: "disabled" },
     });
 
     expect(
-      getModelRuntime("gemini-3.1-pro-preview", true, "medium").getProviderOptionsFromHistory(messages)
+      getModelRuntime("gemini-3.1-pro-preview", "medium").getProviderOptionsFromHistory(messages)
         .google
     ).toEqual({
       thinkingConfig: {
@@ -270,13 +267,10 @@ describe("critical model policy: provider options", () => {
         includeThoughts: true,
       },
     });
-    expect(
-      getModelRuntime("gemini-3-pro-preview", true).getProviderOptionsFromHistory(messages).google
-    ).toEqual({});
 
     for (const modelId of FIREWORKS_REASONING_MODELS) {
       expect(
-        getModelRuntime(modelId, true).getProviderOptionsFromHistory(messages).fireworks
+        getModelRuntime(modelId).getProviderOptionsFromHistory(messages).fireworks
       ).toEqual({
         thinking: { type: "enabled", budgetTokens: 8192 },
         reasoningHistory: "preserved",
@@ -284,7 +278,7 @@ describe("critical model policy: provider options", () => {
     }
 
     expect(
-      getModelRuntime("accounts/fireworks/models/deepseek-v3p2", true, "medium")
+      getModelRuntime("accounts/fireworks/models/deepseek-v3p2", "medium")
         .getProviderOptionsFromHistory(messages)
         .fireworks
     ).toEqual({
@@ -294,7 +288,7 @@ describe("critical model policy: provider options", () => {
 
     for (const modelId of FIREWORKS_NON_REASONING_MODELS) {
       expect(
-        getModelRuntime(modelId, true, "high").getProviderOptionsFromHistory(messages).fireworks
+        getModelRuntime(modelId, "high").getProviderOptionsFromHistory(messages).fireworks
       ).toEqual({});
     }
   });
@@ -303,38 +297,38 @@ describe("critical model policy: provider options", () => {
 describe("critical model policy: tool behavior", () => {
   it("keeps OpenAI code interpreter denylist intact", () => {
     for (const modelId of OPENAI_CODE_INTERPRETER_DENYLIST) {
-      expect(getModelRuntime(modelId, true).getProviderTools(true).code_interpreter).toBeUndefined();
+      expect(getModelRuntime(modelId).getProviderTools(true).code_interpreter).toBeUndefined();
     }
   });
 
   it("keeps key cross-provider tool policies", () => {
-    const openaiGeneral = getModelRuntime("gpt-4.1-mini", true).getProviderTools(true);
+    const openaiGeneral = getModelRuntime("gpt-4.1-mini").getProviderTools(true);
     expect(openaiGeneral.code_interpreter).toBeDefined();
     expect(openaiGeneral.image_generation).toBeDefined();
     expect(openaiGeneral.web_search).toBeDefined();
 
-    const openaiReasoningNoImage = getModelRuntime("gpt-5", true).getProviderTools(true);
+    const openaiReasoningNoImage = getModelRuntime("gpt-5").getProviderTools(true);
     expect(openaiReasoningNoImage.image_generation).toBeUndefined();
 
     for (const modelId of XAI_RESPONSES_MODELS) {
-      const tools = getModelRuntime(modelId, true).getProviderTools(true);
+      const tools = getModelRuntime(modelId).getProviderTools(true);
       expect(tools.x_search).toBeDefined();
       expect(tools.web_search).toBeDefined();
     }
 
-    const xaiResponsesNoSearch = getModelRuntime("grok-4-1-fast-non-reasoning", false).getProviderTools(
+    const xaiResponsesNoSearch = getModelRuntime("grok-4-1-fast-non-reasoning").getProviderTools(
       false
     );
     expect(xaiResponsesNoSearch.x_search).toBeUndefined();
     expect(xaiResponsesNoSearch.web_search).toBeUndefined();
 
     for (const modelId of XAI_CHAT_MODELS) {
-      const tools = getModelRuntime(modelId, true).getProviderTools(true);
+      const tools = getModelRuntime(modelId).getProviderTools(true);
       expect(tools.x_search).toBeUndefined();
       expect(tools.web_search).toBeUndefined();
     }
 
-    expect(getModelRuntime("claude-sonnet-4-6", true).getProviderTools(true).web_search).toBeDefined();
-    expect(getModelRuntime("gemini-3.1-pro-preview", true).getProviderTools(true).google_search).toBeDefined();
+    expect(getModelRuntime("claude-sonnet-4-6").getProviderTools(true).web_search).toBeDefined();
+    expect(getModelRuntime("gemini-3.1-pro-preview").getProviderTools(true).google_search).toBeDefined();
   });
 });

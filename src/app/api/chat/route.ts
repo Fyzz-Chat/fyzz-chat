@@ -344,7 +344,7 @@ export async function POST(req: NextRequest) {
 
   const { id, model: modelId, browse, temporaryChat, messages } = parsedRequest.data;
   const newMessage = messages.at(-1);
-  const runtime = getModelRuntime(modelId, browse, parsedRequest.data.reasoningEffort);
+  const runtime = getModelRuntime(modelId, parsedRequest.data.reasoningEffort);
   const { model } = runtime;
 
   if (!model) {
