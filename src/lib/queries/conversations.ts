@@ -8,6 +8,7 @@ import {
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
 import { useCallback } from "react";
 import {
+  branchConversationAction,
   deleteConversation,
   saveConversation,
   saveConversationModel,
@@ -443,6 +444,68 @@ export function useDeleteShare() {
     onSuccess: () => {
       // Invalidate all shares queries
       queryClient.invalidateQueries(trpc.shares.queryFilter());
+    },
+  });
+}
+
+export function useBranchConversation() {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation({
+    mutationFn: ({
+      conversationId,
+      messageId,
+    }: {
+      conversationId: string;
+      messageId: string;
+    }) => branchConversationAction(conversationId, messageId),
+    onSuccess: (result, { conversationId }) => {
+      // Get the original conversation to copy its data
+      const originalConversation = queryClient.getQueryData(
+        trpc.conversation.queryKey({ id: conversationId })
+      ) as ConversationData | undefined;
+
+      const originalMessages = queryClient.getQueryData(
+        trpc.messages.queryKey({ id: conversationId })
+      ) as MessagesData | undefined;
+
+      if (originalConversation && originalMessages) {
+        // Create optimistic conversation data
+        const branchedConversation: PartialConversation = {
+          id: result.newConversationId,
+          title: `${originalConversation.title} (branched)`,
+          model: originalConversation.model,
+          messages: originalMessages.messages,
+          lastMessageAt: new Date(),
+        };
+
+        // Set conversation cache
+        queryClient.setQueryData(
+          trpc.conversation.queryKey({ id: result.newConversationId }),
+          branchedConversation
+        );
+
+        // Set messages cache
+        setConversationMessagesCache(
+          queryClient,
+          trpc,
+          result.newConversationId,
+          originalMessages.messages
+        );
+
+        // Add to conversations list
+        updateInfiniteConversationCaches(
+          queryClient,
+          trpc,
+          (old) => prependConversationToFirstPage(old, branchedConversation),
+          { skipFilteredSearch: true }
+        );
+      }
+    },
+    onError: (error) => {
+      console.error("Error branching conversation:", error);
+      // No need to invalidate - the new conversation doesn't exist yet
     },
   });
 }

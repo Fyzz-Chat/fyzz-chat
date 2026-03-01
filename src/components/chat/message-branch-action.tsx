@@ -2,9 +2,8 @@
 
 import { Split } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { MessageAction } from "@/components/ai-elements/message";
-import { branchConversationAction } from "@/lib/actions/conversations";
+import { useBranchConversation } from "@/lib/queries/conversations";
 
 interface MessageBranchActionProps {
   messageId: string;
@@ -16,19 +15,19 @@ export default function MessageBranchAction({
   conversationId,
 }: Readonly<MessageBranchActionProps>) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const branchMutation = useBranchConversation();
 
   async function handleBranch() {
-    if (isLoading) return;
+    if (branchMutation.isPending) return;
 
-    setIsLoading(true);
     try {
-      const result = await branchConversationAction(conversationId, messageId);
+      const result = await branchMutation.mutateAsync({
+        conversationId,
+        messageId,
+      });
       router.push(`/chat/${result.newConversationId}`);
     } catch (error) {
       console.error("Failed to branch conversation:", error);
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -37,7 +36,7 @@ export default function MessageBranchAction({
       label="Branch"
       tooltip="Branch conversation here"
       onClick={handleBranch}
-      disabled={isLoading}
+      disabled={branchMutation.isPending}
     >
       <Split className="size-4" />
     </MessageAction>
