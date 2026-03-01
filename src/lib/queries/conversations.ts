@@ -11,6 +11,7 @@ import {
   deleteConversation,
   saveConversation,
   saveConversationModel,
+  shareConversationUntilMessage,
 } from "@/lib/actions/conversations";
 import { deleteMessageChainAfter } from "@/lib/actions/messages";
 import { useTRPC } from "@/lib/trpc/client";
@@ -404,5 +405,19 @@ export function useCreateConversationOptimistic() {
         prependConversationToFirstPage(old, conversation)
       );
     },
+  });
+}
+
+export function useShareConversation() {
+  return useMutation({
+    mutationFn: ({
+      conversationId,
+      messageId,
+      duration,
+    }: {
+      conversationId: string;
+      messageId: string;
+      duration: string;
+    }) => shareConversationUntilMessage(conversationId, messageId, duration),
   });
 }

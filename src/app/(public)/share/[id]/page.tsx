@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import type { Metadata, ResolvedMetadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import {
@@ -11,28 +10,32 @@ import {
   MessageContent,
   MessageResponse,
 } from "@/components/ai-elements/message";
-import conf from "@/lib/config";
 import { public_getConversationUntilMessage } from "@/lib/dao/conversations";
+import { public_getShareById } from "@/lib/dao/shares";
 import { canonicalUrl, openGraph, twitter } from "@/lib/metadata";
 
 type Props = Readonly<{
-  params: Promise<{ token: string }>;
+  params: Promise<{ id: string }>;
 }>;
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<ResolvedMetadata | Metadata> {
-  const { token } = await params;
+  const { id } = await params;
 
-  const tokenData = jwt.verify(token, conf.jwtSecret) as { messageId: string };
+  const share = await public_getShareById(id);
 
-  const conversation = await public_getConversationUntilMessage(tokenData.messageId);
+  if (!share) {
+    return parent;
+  }
+
+  const conversation = await public_getConversationUntilMessage(share.messageId);
 
   if (conversation) {
     return {
       alternates: {
-        canonical: `${canonicalUrl}/share/${token}`,
+        canonical: `${canonicalUrl}/share/${id}`,
       },
       robots: "noindex, nofollow",
       title: conversation.title,
@@ -53,13 +56,17 @@ export async function generateMetadata(
 export default async function SharePage({
   params,
 }: Readonly<{
-  params: Promise<{ token: string }>;
+  params: Promise<{ id: string }>;
 }>) {
-  const { token } = await params;
+  const { id } = await params;
 
-  const tokenData = jwt.verify(token, conf.jwtSecret) as { messageId: string };
+  const share = await public_getShareById(id);
 
-  const conversation = await public_getConversationUntilMessage(tokenData.messageId);
+  if (!share) {
+    return notFound();
+  }
+
+  const conversation = await public_getConversationUntilMessage(share.messageId);
 
   if (!conversation || !conversation.messages) {
     return notFound();

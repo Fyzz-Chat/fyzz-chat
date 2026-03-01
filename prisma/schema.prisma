@@ -45,6 +45,7 @@ model Conversation {
   id            String    @id @default(uuid())
   title         String
   messages      Message[]
+  shares        Share[]
   model         String
   locked        Boolean   @default(false)
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -76,6 +77,7 @@ model Message {
   completionTokens   Int?         @default(0) @map("completion_tokens")
   conversationId     String       @map("conversation_id")
   conversation       Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  shares             Share[]
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
 
@@ -91,6 +93,20 @@ model SystemSetting {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("system_settings")
+}
+
+model Share {
+  id             String       @id @default(uuid())
+  conversationId String       @map("conversation_id")
+  messageId      String       @map("message_id")
+  expiresAt      DateTime?    @map("expires_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  message        Message      @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([messageId])
+  @@map("shares")
 }
 
 // Better Auth tables

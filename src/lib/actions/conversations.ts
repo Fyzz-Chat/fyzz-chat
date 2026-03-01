@@ -4,12 +4,10 @@ import "server-only";
 
 import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, generateText } from "ai";
-import jwt from "jsonwebtoken";
 import { deleteFile } from "@/lib/aws/s3";
 import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { filterMessages } from "@/lib/backend/utils";
-import conf from "@/lib/config";
-import { MESSAGE_ORDER_DESC } from "@/lib/dao/message-order";
+import { createShare } from "@/lib/dao/shares";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -115,37 +113,33 @@ export async function deleteConversation(conversationId: string) {
   await prisma.conversation.delete({ where: { id: conversationId, userId } });
 }
 
-export async function shareConversationUntilLatestMessage(
+export async function shareConversationUntilMessage(
   conversationId: string,
+  messageId: string,
   duration: string
 ) {
   const user = await getUserIdFromSession();
 
-  const jwtConfigured = conf.jwtSecret !== "";
-
-  if (!jwtConfigured) {
-    throw new Error("JWT is not configured");
-  }
-
+  // Verify the message exists and belongs to the user's conversation
   const message = await prisma.message.findFirst({
     where: {
+      id: messageId,
       conversation: {
         id: conversationId,
         userId: user,
       },
     },
-    orderBy: MESSAGE_ORDER_DESC,
   });
 
   if (!message) {
-    throw new Error("No message found");
+    throw new Error("Message not found or access denied");
   }
 
-  const expiresIn = addDurationToDate(new Date(), duration);
+  const expiresAt = addDurationToDate(new Date(), duration);
 
-  const token = jwt.sign({ messageId: message.id, expiresIn }, conf.jwtSecret);
+  const share = await createShare(conversationId, messageId, expiresAt);
 
-  return token;
+  return share.id;
 }
 
 function addDurationToDate(date: Date, duration: string): Date | null {

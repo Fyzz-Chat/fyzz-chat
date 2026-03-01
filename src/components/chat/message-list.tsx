@@ -300,13 +300,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       persistedMessages.map((message) => (
         <MessageItem
           key={message.id}
+          conversationId={id}
           message={message}
           isStreaming={false}
           onRegenerate={handleRegenerateMessage}
           onEdit={handleEditMessage}
         />
       )),
-    [persistedMessages, handleRegenerateMessage, handleEditMessage]
+    [id, persistedMessages, handleRegenerateMessage, handleEditMessage]
   );
 
   const streamingMessagesList = useMemo(
@@ -314,6 +315,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       streamingMessages.map((message) => (
         <MessageItem
           key={message.id}
+          conversationId={id}
           message={message}
           isStreaming={message.id === activeStreamingAssistantId}
           onRegenerate={handleRegenerateMessage}
@@ -321,6 +323,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         />
       )),
     [
+      id,
       streamingMessages,
       activeStreamingAssistantId,
       handleRegenerateMessage,
