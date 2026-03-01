@@ -18,51 +18,67 @@ export function filterMessages(messages: CustomUIMessage[], modelId: string) {
     (extension) => extension === tabularType
   );
   const anthropicModel = model?.id.startsWith("claude") || false;
+  const toolsSupport = model?.tools ?? false;
 
-  return messages.map((message: CustomUIMessage) => ({
-    ...message,
-    // For Anthropic models only: Remove text-type reasoning parts that lack a signature.
-    // All other cases are allowed:
-    // - Any part for non-Anthropic models
-    // - Reasoning parts WITH signatures (Anthropic)
-    // - Reasoning parts WITHOUT signatures (any model but Anthropic)
-    parts: message.parts?.filter((part) => {
-      if (
-        anthropicModel &&
-        part.type === "reasoning" &&
-        part.providerMetadata?.details?.type === "text" &&
-        !part.providerMetadata?.details?.signature
-      ) {
-        return false;
-      }
+  return messages
+    .filter((message) => toolsSupport || (message.role as string) !== "tool")
+    .map((message: CustomUIMessage) => ({
+      ...message,
+      // For Anthropic models only: Remove text-type reasoning parts that lack a signature.
+      // All other cases are allowed:
+      // - Any part for non-Anthropic models
+      // - Reasoning parts WITH signatures (Anthropic)
+      // - Reasoning parts WITHOUT signatures (any model but Anthropic)
+      parts: message.parts?.filter((part) => {
+        if (!toolsSupport && isToolPart(part.type)) {
+          return false;
+        }
 
-      if (!imageSupport && part.type === "file" && part.mediaType?.startsWith("image/")) {
-        return false;
-      }
+        if (
+          anthropicModel &&
+          part.type === "reasoning" &&
+          part.providerMetadata?.details?.type === "text" &&
+          !part.providerMetadata?.details?.signature
+        ) {
+          return false;
+        }
 
-      if (!pdfSupport && part.type === "file" && part.mediaType?.startsWith(pdfType)) {
-        return false;
-      }
+        if (
+          !imageSupport &&
+          part.type === "file" &&
+          part.mediaType?.startsWith("image/")
+        ) {
+          return false;
+        }
 
-      if (
-        !videoSupport &&
-        part.type === "file" &&
-        part.mediaType?.startsWith(videoType)
-      ) {
-        return false;
-      }
+        if (!pdfSupport && part.type === "file" && part.mediaType?.startsWith(pdfType)) {
+          return false;
+        }
 
-      if (
-        !tabularSupport &&
-        part.type === "file" &&
-        part.mediaType?.startsWith(tabularType)
-      ) {
-        return false;
-      }
+        if (
+          !videoSupport &&
+          part.type === "file" &&
+          part.mediaType?.startsWith(videoType)
+        ) {
+          return false;
+        }
 
-      return true;
-    }),
-  }));
+        if (
+          !tabularSupport &&
+          part.type === "file" &&
+          part.mediaType?.startsWith(tabularType)
+        ) {
+          return false;
+        }
+
+        return true;
+      }),
+    }))
+    .filter((message) => message.parts.length > 0 || message.role === "user");
+}
+
+function isToolPart(partType: string) {
+  return partType === "tool-invocation" || partType.startsWith("tool-");
 }
 
 export function logDuration(start: number, message: string) {
