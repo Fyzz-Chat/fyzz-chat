@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, CopyIcon, ShareIcon, TimerIcon, Trash2 } from "lucide-react";
+import { CheckIcon, CopyIcon, Loader2, ShareIcon, TimerIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { MessageAction } from "@/components/ai-elements/message";
@@ -176,7 +176,11 @@ export default function MessageShareAction({
               onClick={handleDeleteShare}
               disabled={deleteShareMutation.isPending}
             >
-              <Trash2 className="size-4" />
+              {deleteShareMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Trash2 className="size-4" />
+              )}
               <span>{waitForDeleteConfirmation ? "Delete?" : "Delete"}</span>
             </Button>
           </DialogFooter>
