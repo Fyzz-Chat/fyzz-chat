@@ -1,3 +1,29 @@
+# [0.20.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.19.0...v0.20.0) (2026-03-01)
+
+
+### Bug Fixes
+
+* enforce runtime preset declaration for all models and update provider configuration ([60df404](https://github.com/Fyzz-Chat/fyzz-chat/commit/60df404ceade10e24f99e9e9684d004a3a92d6a6))
+* **mcp:** refer to mcp.json correctly ([de15f81](https://github.com/Fyzz-Chat/fyzz-chat/commit/de15f81dc3f0918f502b1152cafc6cab2f575608))
+* **tools:** remove tool messages from history for models not supporting tools ([8d142f4](https://github.com/Fyzz-Chat/fyzz-chat/commit/8d142f49d3673baafad81b8a32d880182747b98a))
+
+
+### Features
+
+* add provider tests for xai ([d23ec6f](https://github.com/Fyzz-Chat/fyzz-chat/commit/d23ec6f3905c5189a8321314eeee7a8fd69ef47e))
+* add reasoning effort to fireworks models ([bce4c32](https://github.com/Fyzz-Chat/fyzz-chat/commit/bce4c3280c9bbb0306924593c7f32ce3785934d5))
+* add reasoning effort to settings ([4663092](https://github.com/Fyzz-Chat/fyzz-chat/commit/4663092eea28586cf27fdb4ac52bbb8ca52f5da1))
+* add sequence to messages ([04bba47](https://github.com/Fyzz-Chat/fyzz-chat/commit/04bba47dc1789f233b7a23c35c3a82cbf151d771))
+* add todos where sequence must be set as default ordering once prod is migrated ([15abda3](https://github.com/Fyzz-Chat/fyzz-chat/commit/15abda318f90e2a74b8ef14e417a9dc2de2ec738))
+* add vercel ai sdk skill ([d7fd4a0](https://github.com/Fyzz-Chat/fyzz-chat/commit/d7fd4a0877d3ef3075d53f2aa0d9005ea8fc3e57))
+* enhance logging for message sequence handling and retries ([31183b9](https://github.com/Fyzz-Chat/fyzz-chat/commit/31183b910581eaa74608eeeac59ba1b09cb2c6d0))
+* **grok:** add x search tools ([4ccbb76](https://github.com/Fyzz-Chat/fyzz-chat/commit/4ccbb76e63919ad5ec83505a4d0091343fc39bfd))
+* **messages:** only load the last 16 message by default ([e063e77](https://github.com/Fyzz-Chat/fyzz-chat/commit/e063e773aff332c377dbf2a628d2d3c09f00dcf0))
+* run tests in ci, pre commit, and agent hooks ([09faafb](https://github.com/Fyzz-Chat/fyzz-chat/commit/09faafbaeeb8ae569883747551fd05c907ff5926))
+* **share:** add option to delete shares ([6844428](https://github.com/Fyzz-Chat/fyzz-chat/commit/6844428568b22fe141569d760607867a0f021698))
+* **tests:** add comprehensive tests for provider configuration and runtime behavior ([8337335](https://github.com/Fyzz-Chat/fyzz-chat/commit/8337335d3676976b0ae76c6fe9baffa593c2050c))
+* use sequence when saving messages ([6080d22](https://github.com/Fyzz-Chat/fyzz-chat/commit/6080d22b5af6c6bf46488c1aec11a5a777c9eb75))
+
 # [0.19.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.18.0...v0.19.0) (2026-02-25)
 
 
