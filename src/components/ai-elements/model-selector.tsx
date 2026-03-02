@@ -252,7 +252,7 @@ export const ModelSelectorLogo = ({
     <img
       {...props}
       alt={`${provider} logo`}
-      className={cn("size-3 dark:invert", className)}
+      className={cn("size-4 dark:invert", className)}
       height={12}
       onError={() => setSrc(FALLBACK_LOGO)}
       src={src}

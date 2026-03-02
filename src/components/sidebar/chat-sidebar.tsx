@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Split, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import type React from "react";
 import { memo, use, useMemo, useState } from "react";
@@ -234,6 +234,9 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
       >
         <div className="flex w-full items-center gap-2">
           {ProviderIcon}
+          {chat.title?.includes("(branched)") && (
+            <Split className="size-4 shrink-0 text-[#3B82F6]" />
+          )}
           <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
           <div className="hidden size-5 group-hover/chat:inline-flex" />
         </div>
