@@ -92,7 +92,7 @@ export default function ChatSettingsMenu({
     <div className="flex flex-col gap-1">
       <div className="flex justify-center">
         <Button
-          className="h-20 flex-col justify-center rounded-[8px] border sm:h-auto sm:w-full sm:flex-row sm:justify-start sm:border-none"
+          className="h-20 flex-1 flex-col justify-center rounded-[8px] border sm:h-auto sm:flex-row sm:justify-start sm:border-none"
           disabled={!supportsAttachments}
           onClick={handleAttachClick}
           type="button"

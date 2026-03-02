@@ -34,7 +34,7 @@ export default function MessageBranchAction({
   return (
     <MessageAction
       label="Branch"
-      tooltip="Branch conversation here"
+      tooltip="Start new conversation from here"
       onClick={handleBranch}
       disabled={branchMutation.isPending}
     >
