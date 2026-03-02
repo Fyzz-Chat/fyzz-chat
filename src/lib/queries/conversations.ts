@@ -479,6 +479,7 @@ export function useBranchConversation() {
           messages: originalMessages.messages,
           lastMessageAt: new Date(),
           branchedFrom: conversationId,
+          projectId: null,
         };
 
         // Set conversation cache

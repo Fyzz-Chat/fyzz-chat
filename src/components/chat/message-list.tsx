@@ -258,6 +258,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             messages: [],
             lastMessageAt: new Date(),
             branchedFrom: null,
+            projectId: null,
           });
           await handleSubmit({ text: initialMessage, files: initialFiles });
           setInitialMessage(null);

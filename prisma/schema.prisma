@@ -35,10 +35,24 @@ model User {
   mcpServers    Json?          @map("mcp_servers")
   defaultModel  String?        @map("default_model")
   conversations Conversation[]
+  projects      Project[]
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Project {
+  id            String         @id @default(uuid())
+  name          String
+  userId        String         @map("user_id")
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@index([userId, updatedAt])
+  @@map("projects")
 }
 
 model Conversation {
@@ -56,10 +70,14 @@ model Conversation {
   branchedFrom  String?        @map("branched_from")
   parent        Conversation?  @relation("ConversationBranches", fields: [branchedFrom], references: [id], onDelete: SetNull)
   branches      Conversation[] @relation("ConversationBranches")
+  projectId     String?        @map("project_id")
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([userId, lastMessageAt(sort: Desc), id(sort: Desc)])
   @@index([branchedFrom])
+  @@index([projectId])
+  @@index([userId, projectId, lastMessageAt])
   @@map("conversations")
 }
 
