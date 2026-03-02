@@ -105,7 +105,7 @@ export default function ChatSidebar({
   });
 
   return (
-    <div className="no-scrollbar flex flex-1 flex-col overflow-auto">
+    <div className="flex flex-col">
       {groupedConversations.today.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel className="text-primary/70">
