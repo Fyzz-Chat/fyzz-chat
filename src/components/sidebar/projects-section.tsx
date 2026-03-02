@@ -27,13 +27,18 @@ import {
   useUnassignedConversationsCount,
 } from "@/lib/queries/projects";
 import { cn } from "@/lib/utils";
+import type { ProjectWithCount } from "@/types/chat";
 
 interface ProjectsSectionProps {
+  initialProjects: ProjectWithCount[];
+  initialUnassignedCount: number;
   selectedProjectId: string | null | "unassigned";
   onSelectProject: (projectId: string | null | "unassigned") => void;
 }
 
 export function ProjectsSection({
+  initialProjects,
+  initialUnassignedCount,
   selectedProjectId,
   onSelectProject,
 }: ProjectsSectionProps) {
@@ -43,8 +48,9 @@ export function ProjectsSection({
   const [newProjectName, setNewProjectName] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const projects = projectsData?.projects ?? [];
-  const unassignedCount = unassignedCountData?.count ?? 0;
+  // Use server-fetched data initially, then React Query data when available
+  const projects = projectsData?.projects ?? initialProjects;
+  const unassignedCount = unassignedCountData?.count ?? initialUnassignedCount;
 
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) return;

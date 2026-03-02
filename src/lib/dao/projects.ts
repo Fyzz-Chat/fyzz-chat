@@ -2,15 +2,7 @@ import "server-only";
 
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
-
-export interface ProjectWithCount {
-  id: string;
-  name: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  conversationCount: number;
-}
+import type { ProjectWithCount } from "@/types/chat";
 
 export async function getProjects(): Promise<ProjectWithCount[]> {
   const userId = await getUserIdFromSession();

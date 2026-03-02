@@ -29,12 +29,27 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
       ? caller.infiniteConversations({ limit: 15, search: "" })
       : { items: [], nextCursor: undefined }
   );
+  const projectsPromise = userPromise.then((user) =>
+    user ? caller.projects() : { projects: [] }
+  );
+  const unassignedCountPromise = userPromise.then((user) =>
+    user ? caller.unassignedConversationsCount() : { count: 0 }
+  );
 
-  const [cookieStore, user, providers, initialConversationsData] = await Promise.all([
+  const [
+    cookieStore,
+    user,
+    providers,
+    initialConversationsData,
+    initialProjectsData,
+    initialUnassignedCount,
+  ] = await Promise.all([
     cookies(),
     userPromise,
     caller.providers(),
     conversationsPromise,
+    projectsPromise,
+    unassignedCountPromise,
   ]);
 
   const sidebarState = cookieStore.get("sidebar:state");
@@ -57,6 +72,10 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
             <AppSidebar>
               <ChatSidebarWithProjects
                 conversations={initialConversationsData}
+                projects={{
+                  projects: initialProjectsData.projects,
+                  unassignedCount: initialUnassignedCount.count,
+                }}
                 authorized={isLoggedIn}
               />
             </AppSidebar>

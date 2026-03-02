@@ -4,15 +4,17 @@ import { useState } from "react";
 import ChatSidebar from "@/components/sidebar/chat-sidebar";
 import { ProjectsSection } from "@/components/sidebar/projects-section";
 import { Separator } from "@/components/ui/separator";
-import type { PartialConversation } from "@/types/chat";
+import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
 interface ChatSidebarWithProjectsProps {
   conversations: { items: PartialConversation[]; nextCursor: string | undefined };
+  projects: { projects: ProjectWithCount[]; unassignedCount: number };
   authorized: boolean;
 }
 
 export function ChatSidebarWithProjects({
   conversations,
+  projects,
   authorized,
 }: ChatSidebarWithProjectsProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<
@@ -39,6 +41,8 @@ export function ChatSidebarWithProjects({
   return (
     <>
       <ProjectsSection
+        initialProjects={projects.projects}
+        initialUnassignedCount={projects.unassignedCount}
         selectedProjectId={selectedProjectId}
         onSelectProject={setSelectedProjectId}
       />

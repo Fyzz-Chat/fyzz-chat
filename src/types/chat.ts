@@ -54,3 +54,12 @@ export type MessagesData = {
   messages: CustomUIMessage[];
   hasMore: boolean;
 };
+
+export interface ProjectWithCount {
+  id: string;
+  name: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  conversationCount: number;
+}
