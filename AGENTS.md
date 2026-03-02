@@ -48,6 +48,13 @@ Client-side data flows through these layers (top to bottom):
 4. **Server actions** (`lib/actions/`) — server endpoints for writes
 5. **DAOs** (`lib/dao/`) — Prisma database queries
 
+**CRITICAL RULE - Data Fetching:**
+- React Query hooks (`lib/queries/`) MUST fetch data through **tRPC only** - never import DAO functions directly
+- Use `useTRPC()` hook and call tRPC procedures (e.g., `trpc.projects.queryOptions()`)
+- DAO functions are for tRPC routes and server actions only
+- Server actions (`lib/actions/`) can call DAO functions directly for writes
+- Violating this breaks the application as DAO functions are `server-only` and cannot be imported directly in client-side code.
+
 ### Client-side caching
 
 React Query cache is persisted to **IndexedDB** (key: `"fyzz-chat-query-cache"`) via
