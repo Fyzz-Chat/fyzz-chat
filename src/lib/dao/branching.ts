@@ -54,6 +54,7 @@ export async function branchConversation(
     select: {
       title: true,
       model: true,
+      projectId: true,
     },
   });
 
@@ -86,6 +87,7 @@ export async function branchConversation(
         model: originalConversation.model,
         userId,
         branchedFrom: conversationId,
+        projectId: originalConversation.projectId,
       },
     });
 

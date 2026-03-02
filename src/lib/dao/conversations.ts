@@ -30,6 +30,7 @@ export async function getConversation(id: string) {
       id: true,
       title: true,
       model: true,
+      projectId: true,
     },
   });
 

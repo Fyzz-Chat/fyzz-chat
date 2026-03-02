@@ -41,15 +41,6 @@ export type ConversationPage = {
 
 export type ConversationsInfiniteData = InfiniteData<ConversationPage, string | null>;
 
-export type ConversationData =
-  | {
-      id: string;
-      title: string;
-      model: string;
-    }
-  | null
-  | undefined;
-
 export type MessagesData = {
   messages: CustomUIMessage[];
   hasMore: boolean;

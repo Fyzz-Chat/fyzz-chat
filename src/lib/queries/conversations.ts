@@ -21,7 +21,6 @@ import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type {
-  ConversationData,
   ConversationPage,
   ConversationsInfiniteData,
   CustomUIMessage,
@@ -231,7 +230,7 @@ export function useUpdateConversationModel() {
       if (updatedConversation) {
         queryClient.setQueryData(
           trpc.conversation.queryKey({ id: conversationId }),
-          (old: ConversationData): ConversationData => {
+          (old) => {
             if (!old) return old;
             return {
               ...old,
@@ -470,11 +469,11 @@ export function useBranchConversation() {
       // Get the original conversation to copy its data
       const originalConversation = queryClient.getQueryData(
         trpc.conversation.queryKey({ id: conversationId })
-      ) as ConversationData | undefined;
+      );
 
       const originalMessages = queryClient.getQueryData(
         trpc.messages.queryKey({ id: conversationId })
-      ) as MessagesData | undefined;
+      );
 
       if (originalConversation && originalMessages) {
         // Create optimistic conversation data
@@ -485,7 +484,7 @@ export function useBranchConversation() {
           messages: originalMessages.messages,
           lastMessageAt: new Date(),
           branchedFrom: conversationId,
-          projectId: null,
+          projectId: originalConversation.projectId,
         };
 
         // Set conversation cache
@@ -502,13 +501,20 @@ export function useBranchConversation() {
           originalMessages.messages
         );
 
-        // Add to conversations list
+        // Add to "All" conversations list
         updateInfiniteConversationCaches(
           queryClient,
           trpc,
           (old) => prependConversationToFirstPage(old, branchedConversation),
           { skipFilteredSearch: true }
         );
+
+        // Invalidate project-related queries to refresh counts and filtered lists
+        if (originalConversation.projectId) {
+          queryClient.invalidateQueries(trpc.projects.queryFilter());
+        }
+        queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
+        queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
       }
     },
     onError: (error) => {
