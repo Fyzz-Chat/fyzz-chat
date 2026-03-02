@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Split, Trash2 } from "lucide-react";
+import { FolderInput, Loader2, MoreVertical, Split, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import type React from "react";
 import { memo, use, useMemo, useState } from "react";
@@ -16,9 +16,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -31,6 +40,7 @@ import {
   useDeleteConversation,
   usePrefetchConversation,
 } from "@/lib/queries/conversations";
+import { useAssignConversationToProject, useProjects } from "@/lib/queries/projects";
 import { cn, getMessageContent } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
@@ -73,10 +83,12 @@ function groupConversationsByTime(conversations: PartialConversation[]) {
 export default function ChatSidebar({
   conversations,
   authorized,
+  projectId,
 }: Readonly<{
   // biome-ignore lint/suspicious/noExplicitAny: TODO: Need further investigation
   conversations: { items: any; nextCursor: string | undefined };
   authorized: boolean;
+  projectId?: string | null;
 }>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -84,7 +96,8 @@ export default function ChatSidebar({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useConversations(
     conversations,
     authorized,
-    searchQuery
+    searchQuery,
+    projectId
   );
 
   const { allConversations, groupedConversations } = useMemo(() => {
@@ -183,6 +196,8 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   const currentId = params.id as string;
 
   const deleteConversation = useDeleteConversation();
+  const assignConversation = useAssignConversationToProject();
+  const { data: projectsData } = useProjects();
   const router = useRouter();
   const providers = useModelStore((state) => state.providers);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -192,6 +207,8 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
     [providers, chat.model]
   );
   const prefetchConversation = usePrefetchConversation();
+
+  const projects = projectsData?.projects ?? [];
 
   const handleDelete = async () => {
     try {
@@ -222,13 +239,17 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
     handleDelete();
   };
 
+  const handleMoveToProject = (projectId: string | null) => {
+    assignConversation.mutate({ conversationId: chat.id, projectId });
+  };
+
   return (
     <div className="group/chat relative">
       <FastLink
         href={`/chat/${chat.id}`}
         prefetchFunction={() => prefetchConversation(chat.id)}
         className={cn(
-          "flex w-full flex-col items-start gap-1 rounded-lg p-3 text-left text-sm transition-colors",
+          "flex w-full flex-col items-start gap-1 rounded-lg p-3 pr-10 text-left text-sm transition-colors",
           currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
         )}
       >
@@ -236,7 +257,6 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
           {ProviderIcon}
           {chat.branchedFrom && <Split className="size-4 shrink-0 text-[#3B82F6]" />}
           <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
-          <div className="hidden size-5 group-hover/chat:inline-flex" />
         </div>
         {chat?.messages?.length > 0 && (
           <p
@@ -249,14 +269,15 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
           </p>
         )}
       </FastLink>
-      <AlertDialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
-        <AlertDialogTrigger asChild>
+
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-3 right-3 z-10 hidden size-5 items-center justify-center p-2 hover:bg-transparent group-hover/chat:inline-flex"
+            className="pointer-events-none absolute top-2 right-2 z-10 inline-flex size-7 items-center justify-center p-1 opacity-0 transition-opacity hover:bg-accent/50 group-hover/chat:pointer-events-auto group-hover/chat:opacity-100 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100"
           >
-            <Trash2
+            <MoreVertical
               size={16}
               className={cn(
                 "text-muted-foreground",
@@ -264,7 +285,43 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
               )}
             />
           </Button>
-        </AlertDialogTrigger>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-48"
+          side="right"
+          align="start"
+          sideOffset={4}
+          avoidCollisions={false}
+        >
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="flex items-center gap-2">
+              <FolderInput className="size-4" />
+              Move to Project
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="w-48" alignOffset={-4}>
+              <DropdownMenuItem onClick={() => handleMoveToProject(null)}>
+                Unassigned
+              </DropdownMenuItem>
+              {projects.length > 0 && <DropdownMenuSeparator />}
+              {projects.map((project) => (
+                <DropdownMenuItem
+                  key={project.id}
+                  onClick={() => handleMoveToProject(project.id)}
+                >
+                  {project.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive" onClick={() => setIsModalOpen(true)}>
+            <Trash2 className="mr-2 size-4" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>

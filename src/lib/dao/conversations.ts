@@ -86,7 +86,8 @@ export async function getOrCreateConversation(
 export async function getConversationsByCursor(
   limit: number,
   cursor?: string,
-  search?: string
+  search?: string,
+  projectId?: string | null
 ): Promise<ConversationPage> {
   const userId = await getUserIdFromSession();
 
@@ -105,6 +106,12 @@ export async function getConversationsByCursor(
     take: limit + 1,
     where: {
       userId,
+      // Filter by project if specified
+      ...(projectId === null
+        ? { projectId: null }
+        : projectId !== undefined
+          ? { projectId }
+          : {}),
       ...(search
         ? {
             OR: [

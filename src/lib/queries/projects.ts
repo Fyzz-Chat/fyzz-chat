@@ -73,7 +73,7 @@ export function useAssignConversationToProject() {
       projectId: string | null;
     }) => assignConversationToProjectAction(conversationId, projectId),
     onSuccess: (_, { conversationId, projectId }) => {
-      // Update conversation cache
+      // Update conversation cache optimistically for current view
       const queries = queryClient.getQueriesData(
         trpc.infiniteConversations.infiniteQueryFilter()
       );
@@ -95,6 +95,9 @@ export function useAssignConversationToProject() {
           }
         );
       });
+
+      // Invalidate all conversation queries to ensure filtered views are updated
+      queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
 
       // Invalidate project counts
       queryClient.invalidateQueries(trpc.projects.queryFilter());

@@ -123,7 +123,8 @@ function updateConversationMessageCaches(
 export function useConversations(
   conversations: ConversationPage,
   authorized: boolean,
-  search?: string
+  search?: string,
+  projectId?: string | null
 ) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
@@ -136,6 +137,7 @@ export function useConversations(
   const myQuery = trpc.infiniteConversations.infiniteQueryOptions(
     {
       search: search,
+      projectId: projectId,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -259,6 +261,10 @@ export function useDeleteConversation() {
           ),
         })),
       }));
+
+      // Invalidate project counts since conversation may have been in a project
+      queryClient.invalidateQueries(trpc.projects.queryFilter());
+      queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
     },
   });
 }

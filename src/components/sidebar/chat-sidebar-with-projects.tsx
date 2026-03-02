@@ -21,22 +21,16 @@ export function ChatSidebarWithProjects({
     string | null | "unassigned"
   >(null);
 
-  // Filter conversations based on selected project
-  const filteredConversations = {
-    ...conversations,
-    items: conversations.items.filter((c) => {
-      if (selectedProjectId === null) {
-        // Show all conversations
-        return true;
-      }
-      if (selectedProjectId === "unassigned") {
-        // Show only unassigned conversations
-        return !c.projectId;
-      }
-      // Show conversations from selected project
-      return c.projectId === selectedProjectId;
-    }),
-  };
+  // Convert selection to API parameter:
+  // - "All" (null) → undefined (no filter, show all)
+  // - "Unassigned" → null (filter for unassigned only)
+  // - Specific project → project ID string
+  const projectIdForApi =
+    selectedProjectId === "unassigned"
+      ? null
+      : selectedProjectId === null
+        ? undefined
+        : selectedProjectId;
 
   return (
     <>
@@ -49,7 +43,11 @@ export function ChatSidebarWithProjects({
       <div className="px-2">
         <Separator />
       </div>
-      <ChatSidebar conversations={filteredConversations} authorized={authorized} />
+      <ChatSidebar
+        conversations={conversations}
+        authorized={authorized}
+        projectId={projectIdForApi}
+      />
     </>
   );
 }

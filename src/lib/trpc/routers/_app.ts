@@ -55,11 +55,17 @@ export const appRouter = createTRPCRouter({
         limit: z.number().default(15),
         cursor: z.string().optional(),
         search: z.string().default(""),
+        projectId: z.string().optional().nullable(),
       })
     )
     .query(async (opts) => {
-      const { limit, cursor, search } = opts.input;
-      const { items, nextCursor } = await getConversationsByCursor(limit, cursor, search);
+      const { limit, cursor, search, projectId } = opts.input;
+      const { items, nextCursor } = await getConversationsByCursor(
+        limit,
+        cursor,
+        search,
+        projectId
+      );
       return { items, nextCursor };
     }),
   shares: protectedProcedure

@@ -72,7 +72,11 @@ export function ProjectsSection({
                 selectedProjectId === null && "bg-accent text-accent-foreground"
               )}
             >
-              <FolderOpen className="size-4" />
+              {selectedProjectId === null ? (
+                <FolderOpen className="size-4" />
+              ) : (
+                <Folder className="size-4" />
+              )}
               <span>All Conversations</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -85,7 +89,11 @@ export function ProjectsSection({
                 selectedProjectId === "unassigned" && "bg-accent text-accent-foreground"
               )}
             >
-              <Folder className="size-4" />
+              {selectedProjectId === "unassigned" ? (
+                <FolderOpen className="size-4" />
+              ) : (
+                <Folder className="size-4" />
+              )}
               <span className="flex-1">Unassigned</span>
               {unassignedCount > 0 && (
                 <span className="text-muted-foreground text-xs">{unassignedCount}</span>
@@ -102,7 +110,11 @@ export function ProjectsSection({
                   selectedProjectId === project.id && "bg-accent text-accent-foreground"
                 )}
               >
-                <Folder className="size-4" />
+                {selectedProjectId === project.id ? (
+                  <FolderOpen className="size-4" />
+                ) : (
+                  <Folder className="size-4" />
+                )}
                 <span className="flex-1 truncate">{project.name}</span>
                 {project.conversationCount > 0 && (
                   <span className="text-muted-foreground text-xs">
