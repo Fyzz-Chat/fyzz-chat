@@ -82,9 +82,10 @@ export async function branchConversation(
   const result = await prisma.$transaction(async (tx) => {
     const newConversation = await tx.conversation.create({
       data: {
-        title: `${originalConversation.title} (branched)`,
+        title: originalConversation.title,
         model: originalConversation.model,
         userId,
+        branchedFrom: conversationId,
       },
     });
 

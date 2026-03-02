@@ -42,20 +42,24 @@ model User {
 }
 
 model Conversation {
-  id            String    @id @default(uuid())
+  id            String         @id @default(uuid())
   title         String
   messages      Message[]
   shares        Share[]
   model         String
-  locked        Boolean   @default(false)
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String    @map("user_id")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  lastMessageAt DateTime  @default(now()) @map("last_message_at")
+  locked        Boolean        @default(false)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String         @map("user_id")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  lastMessageAt DateTime       @default(now()) @map("last_message_at")
+  branchedFrom  String?        @map("branched_from")
+  parent        Conversation?  @relation("ConversationBranches", fields: [branchedFrom], references: [id], onDelete: SetNull)
+  branches      Conversation[] @relation("ConversationBranches")
 
   @@index([userId])
   @@index([userId, lastMessageAt(sort: Desc), id(sort: Desc)])
+  @@index([branchedFrom])
   @@map("conversations")
 }
 

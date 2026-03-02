@@ -474,10 +474,11 @@ export function useBranchConversation() {
         // Create optimistic conversation data
         const branchedConversation: PartialConversation = {
           id: result.newConversationId,
-          title: `${originalConversation.title} (branched)`,
+          title: originalConversation.title,
           model: originalConversation.model,
           messages: originalMessages.messages,
           lastMessageAt: new Date(),
+          branchedFrom: conversationId,
         };
 
         // Set conversation cache

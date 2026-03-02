@@ -234,9 +234,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
       >
         <div className="flex w-full items-center gap-2">
           {ProviderIcon}
-          {chat.title?.includes("(branched)") && (
-            <Split className="size-4 shrink-0 text-[#3B82F6]" />
-          )}
+          {chat.branchedFrom && <Split className="size-4 shrink-0 text-[#3B82F6]" />}
           <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
           <div className="hidden size-5 group-hover/chat:inline-flex" />
         </div>

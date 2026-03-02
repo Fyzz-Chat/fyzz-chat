@@ -135,6 +135,7 @@ export async function getConversationsByCursor(
       title: true,
       lastMessageAt: true,
       model: true,
+      branchedFrom: true,
       messages: {
         select: {
           id: true,
