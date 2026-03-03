@@ -1,3 +1,25 @@
+# [0.22.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.21.0...v0.22.0) (2026-03-03)
+
+
+### Bug Fixes
+
+* **models:** remove deprecated models, update existing ones ([410ef7d](https://github.com/Fyzz-Chat/fyzz-chat/commit/410ef7dd30757c2511c944c49667057dbb7437e8))
+* **projects:** only populate the full list with initial data ([8c08871](https://github.com/Fyzz-Chat/fyzz-chat/commit/8c08871d854a00cbd805c3ec35c1a3c693eca856))
+
+
+### Features
+
+* add better logging to chat endpoint ([3419df3](https://github.com/Fyzz-Chat/fyzz-chat/commit/3419df310dd6ee5be62d71f484a900857ba1bff3))
+* add code execution tools to claude models ([5002b40](https://github.com/Fyzz-Chat/fyzz-chat/commit/5002b40b260ce66bedbf4fe18c59160e11fbe4a3))
+* add projects table ([46001c3](https://github.com/Fyzz-Chat/fyzz-chat/commit/46001c3ad91cf09cc5644cb7766b6c76a46c695a))
+* **projects:** add dao and actions ([d3b0afa](https://github.com/Fyzz-Chat/fyzz-chat/commit/d3b0afa600a237cd05e454f35124c0b321b224b7))
+* **projects:** add mobile drawer menu ([fbeda38](https://github.com/Fyzz-Chat/fyzz-chat/commit/fbeda38f4f996fc2cb0768a13058a50a31ea16c7))
+* **projects:** add option to assign conversations to projects ([f54d3e2](https://github.com/Fyzz-Chat/fyzz-chat/commit/f54d3e2857f86d6711ad56baee502e77f7e93e55))
+* **projects:** add option to delete and rename projects ([0736f89](https://github.com/Fyzz-Chat/fyzz-chat/commit/0736f89aa5428fb64cb8307cb3f95db1aaf02f31))
+* **projects:** add sidebar menu ([e62e743](https://github.com/Fyzz-Chat/fyzz-chat/commit/e62e7431d5b4dc9df8f9d8213701366a6a70b962))
+* **projects:** branching a conversation in a project stays in the project ([98a4f11](https://github.com/Fyzz-Chat/fyzz-chat/commit/98a4f114b89fc15629816da789b370de38698cab))
+* **projects:** introduce queries and trpc endpoints ([861ee28](https://github.com/Fyzz-Chat/fyzz-chat/commit/861ee28ab5e286b662d850d5d6a5bdfeed1e5f73))
+
 # [0.21.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.20.0...v0.21.0) (2026-03-01)
 
 
