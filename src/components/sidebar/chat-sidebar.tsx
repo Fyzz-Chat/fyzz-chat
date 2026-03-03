@@ -1,9 +1,9 @@
 "use client";
 
-import { FolderInput, Loader2, MoreVertical, Split, Trash2 } from "lucide-react";
+import { Check, FolderInput, Loader2, MoreVertical, Split, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import type React from "react";
-import { memo, use, useMemo, useState } from "react";
+import { memo, use, useMemo, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { FastLink } from "@/components/fast-link";
@@ -18,6 +18,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +43,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { getProviderIcon } from "@/lib/providers";
 import {
   useConversations,
@@ -54,18 +64,22 @@ function groupConversationsByTime(conversations: PartialConversation[]) {
   const lastWeek = new Date(today);
   lastWeek.setDate(lastWeek.getDate() - 7);
 
-  const groups = {
-    today: [] as PartialConversation[],
-    yesterday: [] as PartialConversation[],
-    lastWeek: [] as PartialConversation[],
-    older: [] as PartialConversation[],
+  const groups: {
+    today: PartialConversation[];
+    yesterday: PartialConversation[];
+    lastWeek: PartialConversation[];
+    older: PartialConversation[];
+  } = {
+    today: [],
+    yesterday: [],
+    lastWeek: [],
+    older: [],
   };
 
   conversations
-    .filter((conv) => !!conv)
+    .filter((conv) => conv.lastMessageAt)
     .forEach((conv) => {
       const convDate = new Date(conv.lastMessageAt);
-
       if (convDate >= today) {
         groups.today.push(conv);
       } else if (convDate >= yesterday && convDate < today) {
@@ -99,23 +113,19 @@ export default function ChatSidebar({
     searchQuery,
     projectId
   );
-
-  const { allConversations, groupedConversations } = useMemo(() => {
-    const all = data?.pages.flatMap((page) => page.items) ?? [];
-    return {
-      allConversations: all,
-      groupedConversations: groupConversationsByTime(all),
-    };
-  }, [data?.pages]);
-
+  const allConversations = useMemo(
+    () => data?.pages.flatMap((page) => page.items) ?? [],
+    [data]
+  );
   const { ref } = useInView({
     onChange: (inView) => {
       if (inView && hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     },
-    threshold: 0,
   });
+
+  const groupedConversations = groupConversationsByTime(allConversations);
 
   return (
     <div className="flex flex-col">
@@ -202,6 +212,8 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   const providers = useModelStore((state) => state.providers);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const ProviderIcon = useMemo(
     () => getProviderIcon(providers, chat.model),
     [providers, chat.model]
@@ -241,92 +253,238 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
 
   const handleMoveToProject = (projectId: string | null) => {
     assignConversation.mutate({ conversationId: chat.id, projectId });
+    setDrawerOpen(false);
+  };
+
+  const openDeleteDialog = () => {
+    setDrawerOpen(false);
+    setIsModalOpen(true);
+  };
+
+  // Long press handling for mobile
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const [isLongPress, setIsLongPress] = useState(false);
+  const LONG_PRESS_DURATION = 500; // ms
+
+  const handleTouchStart = (_e: React.TouchEvent) => {
+    if (!isMobile) return;
+
+    setIsLongPress(false);
+    longPressTimer.current = setTimeout(() => {
+      setIsLongPress(true);
+      setDrawerOpen(true);
+    }, LONG_PRESS_DURATION);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+
+    // If it wasn't a long press, allow default navigation
+    if (!isLongPress) {
+      // Let the FastLink handle navigation
+      return;
+    }
+
+    // Prevent navigation on long press
+    e.preventDefault();
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
   };
 
   return (
-    <div className="group/chat relative">
-      <FastLink
-        href={`/chat/${chat.id}`}
-        prefetchFunction={() => prefetchConversation(chat.id)}
-        className={cn(
-          "flex w-full flex-col items-start gap-1 rounded-lg p-3 pr-10 text-left text-sm transition-colors",
-          currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
-        )}
-      >
-        <div className="flex w-full items-center gap-2">
-          {ProviderIcon}
-          {chat.branchedFrom && <Split className="size-4 shrink-0 text-[#3B82F6]" />}
-          <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
-        </div>
-        {chat?.messages?.length > 0 && (
-          <p
-            className={cn(
-              "w-full truncate text-muted-foreground text-xs",
-              currentId === chat.id && "text-accent-foreground"
-            )}
-          >
-            {getMessageContent(chat.messages[chat.messages.length - 1])}
-          </p>
-        )}
-      </FastLink>
-
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="pointer-events-none absolute top-2 right-2 z-10 inline-flex size-7 items-center justify-center p-1 opacity-0 transition-opacity hover:bg-accent/50 group-hover/chat:pointer-events-auto group-hover/chat:opacity-100 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100"
-          >
-            <MoreVertical
-              size={16}
+    <>
+      <div className="group/chat relative">
+        <FastLink
+          href={`/chat/${chat.id}`}
+          prefetchFunction={() => prefetchConversation(chat.id)}
+          className={cn(
+            "flex min-h-16 w-full touch-manipulation select-none flex-col items-start gap-1 rounded-lg p-3.5 pr-10 text-left text-[15px] transition-colors sm:min-h-0 sm:p-3 sm:text-sm",
+            currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+          )}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchMove={handleTouchMove}
+        >
+          <div className="flex w-full items-center gap-2">
+            {ProviderIcon}
+            {chat.branchedFrom && <Split className="size-4 shrink-0 text-[#3B82F6]" />}
+            <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
+          </div>
+          {chat?.messages?.length > 0 && (
+            <p
               className={cn(
-                "text-muted-foreground",
+                "w-full truncate text-muted-foreground text-xs",
                 currentId === chat.id && "text-accent-foreground"
               )}
-            />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-48"
-          side="right"
-          align="start"
-          sideOffset={4}
-          avoidCollisions={false}
-        >
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="flex items-center gap-2">
-              <FolderInput className="size-4" />
-              Move to Project
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-48" alignOffset={-4}>
-              <DropdownMenuItem onClick={() => handleMoveToProject(null)}>
-                Unassigned
+            >
+              {getMessageContent(chat.messages[chat.messages.length - 1])}
+            </p>
+          )}
+        </FastLink>
+
+        {/* Desktop: 3-dot menu */}
+        {!isMobile && (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="pointer-events-none absolute top-2 right-2 z-10 inline-flex size-7 items-center justify-center p-1 opacity-0 transition-opacity hover:bg-accent/50 group-hover/chat:pointer-events-auto group-hover/chat:opacity-100 data-[state=open]:pointer-events-auto data-[state=open]:opacity-100"
+              >
+                <MoreVertical
+                  size={16}
+                  className={cn(
+                    "text-muted-foreground",
+                    currentId === chat.id && "text-accent-foreground"
+                  )}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-48"
+              side="right"
+              align="start"
+              sideOffset={4}
+              avoidCollisions={false}
+            >
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="flex items-center gap-2">
+                  <FolderInput className="size-4" />
+                  Move to Project
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-48" alignOffset={-4}>
+                  <DropdownMenuItem onClick={() => handleMoveToProject(null)}>
+                    Unassigned
+                  </DropdownMenuItem>
+                  {projects.length > 0 && <DropdownMenuSeparator />}
+                  {projects.map((project) => (
+                    <DropdownMenuItem
+                      key={project.id}
+                      onClick={() => handleMoveToProject(project.id)}
+                    >
+                      {project.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Trash2 className="mr-2 size-4" />
+                Delete
               </DropdownMenuItem>
-              {projects.length > 0 && <DropdownMenuSeparator />}
-              {projects.map((project) => (
-                <DropdownMenuItem
-                  key={project.id}
-                  onClick={() => handleMoveToProject(project.id)}
-                >
-                  {project.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" onClick={() => setIsModalOpen(true)}>
-            <Trash2 className="mr-2 size-4" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+
+      {/* Mobile: Drawer */}
+      {isMobile && (
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerContent className="rounded-t-3xl pb-2">
+            <DrawerHeader className="pb-2 text-center">
+              <DrawerTitle className="text-base">Actions</DrawerTitle>
+              <DrawerDescription className="space-y-1 text-center">
+                <span className="line-clamp-1 block text-foreground text-sm">
+                  {chat.title}
+                </span>
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="space-y-4 px-4 py-2">
+              <div className="rounded-2xl border bg-muted/30 p-1">
+                <div className="px-3 pt-2 pb-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+                  Project
+                </div>
+                <div className="max-h-[34svh] space-y-1 overflow-y-auto px-1 pb-1">
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "h-12 w-full justify-between rounded-xl px-3 text-sm",
+                      chat.projectId === null && "text-[#3B82F6]"
+                    )}
+                    disabled={assignConversation.isPending}
+                    onClick={() => handleMoveToProject(null)}
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <FolderInput
+                        className={cn(
+                          "size-4 text-muted-foreground",
+                          chat.projectId === null && "text-[#3B82F6]"
+                        )}
+                      />
+                      Unassigned
+                    </span>
+                    {chat.projectId === null && (
+                      <Check className="size-4 text-[#3B82F6]" />
+                    )}
+                  </Button>
+                  {projects.map((project) => (
+                    <Button
+                      key={project.id}
+                      variant="ghost"
+                      className={cn(
+                        "h-12 w-full justify-between rounded-xl px-3 text-sm",
+                        chat.projectId === project.id && "text-[#3B82F6]"
+                      )}
+                      disabled={assignConversation.isPending}
+                      onClick={() => handleMoveToProject(project.id)}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <FolderInput
+                          className={cn(
+                            "size-4 text-muted-foreground",
+                            chat.projectId === project.id && "text-[#3B82F6]"
+                          )}
+                        />
+                        {project.name}
+                      </span>
+                      {chat.projectId === project.id && (
+                        <Check className="size-4 text-[#3B82F6]" />
+                      )}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DrawerFooter className="pt-1">
+              <Button
+                variant="destructive"
+                size="lg"
+                className="h-12 rounded-xl"
+                disabled={isDeleting}
+                onClick={openDeleteDialog}
+              >
+                <Trash2 className="size-4" />
+                Delete Conversation
+              </Button>
+              <DrawerClose asChild>
+                <Button variant="outline" size="lg" className="h-12 rounded-xl">
+                  Close
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      )}
 
       <AlertDialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              You won't see this conversation ever again.
+              You won&apos;t see this conversation ever again.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -345,7 +503,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
 
