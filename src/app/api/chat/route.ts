@@ -188,7 +188,10 @@ async function loadToolsForRequest({
     logDuration(start, "Tools fetched");
     return toolsResult;
   } catch (error) {
-    logger.error(error);
+    const prefix = "[Chat] Error fetching tools";
+    const model = `Model: ${runtime.modelId}`;
+    const errorMsg = `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+    logger.error(`${prefix}\n${model}\n${errorMsg}`);
 
     if (error instanceof McpClientInitError) {
       return {
@@ -298,7 +301,10 @@ async function persistStreamResult({
       usage = await result.usage;
       logger.debug(JSON.stringify(usage));
     } catch (error) {
-      logger.error(error);
+      const prefix = "[Chat] Error getting usage";
+      const model = `Model: ${runtime.modelId}`;
+      const errorMsg = `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+      logger.error(`${prefix}\n${model}\n${errorMsg}`);
     }
   }
 
@@ -314,7 +320,10 @@ async function persistStreamResult({
       await updateConversationTitle(conversationId, messages);
     }
   } catch (error) {
-    logger.error(error);
+    const prefix = "[Chat] Error updating conversation title";
+    const conversation = `Conversation: ${conversationId}`;
+    const errorMsg = `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+    logger.error(`${prefix}\n${conversation}\n${errorMsg}`);
   }
 }
 
@@ -435,9 +444,10 @@ export async function POST(req: NextRequest) {
       }
     },
     onError: async (error) => {
-      logger.error(
-        (error as { error?: { message?: string } }).error?.message ?? "Unknown error"
-      );
+      const prefix = "[Chat] Error while streaming";
+      const model = `Model: ${runtime.modelId}`;
+      const errorMsg = `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+      logger.error(`${prefix}\n${model}\n${errorMsg}`);
       await endConversation();
     },
   });
@@ -446,7 +456,10 @@ export async function POST(req: NextRequest) {
 
   result.consumeStream({
     onError: (error) => {
-      logger.error(error instanceof Error ? error.message : "Unknown error");
+      const prefix = "[Chat] Error while consuming stream";
+      const model = `Model: ${runtime.modelId}`;
+      const errorMsg = `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+      logger.error(`${prefix}\n${model}\n${errorMsg}`);
       void endConversation();
     },
   });
@@ -457,7 +470,10 @@ export async function POST(req: NextRequest) {
     originalMessages: existingMessages,
     messageMetadata: createMessageMetadataHandler({ start, modelId, reasoning }),
     onError: (error) => {
-      logger.error(error instanceof Error ? error.message : "Unknown error");
+      const prefix = "[Chat] Error while streaming";
+      const model = `Model: ${runtime.modelId}`;
+      const errorMsg = `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+      logger.error(`${prefix}\n${model}\n${errorMsg}`);
       return "An unexpected error occurred.";
     },
     generateMessageId: () => uuidv4(),

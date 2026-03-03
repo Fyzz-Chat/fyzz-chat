@@ -50,6 +50,7 @@ export type Model = {
 };
 
 export type ModelRuntime = {
+  modelId: string;
   model: LanguageModel;
   supportsTools: boolean;
   runtimePreset: RuntimePreset;

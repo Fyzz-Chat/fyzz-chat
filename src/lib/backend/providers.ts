@@ -81,6 +81,7 @@ export function getModelRuntime(
   const selectedReasoningEffort = hasReasoning ? reasoningEffort : undefined;
 
   return {
+    modelId,
     model: provider(id),
     supportsTools: tools,
     runtimePreset,
