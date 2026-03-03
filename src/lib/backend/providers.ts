@@ -294,6 +294,7 @@ export function getProviderTools({
     if (search) {
       tools.web_search = anthropic.tools.webSearch_20250305({ maxUses: 5 }) as Tool;
     }
+    tools.code_execution = anthropic.tools.codeExecution_20260120() as Tool;
   } else if (isGoogleModel) {
     if (search) {
       tools.google_search = google.tools.googleSearch({}) as Tool;
@@ -560,16 +561,6 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 1,
-      },
-      {
-        id: "claude-sonnet-4-20250514",
-        name: "Claude Sonnet 4",
-        features: [search],
-        provider: anthropic,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType],
-        cost: 3,
       },
       {
         id: "claude-sonnet-4-5",
