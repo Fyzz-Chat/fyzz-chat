@@ -190,11 +190,6 @@
   }
 }
 
-* {
-  color-scheme: light dark;
-  border-color: var(--color-border);
-}
-
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
