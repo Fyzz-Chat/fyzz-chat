@@ -53,11 +53,11 @@ export async function AppSidebar({ children }: Readonly<{ children: ReactNode }>
           </div>
           <StatusNotification />
         </SidebarHeader>
-        <SidebarContent className="no-scrollbar relative">
-          <div className="pointer-events-none absolute top-0 right-0 left-0 z-10 h-4 bg-linear-to-b from-sidebar to-transparent" />
-          {children}
-          <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-4 bg-linear-to-t from-sidebar to-transparent" />
-        </SidebarContent>
+        <div className="relative flex min-h-0 flex-1 flex-col">
+          <SidebarContent className="no-scrollbar">{children}</SidebarContent>
+          <div className="pointer-events-none absolute top-0 right-0 left-0 z-10 h-4 bg-linear-to-b from-sidebar via-sidebar/85 to-transparent" />
+          <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-4 bg-linear-to-t from-sidebar via-sidebar/85 to-transparent" />
+        </div>
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>

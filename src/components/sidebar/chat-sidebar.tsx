@@ -308,14 +308,14 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
           href={`/chat/${chat.id}`}
           prefetchFunction={() => prefetchConversation(chat.id)}
           className={cn(
-            "flex min-h-16 w-full touch-manipulation select-none flex-col items-start gap-1 rounded-lg p-3.5 pr-10 text-left text-[15px] transition-colors sm:min-h-0 sm:p-3 sm:text-sm",
+            "flex min-h-16 w-full touch-manipulation select-none flex-col items-start gap-1 rounded-lg p-3.5 text-left text-[15px] transition-colors sm:min-h-0 sm:p-3 sm:text-sm",
             currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
           )}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onTouchMove={handleTouchMove}
         >
-          <div className="flex w-full items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:pr-6">
             {ProviderIcon}
             {chat.branchedFrom && <Split className="size-4 shrink-0 text-[#3B82F6]" />}
             <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
