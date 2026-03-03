@@ -140,7 +140,7 @@ export function useConversations(
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: search ? undefined : initialData,
+      initialData: !search && projectId === undefined ? initialData : undefined,
       placeholderData: keepPreviousData,
       enabled: authorized && !temporaryChat,
     }
