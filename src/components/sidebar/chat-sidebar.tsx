@@ -3,7 +3,7 @@
 import { Check, FolderInput, Loader2, MoreVertical, Split, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import type React from "react";
-import { memo, use, useMemo, useRef, useState } from "react";
+import { memo, use, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import { FastLink } from "@/components/fast-link";
@@ -42,6 +42,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
+import { useLongPress } from "@/hooks/use-long-press";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { getProviderIcon } from "@/lib/providers";
@@ -261,45 +262,17 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
     setIsModalOpen(true);
   };
 
-  // Long press handling for mobile
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const [isLongPress, setIsLongPress] = useState(false);
-  const LONG_PRESS_DURATION = 500; // ms
-
-  const handleTouchStart = (_e: React.TouchEvent) => {
-    if (!isMobile) return;
-
-    setIsLongPress(false);
-    longPressTimer.current = setTimeout(() => {
-      setIsLongPress(true);
+  const {
+    onTouchStart: onLongPressStart,
+    onTouchEnd: onLongPressEnd,
+    onTouchMove: onLongPressMove,
+    consumeLongPressPayload,
+  } = useLongPress<string>({
+    enabled: isMobile,
+    onLongPress: () => {
       setDrawerOpen(true);
-    }, LONG_PRESS_DURATION);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isMobile) return;
-
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-
-    // If it wasn't a long press, allow default navigation
-    if (!isLongPress) {
-      // Let the FastLink handle navigation
-      return;
-    }
-
-    // Prevent navigation on long press
-    e.preventDefault();
-  };
-
-  const handleTouchMove = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  };
+    },
+  });
 
   return (
     <>
@@ -311,9 +284,14 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
             "flex min-h-16 w-full touch-manipulation select-none flex-col items-start gap-1 rounded-lg p-3.5 text-left text-[15px] transition-colors sm:min-h-0 sm:p-3 sm:text-sm",
             currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
           )}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          onTouchMove={handleTouchMove}
+          onTouchStart={() => onLongPressStart(chat.id)}
+          onTouchEnd={(event) => {
+            onLongPressEnd();
+            if (consumeLongPressPayload() === chat.id) {
+              event.preventDefault();
+            }
+          }}
+          onTouchMove={onLongPressMove}
         >
           <div className="flex w-full items-center gap-2 sm:pr-6">
             {ProviderIcon}
