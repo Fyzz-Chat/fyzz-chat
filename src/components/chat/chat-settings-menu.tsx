@@ -39,7 +39,7 @@ function ReasoningBars({
             index === 0 && "h-2",
             index === 1 && "h-3",
             index === 2 && "h-4",
-            index < activeBars && "bg-[#3B82F6]"
+            index < activeBars && "bg-(--theme-blue)"
           )}
           key={index}
         />
@@ -109,7 +109,7 @@ export default function ChatSettingsMenu({
         className={cn(
           "w-full justify-between rounded-[8px]",
           browse &&
-            "text-[#3B82F6] hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] dark:hover:bg-[#3B82F6]/10"
+            "text-(--theme-blue) hover:bg-(--theme-blue)/10 hover:text-(--theme-blue) dark:hover:bg-(--theme-blue)/10"
         )}
         onClick={() => setBrowse(!browse)}
         type="button"

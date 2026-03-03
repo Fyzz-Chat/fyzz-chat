@@ -295,7 +295,9 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
         >
           <div className="flex w-full items-center gap-2 sm:pr-6">
             {ProviderIcon}
-            {chat.branchedFrom && <Split className="size-4 shrink-0 text-[#3B82F6]" />}
+            {chat.branchedFrom && (
+              <Split className="size-4 shrink-0 text-(--theme-blue)" />
+            )}
             <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
           </div>
           {chat?.messages?.length > 0 && (
@@ -390,7 +392,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
                     variant="ghost"
                     className={cn(
                       "h-12 w-full justify-between rounded-xl px-3 text-sm",
-                      chat.projectId === null && "text-[#3B82F6]"
+                      chat.projectId === null && "text-(--theme-blue)"
                     )}
                     disabled={assignConversation.isPending}
                     onClick={() => handleMoveToProject(null)}
@@ -399,13 +401,13 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
                       <FolderInput
                         className={cn(
                           "size-4 text-muted-foreground",
-                          chat.projectId === null && "text-[#3B82F6]"
+                          chat.projectId === null && "text-(--theme-blue)"
                         )}
                       />
                       Unassigned
                     </span>
                     {chat.projectId === null && (
-                      <Check className="size-4 text-[#3B82F6]" />
+                      <Check className="size-4 text-(--theme-blue)" />
                     )}
                   </Button>
                   {projects.map((project) => (
@@ -414,7 +416,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
                       variant="ghost"
                       className={cn(
                         "h-12 w-full justify-between rounded-xl px-3 text-sm",
-                        chat.projectId === project.id && "text-[#3B82F6]"
+                        chat.projectId === project.id && "text-(--theme-blue)"
                       )}
                       disabled={assignConversation.isPending}
                       onClick={() => handleMoveToProject(project.id)}
@@ -423,13 +425,13 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
                         <FolderInput
                           className={cn(
                             "size-4 text-muted-foreground",
-                            chat.projectId === project.id && "text-[#3B82F6]"
+                            chat.projectId === project.id && "text-(--theme-blue)"
                           )}
                         />
                         {project.name}
                       </span>
                       {chat.projectId === project.id && (
-                        <Check className="size-4 text-[#3B82F6]" />
+                        <Check className="size-4 text-(--theme-blue)" />
                       )}
                     </Button>
                   ))}

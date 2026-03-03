@@ -108,7 +108,7 @@ export default function MessageShareAction({
               : "Share conversation up to this message"
           }
         >
-          <ShareIcon className={cn("size-4", share ? "text-[#3B82F6]" : "")} />
+          <ShareIcon className={cn("size-4", share ? "text-(--theme-blue)" : "")} />
         </MessageAction>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

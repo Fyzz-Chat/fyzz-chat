@@ -22,7 +22,7 @@ export function FyzzLogo({ width = 55, height = 24, className }: FyzzLogoProps) 
       />
       <path
         d="M332 123.5C332 130.404 326.404 136 319.5 136C312.596 136 307 130.404 307 123.5C307 116.596 312.596 111 319.5 111C326.404 111 332 116.596 332 123.5Z"
-        fill="#3B82F6"
+        fill="var(--theme-blue)"
       />
     </svg>
   );

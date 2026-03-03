@@ -89,7 +89,7 @@ export default function AuthPopup({
         </DialogTrigger>
         <DialogContent className="max-w-4xl gap-0 overflow-hidden p-0">
           <div className="grid md:grid-cols-2">
-            <div className="relative bg-linear-to-r from-[#3B82F6]/10 via-[#3B82F6]/5 to-transparent p-10">
+            <div className="relative bg-linear-to-r from-(--theme-blue)/10 via-(--theme-blue)/5 to-transparent p-10">
               {/* Blue decorative accent */}
               <div className="flex h-full flex-col justify-start space-y-8">
                 <div className="flex flex-col justify-center gap-3">
@@ -121,8 +121,8 @@ export default function AuthPopup({
                 <div className="space-y-6">
                   {FEATURES.map((feature) => (
                     <div key={feature.title} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]/10">
-                        <feature.icon className="h-5 w-5 text-[#3B82F6]" />
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--theme-blue)/10">
+                        <feature.icon className="h-5 w-5 text-(--theme-blue)" />
                       </div>
                       <div>
                         <h4 className="mb-1 font-medium text-foreground text-sm">
