@@ -544,16 +544,6 @@ const providers: Provider[] = [
         extensions: imageTypes,
         cost: 1,
       },
-      {
-        id: "o3",
-        name: "o3",
-        features: [reasoning],
-        provider: openai,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: imageTypes,
-        cost: 2,
-      },
     ],
   },
   {
@@ -561,26 +551,6 @@ const providers: Provider[] = [
     name: "Anthropic",
     icon: "anthropic",
     models: [
-      {
-        id: "claude-3-haiku-20240307",
-        name: "Claude Haiku 3",
-        features: [search],
-        provider: anthropic,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes],
-        cost: 1,
-      },
-      {
-        id: "claude-3-5-haiku-20241022",
-        name: "Claude Haiku 3.5",
-        features: [search],
-        provider: anthropic,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType],
-        cost: 1,
-      },
       {
         id: "claude-haiku-4-5-20251001",
         name: "Claude Haiku 4.5",
@@ -604,7 +574,7 @@ const providers: Provider[] = [
       {
         id: "claude-sonnet-4-5",
         name: "Claude Sonnet 4.5",
-        features: [reasoning, search],
+        features: [search],
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",

@@ -251,12 +251,6 @@ describe("critical model policy: provider options", () => {
     ).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
     });
-    expect(
-      getModelRuntime("claude-3-haiku-20240307").getProviderOptionsFromHistory(messages)
-        .anthropic
-    ).toEqual({
-      thinking: { type: "disabled" },
-    });
 
     expect(
       getModelRuntime("gemini-3.1-pro-preview", "medium").getProviderOptionsFromHistory(messages)

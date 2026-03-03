@@ -54,14 +54,11 @@ const expectedCatalogShape: {
       { id: "gpt-5.3-codex", runtimePreset: "chat" },
       { id: "o3-mini", runtimePreset: "chat" },
       { id: "o4-mini", runtimePreset: "chat" },
-      { id: "o3", runtimePreset: "chat" },
     ],
   },
   {
     id: "anthropic",
     models: [
-      { id: "claude-3-haiku-20240307", runtimePreset: "chat" },
-      { id: "claude-3-5-haiku-20241022", runtimePreset: "chat" },
       { id: "claude-haiku-4-5-20251001", runtimePreset: "chat" },
       { id: "claude-sonnet-4-20250514", runtimePreset: "chat" },
       { id: "claude-sonnet-4-5", runtimePreset: "chat" },
