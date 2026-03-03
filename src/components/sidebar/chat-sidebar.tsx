@@ -436,7 +436,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
                 </div>
               </div>
             </div>
-            <DrawerFooter className="pt-1">
+            <DrawerFooter className="space-y-1 pt-2">
               <Button
                 variant="destructive"
                 size="lg"

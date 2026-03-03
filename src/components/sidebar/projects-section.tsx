@@ -360,7 +360,7 @@ export function ProjectsSection({
               Delete
             </Button>
           </div>
-          <DrawerFooter className="mt-2 border-t pt-4">
+          <DrawerFooter>
             <DrawerClose asChild>
               <Button variant="outline" size="lg" className="h-12 w-full rounded-xl">
                 Close
