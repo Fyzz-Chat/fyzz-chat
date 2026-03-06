@@ -525,6 +525,16 @@ const providers: Provider[] = [
         capabilities: { supportsCodeInterpreter: false },
       },
       {
+        id: "gpt-5.4",
+        name: "GPT-5.4",
+        features: [reasoning, search, coding],
+        provider: openai,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 3,
+      },
+      {
         id: "o3-mini",
         name: "o3-mini",
         features: [reasoning],

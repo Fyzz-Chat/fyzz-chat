@@ -52,6 +52,7 @@ const expectedCatalogShape: {
       { id: "gpt-5.2", runtimePreset: "chat" },
       { id: "gpt-5.2-codex", runtimePreset: "chat" },
       { id: "gpt-5.3-codex", runtimePreset: "chat" },
+      { id: "gpt-5.4", runtimePreset: "chat" },
       { id: "o3-mini", runtimePreset: "chat" },
       { id: "o4-mini", runtimePreset: "chat" },
     ],
