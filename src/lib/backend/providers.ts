@@ -439,6 +439,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 1,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-5-mini",
@@ -449,6 +450,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 1,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-5",
@@ -459,6 +461,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 2,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-5-codex",
@@ -480,6 +483,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 2,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-5.1-codex",
@@ -501,6 +505,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 3,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "gpt-5.2-codex",
@@ -533,6 +538,7 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 3,
+        capabilities: { supportsImageGeneration: true },
       },
       {
         id: "o3-mini",
