@@ -36,7 +36,7 @@ import { caller } from "@/lib/trpc/server";
 import { type CustomUIMessage, metadataSchema } from "@/types/chat";
 import type { ReasoningEffort } from "@/types/provider";
 
-export const maxDuration = 55;
+export const maxDuration = 600;
 
 const chatRequestEnvelopeSchema = z.object({
   id: z.string().min(1),
