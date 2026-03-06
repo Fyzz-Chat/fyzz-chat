@@ -32,11 +32,9 @@ import ChatSettingsMenu from "@/components/chat/chat-settings-menu";
 import { useSession } from "@/lib/auth-client";
 import { AuthContext } from "@/lib/contexts/auth-context";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
-import { debounce } from "@/lib/utils";
+import { debounce, INPUT_STORAGE_KEY } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useUIStore } from "@/stores/ui-store";
-
-const INPUT_STORAGE_KEY = "fyzz-input-content";
 
 function getPersistedInput() {
   if (typeof localStorage === "undefined") return "";

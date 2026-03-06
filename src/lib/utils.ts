@@ -6,6 +6,8 @@ import { twMerge } from "tailwind-merge";
 import { standaloneTrpc } from "@/lib/trpc/client";
 import type { CustomUIMessage } from "@/types/chat";
 
+export const INPUT_STORAGE_KEY = "fyzz-input-content";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
