@@ -1,3 +1,10 @@
+# [0.23.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.22.0...v0.23.0) (2026-03-06)
+
+
+### Features
+
+* **models:** add gpt-5.4 ([209871d](https://github.com/Fyzz-Chat/fyzz-chat/commit/209871def4ab1c7bf8e82645e4c64a8ce77cbd09))
+
 # [0.22.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.21.0...v0.22.0) (2026-03-03)
 
 
