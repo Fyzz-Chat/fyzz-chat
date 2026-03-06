@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon } from "lucide-react";
-import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useContext, useMemo, useState } from "react";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -29,6 +29,8 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import ChatSettingsMenu from "@/components/chat/chat-settings-menu";
+import { useSession } from "@/lib/auth-client";
+import { AuthContext } from "@/lib/contexts/auth-context";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
 import { debounce } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
@@ -48,6 +50,8 @@ const persistInput = debounce((input: string) => {
 export default function ChatInput() {
   const { handlersRef } = useChatInput();
   const { status, areFilesUploading } = useChatInputStatus();
+  const { data: session } = useSession();
+  const { setDialogOpen } = useContext(AuthContext);
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
@@ -76,10 +80,14 @@ export default function ChatInput() {
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
+      if (!session) {
+        setDialogOpen(true);
+        return;
+      }
       localStorage.removeItem(INPUT_STORAGE_KEY);
       return handlersRef.current.onSubmit(message);
     },
-    [handlersRef]
+    [handlersRef, session, setDialogOpen]
   );
 
   const handleStop = useCallback(() => {
