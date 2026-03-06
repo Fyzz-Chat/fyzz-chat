@@ -1,3 +1,16 @@
+# [0.24.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.23.0...v0.24.0) (2026-03-06)
+
+
+### Bug Fixes
+
+* **auth:** login popup shows on first message ([9a0bc3e](https://github.com/Fyzz-Chat/fyzz-chat/commit/9a0bc3e83c25502c046eb0a99c969d889ec86191))
+* **logout:** clean up thoroughly on logout ([a466291](https://github.com/Fyzz-Chat/fyzz-chat/commit/a466291f3671a4c216a17e767c7951827af4edbe))
+
+
+### Features
+
+* **openai:** add image generation to more models ([163e111](https://github.com/Fyzz-Chat/fyzz-chat/commit/163e111069b453ab315a02490df97ee53b2156ff))
+
 # [0.23.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.22.0...v0.23.0) (2026-03-06)
 
 
