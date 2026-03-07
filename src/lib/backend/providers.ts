@@ -433,7 +433,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-nano",
         name: "GPT-5 nano",
-        features: [reasoning, search, coding],
+        features: [reasoning, search, coding, images],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -444,7 +444,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5-mini",
         name: "GPT-5 mini",
-        features: [reasoning, search, coding],
+        features: [reasoning, search, coding, images],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -455,7 +455,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5",
         name: "GPT-5",
-        features: [reasoning, search, coding],
+        features: [reasoning, search, coding, images],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -477,7 +477,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.1",
         name: "GPT-5.1",
-        features: [reasoning, search, coding],
+        features: [reasoning, search, coding, images],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -499,7 +499,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.2",
         name: "GPT-5.2",
-        features: [reasoning, search, coding],
+        features: [reasoning, search, coding, images],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -532,7 +532,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.4",
         name: "GPT-5.4",
-        features: [reasoning, search, coding],
+        features: [reasoning, search, coding, images],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
