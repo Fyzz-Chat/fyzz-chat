@@ -1,5 +1,6 @@
 "use client";
 
+import { Brain, CodeXml, Globe, ImageIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
@@ -281,3 +282,38 @@ export type ModelSelectorNameProps = ComponentProps<"span">;
 export const ModelSelectorName = ({ className, ...props }: ModelSelectorNameProps) => (
   <span className={cn("flex-1 truncate text-left", className)} {...props} />
 );
+
+const FEATURE_ICONS: Record<string, { icon: React.ElementType; color: string }> = {
+  brain: { icon: Brain, color: "text-yellow-500" },
+  globe: { icon: Globe, color: "text-blue-500" },
+  codeXml: { icon: CodeXml, color: "text-green-500" },
+  image: { icon: ImageIcon, color: "text-orange-500" },
+};
+
+export type ModelSelectorFeaturesProps = ComponentProps<"div"> & {
+  features?: { icon: string; color?: string }[];
+};
+
+export const ModelSelectorFeatures = ({
+  features,
+  className,
+  ...props
+}: ModelSelectorFeaturesProps) => {
+  if (!features?.length) return null;
+
+  return (
+    <div className={cn("flex items-center gap-2", className)} {...props}>
+      {features.map((feature) => {
+        const mapped = FEATURE_ICONS[feature.icon];
+        if (!mapped) return null;
+        const Icon = mapped.icon;
+        return (
+          <Icon
+            key={feature.icon}
+            className={cn("size-3.5", feature.color || mapped.color)}
+          />
+        );
+      })}
+    </div>
+  );
+};

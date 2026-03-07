@@ -6,6 +6,7 @@ import {
   ModelSelector,
   ModelSelectorContent,
   ModelSelectorEmpty,
+  ModelSelectorFeatures,
   ModelSelectorGroup,
   ModelSelectorInput,
   ModelSelectorItem,
@@ -155,6 +156,7 @@ export default function ChatInput() {
                           >
                             <ModelSelectorLogo provider={provider.id} />
                             <ModelSelectorName>{providerModel.name}</ModelSelectorName>
+                            <ModelSelectorFeatures features={providerModel.features} />
                             {model.id === providerModel.id ? (
                               <CheckIcon className="ml-auto size-4" />
                             ) : (
