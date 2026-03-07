@@ -120,27 +120,31 @@ function updateConversationMessageCaches(
 }
 
 export function useConversations(
-  conversations: ConversationPage,
   authorized: boolean,
-  search?: string,
-  projectId?: string | null
+  options?: {
+    initialData?: ConversationPage;
+    search?: string;
+    projectId?: string | null;
+  }
 ) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
-  const initialData = {
-    pages: [conversations],
-    pageParams: [null] as (string | null)[],
-  };
+  const initialData = options?.initialData
+    ? {
+        pages: [options.initialData],
+        pageParams: [null] as (string | null)[],
+      }
+    : undefined;
 
   const myQuery = trpc.infiniteConversations.infiniteQueryOptions(
     {
-      search: search,
-      projectId: projectId,
+      search: options?.search,
+      projectId: options?.projectId,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: !search && projectId === undefined ? initialData : undefined,
+      initialData,
       placeholderData: keepPreviousData,
       enabled: authorized && !temporaryChat,
     }

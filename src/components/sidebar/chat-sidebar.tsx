@@ -109,10 +109,12 @@ export default function ChatSidebar({
   const translations = use(translationsPromise);
   const { searchQuery } = useSearchStore();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useConversations(
-    conversations,
     authorized,
-    searchQuery,
-    projectId
+    {
+      initialData: conversations,
+      search: searchQuery,
+      projectId,
+    }
   );
   const allConversations = useMemo(
     () => data?.pages.flatMap((page) => page.items) ?? [],

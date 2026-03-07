@@ -8,10 +8,16 @@ import {
 import { useTRPC } from "@/lib/trpc/client";
 import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
-export function useProject(id: string) {
+export function useProject(
+  id: string,
+  initialData?: { id: string; name: string } | null
+) {
   const trpc = useTRPC();
 
-  return useQuery(trpc.project.queryOptions({ id }));
+  return useQuery({
+    ...trpc.project.queryOptions({ id }),
+    initialData: initialData ?? undefined,
+  });
 }
 
 export function useProjects(initialData?: { projects: ProjectWithCount[] }) {

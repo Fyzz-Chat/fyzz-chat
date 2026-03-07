@@ -11,11 +11,23 @@ import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useConversations } from "@/lib/queries/conversations";
 import { useProject } from "@/lib/queries/projects";
+import { getMessageContent } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+import type { ConversationPage } from "@/types/chat";
 
-export function ProjectPage({ id }: Readonly<{ id: string }>) {
+interface ProjectPageProps {
+  id: string;
+  initialProject?: { id: string; name: string } | null;
+  initialConversations?: ConversationPage;
+}
+
+export function ProjectPage({
+  id,
+  initialProject,
+  initialConversations,
+}: Readonly<ProjectPageProps>) {
   const router = useRouter();
-  const { data: project, isPending: isProjectPending } = useProject(id);
+  const { data: project } = useProject(id, initialProject);
   const {
     setInitialMessage,
     setInitialModel,
@@ -28,7 +40,10 @@ export function ProjectPage({ id }: Readonly<{ id: string }>) {
   const { setHandlers, setStatus, browseRef } = useChatInput();
 
   const emptyPage = { items: [], nextCursor: undefined };
-  const { data: conversationsData } = useConversations(emptyPage, true, undefined, id);
+  const { data: conversationsData } = useConversations(true, {
+    initialData: initialConversations ?? emptyPage,
+    projectId: id,
+  });
   const conversations = conversationsData?.pages.flatMap((page) => page.items) ?? [];
 
   useEffect(() => {
@@ -68,10 +83,6 @@ export function ProjectPage({ id }: Readonly<{ id: string }>) {
     id,
   ]);
 
-  if (isProjectPending) {
-    return null;
-  }
-
   if (!project) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -103,10 +114,19 @@ export function ProjectPage({ id }: Readonly<{ id: string }>) {
             <Link
               key={conversation.id}
               href={`/chat/${conversation.id}`}
-              className="flex items-center justify-between rounded-lg p-3 text-sm transition-colors hover:bg-muted"
+              className="flex items-start justify-between gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-muted"
             >
-              <span className="truncate">{conversation.title}</span>
-              <span className="shrink-0 text-muted-foreground text-xs">
+              <div className="min-w-0 flex-1">
+                <div className="truncate">{conversation.title}</div>
+                {conversation.messages.length > 0 && (
+                  <p className="truncate text-muted-foreground text-xs">
+                    {getMessageContent(
+                      conversation.messages[conversation.messages.length - 1]
+                    )}
+                  </p>
+                )}
+              </div>
+              <span className="shrink-0 pt-0.5 text-muted-foreground text-xs">
                 {new Date(conversation.lastMessageAt).toLocaleDateString()}
               </span>
             </Link>
