@@ -40,7 +40,8 @@ export async function getConversation(id: string) {
 export async function getOrCreateConversation(
   id: string,
   userId: string,
-  modelId: string
+  modelId: string,
+  projectId?: string
 ): Promise<
   | { conversation: { id: string; userId: string; model: string }; error?: never }
   | { conversation: null; error: string }
@@ -66,7 +67,13 @@ export async function getOrCreateConversation(
 
   try {
     const newConversation = await prisma.conversation.create({
-      data: { id, title: "New Chat", model: modelId, userId },
+      data: {
+        id,
+        title: "New Chat",
+        model: modelId,
+        userId,
+        projectId: projectId ?? null,
+      },
     });
     return { conversation: newConversation };
   } catch (error: unknown) {

@@ -27,6 +27,13 @@ export async function saveConversation(conversation: PartialConversation) {
           id: userId,
         },
       },
+      ...(conversation.projectId && {
+        project: {
+          connect: {
+            id: conversation.projectId,
+          },
+        },
+      }),
     },
     include: {
       messages: true,

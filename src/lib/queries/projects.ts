@@ -8,6 +8,12 @@ import {
 import { useTRPC } from "@/lib/trpc/client";
 import type { PartialConversation } from "@/types/chat";
 
+export function useProject(id: string) {
+  const trpc = useTRPC();
+
+  return useQuery(trpc.project.queryOptions({ id }));
+}
+
 export function useProjects() {
   const trpc = useTRPC();
 

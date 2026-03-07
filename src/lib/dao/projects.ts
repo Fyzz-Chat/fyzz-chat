@@ -4,6 +4,15 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import type { ProjectWithCount } from "@/types/chat";
 
+export async function getProject(id: string) {
+  const userId = await getUserIdFromSession();
+
+  return prisma.project.findUnique({
+    where: { id, userId },
+    select: { id: true, name: true },
+  });
+}
+
 export async function getProjects(): Promise<ProjectWithCount[]> {
   const userId = await getUserIdFromSession();
 

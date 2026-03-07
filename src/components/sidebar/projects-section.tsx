@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ExternalLink,
   Folder,
   FolderOpen,
   Loader2,
@@ -9,6 +10,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -253,6 +255,13 @@ export function ProjectsSection({
                     </SidebarMenuAction>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right" align="start" sideOffset={4}>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/chat/projects/${project.id}`}>
+                        <ExternalLink className="mr-2 size-4" />
+                        Open
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={(event) => {
                         event.stopPropagation();
@@ -335,6 +344,17 @@ export function ProjectsSection({
             </DrawerDescription>
           </DrawerHeader>
           <div className="space-y-2 px-4 py-2">
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 w-full justify-center rounded-xl"
+              asChild
+            >
+              <Link href={`/chat/projects/${projectOverlay?.project.id}`}>
+                <ExternalLink className="size-4" />
+                Open
+              </Link>
+            </Button>
             <Button
               variant="outline"
               size="lg"

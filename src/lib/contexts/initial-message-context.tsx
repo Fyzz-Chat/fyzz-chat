@@ -8,10 +8,12 @@ interface InitialMessageContextType {
   initialModel: string | null;
   initialBrowse: boolean;
   initialFiles: FileUIPart[];
+  initialProjectId: string | null;
   setInitialMessage: (message: string | null) => void;
   setInitialModel: (model: string | null) => void;
   setInitialBrowse: (browse: boolean) => void;
   setInitialFiles: (files: FileUIPart[]) => void;
+  setInitialProjectId: (projectId: string | null) => void;
 }
 
 const InitialMessageContext = createContext<InitialMessageContextType | undefined>(
@@ -23,6 +25,7 @@ export function InitialMessageProvider({ children }: Readonly<{ children: ReactN
   const [initialModel, setInitialModel] = useState<string | null>(null);
   const [initialBrowse, setInitialBrowse] = useState(false);
   const [initialFiles, setInitialFiles] = useState<FileUIPart[]>([]);
+  const [initialProjectId, setInitialProjectId] = useState<string | null>(null);
 
   const value = useMemo(
     () => ({
@@ -30,12 +33,14 @@ export function InitialMessageProvider({ children }: Readonly<{ children: ReactN
       initialModel,
       initialBrowse,
       initialFiles,
+      initialProjectId,
       setInitialMessage,
       setInitialModel,
       setInitialBrowse,
       setInitialFiles,
+      setInitialProjectId,
     }),
-    [initialMessage, initialModel, initialBrowse, initialFiles]
+    [initialMessage, initialModel, initialBrowse, initialFiles, initialProjectId]
   );
 
   return (

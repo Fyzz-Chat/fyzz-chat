@@ -45,6 +45,7 @@ const chatRequestEnvelopeSchema = z.object({
   browse: z.boolean().default(false),
   temporaryChat: z.boolean().default(false),
   reasoningEffort: z.enum(["low", "medium", "high"]).optional(),
+  projectId: z.string().optional(),
 });
 
 async function validateRequestBody(body: unknown): Promise<
@@ -57,6 +58,7 @@ async function validateRequestBody(body: unknown): Promise<
         browse: boolean;
         temporaryChat: boolean;
         reasoningEffort?: ReasoningEffort;
+        projectId?: string;
       };
     }
   | {
@@ -110,6 +112,7 @@ async function loadConversationMessages({
   incomingMessages,
   newMessage,
   temporaryChat,
+  projectId,
   start,
 }: {
   id: string;
@@ -118,6 +121,7 @@ async function loadConversationMessages({
   incomingMessages: CustomUIMessage[];
   newMessage: CustomUIMessage | undefined;
   temporaryChat: boolean;
+  projectId?: string;
   start: number;
 }): Promise<{ messages?: CustomUIMessage[]; errorResponse?: Response }> {
   if (temporaryChat) {
@@ -132,7 +136,7 @@ async function loadConversationMessages({
     return { messages: mappedMessages };
   }
 
-  const getOrCreate = await getOrCreateConversation(id, userId, modelId);
+  const getOrCreate = await getOrCreateConversation(id, userId, modelId, projectId);
 
   if (getOrCreate.error) {
     return {
@@ -351,7 +355,14 @@ export async function POST(req: NextRequest) {
     return new Response(parsedRequest.error, { status: 400 });
   }
 
-  const { id, model: modelId, browse, temporaryChat, messages } = parsedRequest.data;
+  const {
+    id,
+    model: modelId,
+    browse,
+    temporaryChat,
+    messages,
+    projectId,
+  } = parsedRequest.data;
   const newMessage = messages.at(-1);
   const runtime = getModelRuntime(modelId, parsedRequest.data.reasoningEffort);
   const { model } = runtime;
@@ -367,6 +378,7 @@ export async function POST(req: NextRequest) {
     incomingMessages: messages,
     newMessage,
     temporaryChat,
+    projectId,
     start,
   });
 
