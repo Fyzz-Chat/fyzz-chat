@@ -53,4 +53,5 @@ export interface ProjectWithCount {
   createdAt: Date;
   updatedAt: Date;
   conversationCount: number;
+  lastActivityAt: Date;
 }

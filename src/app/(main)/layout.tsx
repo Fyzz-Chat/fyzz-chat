@@ -2,10 +2,8 @@ import { Github } from "lucide-react";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import AuthPopup from "@/components/auth/auth-popup";
-import ChatInput from "@/components/chat/chat-input";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
-import Pad from "@/components/chat/pad";
 import {
   EnterHandler,
   EscapeHandler,
@@ -95,10 +93,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
                   <Github className="size-5" />
                 </a>
               </div>
-              <div className="flex-1">{children}</div>
-              <Pad>
-                <ChatInput />
-              </Pad>
+              {children}
             </SidebarInset>
           </SidebarProvider>
         </ChatLayoutProvider>

@@ -1,10 +1,12 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import ChatInput from "@/components/chat/chat-input";
 import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useConversations } from "@/lib/queries/conversations";
@@ -79,8 +81,17 @@ export function ProjectPage({ id }: Readonly<{ id: string }>) {
   }
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-6 p-4 pt-12 md:p-8 md:pt-12">
+    <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-6 p-4 pt-16">
+      <Link
+        href="/projects"
+        className="group flex items-center gap-1 text-muted-foreground text-sm transition-color duration-200 hover:text-foreground"
+      >
+        <ArrowLeft className="size-4 transition-transform group-hover:translate-x-[-2px]" />
+        Back to projects
+      </Link>
       <h1 className="font-semibold text-2xl">{project.name}</h1>
+
+      <ChatInput />
 
       {conversations.length === 0 ? (
         <p className="text-muted-foreground text-sm">

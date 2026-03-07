@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -89,6 +90,7 @@ export function ProjectsSection({
   selectedProjectId,
   onSelectProject,
 }: ProjectsSectionProps) {
+  const pathname = usePathname();
   const { data: projectsData } = useProjects();
   const { data: unassignedCountData } = useUnassignedConversationsCount();
   const createProject = useCreateProject();
@@ -178,6 +180,19 @@ export function ProjectsSection({
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className={cn(
+                pathname === "/projects" && "bg-accent text-accent-foreground"
+              )}
+            >
+              <Link href="/projects">
+                <Folder className="size-4" />
+                <span>All Projects</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           {/* All Conversations */}
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -256,7 +271,7 @@ export function ProjectsSection({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right" align="start" sideOffset={4}>
                     <DropdownMenuItem asChild>
-                      <Link href={`/chat/projects/${project.id}`}>
+                      <Link href={`/projects/${project.id}`}>
                         <ExternalLink className="mr-2 size-4" />
                         Open
                       </Link>
@@ -350,7 +365,7 @@ export function ProjectsSection({
               className="h-12 w-full justify-center rounded-xl"
               asChild
             >
-              <Link href={`/chat/projects/${projectOverlay?.project.id}`}>
+              <Link href={`/projects/${projectOverlay?.project.id}`}>
                 <ExternalLink className="size-4" />
                 Open
               </Link>

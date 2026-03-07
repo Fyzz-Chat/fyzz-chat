@@ -23,17 +23,31 @@ export async function getProjects(): Promise<ProjectWithCount[]> {
       _count: {
         select: { conversations: true },
       },
+      conversations: {
+        select: { lastMessageAt: true },
+        orderBy: { lastMessageAt: "desc" },
+        take: 1,
+      },
     },
   });
 
-  return projects.map((project) => ({
-    id: project.id,
-    name: project.name,
-    userId: project.userId,
-    createdAt: project.createdAt,
-    updatedAt: project.updatedAt,
-    conversationCount: project._count.conversations,
-  }));
+  return projects.map((project) => {
+    const latestConversationAt = project.conversations[0]?.lastMessageAt;
+    const lastActivityAt =
+      latestConversationAt && latestConversationAt > project.updatedAt
+        ? latestConversationAt
+        : project.updatedAt;
+
+    return {
+      id: project.id,
+      name: project.name,
+      userId: project.userId,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      conversationCount: project._count.conversations,
+      lastActivityAt,
+    };
+  });
 }
 
 export async function createProject(name: string) {

@@ -6,7 +6,7 @@ import {
   updateProjectAction,
 } from "@/lib/actions/projects";
 import { useTRPC } from "@/lib/trpc/client";
-import type { PartialConversation } from "@/types/chat";
+import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
 export function useProject(id: string) {
   const trpc = useTRPC();
@@ -14,10 +14,13 @@ export function useProject(id: string) {
   return useQuery(trpc.project.queryOptions({ id }));
 }
 
-export function useProjects() {
+export function useProjects(initialData?: { projects: ProjectWithCount[] }) {
   const trpc = useTRPC();
 
-  return useQuery(trpc.projects.queryOptions());
+  return useQuery({
+    ...trpc.projects.queryOptions(),
+    initialData,
+  });
 }
 
 export function useUnassignedConversationsCount() {

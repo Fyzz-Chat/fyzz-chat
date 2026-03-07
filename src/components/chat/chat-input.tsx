@@ -112,7 +112,6 @@ export default function ChatInput() {
           onSubmit={handleSubmit}
           accept={model?.extensions?.join(",")}
           maxFileSize={1024 * 1024 * 20}
-          className="md:px-4"
         >
           <PromptInputAttachments>
             {(attachment) => (

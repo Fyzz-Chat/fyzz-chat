@@ -2,16 +2,24 @@
 
 import { Folder, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useProjects } from "@/lib/queries/projects";
+import { formatTimeAgo } from "@/lib/utils";
+import type { ProjectWithCount } from "@/types/chat";
 
-export function ProjectsListPage() {
-  const { data: projectsData, isPending } = useProjects();
-  const projects = projectsData?.projects ?? [];
+interface ProjectsListPageProps {
+  initialProjects: ProjectWithCount[];
+}
 
-  if (isPending) {
-    return null;
-  }
+export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageProps>) {
+  const { data: projectsData } = useProjects({ projects: initialProjects });
+  const projects = projectsData?.projects ?? initialProjects;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 pt-12 md:p-8 md:pt-12">
@@ -24,7 +32,7 @@ export function ProjectsListPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {projects.map((project) => (
-            <Link key={project.id} href={`/chat/projects/${project.id}`}>
+            <Link key={project.id} href={`/projects/${project.id}`}>
               <Card className="transition-colors hover:bg-muted/50">
                 <CardHeader>
                   <div className="flex items-center gap-2">
@@ -37,6 +45,10 @@ export function ProjectsListPage() {
                     {project.conversationCount === 1 ? "conversation" : "conversations"}
                   </CardDescription>
                 </CardHeader>
+                <CardFooter className="text-muted-foreground text-xs">
+                  Updated{" "}
+                  {formatTimeAgo(new Date(project.lastActivityAt || project.updatedAt))}
+                </CardFooter>
               </Card>
             </Link>
           ))}
