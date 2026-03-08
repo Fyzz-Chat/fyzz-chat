@@ -14,7 +14,11 @@ import {
   saveConversationModel,
 } from "@/lib/actions/conversations";
 import { deleteMessageChainAfter } from "@/lib/actions/messages";
-import { updateProjectCounts } from "@/lib/queries/projects";
+import {
+  getConversationListInput,
+  matchesConversationFilter,
+  updateProjectCounts,
+} from "@/lib/queries/projects";
 import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
@@ -47,7 +51,10 @@ function updateInfiniteConversationCaches(
   queryClient: ReturnType<typeof useQueryClient>,
   trpc: ReturnType<typeof useTRPC>,
   updater: (old: ConversationsInfiniteData) => ConversationsInfiniteData,
-  options?: { skipFilteredSearch?: boolean }
+  options?: {
+    skipFilteredSearch?: boolean;
+    onlyForConversation?: PartialConversation;
+  }
 ) {
   const queries = queryClient.getQueriesData(
     trpc.infiniteConversations.infiniteQueryFilter()
@@ -58,6 +65,15 @@ function updateInfiniteConversationCaches(
       const keyPart = Array.isArray(queryKey) ? queryKey[1] : undefined;
       const input = (keyPart as { input?: { search?: string } } | undefined)?.input;
       if (input?.search) {
+        return;
+      }
+    }
+
+    if (options?.onlyForConversation) {
+      const input = getConversationListInput(queryKey);
+      if (
+        !matchesConversationFilter(input, options.onlyForConversation.projectId ?? null)
+      ) {
         return;
       }
     }
@@ -388,7 +404,10 @@ export function useCreateConversation() {
           queryClient,
           trpc,
           (old) => prependConversationToFirstPage(old, newConversation),
-          { skipFilteredSearch: true }
+          {
+            skipFilteredSearch: true,
+            onlyForConversation: newConversation,
+          }
         );
 
         updateProjectCaches(queryClient, trpc, newConversation);
@@ -419,8 +438,11 @@ export function useCreateConversationOptimistic() {
         conversation.messages
       );
 
-      updateInfiniteConversationCaches(queryClient, trpc, (old) =>
-        prependConversationToFirstPage(old, conversation)
+      updateInfiniteConversationCaches(
+        queryClient,
+        trpc,
+        (old) => prependConversationToFirstPage(old, conversation),
+        { onlyForConversation: conversation }
       );
 
       updateProjectCaches(queryClient, trpc, conversation);
@@ -481,7 +503,10 @@ export function useBranchConversation() {
           queryClient,
           trpc,
           (old) => prependConversationToFirstPage(old, branchedConversation),
-          { skipFilteredSearch: true }
+          {
+            skipFilteredSearch: true,
+            onlyForConversation: branchedConversation,
+          }
         );
 
         // Invalidate project-related queries to refresh counts and filtered lists

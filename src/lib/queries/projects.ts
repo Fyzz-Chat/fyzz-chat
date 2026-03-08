@@ -16,7 +16,7 @@ type ConversationData = {
   model: string;
   projectId: string | null;
 } | null;
-type ConversationListInput = { search?: string; projectId?: string | null };
+export type ConversationListInput = { search?: string; projectId?: string | null };
 type ConversationsCache = {
   pages: Array<{ items: PartialConversation[]; nextCursor: string | undefined }>;
   pageParams: (string | null)[];
@@ -71,7 +71,7 @@ function toProjectWithCount(
   };
 }
 
-function getConversationListInput(queryKey: unknown): ConversationListInput {
+export function getConversationListInput(queryKey: unknown): ConversationListInput {
   if (!Array.isArray(queryKey)) {
     return {};
   }
@@ -89,7 +89,7 @@ function getConversationListInput(queryKey: unknown): ConversationListInput {
   return input;
 }
 
-function matchesConversationFilter(
+export function matchesConversationFilter(
   input: ConversationListInput,
   projectId: string | null
 ) {
