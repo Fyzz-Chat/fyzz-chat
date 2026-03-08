@@ -117,7 +117,7 @@ function setProjectCache(
   queryClient.setQueryData(trpc.project.queryKey({ id }), updater);
 }
 
-function updateProjectCounts(
+export function updateProjectCounts(
   queryClient: ReturnType<typeof useQueryClient>,
   trpc: ReturnType<typeof useTRPC>,
   fromProjectId: string | null | undefined,

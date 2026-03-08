@@ -16,6 +16,7 @@ import {
 } from "@/lib/actions/conversations";
 import { deleteMessageChainAfter } from "@/lib/actions/messages";
 import { deleteShareAction } from "@/lib/actions/shares";
+import { updateProjectCounts } from "@/lib/queries/projects";
 import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
@@ -117,6 +118,22 @@ function updateConversationMessageCaches(
       return updater(old);
     });
   });
+}
+
+function updateProjectCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversation: PartialConversation
+) {
+  if (conversation.projectId) {
+    updateProjectCounts(
+      queryClient,
+      trpc,
+      null,
+      conversation.projectId,
+      conversation.lastMessageAt ? new Date(conversation.lastMessageAt) : undefined
+    );
+  }
 }
 
 export function useConversations(
@@ -375,6 +392,8 @@ export function useCreateConversation() {
           (old) => prependConversationToFirstPage(old, newConversation),
           { skipFilteredSearch: true }
         );
+
+        updateProjectCaches(queryClient, trpc, newConversation);
       }
     },
     onError: (error, newConversation) => {
@@ -405,6 +424,8 @@ export function useCreateConversationOptimistic() {
       updateInfiniteConversationCaches(queryClient, trpc, (old) =>
         prependConversationToFirstPage(old, conversation)
       );
+
+      updateProjectCaches(queryClient, trpc, conversation);
     },
   });
 }
