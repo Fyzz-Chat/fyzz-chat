@@ -1,3 +1,17 @@
+# [0.26.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.25.1...v0.26.0) (2026-03-08)
+
+
+### Bug Fixes
+
+* **projects:** align back button correctly ([31205dc](https://github.com/Fyzz-Chat/fyzz-chat/commit/31205dcedc67a2d39394483efbac7975cf06df02))
+
+
+### Features
+
+* introduce memories table, migrate old user memories, introduce project memories ([cf5b019](https://github.com/Fyzz-Chat/fyzz-chat/commit/cf5b0192e356e5f1ac853adfd862d583f2f46aae))
+* **project:** include project name and description in the system prompt ([4947001](https://github.com/Fyzz-Chat/fyzz-chat/commit/4947001ae4091b6d058ee1122b529bb692f1e174))
+* **projects:** show project memories ([9b58f69](https://github.com/Fyzz-Chat/fyzz-chat/commit/9b58f6977d19f27a5c221b9452eed2f8b91646ec))
+
 ## [0.25.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.25.0...v0.25.1) (2026-03-08)
 
 
