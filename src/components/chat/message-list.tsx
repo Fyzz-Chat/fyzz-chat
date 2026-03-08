@@ -25,9 +25,9 @@ import {
   useCreateConversationOptimistic,
   useMessages,
   useRegenerateMessage,
-  useShares,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
+import { useShares } from "@/lib/queries/shares";
 import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";

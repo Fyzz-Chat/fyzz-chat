@@ -12,6 +12,7 @@ import { createShare } from "@/lib/dao/shares";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
+import { addDurationToDate } from "@/lib/utils";
 import type { CustomUIMessage, PartialConversation } from "@/types/chat";
 
 export async function saveConversation(conversation: PartialConversation) {
@@ -148,22 +149,6 @@ export async function shareConversationUntilMessage(
   const share = await createShare(conversationId, messageId, expiresAt);
 
   return share.id;
-}
-
-function addDurationToDate(date: Date, duration: string): Date | null {
-  if (duration === "1D") {
-    date.setDate(date.getDate() + 1);
-  } else if (duration === "1W") {
-    date.setDate(date.getDate() + 7);
-  } else if (duration === "1M") {
-    date.setMonth(date.getMonth() + 1);
-  } else if (duration === "INFINITY") {
-    return null;
-  } else {
-    return null;
-  }
-
-  return date;
 }
 
 export async function branchConversationAction(

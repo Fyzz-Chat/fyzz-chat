@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useDeleteShare, useShareConversation } from "@/lib/queries/conversations";
+import { useDeleteShare, useShareConversation } from "@/lib/queries/shares";
 import { cn } from "@/lib/utils";
 import type { ShareInfo } from "@/types/chat";
 
@@ -89,7 +89,7 @@ export default function MessageShareAction({
 
     if (!share) return;
     try {
-      await deleteShareMutation.mutateAsync(share.id);
+      await deleteShareMutation.mutateAsync({ shareId: share.id, conversationId });
       toast.success("Share deleted successfully");
       setIsOpen(false);
     } catch {
