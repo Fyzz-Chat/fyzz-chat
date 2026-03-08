@@ -313,6 +313,8 @@ export const MessageResponse = memo(
           rehypePlugins: [rehypeCitations],
           components: citationComponents,
         } as Partial<ComponentProps<typeof Streamdown>>)),
+      // TODO: Turn it on once citations are refactored
+      linkSafety: { enabled: false },
     };
 
     return <Streamdown {...streamdownProps} />;
