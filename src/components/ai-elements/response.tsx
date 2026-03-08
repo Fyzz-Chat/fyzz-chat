@@ -1,20 +1,17 @@
 "use client";
 
+import { code } from "@streamdown/code";
+import { math } from "@streamdown/math";
 import { type ComponentProps, memo } from "react";
 import { Streamdown } from "streamdown";
 import { cn } from "@/lib/utils";
+import "katex/dist/katex.min.css";
 
 type ResponseProps = ComponentProps<typeof Streamdown>;
 
 export const Response = memo(
   ({ className, ...props }: ResponseProps) => (
-    <Streamdown
-      className={cn(
-        "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>div>div]:bg-sidebar/90 [&_.shiki]:bg-transparent!",
-        className
-      )}
-      {...props}
-    />
+    <Streamdown plugins={{ math, code }} className={cn(className)} {...props} />
   ),
   (prevProps, nextProps) => prevProps.children === nextProps.children
 );

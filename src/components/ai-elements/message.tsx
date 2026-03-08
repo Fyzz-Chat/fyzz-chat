@@ -1,5 +1,7 @@
 "use client";
 
+import { code } from "@streamdown/code";
+import { math } from "@streamdown/math";
 import type { FileUIPart, SourceUrlUIPart, UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon, PaperclipIcon, XIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
@@ -16,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import rehypeCitations from "@/lib/utils/rehype-citations";
+import "katex/dist/katex.min.css";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage["role"];
@@ -301,19 +304,18 @@ export const MessageResponse = memo(
       };
     }, [sources]);
 
-    return (
-      <Streamdown
-        className={cn(
-          "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-          className
-        )}
-        {...(citationComponents && {
+    const streamdownProps = {
+      plugins: { math, code },
+      className: cn(className),
+      ...props,
+      ...(citationComponents &&
+        ({
           rehypePlugins: [rehypeCitations],
           components: citationComponents,
-        })}
-        {...props}
-      />
-    );
+        } as Partial<ComponentProps<typeof Streamdown>>)),
+    };
+
+    return <Streamdown {...streamdownProps} />;
   },
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children && prevProps.sources === nextProps.sources
