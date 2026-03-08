@@ -54,6 +54,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useLongPress } from "@/hooks/use-long-press";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { useDeleteProject, useProjects, useUpdateProject } from "@/lib/queries/projects";
@@ -303,9 +304,7 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="edit-project-name" className="font-medium text-sm">
-                Name
-              </label>
+              <Label htmlFor="edit-project-name">Name</Label>
               <Input
                 id="edit-project-name"
                 placeholder="Project name"
@@ -319,12 +318,13 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="edit-project-description" className="font-medium text-sm">
-                Description
-              </label>
+              <Label htmlFor="edit-project-description">
+                <span>Description</span>{" "}
+                <span className="text-muted-foreground text-xs">(optional)</span>
+              </Label>
               <Input
                 id="edit-project-description"
-                placeholder="Optional description"
+                placeholder="Project description"
                 value={editProjectDescription}
                 onChange={(event) => setEditProjectDescription(event.target.value)}
               />

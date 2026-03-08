@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -91,9 +92,7 @@ export function ProjectsSection({ initialProjects }: Readonly<ProjectsSectionPro
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label htmlFor="create-project-name" className="font-medium text-sm">
-                      Name
-                    </label>
+                    <Label htmlFor="create-project-name">Name</Label>
                     <Input
                       id="create-project-name"
                       placeholder="Project name"
@@ -107,15 +106,13 @@ export function ProjectsSection({ initialProjects }: Readonly<ProjectsSectionPro
                     />
                   </div>
                   <div className="space-y-2">
-                    <label
-                      htmlFor="create-project-description"
-                      className="font-medium text-sm"
-                    >
-                      Description
-                    </label>
+                    <Label htmlFor="create-project-description">
+                      <span>Description</span>{" "}
+                      <span className="text-muted-foreground text-xs">(optional)</span>
+                    </Label>
                     <Input
                       id="create-project-description"
-                      placeholder="Optional description"
+                      placeholder="Project description"
                       value={newProjectDescription}
                       onChange={(e) => setNewProjectDescription(e.target.value)}
                     />
