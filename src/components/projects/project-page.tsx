@@ -95,7 +95,7 @@ export function ProjectPage({
   }
 
   return (
-    <div className="mx-auto flex h-full w-full flex-col gap-8 overflow-x-hidden p-4 pt-16">
+    <div className="mx-auto flex flex-col gap-8 overflow-x-hidden p-4 pt-16">
       <Link
         href="/projects"
         className="group flex items-center gap-1 text-muted-foreground text-sm transition-color duration-200 hover:text-foreground"
@@ -103,7 +103,7 @@ export function ProjectPage({
         <ArrowLeft className="size-4 transition-transform group-hover:translate-x-[-2px]" />
         Back to projects
       </Link>
-      <div className="flex h-full w-full min-w-0 flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
+      <div className="flex w-full min-w-0 flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
         <div className="flex h-full w-full min-w-0 max-w-2xl flex-col gap-6">
           <div className="flex flex-col gap-2">
             <h1 className="font-semibold text-2xl">{project.name}</h1>
