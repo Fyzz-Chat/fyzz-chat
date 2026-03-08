@@ -1,3 +1,18 @@
+# [0.25.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.24.0...v0.25.0) (2026-03-08)
+
+
+### Bug Fixes
+
+* **projects:** update conversation count when new one is started ([d988a0c](https://github.com/Fyzz-Chat/fyzz-chat/commit/d988a0c9d90667c41a892aa57420dff756e52855))
+
+
+### Features
+
+* add feature icons ([47220e3](https://github.com/Fyzz-Chat/fyzz-chat/commit/47220e3332224b39ffc85d3fd9906e500178a8a3))
+* introduce project pages ([22f7d06](https://github.com/Fyzz-Chat/fyzz-chat/commit/22f7d062687eac619a3fe189b71a1d1697f4fb0f))
+* introduce projects list ([48ee662](https://github.com/Fyzz-Chat/fyzz-chat/commit/48ee662a5b563d75b3ae09394a49a6bbc73fd3a4))
+* **projects:** introduce optional description field ([2520613](https://github.com/Fyzz-Chat/fyzz-chat/commit/252061313e4fafd7599ab3cd02e1cc1c895beb3c))
+
 # [0.24.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.23.0...v0.24.0) (2026-03-06)
 
 
