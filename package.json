@@ -48,6 +48,7 @@
     "@aws-sdk/s3-request-presigner": "3.1004.0",
     "@formatjs/intl-localematcher": "0.8.1",
     "@hookform/resolvers": "5.2.2",
+    "@langchain/core": "1.1.31",
     "@marsidev/react-turnstile": "1.4.2",
     "@modelcontextprotocol/sdk": "1.27.1",
     "@prisma/adapter-pg": "7.4.2",

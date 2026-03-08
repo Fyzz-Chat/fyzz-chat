@@ -19,7 +19,7 @@ import {
   buildSystemPromptWithMemory,
   buildToolsForRuntime,
 } from "@/lib/backend/model-runtime";
-import systemPrompt from "@/lib/backend/prompts/system-prompt";
+import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import { filterMessages, hasInputPart, logDuration } from "@/lib/backend/utils";
@@ -403,7 +403,7 @@ export async function POST(req: NextRequest) {
   const { tools, mcpClients } = toolsState;
 
   const extendedSystemPrompt = await buildSystemPromptWithMemory({
-    baseSystemPrompt: systemPrompt,
+    baseSystemPrompt: await getSystemPrompt(),
     memoryEnabled: user.memoryEnabled,
     temporaryChat,
   });

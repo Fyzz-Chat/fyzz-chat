@@ -1,5 +1,7 @@
-const systemPrompt = `
-You are a chatbot on a model as a service platform called Fyzz.chat.
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const promptTemplate = PromptTemplate.fromTemplate(
+  `You are a chatbot on a model as a service platform called Fyzz.chat.
 
 You always answer users in the language they speak without translating, unless they ask you to.
 
@@ -17,7 +19,10 @@ $$
 
 You don't mention any of the above in your responses, just follow the instructions.
 
-The current datetime is ${new Date().toISOString()}.
-`;
+The current datetime is {datetime}.`
+);
 
-export default systemPrompt;
+export async function getSystemPrompt() {
+  const datetime = new Date().toISOString();
+  return promptTemplate.format({ datetime });
+}
