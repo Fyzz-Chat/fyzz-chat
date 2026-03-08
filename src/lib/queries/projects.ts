@@ -8,6 +8,318 @@ import {
 import { useTRPC } from "@/lib/trpc/client";
 import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
+type ProjectData = { id: string; name: string } | null;
+type ProjectsData = { projects: ProjectWithCount[] };
+type UnassignedConversationsCountData = { count: number };
+type ConversationData = {
+  id: string;
+  title: string;
+  model: string;
+  projectId: string | null;
+} | null;
+type ConversationListInput = { search?: string; projectId?: string | null };
+type ConversationsCache = {
+  pages: Array<{ items: PartialConversation[]; nextCursor: string | undefined }>;
+  pageParams: (string | null)[];
+};
+
+type CreateProjectContext = {
+  optimisticId: string;
+  previousProjects: ProjectsData | undefined;
+};
+
+type UpdateProjectContext = {
+  previousProjects: ProjectsData | undefined;
+  previousProject: ProjectData | undefined;
+};
+
+type DeleteProjectContext = {
+  previousProjects: ProjectsData | undefined;
+  previousProject: ProjectData | undefined;
+  previousUnassignedCount: UnassignedConversationsCountData | undefined;
+};
+
+type AssignProjectContext = {
+  previousProjects: ProjectsData | undefined;
+  previousUnassignedCount: UnassignedConversationsCountData | undefined;
+  previousConversation: ConversationData | undefined;
+  previousConversationLists: Array<[unknown, ConversationsCache | undefined]>;
+};
+
+function sortProjects(projects: ProjectWithCount[]) {
+  return [...projects].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function toProjectWithCount(
+  project: {
+    id: string;
+    name: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
+  },
+  overrides?: Partial<ProjectWithCount>
+): ProjectWithCount {
+  return {
+    id: project.id,
+    name: project.name,
+    userId: project.userId,
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+    conversationCount: 0,
+    lastActivityAt: project.updatedAt,
+    ...overrides,
+  };
+}
+
+function getConversationListInput(queryKey: unknown): ConversationListInput {
+  if (!Array.isArray(queryKey)) {
+    return {};
+  }
+
+  const keyPart = queryKey[1];
+  if (!keyPart || typeof keyPart !== "object") {
+    return {};
+  }
+
+  const input = (keyPart as { input?: ConversationListInput }).input;
+  if (!input || typeof input !== "object") {
+    return {};
+  }
+
+  return input;
+}
+
+function matchesConversationFilter(
+  input: ConversationListInput,
+  projectId: string | null
+) {
+  if (input.projectId === undefined) {
+    return true;
+  }
+
+  return input.projectId === projectId;
+}
+
+function setProjectsCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  updater: (old: ProjectsData | undefined) => ProjectsData | undefined
+) {
+  queryClient.setQueryData(trpc.projects.queryKey(), updater);
+}
+
+function setProjectCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  id: string,
+  updater: (old: ProjectData | undefined) => ProjectData | undefined
+) {
+  queryClient.setQueryData(trpc.project.queryKey({ id }), updater);
+}
+
+function setUnassignedCountCache(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  updater: (
+    old: UnassignedConversationsCountData | undefined
+  ) => UnassignedConversationsCountData | undefined
+) {
+  queryClient.setQueryData(trpc.unassignedConversationsCount.queryKey(), updater);
+}
+
+function updateProjectCounts(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  fromProjectId: string | null | undefined,
+  toProjectId: string | null,
+  activityAt?: Date
+) {
+  if (fromProjectId === toProjectId) {
+    return;
+  }
+
+  setProjectsCache(queryClient, trpc, (old) => {
+    if (!old) return old;
+
+    return {
+      ...old,
+      projects: old.projects.map((project) => {
+        let nextProject = project;
+
+        if (fromProjectId && project.id === fromProjectId) {
+          nextProject = {
+            ...nextProject,
+            conversationCount: Math.max(0, nextProject.conversationCount - 1),
+          };
+        }
+
+        if (toProjectId && project.id === toProjectId) {
+          nextProject = {
+            ...nextProject,
+            conversationCount: nextProject.conversationCount + 1,
+            lastActivityAt:
+              activityAt && activityAt > nextProject.lastActivityAt
+                ? activityAt
+                : nextProject.lastActivityAt,
+          };
+        }
+
+        return nextProject;
+      }),
+    };
+  });
+}
+
+function updateUnassignedConversationCount(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  fromProjectId: string | null | undefined,
+  toProjectId: string | null
+) {
+  if (fromProjectId === toProjectId) {
+    return;
+  }
+
+  setUnassignedCountCache(queryClient, trpc, (old) => {
+    if (!old) return old;
+
+    if (fromProjectId === null && toProjectId !== null) {
+      return { count: Math.max(0, old.count - 1) };
+    }
+
+    if (fromProjectId !== null && toProjectId === null) {
+      return { count: old.count + 1 };
+    }
+
+    return old;
+  });
+}
+
+function findConversationInCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string
+) {
+  const conversationLists = queryClient.getQueriesData(
+    trpc.infiniteConversations.infiniteQueryFilter()
+  ) as Array<[unknown, ConversationsCache | undefined]>;
+
+  for (const [, data] of conversationLists) {
+    if (!data) continue;
+
+    for (const page of data.pages) {
+      const conversation = page.items.find((item) => item.id === conversationId);
+      if (conversation) {
+        return conversation;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function getConversationProjectId(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string
+) {
+  const conversation = findConversationInCaches(queryClient, trpc, conversationId);
+  if (conversation) {
+    return conversation.projectId;
+  }
+
+  const conversationDetail = queryClient.getQueryData(
+    trpc.conversation.queryKey({ id: conversationId })
+  ) as ConversationData | undefined;
+
+  return conversationDetail?.projectId;
+}
+
+function updateConversationProjectCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversationId: string,
+  projectId: string | null
+) {
+  const sourceConversation = findConversationInCaches(queryClient, trpc, conversationId);
+  const nextConversation = sourceConversation
+    ? { ...sourceConversation, projectId }
+    : undefined;
+
+  const conversationLists = queryClient.getQueriesData(
+    trpc.infiniteConversations.infiniteQueryFilter()
+  ) as Array<[unknown, ConversationsCache | undefined]>;
+
+  conversationLists.forEach(([queryKey]) => {
+    const input = getConversationListInput(queryKey);
+    const shouldContainConversation = matchesConversationFilter(input, projectId);
+    const canInsert = !input.search;
+
+    queryClient.setQueryData(
+      queryKey as readonly unknown[],
+      (old: ConversationsCache | undefined) => {
+        if (!old) return old;
+
+        let foundConversation = false;
+        const pages = old.pages.map((page) => ({
+          ...page,
+          items: page.items.flatMap((item) => {
+            if (item.id !== conversationId) {
+              return [item];
+            }
+
+            foundConversation = true;
+            if (!shouldContainConversation) {
+              return [];
+            }
+
+            return [{ ...item, projectId }];
+          }),
+        }));
+
+        if (
+          !foundConversation &&
+          canInsert &&
+          shouldContainConversation &&
+          nextConversation &&
+          pages[0]
+        ) {
+          pages[0] = {
+            ...pages[0],
+            items: [nextConversation, ...pages[0].items],
+          };
+        }
+
+        return {
+          ...old,
+          pages,
+        };
+      }
+    );
+  });
+
+  queryClient.setQueryData(
+    trpc.conversation.queryKey({ id: conversationId }),
+    (old: ConversationData | undefined) => {
+      if (!old) return old;
+      return {
+        ...old,
+        projectId,
+      };
+    }
+  );
+}
+
+function restoreConversationLists(
+  queryClient: ReturnType<typeof useQueryClient>,
+  snapshots: Array<[unknown, ConversationsCache | undefined]>
+) {
+  snapshots.forEach(([queryKey, data]) => {
+    queryClient.setQueryData(queryKey as readonly unknown[], data);
+  });
+}
+
 export function useProject(
   id: string,
   initialData?: { id: string; name: string } | null
@@ -29,20 +341,67 @@ export function useProjects(initialData?: { projects: ProjectWithCount[] }) {
   });
 }
 
-export function useUnassignedConversationsCount() {
-  const trpc = useTRPC();
-
-  return useQuery(trpc.unassignedConversationsCount.queryOptions());
-}
-
 export function useCreateProject() {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
 
   return useMutation({
     mutationFn: (name: string) => createProjectAction(name),
-    onSuccess: () => {
-      queryClient.invalidateQueries(trpc.projects.queryFilter());
+    onMutate: async (name): Promise<CreateProjectContext> => {
+      await queryClient.cancelQueries(trpc.projects.queryFilter());
+
+      const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
+
+      const optimisticId = `optimistic-project-${Date.now()}`;
+      const now = new Date();
+
+      setProjectsCache(queryClient, trpc, (old) => {
+        const optimisticProject = toProjectWithCount(
+          {
+            id: optimisticId,
+            name,
+            userId: old?.projects[0]?.userId ?? "",
+            createdAt: now,
+            updatedAt: now,
+          },
+          {
+            conversationCount: 0,
+            lastActivityAt: now,
+          }
+        );
+
+        if (!old) {
+          return { projects: [optimisticProject] };
+        }
+
+        return {
+          ...old,
+          projects: sortProjects([...old.projects, optimisticProject]),
+        };
+      });
+
+      return { optimisticId, previousProjects };
+    },
+    onError: (_, __, context) => {
+      if (!context) return;
+      queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
+    },
+    onSuccess: (project, _, context) => {
+      setProjectsCache(queryClient, trpc, (old) => {
+        const nextProject = toProjectWithCount(project);
+
+        if (!old) {
+          return { projects: [nextProject] };
+        }
+
+        return {
+          ...old,
+          projects: sortProjects([
+            ...old.projects.filter((item) => item.id !== context?.optimisticId),
+            nextProject,
+          ]),
+        };
+      });
     },
   });
 }
@@ -54,8 +413,67 @@ export function useUpdateProject() {
   return useMutation({
     mutationFn: ({ id, name }: { id: string; name: string }) =>
       updateProjectAction(id, name),
-    onSuccess: () => {
-      queryClient.invalidateQueries(trpc.projects.queryFilter());
+    onMutate: async ({ id, name }): Promise<UpdateProjectContext> => {
+      await queryClient.cancelQueries(trpc.projects.queryFilter());
+      await queryClient.cancelQueries(trpc.project.queryFilter({ id }));
+
+      const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
+      const previousProject = queryClient.getQueryData(trpc.project.queryKey({ id })) as
+        | ProjectData
+        | undefined;
+
+      setProjectsCache(queryClient, trpc, (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          projects: sortProjects(
+            old.projects.map((project) =>
+              project.id === id ? { ...project, name } : project
+            )
+          ),
+        };
+      });
+
+      setProjectCache(queryClient, trpc, id, (old) => {
+        if (!old) return old;
+        return { ...old, name };
+      });
+
+      return { previousProjects, previousProject };
+    },
+    onError: (_, variables, context) => {
+      if (!context) return;
+      queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
+      queryClient.setQueryData(
+        trpc.project.queryKey({ id: variables.id }),
+        context.previousProject
+      );
+    },
+    onSuccess: (project) => {
+      setProjectsCache(queryClient, trpc, (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          projects: sortProjects(
+            old.projects.map((item) =>
+              item.id === project.id
+                ? {
+                    ...item,
+                    name: project.name,
+                    updatedAt: project.updatedAt,
+                  }
+                : item
+            )
+          ),
+        };
+      });
+
+      setProjectCache(queryClient, trpc, project.id, (old) => {
+        if (!old) return old;
+        return { ...old, name: project.name };
+      });
     },
   });
 }
@@ -66,11 +484,60 @@ export function useDeleteProject() {
 
   return useMutation({
     mutationFn: (id: string) => deleteProjectAction(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(trpc.projects.queryFilter());
-      // Also invalidate conversations since they may have been unassigned
-      queryClient.invalidateQueries(trpc.infiniteConversations.queryFilter());
-      queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
+    onMutate: async (id): Promise<DeleteProjectContext> => {
+      await queryClient.cancelQueries(trpc.projects.queryFilter());
+      await queryClient.cancelQueries(trpc.project.queryFilter({ id }));
+      await queryClient.cancelQueries(trpc.unassignedConversationsCount.queryFilter());
+
+      const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
+      const previousProject = queryClient.getQueryData(trpc.project.queryKey({ id })) as
+        | ProjectData
+        | undefined;
+      const previousUnassignedCount = queryClient.getQueryData(
+        trpc.unassignedConversationsCount.queryKey()
+      );
+
+      const deletedProject = previousProjects?.projects.find(
+        (project) => project.id === id
+      );
+
+      setProjectsCache(queryClient, trpc, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          projects: old.projects.filter((project) => project.id !== id),
+        };
+      });
+
+      if (deletedProject) {
+        setUnassignedCountCache(queryClient, trpc, (old) => {
+          if (!old) return old;
+          return {
+            // Conversations of a deleted project are now unassigned
+            count: old.count + deletedProject.conversationCount,
+          };
+        });
+      }
+
+      queryClient.setQueryData(trpc.project.queryKey({ id }), null);
+
+      return {
+        previousProjects,
+        previousProject,
+        previousUnassignedCount,
+      };
+    },
+    onError: (_, variables, context) => {
+      if (!context) return;
+      queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
+      queryClient.setQueryData(
+        trpc.project.queryKey({ id: variables }),
+        context.previousProject
+      );
+      queryClient.setQueryData(
+        trpc.unassignedConversationsCount.queryKey(),
+        context.previousUnassignedCount
+      );
     },
   });
 }
@@ -87,36 +554,78 @@ export function useAssignConversationToProject() {
       conversationId: string;
       projectId: string | null;
     }) => assignConversationToProjectAction(conversationId, projectId),
-    onSuccess: (_, { conversationId, projectId }) => {
-      // Update conversation cache optimistically for current view
-      const queries = queryClient.getQueriesData(
+    onMutate: async ({ conversationId, projectId }): Promise<AssignProjectContext> => {
+      await queryClient.cancelQueries(trpc.projects.queryFilter());
+      await queryClient.cancelQueries(trpc.unassignedConversationsCount.queryFilter());
+      await queryClient.cancelQueries(
+        trpc.conversation.queryFilter({ id: conversationId })
+      );
+      await queryClient.cancelQueries(trpc.infiniteConversations.infiniteQueryFilter());
+
+      const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
+      const previousUnassignedCount = queryClient.getQueryData(
+        trpc.unassignedConversationsCount.queryKey()
+      );
+      const previousConversation = queryClient.getQueryData(
+        trpc.conversation.queryKey({ id: conversationId })
+      ) as ConversationData | undefined;
+      const previousConversationLists = queryClient.getQueriesData(
         trpc.infiniteConversations.infiniteQueryFilter()
+      ) as Array<[unknown, ConversationsCache | undefined]>;
+
+      const previousProjectId = getConversationProjectId(
+        queryClient,
+        trpc,
+        conversationId
+      );
+      const sourceConversation = findConversationInCaches(
+        queryClient,
+        trpc,
+        conversationId
       );
 
-      queries.forEach(([queryKey]) => {
-        queryClient.setQueryData(
-          queryKey,
-          (old: { pages: Array<{ items: PartialConversation[] }> } | undefined) => {
-            if (!old) return old;
-            return {
-              ...old,
-              pages: old.pages.map((page) => ({
-                ...page,
-                items: page.items.map((conv: PartialConversation) =>
-                  conv.id === conversationId ? { ...conv, projectId } : conv
-                ),
-              })),
-            };
-          }
-        );
-      });
+      updateConversationProjectCaches(queryClient, trpc, conversationId, projectId);
+      updateProjectCounts(
+        queryClient,
+        trpc,
+        previousProjectId,
+        projectId,
+        sourceConversation?.lastMessageAt
+      );
+      updateUnassignedConversationCount(queryClient, trpc, previousProjectId, projectId);
 
-      // Invalidate all conversation queries to ensure filtered views are updated
-      queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
+      return {
+        previousProjects,
+        previousUnassignedCount,
+        previousConversation,
+        previousConversationLists,
+      };
+    },
+    onError: (_, variables, context) => {
+      if (!context) return;
 
-      // Invalidate project counts
-      queryClient.invalidateQueries(trpc.projects.queryFilter());
-      queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
+      queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
+      queryClient.setQueryData(
+        trpc.unassignedConversationsCount.queryKey(),
+        context.previousUnassignedCount
+      );
+      queryClient.setQueryData(
+        trpc.conversation.queryKey({ id: variables.conversationId }),
+        context.previousConversation
+      );
+      restoreConversationLists(queryClient, context.previousConversationLists);
+    },
+    onSuccess: (updatedConversation, { conversationId }) => {
+      queryClient.setQueryData(
+        trpc.conversation.queryKey({ id: conversationId }),
+        (old: ConversationData | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            projectId: updatedConversation.projectId,
+          };
+        }
+      );
     },
   });
 }
