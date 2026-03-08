@@ -37,18 +37,32 @@ export async function getConversation(id: string) {
   return conversation;
 }
 
+const conversationSelect = {
+  id: true,
+  userId: true,
+  model: true,
+  project: { select: { name: true, description: true } },
+} as const;
+
+type ConversationResult = {
+  id: string;
+  userId: string;
+  model: string;
+  project: { name: string; description: string | null } | null;
+};
+
 export async function getOrCreateConversation(
   id: string,
   userId: string,
   modelId: string,
   projectId?: string
 ): Promise<
-  | { conversation: { id: string; userId: string; model: string }; error?: never }
+  | { conversation: ConversationResult; error?: never }
   | { conversation: null; error: string }
 > {
   const existing = await prisma.conversation.findUnique({
     where: { id },
-    select: { id: true, userId: true, model: true },
+    select: conversationSelect,
   });
 
   if (existing) {
@@ -59,6 +73,7 @@ export async function getOrCreateConversation(
       const updated = await prisma.conversation.update({
         where: { id },
         data: { model: modelId },
+        select: conversationSelect,
       });
       return { conversation: updated };
     }
@@ -74,11 +89,15 @@ export async function getOrCreateConversation(
         userId,
         projectId: projectId ?? null,
       },
+      select: conversationSelect,
     });
     return { conversation: newConversation };
   } catch (error: unknown) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
-      const retry = await prisma.conversation.findUnique({ where: { id } });
+      const retry = await prisma.conversation.findUnique({
+        where: { id },
+        select: conversationSelect,
+      });
       if (!retry) {
         throw error;
       }

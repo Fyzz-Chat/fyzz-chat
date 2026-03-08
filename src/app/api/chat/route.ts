@@ -123,7 +123,11 @@ async function loadConversationMessages({
   temporaryChat: boolean;
   projectId?: string;
   start: number;
-}): Promise<{ messages?: CustomUIMessage[]; errorResponse?: Response }> {
+}): Promise<{
+  messages?: CustomUIMessage[];
+  project?: { name: string; description: string | null } | null;
+  errorResponse?: Response;
+}> {
   if (temporaryChat) {
     const mappedMessages = (incomingMessages || []).map((message: CustomUIMessage) =>
       mapMessageFilePartsForRead(userId, id, message)
@@ -163,7 +167,7 @@ async function loadConversationMessages({
     return { errorResponse: createEmptyConversationResponse() };
   }
 
-  return { messages: existingMessages };
+  return { messages: existingMessages, project: getOrCreate.conversation?.project };
 }
 
 async function loadToolsForRequest({
@@ -403,7 +407,7 @@ export async function POST(req: NextRequest) {
   const { tools, mcpClients } = toolsState;
 
   const extendedSystemPrompt = await buildSystemPromptWithMemory({
-    baseSystemPrompt: await getSystemPrompt(),
+    baseSystemPrompt: await getSystemPrompt(conversationState.project),
     memoryEnabled: user.memoryEnabled,
     temporaryChat,
   });
