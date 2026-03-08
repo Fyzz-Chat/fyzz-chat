@@ -9,7 +9,7 @@ export async function getProject(id: string) {
 
   return prisma.project.findUnique({
     where: { id, userId },
-    select: { id: true, name: true },
+    select: { id: true, name: true, description: true },
   });
 }
 
@@ -41,6 +41,7 @@ export async function getProjects(): Promise<ProjectWithCount[]> {
     return {
       id: project.id,
       name: project.name,
+      description: project.description,
       userId: project.userId,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
@@ -50,25 +51,30 @@ export async function getProjects(): Promise<ProjectWithCount[]> {
   });
 }
 
-export async function createProject(name: string) {
+export async function createProject(name: string, description?: string | null) {
   const userId = await getUserIdFromSession();
 
   const project = await prisma.project.create({
     data: {
       name,
       userId,
+      ...(description !== undefined && { description }),
     },
   });
 
   return project;
 }
 
-export async function updateProject(id: string, name: string) {
+export async function updateProject(
+  id: string,
+  name: string,
+  description?: string | null
+) {
   const userId = await getUserIdFromSession();
 
   const project = await prisma.project.update({
     where: { id, userId },
-    data: { name },
+    data: { name, ...(description !== undefined && { description }) },
   });
 
   return project;

@@ -36,12 +36,17 @@ export function ProjectsSection({ initialProjects }: Readonly<ProjectsSectionPro
   useProjects({ projects: initialProjects });
   const createProject = useCreateProject();
   const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectDescription, setNewProjectDescription] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) return;
-    await createProject.mutateAsync(newProjectName.trim());
+    await createProject.mutateAsync({
+      name: newProjectName.trim(),
+      description: newProjectDescription.trim() || null,
+    });
     setNewProjectName("");
+    setNewProjectDescription("");
     setIsCreateDialogOpen(false);
   };
 
@@ -81,19 +86,41 @@ export function ProjectsSection({ initialProjects }: Readonly<ProjectsSectionPro
                 <DialogHeader>
                   <DialogTitle>Create New Project</DialogTitle>
                   <DialogDescription>
-                    Enter a name for your new project.
+                    Enter a name and optional description for your new project.
                   </DialogDescription>
                 </DialogHeader>
-                <Input
-                  placeholder="Project name"
-                  value={newProjectName}
-                  onChange={(e) => setNewProjectName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleCreateProject();
-                    }
-                  }}
-                />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="create-project-name" className="font-medium text-sm">
+                      Name
+                    </label>
+                    <Input
+                      id="create-project-name"
+                      placeholder="Project name"
+                      value={newProjectName}
+                      onChange={(e) => setNewProjectName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleCreateProject();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="create-project-description"
+                      className="font-medium text-sm"
+                    >
+                      Description
+                    </label>
+                    <Input
+                      id="create-project-description"
+                      placeholder="Optional description"
+                      value={newProjectDescription}
+                      onChange={(e) => setNewProjectDescription(e.target.value)}
+                    />
+                  </div>
+                </div>
                 <DialogFooter>
                   <Button
                     onClick={handleCreateProject}

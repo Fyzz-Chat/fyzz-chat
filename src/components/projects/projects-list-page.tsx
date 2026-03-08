@@ -65,7 +65,7 @@ interface ProjectsListPageProps {
 }
 
 type ProjectOverlayState = {
-  mode: "actions" | "rename" | "delete";
+  mode: "actions" | "edit" | "delete";
   project: ProjectWithCount;
 };
 
@@ -75,33 +75,37 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
   const deleteProject = useDeleteProject();
   const isMobile = useMediaQuery("(max-width: 640px)");
   const [projectOverlay, setProjectOverlay] = useState<ProjectOverlayState | null>(null);
-  const [renameProjectName, setRenameProjectName] = useState("");
+  const [editProjectName, setEditProjectName] = useState("");
+  const [editProjectDescription, setEditProjectDescription] = useState("");
   const projects = projectsData?.projects ?? initialProjects;
 
-  const openRenameDialog = (project: ProjectWithCount) => {
-    setRenameProjectName(project.name);
-    setProjectOverlay({ mode: "rename", project });
+  const openEditDialog = (project: ProjectWithCount) => {
+    setEditProjectName(project.name);
+    setEditProjectDescription(project.description ?? "");
+    setProjectOverlay({ mode: "edit", project });
   };
 
   const openDeleteDialog = (project: ProjectWithCount) => {
     setProjectOverlay({ mode: "delete", project });
   };
 
-  const handleRenameProject = async () => {
-    if (projectOverlay?.mode !== "rename") return;
+  const handleEditProject = async () => {
+    if (projectOverlay?.mode !== "edit") return;
 
-    const name = renameProjectName.trim();
+    const name = editProjectName.trim();
     if (!name) return;
 
     try {
       await updateProject.mutateAsync({
         id: projectOverlay.project.id,
         name,
+        description: editProjectDescription.trim() || null,
       });
       setProjectOverlay(null);
-      setRenameProjectName("");
+      setEditProjectName("");
+      setEditProjectDescription("");
     } catch {
-      toast.error("Could not rename project. Please try again.");
+      toast.error("Could not update project. Please try again.");
     }
   };
 
@@ -158,24 +162,28 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
                   <Card className="transition-colors hover:bg-muted/50 group-hover/project:bg-muted/50">
                     <CardHeader className="pr-12">
                       <div className="flex items-center gap-2">
-                        <Folder className="size-4 text-muted-foreground" />
-                        <CardTitle className="truncate text-base">
+                        <Folder className="size-4 shrink-0 text-muted-foreground" />
+                        <CardTitle className="min-w-0 truncate text-base">
                           {project.name}
                         </CardTitle>
                       </div>
-                      <CardDescription className="flex items-center gap-1">
-                        <MessageSquare className="size-3" />
-                        {project.conversationCount}{" "}
-                        {project.conversationCount === 1
-                          ? "conversation"
-                          : "conversations"}
-                      </CardDescription>
+                      {project.description ? (
+                        <CardDescription className="line-clamp-2">
+                          {project.description}
+                        </CardDescription>
+                      ) : null}
                     </CardHeader>
-                    <CardFooter className="text-muted-foreground text-xs">
-                      Updated{" "}
-                      {formatTimeAgo(
-                        new Date(project.lastActivityAt || project.updatedAt)
-                      )}
+                    <CardFooter className="flex items-center justify-between text-muted-foreground text-xs">
+                      <p>
+                        Updated{" "}
+                        {formatTimeAgo(
+                          new Date(project.lastActivityAt || project.updatedAt)
+                        )}
+                      </p>
+                      <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                        <MessageSquare className="size-3" />
+                        <span className="text-sm">{project.conversationCount}</span>
+                      </span>
                     </CardFooter>
                   </Card>
                 </Link>
@@ -199,11 +207,11 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
                       <DropdownMenuItem
                         onClick={(event) => {
                           event.stopPropagation();
-                          openRenameDialog(project);
+                          openEditDialog(project);
                         }}
                       >
                         <Pencil className="mr-2 size-4" />
-                        Rename
+                        Edit
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -247,11 +255,11 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
               className="h-12 w-full justify-center rounded-xl"
               onClick={() => {
                 if (!projectOverlay) return;
-                openRenameDialog(projectOverlay.project);
+                openEditDialog(projectOverlay.project);
               }}
             >
               <Pencil className="size-4" />
-              Rename
+              Edit
             </Button>
             <Button
               variant="destructive"
@@ -277,35 +285,57 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
       </Drawer>
 
       <Dialog
-        open={projectOverlay?.mode === "rename"}
+        open={projectOverlay?.mode === "edit"}
         onOpenChange={(open) => {
           if (!open) {
             setProjectOverlay(null);
-            setRenameProjectName("");
+            setEditProjectName("");
+            setEditProjectDescription("");
           }
         }}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Rename Project</DialogTitle>
-            <DialogDescription>Choose a new name for this project.</DialogDescription>
+            <DialogTitle>Edit Project</DialogTitle>
+            <DialogDescription>
+              Update the project name and description.
+            </DialogDescription>
           </DialogHeader>
-          <Input
-            placeholder="Project name"
-            value={renameProjectName}
-            onChange={(event) => setRenameProjectName(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleRenameProject();
-              }
-            }}
-          />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="edit-project-name" className="font-medium text-sm">
+                Name
+              </label>
+              <Input
+                id="edit-project-name"
+                placeholder="Project name"
+                value={editProjectName}
+                onChange={(event) => setEditProjectName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleEditProject();
+                  }
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="edit-project-description" className="font-medium text-sm">
+                Description
+              </label>
+              <Input
+                id="edit-project-description"
+                placeholder="Optional description"
+                value={editProjectDescription}
+                onChange={(event) => setEditProjectDescription(event.target.value)}
+              />
+            </div>
+          </div>
           <DialogFooter>
             <Button
-              onClick={handleRenameProject}
-              disabled={!renameProjectName.trim() || updateProject.isPending}
+              onClick={handleEditProject}
+              disabled={!editProjectName.trim() || updateProject.isPending}
             >
-              {updateProject.isPending ? "Renaming..." : "Rename"}
+              {updateProject.isPending ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </DialogContent>

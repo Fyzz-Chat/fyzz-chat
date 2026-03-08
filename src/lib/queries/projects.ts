@@ -8,7 +8,7 @@ import {
 import { useTRPC } from "@/lib/trpc/client";
 import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
-type ProjectData = { id: string; name: string } | null;
+type ProjectData = { id: string; name: string; description: string | null } | null;
 type ProjectsData = { projects: ProjectWithCount[] };
 type ConversationData = {
   id: string;
@@ -51,6 +51,7 @@ function toProjectWithCount(
   project: {
     id: string;
     name: string;
+    description?: string | null;
     userId: string;
     createdAt: Date;
     updatedAt: Date;
@@ -60,6 +61,7 @@ function toProjectWithCount(
   return {
     id: project.id,
     name: project.name,
+    description: project.description ?? null,
     userId: project.userId,
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
@@ -282,10 +284,7 @@ function restoreConversationLists(
   });
 }
 
-export function useProject(
-  id: string,
-  initialData?: { id: string; name: string } | null
-) {
+export function useProject(id: string, initialData?: ProjectData | null) {
   const trpc = useTRPC();
 
   return useQuery({
@@ -308,8 +307,9 @@ export function useCreateProject() {
   const trpc = useTRPC();
 
   return useMutation({
-    mutationFn: (name: string) => createProjectAction(name),
-    onMutate: async (name): Promise<CreateProjectContext> => {
+    mutationFn: ({ name, description }: { name: string; description?: string | null }) =>
+      createProjectAction(name, description),
+    onMutate: async ({ name, description }): Promise<CreateProjectContext> => {
       await queryClient.cancelQueries(trpc.projects.queryFilter());
 
       const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
@@ -322,6 +322,7 @@ export function useCreateProject() {
           {
             id: optimisticId,
             name,
+            description: description ?? null,
             userId: old?.projects[0]?.userId ?? "",
             createdAt: now,
             updatedAt: now,
@@ -373,9 +374,16 @@ export function useUpdateProject() {
   const trpc = useTRPC();
 
   return useMutation({
-    mutationFn: ({ id, name }: { id: string; name: string }) =>
-      updateProjectAction(id, name),
-    onMutate: async ({ id, name }): Promise<UpdateProjectContext> => {
+    mutationFn: ({
+      id,
+      name,
+      description,
+    }: {
+      id: string;
+      name: string;
+      description?: string | null;
+    }) => updateProjectAction(id, name, description),
+    onMutate: async ({ id, name, description }): Promise<UpdateProjectContext> => {
       await queryClient.cancelQueries(trpc.projects.queryFilter());
       await queryClient.cancelQueries(trpc.project.queryFilter({ id }));
 
@@ -391,7 +399,13 @@ export function useUpdateProject() {
           ...old,
           projects: sortProjects(
             old.projects.map((project) =>
-              project.id === id ? { ...project, name } : project
+              project.id === id
+                ? {
+                    ...project,
+                    name,
+                    ...(description !== undefined && { description }),
+                  }
+                : project
             )
           ),
         };
@@ -399,7 +413,11 @@ export function useUpdateProject() {
 
       setProjectCache(queryClient, trpc, id, (old) => {
         if (!old) return old;
-        return { ...old, name };
+        return {
+          ...old,
+          name,
+          ...(description !== undefined && { description }),
+        };
       });
 
       return { previousProjects, previousProject };
@@ -424,6 +442,7 @@ export function useUpdateProject() {
                 ? {
                     ...item,
                     name: project.name,
+                    description: project.description,
                     updatedAt: project.updatedAt,
                   }
                 : item
@@ -434,7 +453,11 @@ export function useUpdateProject() {
 
       setProjectCache(queryClient, trpc, project.id, (old) => {
         if (!old) return old;
-        return { ...old, name: project.name };
+        return {
+          ...old,
+          name: project.name,
+          description: project.description,
+        };
       });
     },
   });

@@ -17,7 +17,7 @@ import type { ConversationPage } from "@/types/chat";
 
 interface ProjectPageProps {
   id: string;
-  initialProject?: { id: string; name: string } | null;
+  initialProject?: { id: string; name: string; description: string | null } | null;
   initialConversations?: ConversationPage;
 }
 
@@ -100,7 +100,12 @@ export function ProjectPage({
         <ArrowLeft className="size-4 transition-transform group-hover:translate-x-[-2px]" />
         Back to projects
       </Link>
-      <h1 className="font-semibold text-2xl">{project.name}</h1>
+      <div className="flex flex-col gap-2">
+        <h1 className="font-semibold text-2xl">{project.name}</h1>
+        {project.description ? (
+          <p className="text-muted-foreground text-sm">{project.description}</p>
+        ) : null}
+      </div>
 
       <ChatInput />
 
