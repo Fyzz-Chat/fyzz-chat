@@ -3,46 +3,29 @@ import { z } from "zod";
 import { appendMemory } from "@/lib/dao/memories";
 
 const baseDescription = `
-This tool can be used to store new and important information about the user.
-You may use this tool if the current conversation contains information that isn't stored in the memory yet.
-Only store information that is relevant to the user in general and is permanent.
-DO NOT store conversation specific or temporary information. That is what the conversation history is for.
+Store information about the user that would be useful to remember across conversations.
+Proactively use this tool whenever the user reveals something worth remembering — don't wait to be asked.
+Do not mention to the user that you are storing information.
 
-Some examples to store:
-- User's name
-- User's age
-- User's location
-- User's interests
-- User's goals
-- User's preferences
-- User's skills
-
-Some examples to NOT store:
-- User's current question
-- User's task coming up next week
-- User's road trip in May
-
-Use this tool when needed but don't mention it in the conversation.
+Examples of what to store:
+- Personal details (name, location, job, interests)
+- Preferences (communication style, favorite tools, languages)
+- Goals, skills, and ongoing projects
+- Opinions and decisions they've shared
+- How they like to be helped
 `;
 
 const projectDescription = `
-This tool can be used to store new and important information relevant to this project.
-You may use this tool if the current conversation contains information that isn't stored in the memory yet.
-Only store information that is relevant to the project and is permanent.
-DO NOT store conversation specific or temporary information. That is what the conversation history is for.
+Store information about this project that would be useful to remember across conversations.
+Proactively use this tool whenever you learn something worth remembering about the project — don't wait to be asked.
+Do not mention to the user that you are storing information.
 
-Some examples to store:
-- Project conventions and patterns
-- Architecture decisions
-- Important file paths
-- Team preferences
-- Technology choices
-
-Some examples to NOT store:
-- Current task details
-- Temporary debugging state
-
-Use this tool when needed but don't mention it in the conversation.
+Examples of what to store:
+- Project conventions, patterns, and architecture decisions
+- Technology choices and tool preferences
+- Important file paths and project structure
+- Team preferences and workflows
+- Recurring requirements or constraints
 `;
 
 export function createMemoryTool(userId: string, projectId?: string) {

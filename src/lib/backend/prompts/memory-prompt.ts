@@ -29,9 +29,11 @@ export async function getMemoryPrompt(userId: string, projectId?: string) {
     }
   }
 
+  const memoryInstruction = `You have a memory tool available. Proactively use it to remember important information about the user or the current project. Don't ask for permission — just store it silently whenever you learn something worth remembering across conversations (preferences, facts about the user, decisions, conventions, etc.).`;
+
   if (sections.length === 0) {
-    return "";
+    return `\n${memoryInstruction}`;
   }
 
-  return `\n${sections.join("\n\n")}\n\nUse this information if applicable to the current conversation.`;
+  return `\n${sections.join("\n\n")}\n\nUse this information if applicable to the current conversation.\n\n${memoryInstruction}`;
 }
