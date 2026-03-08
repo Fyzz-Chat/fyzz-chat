@@ -9,10 +9,17 @@ export async function getUserMemories(userId: string) {
   });
 }
 
+const memorySelect = {
+  id: true,
+  content: true,
+  createdAt: true,
+} as const;
+
 export async function getProjectMemories(projectId: string) {
   return prisma.memory.findMany({
     where: { projectId },
     orderBy: { createdAt: "asc" },
+    select: memorySelect,
   });
 }
 
@@ -35,4 +42,10 @@ export async function replaceUserMemories(userId: string, entries: string[]) {
       })
     ),
   ]);
+}
+
+export async function deleteMemory(id: string, userId: string) {
+  return prisma.memory.delete({
+    where: { id, userId },
+  });
 }

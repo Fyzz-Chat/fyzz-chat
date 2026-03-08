@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import ChatInput from "@/components/chat/chat-input";
+import { ProjectMemories } from "@/components/projects/project-memories";
 import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useConversations } from "@/lib/queries/conversations";
@@ -19,12 +20,14 @@ interface ProjectPageProps {
   id: string;
   initialProject?: { id: string; name: string; description: string | null } | null;
   initialConversations?: ConversationPage;
+  initialMemories?: { id: string; content: string; createdAt: Date }[];
 }
 
 export function ProjectPage({
   id,
   initialProject,
   initialConversations,
+  initialMemories,
 }: Readonly<ProjectPageProps>) {
   const router = useRouter();
   const { data: project } = useProject(id, initialProject);
@@ -92,7 +95,7 @@ export function ProjectPage({
   }
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-2xl flex-col gap-6 p-4 pt-16">
+    <div className="mx-auto flex h-full w-full flex-col gap-8 overflow-x-hidden p-4 pt-16">
       <Link
         href="/projects"
         className="group flex items-center gap-1 text-muted-foreground text-sm transition-color duration-200 hover:text-foreground"
@@ -100,44 +103,52 @@ export function ProjectPage({
         <ArrowLeft className="size-4 transition-transform group-hover:translate-x-[-2px]" />
         Back to projects
       </Link>
-      <div className="flex flex-col gap-2">
-        <h1 className="font-semibold text-2xl">{project.name}</h1>
-        {project.description ? (
-          <p className="text-muted-foreground text-sm">{project.description}</p>
-        ) : null}
-      </div>
+      <div className="flex h-full w-full min-w-0 flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
+        <div className="flex h-full w-full min-w-0 max-w-2xl flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="font-semibold text-2xl">{project.name}</h1>
+            {project.description ? (
+              <p className="text-muted-foreground text-sm">{project.description}</p>
+            ) : null}
+          </div>
 
-      <ChatInput />
+          <ChatInput />
 
-      {conversations.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          No conversations yet. Send a message to start one.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-1">
-          {conversations.map((conversation) => (
-            <Link
-              key={conversation.id}
-              href={`/chat/${conversation.id}`}
-              className="flex items-start justify-between gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-muted"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="truncate">{conversation.title}</div>
-                {conversation.messages.length > 0 && (
-                  <p className="truncate text-muted-foreground text-xs">
-                    {getMessageContent(
-                      conversation.messages[conversation.messages.length - 1]
+          {conversations.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No conversations yet. Send a message to start one.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-1">
+              {conversations.map((conversation) => (
+                <Link
+                  key={conversation.id}
+                  href={`/chat/${conversation.id}`}
+                  className="flex items-start justify-between gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-muted"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate">{conversation.title}</div>
+                    {conversation.messages.length > 0 && (
+                      <p className="truncate text-muted-foreground text-xs">
+                        {getMessageContent(
+                          conversation.messages[conversation.messages.length - 1]
+                        )}
+                      </p>
                     )}
-                  </p>
-                )}
-              </div>
-              <span className="shrink-0 pt-0.5 text-muted-foreground text-xs">
-                {new Date(conversation.lastMessageAt).toLocaleDateString()}
-              </span>
-            </Link>
-          ))}
+                  </div>
+                  <span className="shrink-0 pt-0.5 text-muted-foreground text-xs">
+                    {new Date(conversation.lastMessageAt).toLocaleDateString()}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+
+        <aside className="h-fit w-full max-w-2xl rounded-lg border p-6 lg:w-auto lg:max-w-96">
+          <ProjectMemories projectId={id} initialMemories={initialMemories} />
+        </aside>
+      </div>
     </div>
   );
 }

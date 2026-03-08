@@ -4,6 +4,7 @@ import { z } from "zod";
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
+import { getProjectMemories } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
 import { getSharesByConversationId } from "@/lib/dao/shares";
@@ -78,6 +79,11 @@ export const appRouter = createTRPCRouter({
   project: protectedProcedure.input(z.object({ id: z.string() })).query(async (opts) => {
     return getProject(opts.input.id);
   }),
+  projectMemories: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async (opts) => {
+      return getProjectMemories(opts.input.projectId);
+    }),
   projects: protectedProcedure.query(async () => {
     const projects = await getProjects();
     return { projects };

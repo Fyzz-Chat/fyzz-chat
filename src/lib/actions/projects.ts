@@ -2,12 +2,14 @@
 
 import "server-only";
 
+import { deleteMemory } from "@/lib/dao/memories";
 import {
   assignConversationToProject,
   createProject,
   deleteProject,
   updateProject,
 } from "@/lib/dao/projects";
+import { getUserIdFromSession } from "@/lib/dao/users";
 
 export async function createProjectAction(name: string, description?: string | null) {
   const project = await createProject(name, description);
@@ -25,6 +27,11 @@ export async function updateProjectAction(
 
 export async function deleteProjectAction(id: string) {
   await deleteProject(id);
+}
+
+export async function deleteMemoryAction(memoryId: string) {
+  const userId = await getUserIdFromSession();
+  await deleteMemory(memoryId, userId);
 }
 
 export async function assignConversationToProjectAction(
