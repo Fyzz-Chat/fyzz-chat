@@ -25,9 +25,9 @@ import {
   useCreateConversationOptimistic,
   useMessages,
   useRegenerateMessage,
-  useShares,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
+import { useShares } from "@/lib/queries/shares";
 import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";
@@ -50,9 +50,11 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     initialMessage,
     initialModel: contextInitialModel,
     initialFiles,
+    initialProjectId,
     setInitialMessage,
     setInitialModel: setContextInitialModel,
     setInitialFiles,
+    setInitialProjectId,
   } = useInitialMessage();
   const isNewConversation = Boolean(initialMessage);
   const conversationData = useConversation(id);
@@ -216,13 +218,22 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             temporaryChat: false,
             browse: browseRef.current,
             reasoningEffort: reasoningEffortRef.current,
+            ...(initialProjectId && { projectId: initialProjectId }),
           },
         }
       );
 
       nextMessageId.current = uuidv4();
     },
-    [id, model.id, addMessage, setAreFilesUploading, browseRef, reasoningEffortRef]
+    [
+      id,
+      model.id,
+      addMessage,
+      setAreFilesUploading,
+      browseRef,
+      reasoningEffortRef,
+      initialProjectId,
+    ]
   );
 
   useEffect(() => {
@@ -258,11 +269,12 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             messages: [],
             lastMessageAt: new Date(),
             branchedFrom: null,
-            projectId: null,
+            projectId: initialProjectId ?? null,
           });
           await handleSubmit({ text: initialMessage, files: initialFiles });
           setInitialMessage(null);
           setInitialFiles([]);
+          setInitialProjectId(null);
           setAreFilesUploading(false);
         } catch {
           hasSentInitial.current = false;
@@ -277,8 +289,10 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     createConversationOptimistic,
     setInitialMessage,
     setInitialFiles,
+    setInitialProjectId,
     setAreFilesUploading,
     initialFiles,
+    initialProjectId,
     model.id,
     providers.length,
     id,

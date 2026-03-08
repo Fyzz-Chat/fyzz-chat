@@ -49,8 +49,10 @@ export type MessagesData = {
 export interface ProjectWithCount {
   id: string;
   name: string;
+  description: string | null;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
   conversationCount: number;
+  lastActivityAt: Date;
 }

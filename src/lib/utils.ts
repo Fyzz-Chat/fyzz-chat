@@ -31,6 +31,20 @@ export function formatTimeAgo(date: Date) {
   return timeAgo.format(date);
 }
 
+export function addDurationToDate(date: Date, duration: string): Date | null {
+  const result = new Date(date);
+  if (duration === "1D") {
+    result.setDate(result.getDate() + 1);
+  } else if (duration === "1W") {
+    result.setDate(result.getDate() + 7);
+  } else if (duration === "1M") {
+    result.setMonth(result.getMonth() + 1);
+  } else {
+    return null;
+  }
+  return result;
+}
+
 // biome-ignore lint/complexity/noBannedTypes: TODO: Need further investigation
 export function debounce(func: Function, wait = 100) {
   let timeout: NodeJS.Timeout;

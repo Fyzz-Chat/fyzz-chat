@@ -11,6 +11,7 @@ export default function Pad({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <div
       className={cn(
+        "md:px-4",
         id
           ? "absolute right-0 bottom-0 left-0 md:bottom-4"
           : "relative flex flex-1 items-start"

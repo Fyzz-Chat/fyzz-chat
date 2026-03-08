@@ -12,10 +12,9 @@ import {
   deleteConversation,
   saveConversation,
   saveConversationModel,
-  shareConversationUntilMessage,
 } from "@/lib/actions/conversations";
 import { deleteMessageChainAfter } from "@/lib/actions/messages";
-import { deleteShareAction } from "@/lib/actions/shares";
+import { updateProjectCounts } from "@/lib/queries/projects";
 import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
@@ -119,28 +118,48 @@ function updateConversationMessageCaches(
   });
 }
 
+function updateProjectCaches(
+  queryClient: ReturnType<typeof useQueryClient>,
+  trpc: ReturnType<typeof useTRPC>,
+  conversation: PartialConversation
+) {
+  if (conversation.projectId) {
+    updateProjectCounts(
+      queryClient,
+      trpc,
+      null,
+      conversation.projectId,
+      conversation.lastMessageAt ? new Date(conversation.lastMessageAt) : undefined
+    );
+  }
+}
+
 export function useConversations(
-  conversations: ConversationPage,
   authorized: boolean,
-  search?: string,
-  projectId?: string | null
+  options?: {
+    initialData?: ConversationPage;
+    search?: string;
+    projectId?: string | null;
+  }
 ) {
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
-  const initialData = {
-    pages: [conversations],
-    pageParams: [null] as (string | null)[],
-  };
+  const initialData = options?.initialData
+    ? {
+        pages: [options.initialData],
+        pageParams: [null] as (string | null)[],
+      }
+    : undefined;
 
   const myQuery = trpc.infiniteConversations.infiniteQueryOptions(
     {
-      search: search,
-      projectId: projectId,
+      search: options?.search,
+      projectId: options?.projectId,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: !search && projectId === undefined ? initialData : undefined,
+      initialData,
       placeholderData: keepPreviousData,
       enabled: authorized && !temporaryChat,
     }
@@ -263,7 +282,6 @@ export function useDeleteConversation() {
 
       // Invalidate project counts since conversation may have been in a project
       queryClient.invalidateQueries(trpc.projects.queryFilter());
-      queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
     },
   });
 }
@@ -372,6 +390,8 @@ export function useCreateConversation() {
           (old) => prependConversationToFirstPage(old, newConversation),
           { skipFilteredSearch: true }
         );
+
+        updateProjectCaches(queryClient, trpc, newConversation);
       }
     },
     onError: (error, newConversation) => {
@@ -402,53 +422,8 @@ export function useCreateConversationOptimistic() {
       updateInfiniteConversationCaches(queryClient, trpc, (old) =>
         prependConversationToFirstPage(old, conversation)
       );
-    },
-  });
-}
 
-export function useShareConversation() {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
-
-  return useMutation({
-    mutationFn: ({
-      conversationId,
-      messageId,
-      duration,
-    }: {
-      conversationId: string;
-      messageId: string;
-      duration: string;
-    }) => shareConversationUntilMessage(conversationId, messageId, duration),
-    onSuccess: () => {
-      // Invalidate shares queries to refresh the share indicators
-      queryClient.invalidateQueries(trpc.shares.queryFilter());
-    },
-  });
-}
-
-export function useShares(conversationId: string) {
-  const trpc = useTRPC();
-
-  return useQuery(
-    trpc.shares.queryOptions(
-      { conversationId },
-      {
-        enabled: Boolean(conversationId),
-      }
-    )
-  );
-}
-
-export function useDeleteShare() {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
-
-  return useMutation({
-    mutationFn: (shareId: string) => deleteShareAction(shareId),
-    onSuccess: () => {
-      // Invalidate all shares queries
-      queryClient.invalidateQueries(trpc.shares.queryFilter());
+      updateProjectCaches(queryClient, trpc, conversation);
     },
   });
 }
@@ -513,7 +488,6 @@ export function useBranchConversation() {
         if (originalConversation.projectId) {
           queryClient.invalidateQueries(trpc.projects.queryFilter());
         }
-        queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
         queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
       }
     },

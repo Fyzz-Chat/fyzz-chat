@@ -9,10 +9,15 @@ import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import { useModelStore } from "@/stores/model-store";
 
-export default function ChatLanding() {
+export default function ChatLanding({ projectId }: Readonly<{ projectId?: string }>) {
   const router = useRouter();
-  const { setInitialMessage, setInitialModel, setInitialBrowse, setInitialFiles } =
-    useInitialMessage();
+  const {
+    setInitialMessage,
+    setInitialModel,
+    setInitialBrowse,
+    setInitialFiles,
+    setInitialProjectId,
+  } = useInitialMessage();
   const setDefaultModel = useModelStore((state) => state.setDefaultModel);
   const userDefaultModelId = useModelStore((state) => state.userDefaultModelId);
   const { setHandlers, setStatus, browseRef } = useChatInput();
@@ -37,6 +42,9 @@ export default function ChatLanding() {
         }
         setInitialBrowse(browseRef.current);
         setInitialFiles(message.files || []);
+        if (projectId) {
+          setInitialProjectId(projectId);
+        }
         router.push(`/chat/${id}`);
       },
     });
@@ -48,7 +56,9 @@ export default function ChatLanding() {
     setInitialModel,
     setInitialBrowse,
     setInitialFiles,
+    setInitialProjectId,
     browseRef,
+    projectId,
   ]);
 
   return (

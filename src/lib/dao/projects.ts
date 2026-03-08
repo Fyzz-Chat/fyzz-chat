@@ -4,6 +4,15 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import type { ProjectWithCount } from "@/types/chat";
 
+export async function getProject(id: string) {
+  const userId = await getUserIdFromSession();
+
+  return prisma.project.findUnique({
+    where: { id, userId },
+    select: { id: true, name: true, description: true },
+  });
+}
+
 export async function getProjects(): Promise<ProjectWithCount[]> {
   const userId = await getUserIdFromSession();
 
@@ -14,38 +23,58 @@ export async function getProjects(): Promise<ProjectWithCount[]> {
       _count: {
         select: { conversations: true },
       },
+      conversations: {
+        select: { lastMessageAt: true },
+        orderBy: { lastMessageAt: "desc" },
+        take: 1,
+      },
     },
   });
 
-  return projects.map((project) => ({
-    id: project.id,
-    name: project.name,
-    userId: project.userId,
-    createdAt: project.createdAt,
-    updatedAt: project.updatedAt,
-    conversationCount: project._count.conversations,
-  }));
+  return projects.map((project) => {
+    const latestConversationAt = project.conversations[0]?.lastMessageAt;
+    const lastActivityAt =
+      latestConversationAt && latestConversationAt > project.updatedAt
+        ? latestConversationAt
+        : project.updatedAt;
+
+    return {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      userId: project.userId,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      conversationCount: project._count.conversations,
+      lastActivityAt,
+    };
+  });
 }
 
-export async function createProject(name: string) {
+export async function createProject(name: string, description?: string | null) {
   const userId = await getUserIdFromSession();
 
   const project = await prisma.project.create({
     data: {
       name,
       userId,
+      ...(description !== undefined && { description }),
     },
   });
 
   return project;
 }
 
-export async function updateProject(id: string, name: string) {
+export async function updateProject(
+  id: string,
+  name: string,
+  description?: string | null
+) {
   const userId = await getUserIdFromSession();
 
   const project = await prisma.project.update({
     where: { id, userId },
-    data: { name },
+    data: { name, ...(description !== undefined && { description }) },
   });
 
   return project;
@@ -124,17 +153,4 @@ export async function getConversationsByProject(projectId: string | null) {
   });
 
   return conversations;
-}
-
-export async function getUnassignedConversationsCount(): Promise<number> {
-  const userId = await getUserIdFromSession();
-
-  const count = await prisma.conversation.count({
-    where: {
-      userId,
-      projectId: null,
-    },
-  });
-
-  return count;
 }

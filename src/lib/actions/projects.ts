@@ -9,13 +9,17 @@ import {
   updateProject,
 } from "@/lib/dao/projects";
 
-export async function createProjectAction(name: string) {
-  const project = await createProject(name);
+export async function createProjectAction(name: string, description?: string | null) {
+  const project = await createProject(name, description);
   return project;
 }
 
-export async function updateProjectAction(id: string, name: string) {
-  const project = await updateProject(id, name);
+export async function updateProjectAction(
+  id: string,
+  name: string,
+  description?: string | null
+) {
+  const project = await updateProject(id, name, description);
   return project;
 }
 
