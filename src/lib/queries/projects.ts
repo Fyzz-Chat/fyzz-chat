@@ -10,7 +10,6 @@ import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
 type ProjectData = { id: string; name: string } | null;
 type ProjectsData = { projects: ProjectWithCount[] };
-type UnassignedConversationsCountData = { count: number };
 type ConversationData = {
   id: string;
   title: string;
@@ -36,12 +35,10 @@ type UpdateProjectContext = {
 type DeleteProjectContext = {
   previousProjects: ProjectsData | undefined;
   previousProject: ProjectData | undefined;
-  previousUnassignedCount: UnassignedConversationsCountData | undefined;
 };
 
 type AssignProjectContext = {
   previousProjects: ProjectsData | undefined;
-  previousUnassignedCount: UnassignedConversationsCountData | undefined;
   previousConversation: ConversationData | undefined;
   previousConversationLists: Array<[unknown, ConversationsCache | undefined]>;
 };
@@ -118,16 +115,6 @@ function setProjectCache(
   queryClient.setQueryData(trpc.project.queryKey({ id }), updater);
 }
 
-function setUnassignedCountCache(
-  queryClient: ReturnType<typeof useQueryClient>,
-  trpc: ReturnType<typeof useTRPC>,
-  updater: (
-    old: UnassignedConversationsCountData | undefined
-  ) => UnassignedConversationsCountData | undefined
-) {
-  queryClient.setQueryData(trpc.unassignedConversationsCount.queryKey(), updater);
-}
-
 function updateProjectCounts(
   queryClient: ReturnType<typeof useQueryClient>,
   trpc: ReturnType<typeof useTRPC>,
@@ -168,31 +155,6 @@ function updateProjectCounts(
         return nextProject;
       }),
     };
-  });
-}
-
-function updateUnassignedConversationCount(
-  queryClient: ReturnType<typeof useQueryClient>,
-  trpc: ReturnType<typeof useTRPC>,
-  fromProjectId: string | null | undefined,
-  toProjectId: string | null
-) {
-  if (fromProjectId === toProjectId) {
-    return;
-  }
-
-  setUnassignedCountCache(queryClient, trpc, (old) => {
-    if (!old) return old;
-
-    if (fromProjectId === null && toProjectId !== null) {
-      return { count: Math.max(0, old.count - 1) };
-    }
-
-    if (fromProjectId !== null && toProjectId === null) {
-      return { count: old.count + 1 };
-    }
-
-    return old;
   });
 }
 
@@ -487,19 +449,11 @@ export function useDeleteProject() {
     onMutate: async (id): Promise<DeleteProjectContext> => {
       await queryClient.cancelQueries(trpc.projects.queryFilter());
       await queryClient.cancelQueries(trpc.project.queryFilter({ id }));
-      await queryClient.cancelQueries(trpc.unassignedConversationsCount.queryFilter());
 
       const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
       const previousProject = queryClient.getQueryData(trpc.project.queryKey({ id })) as
         | ProjectData
         | undefined;
-      const previousUnassignedCount = queryClient.getQueryData(
-        trpc.unassignedConversationsCount.queryKey()
-      );
-
-      const deletedProject = previousProjects?.projects.find(
-        (project) => project.id === id
-      );
 
       setProjectsCache(queryClient, trpc, (old) => {
         if (!old) return old;
@@ -509,22 +463,11 @@ export function useDeleteProject() {
         };
       });
 
-      if (deletedProject) {
-        setUnassignedCountCache(queryClient, trpc, (old) => {
-          if (!old) return old;
-          return {
-            // Conversations of a deleted project are now unassigned
-            count: old.count + deletedProject.conversationCount,
-          };
-        });
-      }
-
       queryClient.setQueryData(trpc.project.queryKey({ id }), null);
 
       return {
         previousProjects,
         previousProject,
-        previousUnassignedCount,
       };
     },
     onError: (_, variables, context) => {
@@ -533,10 +476,6 @@ export function useDeleteProject() {
       queryClient.setQueryData(
         trpc.project.queryKey({ id: variables }),
         context.previousProject
-      );
-      queryClient.setQueryData(
-        trpc.unassignedConversationsCount.queryKey(),
-        context.previousUnassignedCount
       );
     },
   });
@@ -556,16 +495,12 @@ export function useAssignConversationToProject() {
     }) => assignConversationToProjectAction(conversationId, projectId),
     onMutate: async ({ conversationId, projectId }): Promise<AssignProjectContext> => {
       await queryClient.cancelQueries(trpc.projects.queryFilter());
-      await queryClient.cancelQueries(trpc.unassignedConversationsCount.queryFilter());
       await queryClient.cancelQueries(
         trpc.conversation.queryFilter({ id: conversationId })
       );
       await queryClient.cancelQueries(trpc.infiniteConversations.infiniteQueryFilter());
 
       const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
-      const previousUnassignedCount = queryClient.getQueryData(
-        trpc.unassignedConversationsCount.queryKey()
-      );
       const previousConversation = queryClient.getQueryData(
         trpc.conversation.queryKey({ id: conversationId })
       ) as ConversationData | undefined;
@@ -592,11 +527,9 @@ export function useAssignConversationToProject() {
         projectId,
         sourceConversation?.lastMessageAt
       );
-      updateUnassignedConversationCount(queryClient, trpc, previousProjectId, projectId);
 
       return {
         previousProjects,
-        previousUnassignedCount,
         previousConversation,
         previousConversationLists,
       };
@@ -605,10 +538,6 @@ export function useAssignConversationToProject() {
       if (!context) return;
 
       queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
-      queryClient.setQueryData(
-        trpc.unassignedConversationsCount.queryKey(),
-        context.previousUnassignedCount
-      );
       queryClient.setQueryData(
         trpc.conversation.queryKey({ id: variables.conversationId }),
         context.previousConversation

@@ -5,11 +5,7 @@ import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getMessages } from "@/lib/dao/messages";
-import {
-  getProject,
-  getProjects,
-  getUnassignedConversationsCount,
-} from "@/lib/dao/projects";
+import { getProject, getProjects } from "@/lib/dao/projects";
 import { getSharesByConversationId } from "@/lib/dao/shares";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
@@ -85,10 +81,6 @@ export const appRouter = createTRPCRouter({
   projects: protectedProcedure.query(async () => {
     const projects = await getProjects();
     return { projects };
-  }),
-  unassignedConversationsCount: protectedProcedure.query(async () => {
-    const count = await getUnassignedConversationsCount();
-    return { count };
   }),
 });
 // export type definition of API

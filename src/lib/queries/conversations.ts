@@ -267,7 +267,6 @@ export function useDeleteConversation() {
 
       // Invalidate project counts since conversation may have been in a project
       queryClient.invalidateQueries(trpc.projects.queryFilter());
-      queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
     },
   });
 }
@@ -517,7 +516,6 @@ export function useBranchConversation() {
         if (originalConversation.projectId) {
           queryClient.invalidateQueries(trpc.projects.queryFilter());
         }
-        queryClient.invalidateQueries(trpc.unassignedConversationsCount.queryFilter());
         queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
       }
     },

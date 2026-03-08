@@ -5,7 +5,7 @@ import type { PartialConversation, ProjectWithCount } from "@/types/chat";
 
 interface ChatSidebarWithProjectsProps {
   conversations: { items: PartialConversation[]; nextCursor: string | undefined };
-  projects: { projects: ProjectWithCount[]; unassignedCount: number };
+  projects: { projects: ProjectWithCount[] };
   authorized: boolean;
 }
 

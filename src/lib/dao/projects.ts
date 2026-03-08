@@ -148,16 +148,3 @@ export async function getConversationsByProject(projectId: string | null) {
 
   return conversations;
 }
-
-export async function getUnassignedConversationsCount(): Promise<number> {
-  const userId = await getUserIdFromSession();
-
-  const count = await prisma.conversation.count({
-    where: {
-      userId,
-      projectId: null,
-    },
-  });
-
-  return count;
-}

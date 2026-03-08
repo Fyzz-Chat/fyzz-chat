@@ -30,25 +30,15 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   const projectsPromise = userPromise.then((user) =>
     user ? caller.projects() : { projects: [] }
   );
-  const unassignedCountPromise = userPromise.then((user) =>
-    user ? caller.unassignedConversationsCount() : { count: 0 }
-  );
 
-  const [
-    cookieStore,
-    user,
-    providers,
-    initialConversationsData,
-    initialProjectsData,
-    initialUnassignedCount,
-  ] = await Promise.all([
-    cookies(),
-    userPromise,
-    caller.providers(),
-    conversationsPromise,
-    projectsPromise,
-    unassignedCountPromise,
-  ]);
+  const [cookieStore, user, providers, initialConversationsData, initialProjectsData] =
+    await Promise.all([
+      cookies(),
+      userPromise,
+      caller.providers(),
+      conversationsPromise,
+      projectsPromise,
+    ]);
 
   const sidebarState = cookieStore.get("sidebar:state");
   const isLoggedIn = Boolean(user);
@@ -70,10 +60,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
             <AppSidebar>
               <ChatSidebarWithProjects
                 conversations={initialConversationsData}
-                projects={{
-                  projects: initialProjectsData.projects,
-                  unassignedCount: initialUnassignedCount.count,
-                }}
+                projects={initialProjectsData}
                 authorized={isLoggedIn}
               />
             </AppSidebar>
