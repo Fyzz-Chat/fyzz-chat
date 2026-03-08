@@ -7,6 +7,7 @@ import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 import conf from "@/lib/config";
+import { replaceUserMemories } from "@/lib/dao/memories";
 import { getUserFromSession, getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -258,12 +259,12 @@ export async function updateDefaultModel(defaultModel: string): Promise<string> 
 export async function updateUserMemory(memory: string): Promise<FormState> {
   const userId = await getUserIdFromSession();
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      memory,
-    },
-  });
+  const entries = memory
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  await replaceUserMemories(userId, entries);
 
   return {
     message: "Memory updated",

@@ -41,14 +41,14 @@ const conversationSelect = {
   id: true,
   userId: true,
   model: true,
-  project: { select: { name: true, description: true } },
+  project: { select: { id: true, name: true, description: true } },
 } as const;
 
 type ConversationResult = {
   id: string;
   userId: string;
   model: string;
-  project: { name: string; description: string | null } | null;
+  project: { id: string; name: string; description: string | null } | null;
 };
 
 export async function getOrCreateConversation(

@@ -103,35 +103,3 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
 
   return user;
 });
-
-export async function getUserMemory(): Promise<string | null | undefined> {
-  const userId = await getUserIdFromSession();
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
-
-  return user?.memory;
-}
-
-export async function appendToUserMemory(newMemory: string): Promise<void> {
-  const userId = await getUserIdFromSession();
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
-
-  const memory = user?.memory;
-  const dateTime = new Date().toLocaleString("hu-HU", { timeZone: "UTC" });
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      memory: {
-        set: memory
-          ? `${memory}\n${dateTime}: ${newMemory}`
-          : `${dateTime}: ${newMemory}`,
-      },
-    },
-  });
-}

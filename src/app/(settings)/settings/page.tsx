@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
+import { getUserMemories } from "@/lib/dao/memories";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 
@@ -28,7 +29,6 @@ export default async function SettingsPage() {
       id: userId,
     },
     select: {
-      memory: true,
       memoryEnabled: true,
       mcpServers: true,
       defaultModel: true,
@@ -39,6 +39,7 @@ export default async function SettingsPage() {
       },
     },
   });
+  const memories = await getUserMemories(userId);
   const providers = getProvidersPublic();
   const hasPassword = user?.accounts?.some((account) => account.password);
 
@@ -111,7 +112,7 @@ export default async function SettingsPage() {
                   <CardContent>
                     <MemoryForm
                       defaultModel={user?.defaultModel ?? undefined}
-                      memory={user?.memory ?? undefined}
+                      memory={memories.map((m) => m.content).join("\n") || undefined}
                       memoryEnabled={user?.memoryEnabled ?? false}
                       providers={providers}
                     />

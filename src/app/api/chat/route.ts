@@ -125,7 +125,7 @@ async function loadConversationMessages({
   start: number;
 }): Promise<{
   messages?: CustomUIMessage[];
-  project?: { name: string; description: string | null } | null;
+  project?: { id: string; name: string; description: string | null } | null;
   errorResponse?: Response;
 }> {
   if (temporaryChat) {
@@ -175,12 +175,14 @@ async function loadToolsForRequest({
   user,
   browse,
   temporaryChat,
+  projectId,
   start,
 }: {
   runtime: ReturnType<typeof getModelRuntime>;
   user: Awaited<ReturnType<typeof getUserFromSession>>;
   browse: boolean;
   temporaryChat: boolean;
+  projectId?: string;
   start: number;
 }): Promise<{
   tools: { [key: string]: Tool };
@@ -192,7 +194,7 @@ async function loadToolsForRequest({
   }
 
   try {
-    const toolsResult = await buildToolsForRuntime(user, browse, runtime);
+    const toolsResult = await buildToolsForRuntime(user, browse, runtime, projectId);
     logDuration(start, "Tools fetched");
     return toolsResult;
   } catch (error) {
@@ -398,6 +400,7 @@ export async function POST(req: NextRequest) {
     user,
     browse,
     temporaryChat,
+    projectId: conversationState.project?.id,
     start,
   });
 
@@ -410,6 +413,8 @@ export async function POST(req: NextRequest) {
     baseSystemPrompt: await getSystemPrompt(conversationState.project),
     memoryEnabled: user.memoryEnabled,
     temporaryChat,
+    userId: user.id,
+    projectId: conversationState.project?.id,
   });
 
   logDuration(start, "Memory prompt fetched");
