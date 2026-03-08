@@ -1,3 +1,10 @@
+## [0.25.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.25.0...v0.25.1) (2026-03-08)
+
+
+### Bug Fixes
+
+* **projects:** only update the relevant list when a new conversation is created ([607656f](https://github.com/Fyzz-Chat/fyzz-chat/commit/607656fafc5f0bd3ffd525612a718f7241bc7da5))
+
 # [0.25.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.24.0...v0.25.0) (2026-03-08)
 
 
