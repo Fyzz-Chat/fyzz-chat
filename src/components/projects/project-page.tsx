@@ -95,60 +95,58 @@ export function ProjectPage({
   }
 
   return (
-    <div className="mx-auto flex flex-col gap-8 overflow-x-hidden p-4 pt-16">
-      <Link
-        href="/projects"
-        className="group flex items-center gap-1 text-muted-foreground text-sm transition-color duration-200 hover:text-foreground"
-      >
-        <ArrowLeft className="size-4 transition-transform group-hover:translate-x-[-2px]" />
-        Back to projects
-      </Link>
-      <div className="flex w-full min-w-0 flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
-        <div className="flex h-full w-full min-w-0 max-w-2xl flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-semibold text-2xl">{project.name}</h1>
-            {project.description ? (
-              <p className="text-muted-foreground text-sm">{project.description}</p>
-            ) : null}
-          </div>
-
-          <ChatInput />
-
-          {conversations.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              No conversations yet. Send a message to start one.
-            </p>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {conversations.map((conversation) => (
-                <Link
-                  key={conversation.id}
-                  href={`/chat/${conversation.id}`}
-                  className="flex items-start justify-between gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-muted"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate">{conversation.title}</div>
-                    {conversation.messages.length > 0 && (
-                      <p className="truncate text-muted-foreground text-xs">
-                        {getMessageContent(
-                          conversation.messages[conversation.messages.length - 1]
-                        )}
-                      </p>
-                    )}
-                  </div>
-                  <span className="shrink-0 pt-0.5 text-muted-foreground text-xs">
-                    {new Date(conversation.lastMessageAt).toLocaleDateString()}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          )}
+    <div className="mx-auto flex w-full min-w-0 flex-col items-center justify-center gap-8 overflow-x-hidden p-4 pt-16 lg:flex-row lg:items-start">
+      <div className="flex h-full w-full min-w-0 max-w-2xl flex-col gap-6">
+        <Link
+          href="/projects"
+          className="group flex items-center gap-1 text-muted-foreground text-sm transition-color duration-200 hover:text-foreground"
+        >
+          <ArrowLeft className="size-4 transition-transform group-hover:translate-x-[-2px]" />
+          Back to projects
+        </Link>
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold text-2xl">{project.name}</h1>
+          {project.description ? (
+            <p className="text-muted-foreground text-sm">{project.description}</p>
+          ) : null}
         </div>
 
-        <aside className="h-fit w-full max-w-2xl rounded-lg border p-6 lg:w-auto lg:max-w-96">
-          <ProjectMemories projectId={id} initialMemories={initialMemories} />
-        </aside>
+        <ChatInput />
+
+        {conversations.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            No conversations yet. Send a message to start one.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {conversations.map((conversation) => (
+              <Link
+                key={conversation.id}
+                href={`/chat/${conversation.id}`}
+                className="flex items-start justify-between gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-muted"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="truncate">{conversation.title}</div>
+                  {conversation.messages.length > 0 && (
+                    <p className="truncate text-muted-foreground text-xs">
+                      {getMessageContent(
+                        conversation.messages[conversation.messages.length - 1]
+                      )}
+                    </p>
+                  )}
+                </div>
+                <span className="shrink-0 pt-0.5 text-muted-foreground text-xs">
+                  {new Date(conversation.lastMessageAt).toLocaleDateString()}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
+
+      <aside className="h-fit w-full max-w-2xl rounded-lg border p-6 lg:mt-12 lg:w-auto lg:max-w-96">
+        <ProjectMemories projectId={id} initialMemories={initialMemories} />
+      </aside>
     </div>
   );
 }
