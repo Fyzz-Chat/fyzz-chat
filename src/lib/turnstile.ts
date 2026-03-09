@@ -9,7 +9,7 @@ export const turnstileFailedResponse = {
 
 export async function verifyTurnstile(response?: string): Promise<boolean> {
   if (!conf.turnstileSecretKey) {
-    logger.warn("Turnstile verification bypassed: secret key not configured");
+    logger.debug("Turnstile verification bypassed: secret key not configured");
     return true;
   }
 
