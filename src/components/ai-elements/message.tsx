@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import rehypeCitations from "@/lib/utils/rehype-citations";
 import "katex/dist/katex.min.css";
+import "streamdown/styles.css";
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage["role"];
@@ -315,7 +316,7 @@ export const MessageResponse = memo(
         } as Partial<ComponentProps<typeof Streamdown>>)),
       // TODO: Turn it on once citations are refactored
       linkSafety: { enabled: false },
-    };
+    } as Partial<ComponentProps<typeof Streamdown>>;
 
     return <Streamdown {...streamdownProps} />;
   },
