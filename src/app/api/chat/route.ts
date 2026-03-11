@@ -22,7 +22,13 @@ import {
 import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
-import { filterMessages, hasInputPart, logDuration } from "@/lib/backend/utils";
+import {
+  filterMessages,
+  getUnsupportedFileTypes,
+  hasInputPart,
+  logDuration,
+  streamSentence,
+} from "@/lib/backend/utils";
 import {
   ensureMessageAppended,
   getOrCreateConversation,
@@ -393,6 +399,33 @@ export async function POST(req: NextRequest) {
   }
 
   const existingMessages = conversationState.messages || [];
+
+  const latestMessage = existingMessages.at(-1);
+  if (latestMessage?.role === "user") {
+    const unsupported = getUnsupportedFileTypes(latestMessage, modelId);
+    if (unsupported.length > 0) {
+      const types = unsupported.join(", ");
+      const sentence = `The selected model doesn't support the following file types: ${types}. Please remove the unsupported files or switch to a model that supports them.`;
+      const assistantMessageId = uuidv4();
+
+      if (!temporaryChat) {
+        await ensureMessageSaved(
+          {
+            id: assistantMessageId,
+            role: "assistant",
+            parts: [{ type: "text", text: sentence }],
+            metadata: { createdAt: new Date(), model: modelId },
+          },
+          id,
+          0,
+          0
+        );
+      }
+
+      return streamSentence(sentence, { messageId: assistantMessageId });
+    }
+  }
+
   const filteredMessages = filterMessages(existingMessages, modelId);
 
   const toolsState = await loadToolsForRequest({
