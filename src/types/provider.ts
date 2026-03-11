@@ -1,5 +1,5 @@
-import type { SharedV3ProviderOptions } from "@ai-sdk/provider";
-import type { LanguageModel, Tool } from "ai";
+import type { LanguageModelV3, SharedV3ProviderOptions } from "@ai-sdk/provider";
+import type { Tool } from "ai";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 
 export type Feature = {
@@ -41,7 +41,7 @@ export type Model = {
   name: string;
   features?: Feature[];
   free?: boolean;
-  provider: (model: string) => LanguageModel;
+  provider: (model: string) => LanguageModelV3;
   tools: boolean;
   runtimePreset: RuntimePreset;
   extensions: ExtensionType[];
@@ -51,7 +51,7 @@ export type Model = {
 
 export type ModelRuntime = {
   modelId: string;
-  model: LanguageModel;
+  model: LanguageModelV3;
   supportsTools: boolean;
   runtimePreset: RuntimePreset;
   selectInputMessages: (messages: CustomUIMessage[]) => CustomUIMessage[];

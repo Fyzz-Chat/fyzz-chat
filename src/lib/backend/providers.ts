@@ -5,8 +5,10 @@ import { type FireworksLanguageModelOptions, fireworks } from "@ai-sdk/fireworks
 import { type GoogleGenerativeAIProviderOptions, google } from "@ai-sdk/google";
 import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import { perplexity } from "@ai-sdk/perplexity";
+import type { LanguageModelV3 } from "@ai-sdk/provider";
 import { type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
-import type { Tool, ToolSet } from "ai";
+import { type Tool, type ToolSet, wrapLanguageModel } from "ai";
+import { anthropicCacheMiddleware } from "@/lib/backend/anthropic-cache-middleware";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
   type Feature,
@@ -56,6 +58,13 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
     .find((model) => model.id === modelId);
 }
 
+function wrapModel(model: LanguageModelV3, providerId: Provider["id"]): LanguageModelV3 {
+  if (providerId === "anthropic") {
+    return wrapLanguageModel({ model, middleware: anthropicCacheMiddleware });
+  }
+  return model;
+}
+
 export function getModelRuntime(
   modelId: string,
   reasoningEffort?: ReasoningEffort
@@ -80,9 +89,11 @@ export function getModelRuntime(
   const hasReasoning = runtimeModel.model.features?.includes(reasoning) ?? false;
   const selectedReasoningEffort = hasReasoning ? reasoningEffort : undefined;
 
+  const rawModel = provider(id);
+
   return {
     modelId,
-    model: provider(id),
+    model: wrapModel(rawModel, providerId),
     supportsTools: tools,
     runtimePreset,
     selectInputMessages: (messages) =>
