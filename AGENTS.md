@@ -71,6 +71,21 @@ persistence with `meta: { persist: false }`.
 - **Existing conversation:** `useConversation(id)` loads from IndexedDB cache or tRPC.
   Model is synced to Zustand store via a `useEffect` in `message-list.tsx`.
 
+### Server-side data loading
+
+When a page needs multiple server-side queries, do NOT `Promise.all` them and block rendering
+until all resolve. Instead:
+
+1. `await` only the fast/critical query directly (e.g., lightweight metadata).
+2. Wrap heavier queries in inline async server components, each inside a `<Suspense>` boundary
+   with a skeleton fallback.
+3. Create skeleton components (`Skeleton` from `components/ui/skeleton`) that match the real
+   content's dimensions to avoid layout shifts when data streams in.
+
+This lets the shell render instantly while expensive data streams in progressively.
+
+## Creating and using components
+
 By default, rely on preinstalled Shadcn UI components and AI elements. If you cannot find a
 matching component, use the `shadcn` or the `ai-elements` MCP tools to find and install the
 missing component.
