@@ -161,12 +161,13 @@ export function useConversations(
   const temporaryChat = useModelStore((state) => state.temporaryChat);
   const trpc = useTRPC();
 
-  const initialData = options?.initialData
-    ? {
-        pages: [options.initialData],
-        pageParams: [null] as (string | null)[],
-      }
-    : undefined;
+  const initialData =
+    options?.initialData && !options?.search
+      ? {
+          pages: [options.initialData],
+          pageParams: [null] as (string | null)[],
+        }
+      : undefined;
 
   const myQuery = trpc.infiniteConversations.infiniteQueryOptions(
     {
@@ -442,7 +443,7 @@ export function useCreateConversationOptimistic() {
         queryClient,
         trpc,
         (old) => prependConversationToFirstPage(old, conversation),
-        { onlyForConversation: conversation }
+        { skipFilteredSearch: true, onlyForConversation: conversation }
       );
 
       updateProjectCaches(queryClient, trpc, conversation);
