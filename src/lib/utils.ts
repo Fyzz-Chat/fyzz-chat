@@ -45,6 +45,10 @@ export function addDurationToDate(date: Date, duration: string): Date | null {
   return result;
 }
 
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // biome-ignore lint/complexity/noBannedTypes: TODO: Need further investigation
 export function debounce(func: Function, wait = 100) {
   let timeout: NodeJS.Timeout;
