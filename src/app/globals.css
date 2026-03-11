@@ -246,3 +246,8 @@ table tr:nth-child(2n) {
 .animate-scroll-infinite {
   animation: scroll-infinite 30s linear infinite;
 }
+
+/* TODO: Remove this once Streamdown fixes the issue */
+[data-streamdown="code-block-body"] {
+  overflow-x: auto;
+}
