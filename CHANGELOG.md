@@ -1,3 +1,11 @@
+## [0.26.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.26.0...v0.26.1) (2026-03-11)
+
+
+### Bug Fixes
+
+* prevent the upload of unsupported file types ([cf268a9](https://github.com/Fyzz-Chat/fyzz-chat/commit/cf268a9273650178eeaa38e9bce24e0e67667e26))
+* **search:** make search work again ([b4e603b](https://github.com/Fyzz-Chat/fyzz-chat/commit/b4e603ba8b3f73037ac63c428a91084252a8ae3a))
+
 # [0.26.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.25.1...v0.26.0) (2026-03-08)
 
 
