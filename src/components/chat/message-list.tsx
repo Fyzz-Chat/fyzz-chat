@@ -1,7 +1,6 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -25,18 +24,16 @@ import {
   useMessages,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
+import { useOptimisticallyTrimMessagesUpToAnchor } from "@/lib/queries/messages";
 import { useShares } from "@/lib/queries/shares";
-import { useTRPC } from "@/lib/trpc/client";
-import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
+import { cn, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage, MessagesData, ShareInfo } from "@/types/chat";
+import type { CustomUIMessage, ShareInfo } from "@/types/chat";
 
 const MESSAGE_WINDOW_SIZE = 16;
 
 export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
   const { layout } = useChatLayout();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
@@ -67,6 +64,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   });
   const persistedMessages = persistedMessagesData.data?.messages || [];
   const hasMorePersistedMessages = Boolean(persistedMessagesData.data?.hasMore);
+  const trimPersistedMessages = useOptimisticallyTrimMessagesUpToAnchor(id);
 
   const { data: sharesData } = useShares(id);
   const sharesByMessageId = useMemo(() => {
@@ -132,36 +130,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     return false;
   }, []);
 
-  const optimisticallyTrimPersistedMessages = useCallback(
-    (messageId: string, newContent?: string) => {
-      const previousQueries = queryClient.getQueriesData<MessagesData>(
-        trpc.messages.queryFilter({ id })
-      );
-
-      previousQueries.forEach(([queryKey]) => {
-        queryClient.setQueryData(queryKey, (old: MessagesData | undefined) => {
-          if (!old) return old;
-          return {
-            ...old,
-            messages: filterMessagesUpToAnchor(old.messages, messageId, newContent),
-          };
-        });
-      });
-
-      return previousQueries;
-    },
-    [id, queryClient, trpc]
-  );
-
-  const restorePersistedMessages = useCallback(
-    (previousQueries: Array<[readonly unknown[], MessagesData | undefined]>) => {
-      previousQueries.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
-      });
-    },
-    [queryClient]
-  );
-
   // `useChat` does not re-seed its internal message state when `persistedMessages` arrive
   // asynchronously (e.g. from IndexedDB). This can cause regenerate/edit to target a message
   // that exists in the UI (persisted list) but not in the chat state.
@@ -186,7 +154,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         return;
       }
 
-      const previousQueries = optimisticallyTrimPersistedMessages(messageId);
+      const rollback = trimPersistedMessages(messageId);
 
       try {
         await regenerateRef.current({
@@ -200,7 +168,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           },
         });
       } catch {
-        restorePersistedMessages(previousQueries);
+        rollback();
         // Regeneration failed - user can retry
       }
     },
@@ -210,8 +178,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       model.id,
       browseRef,
       reasoningEffortRef,
-      optimisticallyTrimPersistedMessages,
-      restorePersistedMessages,
+      trimPersistedMessages,
     ]
   );
 
@@ -221,7 +188,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         return;
       }
 
-      const previousQueries = optimisticallyTrimPersistedMessages(messageId, newContent);
+      const rollback = trimPersistedMessages(messageId, newContent);
 
       try {
         await regenerateRef.current({
@@ -236,7 +203,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           },
         });
       } catch {
-        restorePersistedMessages(previousQueries);
+        rollback();
         // Editing failed - user can retry
       }
     },
@@ -246,8 +213,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       model.id,
       browseRef,
       reasoningEffortRef,
-      optimisticallyTrimPersistedMessages,
-      restorePersistedMessages,
+      trimPersistedMessages,
     ]
   );
 
