@@ -33,7 +33,11 @@ import {
   getOrCreateConversation,
   hasDefaultTitle,
 } from "@/lib/dao/conversations";
-import { ensureMessageSaved, ensureTokenUsageSaved } from "@/lib/dao/messages";
+import {
+  deleteMessageChainAfterPersisted,
+  ensureMessageSaved,
+  ensureTokenUsageSaved,
+} from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
@@ -47,6 +51,9 @@ const chatRequestEnvelopeSchema = z.object({
   id: z.string().min(1),
   model: z.string().min(1),
   messages: z.unknown(),
+  trigger: z.enum(["submit-message", "regenerate-message"]).optional(),
+  messageId: z.string().optional(),
+  newContent: z.string().optional(),
   browse: z.boolean().default(false),
   temporaryChat: z.boolean().default(false),
   reasoningEffort: z.enum(["low", "medium", "high"]).optional(),
@@ -60,6 +67,9 @@ async function validateRequestBody(body: unknown): Promise<
         id: string;
         model: string;
         messages: CustomUIMessage[];
+        trigger?: "submit-message" | "regenerate-message";
+        messageId?: string;
+        newContent?: string;
         browse: boolean;
         temporaryChat: boolean;
         reasoningEffort?: ReasoningEffort;
@@ -369,6 +379,9 @@ export async function POST(req: NextRequest) {
   const {
     id,
     model: modelId,
+    trigger,
+    messageId,
+    newContent,
     browse,
     temporaryChat,
     messages,
@@ -380,6 +393,20 @@ export async function POST(req: NextRequest) {
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
+  }
+
+  if (!temporaryChat && trigger === "regenerate-message" && messageId) {
+    try {
+      await deleteMessageChainAfterPersisted(messageId, id, newContent);
+    } catch (error) {
+      logger.warn({
+        message: "Failed to delete message chain for regeneration.",
+        conversationId: id,
+        messageId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return new Response("Failed to regenerate message.", { status: 400 });
+    }
   }
 
   const conversationState = await loadConversationMessages({

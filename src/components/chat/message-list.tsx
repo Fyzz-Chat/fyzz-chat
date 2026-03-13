@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -22,18 +23,20 @@ import {
   useConversation,
   useCreateConversationOptimistic,
   useMessages,
-  useRegenerateMessage,
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
 import { useShares } from "@/lib/queries/shares";
-import { cn, uploadFileParts } from "@/lib/utils";
+import { useTRPC } from "@/lib/trpc/client";
+import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage, ShareInfo } from "@/types/chat";
+import type { CustomUIMessage, MessagesData, ShareInfo } from "@/types/chat";
 
 const MESSAGE_WINDOW_SIZE = 16;
 
 export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
   const { layout } = useChatLayout();
   const providers = useModelStore((state) => state.providers);
   const model = useModelStore((state) => state.model);
@@ -43,7 +46,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     useChatInput();
   const addMessage = useAddMessage(id);
   const createConversationOptimistic = useCreateConversationOptimistic();
-  const regenerateMessage = useRegenerateMessage();
   const {
     initialMessage,
     initialModel: contextInitialModel,
@@ -83,9 +85,9 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        prepareSendMessagesRequest({ id, messages, body }) {
+        prepareSendMessagesRequest({ id, messages, body, trigger, messageId }) {
           const messagesToSend = body?.temporaryChat ? messages : [messages.at(-1)];
-          return { body: { id, messages: messagesToSend, ...body } };
+          return { body: { id, messages: messagesToSend, trigger, messageId, ...body } };
         },
       }),
     []
@@ -130,6 +132,36 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     return false;
   }, []);
 
+  const optimisticallyTrimPersistedMessages = useCallback(
+    (messageId: string, newContent?: string) => {
+      const previousQueries = queryClient.getQueriesData<MessagesData>(
+        trpc.messages.queryFilter({ id })
+      );
+
+      previousQueries.forEach(([queryKey]) => {
+        queryClient.setQueryData(queryKey, (old: MessagesData | undefined) => {
+          if (!old) return old;
+          return {
+            ...old,
+            messages: filterMessagesUpToAnchor(old.messages, messageId, newContent),
+          };
+        });
+      });
+
+      return previousQueries;
+    },
+    [id, queryClient, trpc]
+  );
+
+  const restorePersistedMessages = useCallback(
+    (previousQueries: Array<[readonly unknown[], MessagesData | undefined]>) => {
+      previousQueries.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+    },
+    [queryClient]
+  );
+
   // `useChat` does not re-seed its internal message state when `persistedMessages` arrive
   // asynchronously (e.g. from IndexedDB). This can cause regenerate/edit to target a message
   // that exists in the UI (persisted list) but not in the chat state.
@@ -143,8 +175,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
 
     setMessages(persistedMessages);
   }, [messages, persistedMessages, setMessages, status]);
-  const regenerateMessageRef = useRef(regenerateMessage.mutateAsync);
-  regenerateMessageRef.current = regenerateMessage.mutateAsync;
 
   const handleStop = useCallback(() => {
     stopRef.current();
@@ -155,11 +185,10 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       if (!ensureChatHasMessageId(messageId)) {
         return;
       }
+
+      const previousQueries = optimisticallyTrimPersistedMessages(messageId);
+
       try {
-        await regenerateMessageRef.current({
-          messageId,
-          conversationId: id,
-        });
         await regenerateRef.current({
           messageId,
           body: {
@@ -171,10 +200,19 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           },
         });
       } catch {
+        restorePersistedMessages(previousQueries);
         // Regeneration failed - user can retry
       }
     },
-    [ensureChatHasMessageId, id, model.id, browseRef, reasoningEffortRef]
+    [
+      ensureChatHasMessageId,
+      id,
+      model.id,
+      browseRef,
+      reasoningEffortRef,
+      optimisticallyTrimPersistedMessages,
+      restorePersistedMessages,
+    ]
   );
 
   const handleEditMessage = useCallback(
@@ -182,12 +220,10 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       if (!ensureChatHasMessageId(messageId)) {
         return;
       }
+
+      const previousQueries = optimisticallyTrimPersistedMessages(messageId, newContent);
+
       try {
-        await regenerateMessageRef.current({
-          messageId,
-          conversationId: id,
-          newContent,
-        });
         await regenerateRef.current({
           messageId,
           body: {
@@ -196,13 +232,23 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             temporaryChat: false,
             browse: browseRef.current,
             reasoningEffort: reasoningEffortRef.current,
+            newContent,
           },
         });
       } catch {
+        restorePersistedMessages(previousQueries);
         // Editing failed - user can retry
       }
     },
-    [ensureChatHasMessageId, id, model.id, browseRef, reasoningEffortRef]
+    [
+      ensureChatHasMessageId,
+      id,
+      model.id,
+      browseRef,
+      reasoningEffortRef,
+      optimisticallyTrimPersistedMessages,
+      restorePersistedMessages,
+    ]
   );
 
   const handleSubmit = useCallback(
