@@ -109,6 +109,8 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   regenerateRef.current = regenerate;
   const sendMessageRef = useRef(sendMessage);
   sendMessageRef.current = sendMessage;
+  const regenerateMessageRef = useRef(regenerateMessage.mutateAsync);
+  regenerateMessageRef.current = regenerateMessage.mutateAsync;
 
   const handleStop = useCallback(() => {
     stopRef.current();
@@ -117,7 +119,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const handleRegenerateMessage = useCallback(
     async (messageId: string) => {
       try {
-        await regenerateMessage.mutateAsync({
+        await regenerateMessageRef.current({
           messageId,
           conversationId: id,
         });
@@ -135,13 +137,13 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         // Regeneration failed - user can retry
       }
     },
-    [regenerateMessage, id, model.id, browseRef, reasoningEffortRef]
+    [id, model.id, browseRef, reasoningEffortRef]
   );
 
   const handleEditMessage = useCallback(
     async (messageId: string, newContent: string) => {
       try {
-        await regenerateMessage.mutateAsync({
+        await regenerateMessageRef.current({
           messageId,
           conversationId: id,
           newContent,
@@ -160,7 +162,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         // Editing failed - user can retry
       }
     },
-    [regenerateMessage, id, model.id, browseRef, reasoningEffortRef]
+    [id, model.id, browseRef, reasoningEffortRef]
   );
 
   const handleSubmit = useCallback(
