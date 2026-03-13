@@ -91,17 +91,16 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     []
   );
 
-  const { messages, sendMessage, status, stop, regenerate } = useChat<CustomUIMessage>({
-    transport,
-    id,
-    generateId: () => nextMessageId.current,
-    messages: persistedMessages,
-    onFinish: async ({ message }: { message: CustomUIMessage }) => {
-      await addMessage.mutateAsync({
-        message,
-      });
-    },
-  });
+  const { messages, setMessages, sendMessage, status, stop, regenerate } =
+    useChat<CustomUIMessage>({
+      transport,
+      id,
+      generateId: () => nextMessageId.current,
+      messages: persistedMessages,
+      onFinish: async ({ message }: { message: CustomUIMessage }) => {
+        await addMessage.mutateAsync({ message });
+      },
+    });
 
   const stopRef = useRef(stop);
   stopRef.current = stop;
@@ -109,6 +108,41 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   regenerateRef.current = regenerate;
   const sendMessageRef = useRef(sendMessage);
   sendMessageRef.current = sendMessage;
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
+  const persistedMessagesRef = useRef(persistedMessages);
+  persistedMessagesRef.current = persistedMessages;
+  const setMessagesRef = useRef(setMessages);
+  setMessagesRef.current = setMessages;
+
+  const ensureChatHasMessageId = useCallback((messageId: string) => {
+    const chatMessages = messagesRef.current;
+    if (chatMessages.some((m) => m.id === messageId)) {
+      return true;
+    }
+
+    const persisted = persistedMessagesRef.current;
+    if (persisted.some((m) => m.id === messageId)) {
+      setMessagesRef.current(persisted);
+      return true;
+    }
+
+    return false;
+  }, []);
+
+  // `useChat` does not re-seed its internal message state when `persistedMessages` arrive
+  // asynchronously (e.g. from IndexedDB). This can cause regenerate/edit to target a message
+  // that exists in the UI (persisted list) but not in the chat state.
+  useEffect(() => {
+    if (status !== "ready") return;
+    if (persistedMessages.length === 0) return;
+
+    const chatIds = new Set(messages.map((m) => m.id));
+    const missingPersisted = persistedMessages.some((m) => !chatIds.has(m.id));
+    if (!missingPersisted) return;
+
+    setMessages(persistedMessages);
+  }, [messages, persistedMessages, setMessages, status]);
   const regenerateMessageRef = useRef(regenerateMessage.mutateAsync);
   regenerateMessageRef.current = regenerateMessage.mutateAsync;
 
@@ -118,6 +152,9 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
 
   const handleRegenerateMessage = useCallback(
     async (messageId: string) => {
+      if (!ensureChatHasMessageId(messageId)) {
+        return;
+      }
       try {
         await regenerateMessageRef.current({
           messageId,
@@ -137,11 +174,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         // Regeneration failed - user can retry
       }
     },
-    [id, model.id, browseRef, reasoningEffortRef]
+    [ensureChatHasMessageId, id, model.id, browseRef, reasoningEffortRef]
   );
 
   const handleEditMessage = useCallback(
     async (messageId: string, newContent: string) => {
+      if (!ensureChatHasMessageId(messageId)) {
+        return;
+      }
       try {
         await regenerateMessageRef.current({
           messageId,
@@ -162,7 +202,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         // Editing failed - user can retry
       }
     },
-    [id, model.id, browseRef, reasoningEffortRef]
+    [ensureChatHasMessageId, id, model.id, browseRef, reasoningEffortRef]
   );
 
   const handleSubmit = useCallback(
