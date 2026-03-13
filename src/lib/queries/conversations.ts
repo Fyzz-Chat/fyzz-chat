@@ -474,8 +474,14 @@ export function useCreateConversationOptimistic() {
   const trpc = useTRPC();
 
   return useMutation({
-    mutationFn: async (conversation: PartialConversation) => {
+    mutationFn: async (conversation: PartialConversation) => conversation,
+    onMutate: async (conversation) => {
       await cancelConversationQueries(queryClient, trpc, conversation.id);
+
+      const previousConversationLists = queryClient.getQueriesData(
+        trpc.infiniteConversations.infiniteQueryFilter()
+      );
+      const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
 
       queryClient.setQueryData(
         trpc.conversation.queryKey({ id: conversation.id }),
@@ -496,6 +502,25 @@ export function useCreateConversationOptimistic() {
       );
 
       updateProjectCaches(queryClient, trpc, conversation);
+
+      return {
+        previousConversationLists,
+        previousProjects,
+        conversationId: conversation.id,
+      };
+    },
+    onError: (_, __, context) => {
+      if (!context) return;
+      queryClient.removeQueries(
+        trpc.conversation.queryFilter({ id: context.conversationId })
+      );
+      queryClient.removeQueries(
+        trpc.messages.queryFilter({ id: context.conversationId })
+      );
+      context.previousConversationLists.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
     },
   });
 }
