@@ -350,19 +350,21 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     id,
   ]);
 
+  const persistedMessageIds = useMemo(
+    () => new Set(persistedMessages.map((m) => m.id)),
+    [persistedMessages]
+  );
+
   const streamingMessages = useMemo(() => {
-    const persistedIds = new Set(persistedMessages.map((m) => m.id));
-    return messages.filter((msg) => !persistedIds.has(msg.id));
-  }, [messages, persistedMessages]);
+    return messages.filter((msg) => !persistedMessageIds.has(msg.id));
+  }, [messages, persistedMessageIds]);
 
   const activeStreamingAssistantId = useMemo(() => {
     if (status !== "streaming" && status !== "submitted") {
       return null;
     }
 
-    return (
-      [...messages].reverse().find((message) => message.role === "assistant")?.id ?? null
-    );
+    return messages.findLast((message) => message.role === "assistant")?.id ?? null;
   }, [messages, status]);
 
   const loadOlderMessages = useCallback(() => {
