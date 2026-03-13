@@ -83,6 +83,7 @@ export default function ChatInput() {
         setDialogOpen(true);
         return;
       }
+      persistInput.cancel();
       localStorage.removeItem(INPUT_STORAGE_KEY);
       return handlersRef.current.onSubmit(message);
     },

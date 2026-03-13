@@ -52,14 +52,16 @@ export async function sleep(ms: number) {
 // biome-ignore lint/complexity/noBannedTypes: TODO: Need further investigation
 export function debounce(func: Function, wait = 100) {
   let timeout: NodeJS.Timeout;
-  return function executedFunction(...args: unknown[]) {
+  function executedFunction(...args: unknown[]) {
     const later = () => {
       clearTimeout(timeout);
       func(...args);
     };
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
-  };
+  }
+  executedFunction.cancel = () => clearTimeout(timeout);
+  return executedFunction;
 }
 
 export function ensure(condition: unknown, message: string): asserts condition {
