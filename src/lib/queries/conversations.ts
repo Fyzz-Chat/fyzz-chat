@@ -333,7 +333,17 @@ export function useAddMessage(id: string) {
   const conversationId = id;
 
   return useMutation({
-    mutationFn: async ({ message }: { message: CustomUIMessage }) => {
+    mutationFn: async ({ message }: { message: CustomUIMessage }) => message,
+    onMutate: async ({ message }) => {
+      await cancelConversationQueries(queryClient, trpc, conversationId);
+
+      const previousMessages = queryClient.getQueryData(
+        trpc.messages.queryKey({ id: conversationId })
+      );
+      const previousConversationLists = queryClient.getQueriesData(
+        trpc.infiniteConversations.infiniteQueryFilter()
+      );
+
       updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => {
         if (old.messages.some((existing) => existing.id === message.id)) {
           return old;
@@ -360,10 +370,17 @@ export function useAddMessage(id: string) {
         })),
       }));
 
-      return message;
+      return { previousMessages, previousConversationLists };
     },
-    onError: (_) => {
-      invalidateConversationCaches(queryClient, trpc, conversationId);
+    onError: (_, __, context) => {
+      if (!context) return;
+      queryClient.setQueryData(
+        trpc.messages.queryKey({ id: conversationId }),
+        context.previousMessages
+      );
+      context.previousConversationLists.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
     },
   });
 }
