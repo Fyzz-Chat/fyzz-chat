@@ -1,5 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { useTRPC } from "@/lib/trpc/client";
 import { filterMessagesUpToAnchor } from "@/lib/utils";
 import type { MessagesData } from "@/types/chat";
@@ -36,12 +37,15 @@ export function useOptimisticallyTrimMessagesUpToAnchor(conversationId: string) 
   const queryClient = useQueryClient();
   const trpc = useTRPC();
 
-  return (messageId: string, newContent?: string) =>
-    optimisticallyTrimMessagesUpToAnchor(
-      queryClient,
-      trpc,
-      conversationId,
-      messageId,
-      newContent
-    );
+  return useCallback(
+    (messageId: string, newContent?: string) =>
+      optimisticallyTrimMessagesUpToAnchor(
+        queryClient,
+        trpc,
+        conversationId,
+        messageId,
+        newContent
+      ),
+    [conversationId, queryClient, trpc]
+  );
 }

@@ -13,7 +13,6 @@ import {
   saveConversation,
   saveConversationModel,
 } from "@/lib/actions/conversations";
-import { deleteMessageChainAfter } from "@/lib/actions/messages";
 import {
   getConversationListInput,
   matchesConversationFilter,
@@ -21,7 +20,6 @@ import {
 } from "@/lib/queries/projects";
 import { useTRPC } from "@/lib/trpc/client";
 import type { AppRouter } from "@/lib/trpc/routers/_app";
-import { filterMessagesUpToAnchor } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type {
   ConversationPage,
@@ -388,51 +386,6 @@ export function useAddMessage(id: string) {
       context.previousConversationLists.forEach(([queryKey, data]) => {
         queryClient.setQueryData(queryKey, data);
       });
-    },
-  });
-}
-
-export function useRegenerateMessage() {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
-
-  return useMutation({
-    mutationFn: ({
-      messageId,
-      conversationId,
-      temporaryChat = false,
-      newContent,
-    }: {
-      messageId: string;
-      conversationId: string;
-      temporaryChat?: boolean;
-      newContent?: string;
-    }) => {
-      if (temporaryChat) {
-        return Promise.resolve();
-      }
-      return deleteMessageChainAfter(messageId, conversationId, newContent);
-    },
-    onMutate: async ({ conversationId, messageId, newContent }) => {
-      await cancelConversationQueries(queryClient, trpc, conversationId);
-
-      const previousMessages = queryClient.getQueryData(
-        trpc.messages.queryKey({ id: conversationId })
-      );
-
-      updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => ({
-        messages: filterMessagesUpToAnchor(old.messages, messageId, newContent),
-        hasMore: old.hasMore,
-      }));
-
-      return { previousMessages, conversationId };
-    },
-    onError: (_, __, context) => {
-      if (!context) return;
-      queryClient.setQueryData(
-        trpc.messages.queryKey({ id: context.conversationId }),
-        context.previousMessages
-      );
     },
   });
 }
