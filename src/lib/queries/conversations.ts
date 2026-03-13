@@ -406,18 +406,26 @@ export function useRegenerateMessage() {
       }
       return deleteMessageChainAfter(messageId, conversationId, newContent);
     },
-    onSuccess: (_, { conversationId, messageId, newContent }) => {
-      updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => {
-        const filteredMessages = filterMessagesUpToAnchor(
-          old.messages,
-          messageId,
-          newContent
-        );
-        return {
-          messages: filteredMessages,
-          hasMore: old.hasMore,
-        };
-      });
+    onMutate: async ({ conversationId, messageId, newContent }) => {
+      await cancelConversationQueries(queryClient, trpc, conversationId);
+
+      const previousMessages = queryClient.getQueryData(
+        trpc.messages.queryKey({ id: conversationId })
+      );
+
+      updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => ({
+        messages: filterMessagesUpToAnchor(old.messages, messageId, newContent),
+        hasMore: old.hasMore,
+      }));
+
+      return { previousMessages, conversationId };
+    },
+    onError: (_, __, context) => {
+      if (!context) return;
+      queryClient.setQueryData(
+        trpc.messages.queryKey({ id: context.conversationId }),
+        context.previousMessages
+      );
     },
   });
 }
