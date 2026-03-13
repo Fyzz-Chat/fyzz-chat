@@ -286,7 +286,21 @@ export function useDeleteConversation() {
   return useMutation({
     mutationFn: ({ conversationId }: { conversationId: string }) =>
       deleteConversation(conversationId),
-    onSuccess: (_, { conversationId }) => {
+    onMutate: async ({ conversationId }) => {
+      await queryClient.cancelQueries(trpc.infiniteConversations.infiniteQueryFilter());
+
+      const previousConversationLists = queryClient.getQueriesData(
+        trpc.infiniteConversations.infiniteQueryFilter()
+      );
+      const previousProjects = queryClient.getQueryData(trpc.projects.queryKey());
+
+      const deletedConversation = previousConversationLists
+        .flatMap(
+          ([, data]) => (data as ConversationsInfiniteData | undefined)?.pages ?? []
+        )
+        .flatMap((page) => page.items)
+        .find((conv) => conv.id === conversationId);
+
       updateInfiniteConversationCaches(queryClient, trpc, (old) => ({
         ...old,
         pages: old.pages.map((page) => ({
@@ -297,8 +311,18 @@ export function useDeleteConversation() {
         })),
       }));
 
-      // Invalidate project counts since conversation may have been in a project
-      queryClient.invalidateQueries(trpc.projects.queryFilter());
+      if (deletedConversation?.projectId) {
+        updateProjectCounts(queryClient, trpc, deletedConversation.projectId, null);
+      }
+
+      return { previousConversationLists, previousProjects };
+    },
+    onError: (_, __, context) => {
+      if (!context) return;
+      context.previousConversationLists.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      queryClient.setQueryData(trpc.projects.queryKey(), context.previousProjects);
     },
   });
 }
