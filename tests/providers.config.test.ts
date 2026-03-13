@@ -1,11 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import type { ProviderId, RuntimePreset } from "../src/types/provider";
 import {
   OPENAI_CODE_INTERPRETER_DENYLIST,
   OPENAI_IMAGE_GENERATION_MODELS,
   XAI_SEARCH_TOOLS_MODELS,
 } from "./providers.policy.fixtures";
 import { restoreProviderTestEnv, setupProviderTestEnv } from "./providers.test-utils";
-import type { ProviderId, RuntimePreset } from "../src/types/provider";
 
 let getProvidersPublic: typeof import("../src/lib/backend/providers").getProvidersPublic;
 let countModels: typeof import("../src/lib/backend/providers").countModels;
@@ -117,13 +117,12 @@ async function getProviderIdsForEnv(
   scenario: string,
   overrides: Partial<Record<ProviderEnvKey, string | undefined>>
 ): Promise<ProviderId[]> {
-  const previous = providerEnvKeys.reduce<Partial<Record<ProviderEnvKey, string | undefined>>>(
-    (acc, key) => {
-      acc[key] = process.env[key];
-      return acc;
-    },
-    {}
-  );
+  const previous = providerEnvKeys.reduce<
+    Partial<Record<ProviderEnvKey, string | undefined>>
+  >((acc, key) => {
+    acc[key] = process.env[key];
+    return acc;
+  }, {});
 
   try {
     const env = { ...baselineProviderEnv, ...overrides };
@@ -178,7 +177,9 @@ describe("providers config invariants", () => {
 
   it("declares runtime preset for every model", () => {
     const models = getProvidersPublic().flatMap((provider) => provider.models);
-    const modelsWithoutPreset = models.filter((model) => model.runtimePreset === undefined);
+    const modelsWithoutPreset = models.filter(
+      (model) => model.runtimePreset === undefined
+    );
 
     expect(modelsWithoutPreset).toHaveLength(0);
   });
@@ -290,7 +291,10 @@ describe("providers config invariants", () => {
     ];
 
     for (const testCase of matrix) {
-      const providerIds = await getProviderIdsForEnv(testCase.scenario, testCase.overrides);
+      const providerIds = await getProviderIdsForEnv(
+        testCase.scenario,
+        testCase.overrides
+      );
       for (const providerId of testCase.missing) {
         expect(providerIds).not.toContain(providerId);
       }

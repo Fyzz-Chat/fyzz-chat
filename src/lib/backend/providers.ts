@@ -9,6 +9,7 @@ import type { LanguageModelV3 } from "@ai-sdk/provider";
 import { type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
 import { type Tool, type ToolSet, wrapLanguageModel } from "ai";
 import { anthropicCacheMiddleware } from "@/lib/backend/anthropic-cache-middleware";
+import { messageFilterMiddleware } from "@/lib/backend/message-filter-middleware";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
   type Feature,
@@ -58,11 +59,16 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
     .find((model) => model.id === modelId);
 }
 
-function wrapModel(model: LanguageModelV3, providerId: Provider["id"]): LanguageModelV3 {
+function wrapModel(
+  model: LanguageModelV3,
+  modelId: string,
+  providerId: Provider["id"]
+): LanguageModelV3 {
+  const middleware = [messageFilterMiddleware(modelId)];
   if (providerId === "anthropic") {
-    return wrapLanguageModel({ model, middleware: anthropicCacheMiddleware });
+    middleware.push(anthropicCacheMiddleware);
   }
-  return model;
+  return wrapLanguageModel({ model, middleware });
 }
 
 export function getModelRuntime(
@@ -93,7 +99,7 @@ export function getModelRuntime(
 
   return {
     modelId,
-    model: wrapModel(rawModel, providerId),
+    model: wrapModel(rawModel, modelId, providerId),
     supportsTools: tools,
     runtimePreset,
     selectInputMessages: (messages) =>

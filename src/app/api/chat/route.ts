@@ -23,7 +23,6 @@ import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import {
-  filterMessages,
   getUnsupportedFileTypes,
   hasInputPart,
   logDuration,
@@ -426,8 +425,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const filteredMessages = filterMessages(existingMessages, modelId);
-
   const toolsState = await loadToolsForRequest({
     runtime,
     user,
@@ -472,7 +469,7 @@ export async function POST(req: NextRequest) {
 
   logDuration(start, "Streaming started");
 
-  const messagesForModel = runtime.selectInputMessages(filteredMessages);
+  const messagesForModel = runtime.selectInputMessages(existingMessages);
 
   const result = streamText({
     model,

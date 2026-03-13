@@ -10,7 +10,8 @@ let mapDbMessagesToUiMessages: typeof import("../src/lib/backend/message-mapper"
 
 beforeAll(async () => {
   mock.module("@/lib/aws/s3", () => ({
-    getFileUrlSigned: (prefix: string, fileUrl: string) => `signed://${prefix}/${fileUrl}`,
+    getFileUrlSigned: (prefix: string, fileUrl: string) =>
+      `signed://${prefix}/${fileUrl}`,
   }));
 
   ({

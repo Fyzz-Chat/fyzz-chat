@@ -2,11 +2,10 @@
 
 import "server-only";
 
-import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, generateText } from "ai";
 import { deleteFile } from "@/lib/aws/s3";
 import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
-import { filterMessages } from "@/lib/backend/utils";
+import { getModelRuntime } from "@/lib/backend/providers";
 import { branchConversation } from "@/lib/dao/branching";
 import { createShare } from "@/lib/dao/shares";
 import { getUserIdFromSession } from "@/lib/dao/users";
@@ -67,12 +66,12 @@ export async function updateConversationTitle(
   messages: CustomUIMessage[]
 ) {
   const modelId = "gpt-5-nano";
-  const filteredMessages = filterMessages(messages, modelId);
+  const { model } = getModelRuntime(modelId);
   const { text } = await generateText({
-    model: openai(modelId),
+    model,
     system:
       "Your job is to generate a title for a conversation based on the messages. The title should never be longer than 3 words. Only return the title, no other text.",
-    messages: await convertToModelMessages(filteredMessages),
+    messages: await convertToModelMessages(messages),
   });
 
   const updatedConversation = await saveConversationTitle(conversationId, text);

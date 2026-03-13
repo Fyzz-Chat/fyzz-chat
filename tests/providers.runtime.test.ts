@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import type { CustomMetadata, CustomUIMessage } from "../src/types/chat";
 import {
   FIREWORKS_NON_REASONING_MODELS,
   FIREWORKS_REASONING_MODELS,
@@ -9,7 +10,6 @@ import {
   XAI_RESPONSES_MODELS,
 } from "./providers.policy.fixtures";
 import { restoreProviderTestEnv, setupProviderTestEnv } from "./providers.test-utils";
-import type { CustomMetadata, CustomUIMessage } from "../src/types/chat";
 
 let getModelRuntime: typeof import("../src/lib/backend/providers").getModelRuntime;
 
@@ -218,15 +218,15 @@ describe("critical model policy: provider options", () => {
 
   it("keeps xAI responses threading only on responses models", () => {
     for (const modelId of XAI_RESPONSES_MODELS) {
-      expect(getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai).toEqual(
-        XAI_RESPONSES_THREADING_OPTIONS
-      );
+      expect(
+        getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai
+      ).toEqual(XAI_RESPONSES_THREADING_OPTIONS);
     }
 
     for (const modelId of XAI_CHAT_MODELS) {
-      expect(getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai).toEqual(
-        {}
-      );
+      expect(
+        getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai
+      ).toEqual({});
     }
   });
 
@@ -240,21 +240,22 @@ describe("critical model policy: provider options", () => {
       });
     }
 
-    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini").getProviderOptionsFromHistory(
-      messages
-    ).openai;
+    const openaiNonReasoning =
+      getModelRuntime("gpt-4.1-mini").getProviderOptionsFromHistory(messages).openai;
     expect(openaiNonReasoning?.reasoningEffort).toBeUndefined();
     expect(openaiNonReasoning?.reasoningSummary).toBeUndefined();
 
     expect(
-      getModelRuntime("claude-sonnet-4-6").getProviderOptionsFromHistory(messages).anthropic
+      getModelRuntime("claude-sonnet-4-6").getProviderOptionsFromHistory(messages)
+        .anthropic
     ).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
     });
 
     expect(
-      getModelRuntime("gemini-3.1-pro-preview", "medium").getProviderOptionsFromHistory(messages)
-        .google
+      getModelRuntime("gemini-3.1-pro-preview", "medium").getProviderOptionsFromHistory(
+        messages
+      ).google
     ).toEqual({
       thinkingConfig: {
         thinkingLevel: "medium",
@@ -272,9 +273,10 @@ describe("critical model policy: provider options", () => {
     }
 
     expect(
-      getModelRuntime("accounts/fireworks/models/deepseek-v3p2", "medium")
-        .getProviderOptionsFromHistory(messages)
-        .fireworks
+      getModelRuntime(
+        "accounts/fireworks/models/deepseek-v3p2",
+        "medium"
+      ).getProviderOptionsFromHistory(messages).fireworks
     ).toEqual({
       thinking: { type: "enabled", budgetTokens: 4096 },
       reasoningHistory: "preserved",
@@ -291,7 +293,9 @@ describe("critical model policy: provider options", () => {
 describe("critical model policy: tool behavior", () => {
   it("keeps OpenAI code interpreter denylist intact", () => {
     for (const modelId of OPENAI_CODE_INTERPRETER_DENYLIST) {
-      expect(getModelRuntime(modelId).getProviderTools(true).code_interpreter).toBeUndefined();
+      expect(
+        getModelRuntime(modelId).getProviderTools(true).code_interpreter
+      ).toBeUndefined();
     }
   });
 
@@ -310,9 +314,9 @@ describe("critical model policy: tool behavior", () => {
       expect(tools.web_search).toBeDefined();
     }
 
-    const xaiResponsesNoSearch = getModelRuntime("grok-4-1-fast-non-reasoning").getProviderTools(
-      false
-    );
+    const xaiResponsesNoSearch = getModelRuntime(
+      "grok-4-1-fast-non-reasoning"
+    ).getProviderTools(false);
     expect(xaiResponsesNoSearch.x_search).toBeUndefined();
     expect(xaiResponsesNoSearch.web_search).toBeUndefined();
 
@@ -322,7 +326,11 @@ describe("critical model policy: tool behavior", () => {
       expect(tools.web_search).toBeUndefined();
     }
 
-    expect(getModelRuntime("claude-sonnet-4-6").getProviderTools(true).web_search).toBeDefined();
-    expect(getModelRuntime("gemini-3.1-pro-preview").getProviderTools(true).google_search).toBeDefined();
+    expect(
+      getModelRuntime("claude-sonnet-4-6").getProviderTools(true).web_search
+    ).toBeDefined();
+    expect(
+      getModelRuntime("gemini-3.1-pro-preview").getProviderTools(true).google_search
+    ).toBeDefined();
   });
 });
