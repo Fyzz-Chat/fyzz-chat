@@ -59,6 +59,12 @@ export default function RootLayout({
           inter.variable
         )}
       >
+        {process.env.NODE_ENV === "development" && process.env.REACT_SCAN === "true" && (
+          <script
+            src="https://unpkg.com/react-scan/dist/auto.global.js"
+            crossOrigin="anonymous"
+          />
+        )}
         <Providers>
           {children}
           <Toaster position="top-right" />

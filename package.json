@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "scan": "next dev & bunx react-scan@latest localhost:3000",
+    "scan": "REACT_SCAN=true next dev",
     "dev:email": "email dev --port 3001",
     "analyze": "ANALYZE=true next build --webpack",
     "build": "prisma generate && next build",
