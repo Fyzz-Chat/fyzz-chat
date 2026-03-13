@@ -1,3 +1,18 @@
+# [0.27.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.26.1...v0.27.0) (2026-03-13)
+
+
+### Bug Fixes
+
+* **input:** clear debounce save when message is quickly sent after typing ([6ef8933](https://github.com/Fyzz-Chat/fyzz-chat/commit/6ef89338d0b76e1822f9b27990ba4e66059b6b2b))
+* **react-scan:** use lib correctly ([5d7764c](https://github.com/Fyzz-Chat/fyzz-chat/commit/5d7764ce01a8b4f6505f9e41e42f30fbe23f47c2))
+* **regenerate:** make logic stable ([fcd79da](https://github.com/Fyzz-Chat/fyzz-chat/commit/fcd79daab1b718a226109ea5531808b46c909118))
+* **streamdown:** add temporary horizontal scroll fix ([2e04dca](https://github.com/Fyzz-Chat/fyzz-chat/commit/2e04dca75105b0b4bb5e379aa774819eaaa6c96a))
+
+
+### Features
+
+* **anthropic:** add cache control to system message, files, and last user message ([3800c0d](https://github.com/Fyzz-Chat/fyzz-chat/commit/3800c0de1d736b41bfb4f3ec398f62d30ef45680))
+
 ## [0.26.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.26.0...v0.26.1) (2026-03-11)
 
 
