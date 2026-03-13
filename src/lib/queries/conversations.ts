@@ -262,19 +262,26 @@ export function useUpdateConversationModel() {
 
       return saveConversationModel(conversationId, model);
     },
-    onSuccess: (updatedConversation, { conversationId }) => {
-      if (updatedConversation) {
+    onMutate: async ({ conversationId, model }) => {
+      const previousConversation = queryClient.getQueryData(
+        trpc.conversation.queryKey({ id: conversationId })
+      );
+
+      if (previousConversation) {
         queryClient.setQueryData(
           trpc.conversation.queryKey({ id: conversationId }),
-          (old) => {
-            if (!old) return old;
-            return {
-              ...old,
-              model: updatedConversation.model,
-            };
-          }
+          (old) => (old ? { ...old, model } : old)
         );
       }
+
+      return { previousConversation, conversationId };
+    },
+    onError: (_, __, context) => {
+      if (!context?.previousConversation) return;
+      queryClient.setQueryData(
+        trpc.conversation.queryKey({ id: context.conversationId }),
+        context.previousConversation
+      );
     },
   });
 }
