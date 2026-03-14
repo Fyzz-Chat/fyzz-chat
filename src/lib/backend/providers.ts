@@ -747,8 +747,8 @@ const providers: Provider[] = [
         cost: 3,
       },
       {
-        id: "grok-4-0709",
-        name: "Grok 4",
+        id: "grok-4-fast-reasoning",
+        name: "Grok 4 Fast Reasoning",
         features: [reasoning],
         provider: xai.responses,
         tools: true,

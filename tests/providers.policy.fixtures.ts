@@ -1,5 +1,5 @@
 export const XAI_RESPONSES_MODELS = [
-  "grok-4-0709",
+  "grok-4-fast-reasoning",
   "grok-4-fast-non-reasoning",
   "grok-4-1-fast-non-reasoning",
 ] as const;

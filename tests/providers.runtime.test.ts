@@ -167,7 +167,7 @@ describe("providers runtime behavior", () => {
       reasoningSummary: "detailed",
     });
 
-    const xaiReasoning = getModelRuntime("grok-4-0709", "medium");
+    const xaiReasoning = getModelRuntime("grok-4-fast-reasoning", "medium");
     expect(xaiReasoning.getProviderOptionsFromHistory(messages).xai).toEqual({
       store: true,
       previousResponseId: "resp-1",

@@ -5,16 +5,27 @@ mock.module("server-only", () => ({}));
 
 const RUN_INTEGRATION = process.env.RUN_INTEGRATION === "true";
 const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
+const CONCURRENCY = 8;
 
 type PublicModel = {
   id: string;
   name: string;
+  features?: Array<{ name: string }>;
 };
 
 type PublicProvider = {
   id: string;
   name: string;
   models: PublicModel[];
+};
+
+type ReasoningEffort = "low" | "medium" | "high";
+
+type TestResult = {
+  label: string;
+  modelId: string;
+  output?: string;
+  error?: string;
 };
 
 let sessionCookie: string;
@@ -95,16 +106,17 @@ async function consumeStream(
         text += parsed.delta ?? parsed.textDelta ?? "";
       }
     } catch {
-      // Not all lines are JSON in the UI message stream protocol
+      // Not all SSE lines are valid JSON
     }
   }
 
   return { ok: true, text };
 }
 
-async function testModel(modelId: string): Promise<string> {
-  const conversationId = crypto.randomUUID();
-
+async function chatWithModel(
+  modelId: string,
+  reasoningEffort?: ReasoningEffort
+): Promise<string> {
   const response = await fetch(`${BASE_URL}/api/chat`, {
     method: "POST",
     headers: {
@@ -112,9 +124,10 @@ async function testModel(modelId: string): Promise<string> {
       Cookie: sessionCookie,
     },
     body: JSON.stringify({
-      id: conversationId,
+      id: crypto.randomUUID(),
       model: modelId,
       temporaryChat: true,
+      reasoningEffort,
       messages: [
         {
           id: crypto.randomUUID(),
@@ -128,14 +141,64 @@ async function testModel(modelId: string): Promise<string> {
     }),
   });
 
-  expect(response.status).toBe(200);
+  if (response.status !== 200) {
+    throw new Error(`HTTP ${response.status}`);
+  }
 
   const streamResult = await consumeStream(response);
   if (!streamResult.ok) {
-    throw new Error(`Stream error for ${modelId}: ${streamResult.error}`);
+    throw new Error(streamResult.error);
   }
 
   return streamResult.text;
+}
+
+async function runWithConcurrency<T>(
+  tasks: Array<() => Promise<T>>,
+  concurrency: number
+): Promise<T[]> {
+  const results: T[] = [];
+  let index = 0;
+
+  async function worker() {
+    while (index < tasks.length) {
+      const i = index++;
+      results[i] = await tasks[i]();
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, tasks.length) }, () => worker())
+  );
+  return results;
+}
+
+function logResult(result: TestResult) {
+  const preview = result.output?.replaceAll("\n", " ").trim().slice(0, 80) ?? "";
+  if (result.error) {
+    console.error(`  \x1b[31m✗ ${result.label}: ${result.error}\x1b[0m`);
+  } else {
+    console.log(`  \x1b[32m✓\x1b[0m ${result.label} \x1b[36m${preview}\x1b[0m`);
+  }
+}
+
+function logSummary(results: TestResult[]) {
+  const passed = results.filter((r) => !r.error).length;
+  const failures = results.filter((r) => r.error);
+  console.log(
+    `\n  \x1b[1m${passed}/${results.length} passed\x1b[0m` +
+      (failures.length > 0 ? `, \x1b[31m${failures.length} failed\x1b[0m` : "")
+  );
+}
+
+function throwOnFailures(results: TestResult[]) {
+  const failures = results.filter((r) => r.error);
+  if (failures.length > 0) {
+    const summary = failures
+      .map((f) => `  \x1b[31m${f.label}: ${f.error}\x1b[0m`)
+      .join("\n");
+    throw new Error(`${failures.length}/${results.length} failed:\n${summary}`);
+  }
 }
 
 describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
@@ -152,37 +215,59 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
 
   test("all models respond without errors", async () => {
     const models = providers.flatMap((p) =>
-      p.models.map((m) => ({ providerId: p.id, modelId: m.id, modelName: m.name }))
+      p.models.map((m) => ({ providerId: p.id, model: m }))
     );
 
-    const results: Array<{ modelId: string; modelName: string; error?: string }> = [];
-
-    for (const { modelId, modelName } of models) {
+    const tasks = models.map(({ model }) => async (): Promise<TestResult> => {
+      const label = `${model.name} \x1b[2m(${model.id})\x1b[0m`;
       try {
-        const output = await testModel(modelId);
-        results.push({ modelId, modelName });
-        const preview = output.replaceAll("\n", " ").trim().slice(0, 80);
-        console.log(
-          `  \x1b[32m✓\x1b[0m ${modelName} \x1b[2m(${modelId})\x1b[0m \x1b[36m${preview}\x1b[0m`
-        );
+        const output = await chatWithModel(model.id);
+        const result: TestResult = { label, modelId: model.id, output };
+        logResult(result);
+        return result;
       } catch (e) {
         const error = e instanceof Error ? e.message : String(e);
-        results.push({ modelId, modelName, error });
-        console.error(`  \x1b[31m✗ ${modelName} (${modelId}): ${error}\x1b[0m`);
+        const result: TestResult = { label, modelId: model.id, error };
+        logResult(result);
+        return result;
       }
+    });
+
+    const results = await runWithConcurrency(tasks, CONCURRENCY);
+    logSummary(results);
+    throwOnFailures(results);
+  }, 600_000);
+
+  test("reasoning models support all effort levels", async () => {
+    const reasoningModels = providers
+      .flatMap((p) => p.models)
+      .filter((m) => m.features?.some((f) => f.name === "Reasoning"));
+
+    if (reasoningModels.length === 0) {
+      console.log("  No reasoning models configured, skipping");
+      return;
     }
 
-    const passed = results.filter((r) => !r.error).length;
-    const failures = results.filter((r) => r.error);
-    console.log(
-      `\n  \x1b[1m${passed}/${models.length} passed\x1b[0m` +
-        (failures.length > 0 ? `, \x1b[31m${failures.length} failed\x1b[0m` : "")
+    const efforts: ReasoningEffort[] = ["low", "medium", "high"];
+    const tasks = reasoningModels.flatMap((model) =>
+      efforts.map((effort) => async (): Promise<TestResult> => {
+        const label = `${model.name} \x1b[2m(${model.id})\x1b[0m \x1b[33m[${effort}]\x1b[0m`;
+        try {
+          const output = await chatWithModel(model.id, effort);
+          const result: TestResult = { label, modelId: model.id, output };
+          logResult(result);
+          return result;
+        } catch (e) {
+          const error = e instanceof Error ? e.message : String(e);
+          const result: TestResult = { label, modelId: model.id, error };
+          logResult(result);
+          return result;
+        }
+      })
     );
-    if (failures.length > 0) {
-      const summary = failures
-        .map((f) => `  \x1b[31m${f.modelName} (${f.modelId}): ${f.error}\x1b[0m`)
-        .join("\n");
-      throw new Error(`${failures.length}/${models.length} models failed:\n${summary}`);
-    }
+
+    const results = await runWithConcurrency(tasks, CONCURRENCY);
+    logSummary(results);
+    throwOnFailures(results);
   }, 600_000);
 });
