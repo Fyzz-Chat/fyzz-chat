@@ -109,3 +109,11 @@ missing component.
 
 - Keep contexts in `/src/lib/contexts/` folder, hooks in `/src/hooks/` folder, and utils in `/src/lib/utils/` folder.
 - Extract helper functions with no component dependencies to `/src/lib/utils/` or `/src/lib/` subfolders.
+
+## Critical files
+
+The `useChat` hook from the AI SDK lives in `src/components/chat/message-list.tsx`; that file requires special attention.
+
+The hook's internal state changes on every token received from the AI model, so the component that calls it would re-render on every token. Without the patterns below, the whole conversation re-renders on every token (poor performance and possible flicker).
+
+Use refs for changing values and functions, `useCallback` for handlers, and `useMemo` for derived state and list JSX. That way only the last (currently streaming) message re-renders on every token; the rest of the conversation stays unchanged. This behavior must be maintained.
