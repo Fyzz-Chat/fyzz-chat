@@ -12,6 +12,7 @@ import { anthropicCacheMiddleware } from "@/lib/backend/anthropic-cache-middlewa
 import { messageFilterMiddleware } from "@/lib/backend/message-filter-middleware";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
+  audioType,
   type Feature,
   imageTypes,
   type ModelCapabilities,
@@ -649,7 +650,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, videoType, tabularType],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, tabularType],
         cost: 1,
       },
       {
@@ -659,7 +660,7 @@ const providers: Provider[] = [
         provider: google,
         tools: false,
         runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, videoType, tabularType],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, tabularType],
         cost: 1,
       },
       {
@@ -669,7 +670,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, videoType, tabularType],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, tabularType],
         cost: 2,
       },
       {
@@ -679,7 +680,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, videoType, tabularType],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, tabularType],
         cost: 1,
       },
       {
@@ -689,7 +690,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, videoType, tabularType],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, tabularType],
         cost: 4,
       },
       {

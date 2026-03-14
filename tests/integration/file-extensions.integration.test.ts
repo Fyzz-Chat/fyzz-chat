@@ -23,6 +23,13 @@ const FILE_FIXTURES: Array<{ filename: string; mediaType: string }> = [
   { filename: "test.jpeg", mediaType: "image/jpeg" },
   { filename: "test.webp", mediaType: "image/webp" },
   { filename: "test.pdf", mediaType: "application/pdf" },
+  { filename: "test.mp3", mediaType: "audio/mp3" },
+  { filename: "test.flac", mediaType: "audio/flac" },
+  { filename: "test.ogg", mediaType: "audio/ogg" },
+  { filename: "test.wav", mediaType: "audio/wav" },
+  { filename: "test.opus", mediaType: "audio/ogg" },
+  { filename: "test.aac", mediaType: "audio/aac" },
+  { filename: "test.m4a", mediaType: "audio/x-m4a" },
 ];
 
 describe.skipIf(!RUN_INTEGRATION)("Chat API - file extensions", () => {

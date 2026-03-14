@@ -20,13 +20,31 @@ export const imageTypes: ImageType[] = [
 export type PDFType = "application/pdf";
 export const pdfType: PDFType = "application/pdf";
 
+export type AudioType =
+  | "audio/mp3"
+  | "audio/flac"
+  | "audio/ogg"
+  | "audio/mpeg"
+  | "audio/wav"
+  | "audio/aac"
+  | "audio/x-m4a";
+export const audioType: AudioType[] = [
+  "audio/mp3",
+  "audio/flac",
+  "audio/ogg",
+  "audio/mpeg",
+  "audio/wav",
+  "audio/aac",
+  "audio/x-m4a",
+];
+
 export type VideoType = "video/mp4";
 export const videoType: VideoType = "video/mp4";
 
 export type TabularType = "text/csv";
 export const tabularType: TabularType = "text/csv";
 
-export type ExtensionType = ImageType | PDFType | VideoType | TabularType;
+export type ExtensionType = ImageType | PDFType | AudioType | VideoType | TabularType;
 export type RuntimePreset = "chat" | "responses";
 export type ReasoningEffort = "low" | "medium" | "high";
 
