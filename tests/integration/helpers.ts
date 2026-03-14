@@ -4,6 +4,11 @@ export const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
 export const CONCURRENCY = 8;
 export const MODEL_FILTER = process.env.TEST_MODEL;
 
+export function matchesFilter(modelId: string): boolean {
+  if (!MODEL_FILTER) return true;
+  return modelId.toLowerCase().includes(MODEL_FILTER.toLowerCase());
+}
+
 export type PublicModel = {
   id: string;
   name: string;

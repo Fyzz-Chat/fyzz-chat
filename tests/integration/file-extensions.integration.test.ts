@@ -7,6 +7,7 @@ import {
   logResult,
   logSummary,
   MODEL_FILTER,
+  matchesFilter,
   runWithConcurrency,
   type TestResult,
   throwOnFailures,
@@ -41,7 +42,7 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - file extensions", () => {
       .flatMap((p) => p.models)
       .filter((m) => m.extensions.some((ext) => testedTypes.includes(ext)));
     if (MODEL_FILTER) {
-      models = models.filter((m) => m.id === MODEL_FILTER);
+      models = models.filter((m) => matchesFilter(m.id));
     }
 
     if (models.length === 0) {
@@ -58,8 +59,7 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - file extensions", () => {
         try {
           const output = await chatWithModel({
             modelId: model.id,
-            message:
-              "Return a single word you can find in this file, nothing else. This is a test.",
+            message: "Return a single word you can find in this file, nothing else.",
             file,
           });
           const result: TestResult = { label, modelId: model.id, output };

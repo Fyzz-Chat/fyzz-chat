@@ -7,6 +7,7 @@ import {
   logResult,
   logSummary,
   MODEL_FILTER,
+  matchesFilter,
   type ReasoningEffort,
   runWithConcurrency,
   type TestResult,
@@ -29,7 +30,7 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
       p.models.map((m) => ({ providerId: p.id, model: m }))
     );
     if (MODEL_FILTER) {
-      models = models.filter((m) => m.model.id === MODEL_FILTER);
+      models = models.filter((m) => matchesFilter(m.model.id));
       expect(models.length).toBeGreaterThan(0);
     }
 
@@ -58,7 +59,7 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
       .flatMap((p) => p.models)
       .filter((m) => m.features?.some((f) => f.name === "Reasoning"));
     if (MODEL_FILTER) {
-      reasoningModels = reasoningModels.filter((m) => m.id === MODEL_FILTER);
+      reasoningModels = reasoningModels.filter((m) => matchesFilter(m.id));
     }
 
     if (reasoningModels.length === 0) {
