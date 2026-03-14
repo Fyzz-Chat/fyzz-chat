@@ -9,6 +9,7 @@
     "ignoreUnknown": false,
     "includes": [
       ".agents/hooks/**",
+      ".opencode/plugins/**",
       "src/**",
       "tests/**",
       "emails/**",

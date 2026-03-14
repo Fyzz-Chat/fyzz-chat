@@ -80,6 +80,7 @@
         "@commitlint/cli": "20.4.3",
         "@commitlint/config-conventional": "20.4.3",
         "@next/bundle-analyzer": "16.1.6",
+        "@opencode-ai/plugin": "1.2.26",
         "@react-email/preview-server": "5.2.9",
         "@tailwindcss/postcss": "4.2.1",
         "@types/html-to-text": "9.0.4",
@@ -572,6 +573,10 @@
     "@open-draft/logger": ["@open-draft/logger@0.3.0", "", { "dependencies": { "is-node-process": "^1.2.0", "outvariant": "^1.4.0" } }, "sha512-X2g45fzhxH238HKO4xbSr7+wBS8Fvw6ixhTDuvLd5mqh6bJJCFAPwU9mPDxbcrRtfxv4u5IHCEH77BmxvXmmxQ=="],
 
     "@open-draft/until": ["@open-draft/until@2.1.0", "", {}, "sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg=="],
+
+    "@opencode-ai/plugin": ["@opencode-ai/plugin@1.2.26", "", { "dependencies": { "@opencode-ai/sdk": "1.2.26", "zod": "4.1.8" } }, "sha512-pC71KGAI9T0+S84KpbEq9THp5pT7KOq+GmfdXkvQ7KSH5zi+iASWRhqorir73sKmEj2MQfpbe1BxdcU5qbeOwA=="],
+
+    "@opencode-ai/sdk": ["@opencode-ai/sdk@1.2.26", "", {}, "sha512-HPB+0pfvTMPj2KEjNLF3oqgldKW8koTJ7ssqXwzndazqxS+gUynzvdIKIQP4+QIInNcc5nJMG9JtfLcePGgTLQ=="],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 
@@ -2434,6 +2439,8 @@
     "@langchain/core/uuid": ["uuid@11.1.0", "", { "bin": { "uuid": "dist/esm/bin/uuid" } }, "sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A=="],
 
     "@noble/curves/@noble/hashes": ["@noble/hashes@1.8.0", "", {}, "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="],
+
+    "@opencode-ai/plugin/zod": ["zod@4.1.8", "", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
 
     "@prisma/dev/@hono/node-server": ["@hono/node-server@1.19.9", "", { "peerDependencies": { "hono": "^4" } }, "sha512-vHL6w3ecZsky+8P5MD+eFfaGTyCeOHUIFYMGpQGbrBTSmNNoxv0if69rEZ5giu36weC5saFuznL411gRX7bJDw=="],
 
