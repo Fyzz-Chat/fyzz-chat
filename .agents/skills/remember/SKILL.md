@@ -1,6 +1,7 @@
 ---
 name: remember
 description: When the user invokes this skill, the agent reflects on the most important lessons learned recently and suggests adding a new rule to AGENTS.md to prevent the same issue from recurring. Use when the user explicitly invokes the remember skill.
+disable-model-invocation: true
 ---
 
 # Remember

@@ -1,9 +1,10 @@
 ---
 name: lint
-description: Contains commands to lint, format, type check, test, and build the project. Use when the user directly invokes this skill.
+description: Contains commands to lint, format, type check, test, and build the project. Use when the user explicitly invokes the lint skill.
+disable-model-invocation: true
 ---
 
-When the user invokes this skill, run the following commands in order.
+When this skill is invoked, run the following commands in order.
 
 `bun run check-write`: Runs linter and formatter and fixes trivial issues
 `bun run type-check`: Runs type checking
