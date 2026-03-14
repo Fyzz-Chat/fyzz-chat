@@ -1,3 +1,10 @@
+# [0.29.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.28.0...v0.29.0) (2026-03-14)
+
+
+### Features
+
+* **auth:** implement domain restriction for user registration and login ([ba3a934](https://github.com/Fyzz-Chat/fyzz-chat/commit/ba3a9342d6c54376a9d1277fed826ca7a1ae6c5b))
+
 # [0.28.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.27.0...v0.28.0) (2026-03-14)
 
 
