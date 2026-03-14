@@ -753,7 +753,7 @@ const providers: Provider[] = [
         provider: xai.responses,
         tools: true,
         runtimePreset: "responses",
-        extensions: [...imageTypes, pdfType, videoType],
+        extensions: [...imageTypes, videoType],
         cost: 1,
         capabilities: { supportsXaiSearchTools: true },
       },
