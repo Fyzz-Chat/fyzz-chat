@@ -1,3 +1,16 @@
+# [0.28.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.27.0...v0.28.0) (2026-03-14)
+
+
+### Features
+
+* add lint skill ([189a78e](https://github.com/Fyzz-Chat/fyzz-chat/commit/189a78ea2a683649505a452a289167ea03f94c24))
+* **agents.md:** extend with useChat special rules ([e347f33](https://github.com/Fyzz-Chat/fyzz-chat/commit/e347f33a6a018720d8b852cc50cc3fb7256487de))
+* **agents:** add optimize skill ([6f6ca82](https://github.com/Fyzz-Chat/fyzz-chat/commit/6f6ca823300299148411b11b237ff760c91c0e84))
+* **agents:** add remember skill ([b822366](https://github.com/Fyzz-Chat/fyzz-chat/commit/b8223667afd63f1251895d5376b8dadacc3bf4cc))
+* **claude:** add build hook ([f0c27fa](https://github.com/Fyzz-Chat/fyzz-chat/commit/f0c27fa0a18c2f767f8b0ef3104595b32a4b7449))
+* **claude:** commit allowlisted settings ([6337349](https://github.com/Fyzz-Chat/fyzz-chat/commit/6337349c0757f7bf7b46cb4a23b823aa4c640db7))
+* **opencode:** add lint plugin ([f6efc23](https://github.com/Fyzz-Chat/fyzz-chat/commit/f6efc237537d3f34aa0ca0e412ae6a395d56154b))
+
 # [0.27.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.26.1...v0.27.0) (2026-03-13)
 
 
