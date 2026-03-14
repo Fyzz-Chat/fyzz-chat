@@ -13,6 +13,7 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "test": "bun test",
+    "test:integration": "RUN_INTEGRATION=true bun test tests/integration",
     "lint-staged": "lint-staged",
     "format": "biome format",
     "format-write": "biome format --write",
