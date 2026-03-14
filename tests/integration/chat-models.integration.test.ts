@@ -6,6 +6,7 @@ mock.module("server-only", () => ({}));
 const RUN_INTEGRATION = process.env.RUN_INTEGRATION === "true";
 const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
 const CONCURRENCY = 8;
+const MODEL_FILTER = process.env.TEST_MODEL;
 
 type PublicModel = {
   id: string;
@@ -214,9 +215,13 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
   });
 
   test("all models respond without errors", async () => {
-    const models = providers.flatMap((p) =>
+    let models = providers.flatMap((p) =>
       p.models.map((m) => ({ providerId: p.id, model: m }))
     );
+    if (MODEL_FILTER) {
+      models = models.filter((m) => m.model.id === MODEL_FILTER);
+      expect(models.length).toBeGreaterThan(0);
+    }
 
     const tasks = models.map(({ model }) => async (): Promise<TestResult> => {
       const label = `${model.name} \x1b[2m(${model.id})\x1b[0m`;
@@ -239,9 +244,12 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
   }, 600_000);
 
   test("reasoning models support all effort levels", async () => {
-    const reasoningModels = providers
+    let reasoningModels = providers
       .flatMap((p) => p.models)
       .filter((m) => m.features?.some((f) => f.name === "Reasoning"));
+    if (MODEL_FILTER) {
+      reasoningModels = reasoningModels.filter((m) => m.id === MODEL_FILTER);
+    }
 
     if (reasoningModels.length === 0) {
       console.log("  No reasoning models configured, skipping");

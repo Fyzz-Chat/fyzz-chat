@@ -84,7 +84,6 @@ const expectedCatalogShape: {
     models: [
       { id: "grok-3-mini", runtimePreset: "chat" },
       { id: "grok-3", runtimePreset: "chat" },
-      { id: "grok-4-fast-reasoning", runtimePreset: "responses" },
       { id: "grok-4-fast-non-reasoning", runtimePreset: "responses" },
       { id: "grok-code-fast-1", runtimePreset: "chat" },
       { id: "grok-4-1-fast-non-reasoning", runtimePreset: "responses" },

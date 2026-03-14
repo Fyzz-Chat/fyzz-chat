@@ -747,17 +747,6 @@ const providers: Provider[] = [
         cost: 3,
       },
       {
-        id: "grok-4-fast-reasoning",
-        name: "Grok 4 Fast Reasoning",
-        features: [reasoning],
-        provider: xai.responses,
-        tools: true,
-        runtimePreset: "responses",
-        extensions: imageTypes,
-        cost: 3,
-        capabilities: { supportsXaiSearchTools: true },
-      },
-      {
         id: "grok-4-fast-non-reasoning",
         name: "Grok 4 Fast",
         features: [],
@@ -771,7 +760,7 @@ const providers: Provider[] = [
       {
         id: "grok-code-fast-1",
         name: "Grok Code Fast 1",
-        features: [coding, reasoning],
+        features: [coding],
         provider: xai,
         tools: true,
         runtimePreset: "chat",

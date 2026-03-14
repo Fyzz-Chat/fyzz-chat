@@ -167,13 +167,6 @@ describe("providers runtime behavior", () => {
       reasoningSummary: "detailed",
     });
 
-    const xaiReasoning = getModelRuntime("grok-4-fast-reasoning", "medium");
-    expect(xaiReasoning.getProviderOptionsFromHistory(messages).xai).toEqual({
-      store: true,
-      previousResponseId: "resp-1",
-      reasoningEffort: "medium",
-    });
-
     const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", "low");
     expect(anthropicReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
