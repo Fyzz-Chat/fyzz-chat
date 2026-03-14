@@ -60,6 +60,14 @@ The following environment variables are required:
 - `DIRECT_DATABASE_URL`: The URL of your database.
 - `OPENAI_API_KEY`: The API key for OpenAI. Create one [here](https://platform.openai.com/api-keys).
 
+The following environment variables are optional and influence the authentication process:
+
+- `ANONYMOUS_LOGIN`: Whether to allow single-click anonymous logins.
+- `AUTHORIZED_EMAIL_DOMAINS`: A comma-separated list of email domains that are allowed to sign up and log in.
+- To enable login with Google, you need to set the following environment variables:
+- `GOOGLE_CLIENT_ID`: The Google client ID.
+- `GOOGLE_CLIENT_SECRET`: The Google client secret.
+
 The following environment variables are optional and control which additional models are available for use:
 
 - `ANTHROPIC_API_KEY`: The API key for Anthropic. Create one [here](https://platform.claude.com/settings/keys).

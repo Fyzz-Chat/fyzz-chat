@@ -21,6 +21,19 @@ import {
   registerSchema,
 } from "@/types/auth";
 
+function isEmailDomainAllowed(email: string): boolean {
+  const domains = conf.authorizedEmailDomains;
+  if (domains.length === 0) return true;
+  const domain = email.split("@")[1]?.toLowerCase();
+  return !!domain && domains.includes(domain);
+}
+
+const domainRestrictedResponse: FormState = {
+  message: "Authentication restricted",
+  description: "Unauthorized email domain.",
+  success: false,
+};
+
 export async function signInUser(
   _prevState: FormState,
   formData: LoginFormData
@@ -43,6 +56,10 @@ export async function signInUser(
 
   if (!turnstileVerified) {
     return turnstileFailedResponse;
+  }
+
+  if (!isEmailDomainAllowed(parsedData.email)) {
+    return domainRestrictedResponse;
   }
 
   const body = {
@@ -93,6 +110,10 @@ export async function registerUser(
     return turnstileFailedResponse;
   }
 
+  if (!isEmailDomainAllowed(parsedData.email)) {
+    return domainRestrictedResponse;
+  }
+
   const body = {
     name: parsedData.name,
     email: parsedData.email,
@@ -127,6 +148,10 @@ export async function signInAnonymously(): Promise<FormState> {
     };
   }
 
+  if (conf.authorizedEmailDomains.length > 0) {
+    return domainRestrictedResponse;
+  }
+
   const randomEmail = `anonymous-${randomBytes(16).toString("hex")}@fyzz.local`;
   const randomPassword = randomBytes(32).toString("hex");
 
@@ -157,7 +182,11 @@ export async function signInAnonymously(): Promise<FormState> {
   }
 }
 
-export async function userExists(email: string): Promise<boolean> {
+export async function userExists(email: string): Promise<boolean | "domain_restricted"> {
+  if (!isEmailDomainAllowed(email)) {
+    return "domain_restricted";
+  }
+
   const user = await prisma.user.findUnique({
     where: { email },
     select: { id: true },

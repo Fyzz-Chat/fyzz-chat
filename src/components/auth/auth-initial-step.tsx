@@ -46,9 +46,14 @@ export default function AuthInitialStep({
     sessionStorage.setItem("auth_email", data.email);
 
     try {
-      const existingUser = await userExists(data.email);
+      const result = await userExists(data.email);
 
-      if (existingUser) {
+      if (result === "domain_restricted") {
+        toast.error("Unauthorized email domain.");
+        return;
+      }
+
+      if (result) {
         router.push("/login");
       } else {
         router.push("/register");

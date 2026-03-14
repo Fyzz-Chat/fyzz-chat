@@ -26,6 +26,7 @@ export default function RegisterForm() {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -50,8 +51,10 @@ export default function RegisterForm() {
       sessionStorage.removeItem("auth_email");
       queryClient.clear();
       globalThis.location.href = publicConf.redirectPath;
+    } else {
+      setError("email", { message: state.description });
     }
-  }, [state, queryClient]);
+  }, [state, queryClient, setError]);
 
   function onSubmit(data: RegisterFormData) {
     startTransition(() => {

@@ -84,9 +84,16 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
+          const authorizedDomains = conf.authorizedEmailDomains;
+          if (authorizedDomains.length > 0) {
+            const domain = user.email.split("@")[1]?.toLowerCase();
+            if (!domain || !authorizedDomains.includes(domain)) {
+              return false;
+            }
+          }
+
           logger.info(`Creating user with id ${user.id}`);
 
-          // Add custom fields to the user here
           return {
             data: {
               ...user,

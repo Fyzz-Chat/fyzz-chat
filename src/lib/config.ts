@@ -21,6 +21,7 @@ const schema = z.object({
   anonymousLogin: booleanFromString,
   googleId: z.string().optional(),
   googleSecret: z.string().optional(),
+  authorizedEmailDomains: z.array(z.string()).default([]),
 
   // AWS
   awsRegion: z.string().default("eu-central-1"),
@@ -49,6 +50,9 @@ const envVars = {
   anonymousLogin: process.env.ANONYMOUS_LOGIN,
   googleId: process.env.GOOGLE_CLIENT_ID,
   googleSecret: process.env.GOOGLE_CLIENT_SECRET,
+  authorizedEmailDomains: process.env.AUTHORIZED_EMAIL_DOMAINS
+    ? process.env.AUTHORIZED_EMAIL_DOMAINS.split(",").map((d) => d.trim().toLowerCase())
+    : [],
 
   // AWS
   awsRegion: process.env.AWS_REGION,
