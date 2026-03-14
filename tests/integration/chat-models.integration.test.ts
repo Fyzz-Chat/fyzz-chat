@@ -61,42 +61,48 @@ async function fetchModels(): Promise<PublicProvider[]> {
 
 async function consumeStream(
   response: Response
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; text: string; error?: string }> {
   const body = response.body;
   if (!body) {
-    return { ok: false, error: "No response body" };
+    return { ok: false, text: "", error: "No response body" };
   }
 
   const reader = body.getReader();
   const decoder = new TextDecoder();
-  let fullText = "";
+  let rawStream = "";
 
   try {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      fullText += decoder.decode(value, { stream: true });
+      rawStream += decoder.decode(value, { stream: true });
     }
   } finally {
     reader.releaseLock();
   }
 
-  for (const line of fullText.split("\n")) {
-    if (!line.trim()) continue;
+  let text = "";
+
+  for (const line of rawStream.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("data: ")) continue;
     try {
-      const parsed = JSON.parse(line);
+      const parsed = JSON.parse(trimmed.slice(6));
       if (parsed.type === "error") {
-        return { ok: false, error: parsed.error || JSON.stringify(parsed) };
+        return { ok: false, text, error: parsed.error || JSON.stringify(parsed) };
+      }
+      if (parsed.type === "text-delta") {
+        text += parsed.delta ?? parsed.textDelta ?? "";
       }
     } catch {
       // Not all lines are JSON in the UI message stream protocol
     }
   }
 
-  return { ok: true };
+  return { ok: true, text };
 }
 
-async function testModel(modelId: string): Promise<void> {
+async function testModel(modelId: string): Promise<string> {
   const conversationId = crypto.randomUUID();
 
   const response = await fetch(`${BASE_URL}/api/chat`, {
@@ -128,6 +134,8 @@ async function testModel(modelId: string): Promise<void> {
   if (!streamResult.ok) {
     throw new Error(`Stream error for ${modelId}: ${streamResult.error}`);
   }
+
+  return streamResult.text;
 }
 
 describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
@@ -151,9 +159,12 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
 
     for (const { modelId, modelName } of models) {
       try {
-        await testModel(modelId);
+        const output = await testModel(modelId);
         results.push({ modelId, modelName });
-        console.log(`  \x1b[32m✓\x1b[0m ${modelName} \x1b[2m(${modelId})\x1b[0m`);
+        const preview = output.replaceAll("\n", " ").trim().slice(0, 80);
+        console.log(
+          `  \x1b[32m✓\x1b[0m ${modelName} \x1b[2m(${modelId})\x1b[0m \x1b[36m${preview}\x1b[0m`
+        );
       } catch (e) {
         const error = e instanceof Error ? e.message : String(e);
         results.push({ modelId, modelName, error });
