@@ -3,6 +3,7 @@
 import { Command, ExternalLink, FileText, Settings } from "lucide-react";
 import { use } from "react";
 import { FastLink } from "@/components/fast-link";
+import GitHub from "@/components/icons/github";
 import { SignOut } from "@/components/sidebar/signout-button";
 import {
   DropdownMenuContent,
@@ -84,6 +85,20 @@ export default function ProfileMenu({
           <FileText className="shrink-0" />
           <span className="relative">
             {translations.sidebar.menu.privacyPolicy}
+            <ExternalLink className="absolute top-0 -right-4 h-3! w-3!" />
+          </span>
+        </a>
+      </DropdownMenuItem>
+      <DropdownMenuItem className="p-0">
+        <a
+          href="https://github.com/Fyzz-Chat/fyzz-chat"
+          target="_blank"
+          className="flex size-full items-center gap-2 px-2 py-1.5"
+          rel="noopener noreferrer"
+        >
+          <GitHub size={16} />
+          <span className="relative">
+            Star on GitHub
             <ExternalLink className="absolute top-0 -right-4 h-3! w-3!" />
           </span>
         </a>
