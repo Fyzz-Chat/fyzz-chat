@@ -153,18 +153,23 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - all models integration", () => {
       try {
         await testModel(modelId);
         results.push({ modelId, modelName });
-        console.log(`  ✓ ${modelName} (${modelId})`);
+        console.log(`  \x1b[32m✓\x1b[0m ${modelName} \x1b[2m(${modelId})\x1b[0m`);
       } catch (e) {
         const error = e instanceof Error ? e.message : String(e);
         results.push({ modelId, modelName, error });
-        console.error(`  ✗ ${modelName} (${modelId}): ${error}`);
+        console.error(`  \x1b[31m✗ ${modelName} (${modelId}): ${error}\x1b[0m`);
       }
     }
 
+    const passed = results.filter((r) => !r.error).length;
     const failures = results.filter((r) => r.error);
+    console.log(
+      `\n  \x1b[1m${passed}/${models.length} passed\x1b[0m` +
+        (failures.length > 0 ? `, \x1b[31m${failures.length} failed\x1b[0m` : "")
+    );
     if (failures.length > 0) {
       const summary = failures
-        .map((f) => `  ${f.modelName} (${f.modelId}): ${f.error}`)
+        .map((f) => `  \x1b[31m${f.modelName} (${f.modelId}): ${f.error}\x1b[0m`)
         .join("\n");
       throw new Error(`${failures.length}/${models.length} models failed:\n${summary}`);
     }
