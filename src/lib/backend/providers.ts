@@ -24,7 +24,6 @@ import {
   plaintextType,
   type ReasoningEffort,
   type RuntimePreset,
-  tabularType,
   videoType,
 } from "@/types/provider";
 
@@ -651,14 +650,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [
-          ...imageTypes,
-          pdfType,
-          ...audioType,
-          videoType,
-          tabularType,
-          ...plaintextType,
-        ],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
         cost: 1,
       },
       {
@@ -668,14 +660,7 @@ const providers: Provider[] = [
         provider: google,
         tools: false,
         runtimePreset: "chat",
-        extensions: [
-          ...imageTypes,
-          pdfType,
-          ...audioType,
-          videoType,
-          tabularType,
-          ...plaintextType,
-        ],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
         cost: 1,
       },
       {
@@ -685,14 +670,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [
-          ...imageTypes,
-          pdfType,
-          ...audioType,
-          videoType,
-          tabularType,
-          ...plaintextType,
-        ],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
         cost: 2,
       },
       {
@@ -702,14 +680,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [
-          ...imageTypes,
-          pdfType,
-          ...audioType,
-          videoType,
-          tabularType,
-          ...plaintextType,
-        ],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
         cost: 1,
       },
       {
@@ -719,14 +690,7 @@ const providers: Provider[] = [
         provider: google,
         tools: true,
         runtimePreset: "chat",
-        extensions: [
-          ...imageTypes,
-          pdfType,
-          ...audioType,
-          videoType,
-          tabularType,
-          ...plaintextType,
-        ],
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
         cost: 4,
       },
       {

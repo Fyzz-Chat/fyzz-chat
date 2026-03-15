@@ -29,19 +29,10 @@ export type AudioType = (typeof audioType)[number];
 export const videoType = "video/mp4" as const;
 export type VideoType = typeof videoType;
 
-export const tabularType = "text/csv" as const;
-export type TabularType = typeof tabularType;
-
 export const plaintextType = ["text/plain", "text/markdown", "text/csv"] as const;
 export type PlaintextType = (typeof plaintextType)[number];
 
-export type ExtensionType =
-  | ImageType
-  | PDFType
-  | AudioType
-  | VideoType
-  | TabularType
-  | PlaintextType;
+export type ExtensionType = ImageType | PDFType | AudioType | VideoType | PlaintextType;
 export type RuntimePreset = "chat" | "responses";
 export type ReasoningEffort = "low" | "medium" | "high";
 
