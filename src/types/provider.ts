@@ -32,8 +32,8 @@ export type VideoType = typeof videoType;
 export const tabularType = "text/csv" as const;
 export type TabularType = typeof tabularType;
 
-export const plaintextType = "text/plain" as const;
-export type PlaintextType = typeof plaintextType;
+export const plaintextType = ["text/plain", "text/markdown", "text/csv"] as const;
+export type PlaintextType = (typeof plaintextType)[number];
 
 export type ExtensionType =
   | ImageType
