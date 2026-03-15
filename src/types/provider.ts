@@ -9,26 +9,13 @@ export type Feature = {
   color: string;
 };
 
-export type ImageType = "image/png" | "image/jpeg" | "image/jpg" | "image/webp";
-export const imageTypes: ImageType[] = [
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/webp",
-];
+export const imageTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"] as const;
+export type ImageType = (typeof imageTypes)[number];
 
-export type PDFType = "application/pdf";
-export const pdfType: PDFType = "application/pdf";
+export const pdfType = "application/pdf" as const;
+export type PDFType = typeof pdfType;
 
-export type AudioType =
-  | "audio/mp3"
-  | "audio/flac"
-  | "audio/ogg"
-  | "audio/mpeg"
-  | "audio/wav"
-  | "audio/aac"
-  | "audio/x-m4a";
-export const audioType: AudioType[] = [
+export const audioType = [
   "audio/mp3",
   "audio/flac",
   "audio/ogg",
@@ -36,13 +23,14 @@ export const audioType: AudioType[] = [
   "audio/wav",
   "audio/aac",
   "audio/x-m4a",
-];
+] as const;
+export type AudioType = (typeof audioType)[number];
 
-export type VideoType = "video/mp4";
-export const videoType: VideoType = "video/mp4";
+export const videoType = "video/mp4" as const;
+export type VideoType = typeof videoType;
 
-export type TabularType = "text/csv";
-export const tabularType: TabularType = "text/csv";
+export const tabularType = "text/csv" as const;
+export type TabularType = typeof tabularType;
 
 export type ExtensionType = ImageType | PDFType | AudioType | VideoType | TabularType;
 export type RuntimePreset = "chat" | "responses";
@@ -62,7 +50,7 @@ export type Model = {
   provider: (model: string) => LanguageModelV3;
   tools: boolean;
   runtimePreset: RuntimePreset;
-  extensions: ExtensionType[];
+  extensions: readonly ExtensionType[];
   cost: number;
   capabilities?: ModelCapabilities;
 };
