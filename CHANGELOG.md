@@ -1,3 +1,13 @@
+# [0.30.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.29.0...v0.30.0) (2026-03-15)
+
+
+### Features
+
+* **gemini:** add 3.1 flash lite and nano banana 2 ([ab4b206](https://github.com/Fyzz-Chat/fyzz-chat/commit/ab4b206b892b023673b02f739cdbb2a3df13271f))
+* **gemini:** add markdown and csv support ([d69c674](https://github.com/Fyzz-Chat/fyzz-chat/commit/d69c6743ee652006ed795318eb87d3aed4611a83))
+* **gemini:** add nano banana pro ([8327296](https://github.com/Fyzz-Chat/fyzz-chat/commit/83272967492b70f3a537e721e12e5a49c81c2f16))
+* **gemini:** add plaintext type to gemini models ([58cffda](https://github.com/Fyzz-Chat/fyzz-chat/commit/58cffda1f39964a0cd5c224c8e43fc1c484760d6))
+
 # [0.29.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.28.0...v0.29.0) (2026-03-14)
 
 
