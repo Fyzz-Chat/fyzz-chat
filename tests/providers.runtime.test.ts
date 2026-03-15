@@ -3,6 +3,7 @@ import type { CustomMetadata, CustomUIMessage } from "../src/types/chat";
 import {
   FIREWORKS_NON_REASONING_MODELS,
   FIREWORKS_REASONING_MODELS,
+  GEMINI_REASONING_MODELS,
   OPENAI_CODE_INTERPRETER_DENYLIST,
   OPENAI_REASONING_MODELS,
   TOOLS_DISABLED_MODELS,
@@ -39,7 +40,11 @@ const CRITICAL_RUNTIME_CASES: {
     supportsTools: true,
   })),
   { modelId: "claude-sonnet-4-6", runtimePreset: "chat", supportsTools: true },
-  { modelId: "gemini-3.1-pro-preview", runtimePreset: "chat", supportsTools: true },
+  ...GEMINI_REASONING_MODELS.map((modelId) => ({
+    modelId,
+    runtimePreset: "chat" as const,
+    supportsTools: true,
+  })),
   ...TOOLS_DISABLED_MODELS.map((modelId) => ({
     modelId,
     runtimePreset: "chat" as const,
@@ -245,16 +250,16 @@ describe("critical model policy: provider options", () => {
       thinking: { type: "enabled", budgetTokens: 5000 },
     });
 
-    expect(
-      getModelRuntime("gemini-3.1-pro-preview", "medium").getProviderOptionsFromHistory(
-        messages
-      ).google
-    ).toEqual({
-      thinkingConfig: {
-        thinkingLevel: "medium",
-        includeThoughts: true,
-      },
-    });
+    for (const modelId of GEMINI_REASONING_MODELS) {
+      expect(
+        getModelRuntime(modelId, "medium").getProviderOptionsFromHistory(messages).google
+      ).toEqual({
+        thinkingConfig: {
+          thinkingLevel: "medium",
+          includeThoughts: true,
+        },
+      });
+    }
 
     for (const modelId of FIREWORKS_REASONING_MODELS) {
       expect(
@@ -322,8 +327,8 @@ describe("critical model policy: tool behavior", () => {
     expect(
       getModelRuntime("claude-sonnet-4-6").getProviderTools(true).web_search
     ).toBeDefined();
-    expect(
-      getModelRuntime("gemini-3.1-pro-preview").getProviderTools(true).google_search
-    ).toBeDefined();
+    for (const modelId of GEMINI_REASONING_MODELS) {
+      expect(getModelRuntime(modelId).getProviderTools(true).google_search).toBeDefined();
+    }
   });
 });

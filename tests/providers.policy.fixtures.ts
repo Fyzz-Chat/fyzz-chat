@@ -26,6 +26,12 @@ export const OPENAI_IMAGE_GENERATION_MODELS = [
 
 export const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
 
+export const GEMINI_REASONING_MODELS = [
+  "gemini-3-flash-preview",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-3.1-pro-preview",
+] as const;
+
 export const FIREWORKS_REASONING_MODELS = [
   "accounts/fireworks/models/deepseek-v3p2",
   "accounts/fireworks/models/kimi-k2p5",
