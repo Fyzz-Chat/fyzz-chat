@@ -32,7 +32,16 @@ export type VideoType = typeof videoType;
 export const tabularType = "text/csv" as const;
 export type TabularType = typeof tabularType;
 
-export type ExtensionType = ImageType | PDFType | AudioType | VideoType | TabularType;
+export const plaintextType = "text/plain" as const;
+export type PlaintextType = typeof plaintextType;
+
+export type ExtensionType =
+  | ImageType
+  | PDFType
+  | AudioType
+  | VideoType
+  | TabularType
+  | PlaintextType;
 export type RuntimePreset = "chat" | "responses";
 export type ReasoningEffort = "low" | "medium" | "high";
 

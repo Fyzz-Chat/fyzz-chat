@@ -30,6 +30,7 @@ const FILE_FIXTURES: Array<{ filename: string; mediaType: string }> = [
   { filename: "test.opus", mediaType: "audio/ogg" },
   { filename: "test.aac", mediaType: "audio/aac" },
   { filename: "test.m4a", mediaType: "audio/x-m4a" },
+  { filename: "test.txt", mediaType: "text/plain" },
 ];
 
 describe.skipIf(!RUN_INTEGRATION)("Chat API - file extensions", () => {
