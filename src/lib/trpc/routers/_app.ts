@@ -3,6 +3,7 @@ import "server-only";
 import { z } from "zod";
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
+import { getApiKeysByUser } from "@/lib/dao/api-keys";
 import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
 import { getProjectMemories } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
@@ -87,6 +88,9 @@ export const appRouter = createTRPCRouter({
   projects: protectedProcedure.query(async () => {
     const projects = await getProjects();
     return { projects };
+  }),
+  apiKeys: protectedProcedure.query(async (opts) => {
+    return getApiKeysByUser(opts.ctx.user.id);
   }),
 });
 // export type definition of API
