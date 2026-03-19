@@ -23,11 +23,12 @@ export async function createApiKey(userId: string, name: string) {
   const hash = await hashKey(rawKey);
   const prefix = rawKey.slice(0, 12);
 
-  await prisma.apiKey.create({
+  const apiKey = await prisma.apiKey.create({
     data: { name, prefix, hash, userId },
+    select: { id: true, createdAt: true },
   });
 
-  return { rawKey, prefix };
+  return { id: apiKey.id, rawKey, prefix, createdAt: apiKey.createdAt };
 }
 
 export async function getApiKeysByUser(userId: string) {

@@ -30,11 +30,11 @@ export function useCreateApiKey() {
     onSuccess: (result, name) => {
       queryClient.setQueryData(trpc.apiKeys.queryKey(), (old: ApiKeysData) => {
         const newKey: ApiKeyItem = {
-          id: crypto.randomUUID(),
+          id: result.id,
           name,
           prefix: result.prefix,
           lastUsedAt: null,
-          createdAt: new Date(),
+          createdAt: result.createdAt,
         };
         return old ? [newKey, ...old] : [newKey];
       });
