@@ -1,3 +1,15 @@
+# [0.31.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.30.0...v0.31.0) (2026-03-19)
+
+
+### Bug Fixes
+
+* **api-keys:** let new keys be deleted ([47e8c19](https://github.com/Fyzz-Chat/fyzz-chat/commit/47e8c19e3de9c0e31ca57830ea3235aa9b886960))
+
+
+### Features
+
+* **api-keys:** implement API key management functionality ([cf579d7](https://github.com/Fyzz-Chat/fyzz-chat/commit/cf579d748662f0e82e6fea72b337fd5c75abb0af))
+
 # [0.30.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.29.0...v0.30.0) (2026-03-15)
 
 
