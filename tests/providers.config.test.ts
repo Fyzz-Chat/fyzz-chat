@@ -65,6 +65,7 @@ const expectedCatalogShape: {
       { id: "claude-sonnet-4-6", runtimePreset: "chat" },
       { id: "claude-opus-4-5", runtimePreset: "chat" },
       { id: "claude-opus-4-6", runtimePreset: "chat" },
+      { id: "claude-opus-4-7", runtimePreset: "chat" },
     ],
   },
   {
