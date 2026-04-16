@@ -1,3 +1,10 @@
+# [0.32.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.31.0...v0.32.0) (2026-04-16)
+
+
+### Features
+
+* update anthropic models, add opus 4.7 ([e0884fb](https://github.com/Fyzz-Chat/fyzz-chat/commit/e0884fb6a4432d1876b1f63bfe810c0c36bd8416))
+
 # [0.31.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.30.0...v0.31.0) (2026-03-19)
 
 
