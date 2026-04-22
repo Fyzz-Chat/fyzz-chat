@@ -1,3 +1,11 @@
+## [0.32.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.32.0...v0.32.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* set meta title for conversations to chat title ([37e90e8](https://github.com/Fyzz-Chat/fyzz-chat/commit/37e90e8a956ae1fdddf53c27a5a79992c9aa75c1))
+* **title:** limit model input to 2000 chars or 4 messages ([c6652a9](https://github.com/Fyzz-Chat/fyzz-chat/commit/c6652a9d40fba551e6f0ae756e558bac0bba59b8))
+
 # [0.32.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.31.0...v0.32.0) (2026-04-16)
 
 
