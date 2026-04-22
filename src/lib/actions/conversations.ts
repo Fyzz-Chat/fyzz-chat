@@ -61,6 +61,25 @@ async function saveConversationTitle(conversationId: string, title: string) {
   return updatedConversation;
 }
 
+const TITLER_MAX_MESSAGES = 4;
+const TITLER_MAX_CHARS = 2000;
+
+function truncateMessagesForTitler(messages: CustomUIMessage[]): CustomUIMessage[] {
+  let remaining = TITLER_MAX_CHARS;
+  return messages.slice(0, TITLER_MAX_MESSAGES).map((message) => {
+    const parts: CustomUIMessage["parts"] = [];
+    for (const part of message.parts) {
+      if (remaining <= 0) break;
+      if (part.type === "text" && typeof part.text === "string") {
+        const text = part.text.slice(0, remaining);
+        remaining -= text.length;
+        parts.push({ ...part, text });
+      }
+    }
+    return { ...message, parts };
+  });
+}
+
 export async function updateConversationTitle(
   conversationId: string,
   messages: CustomUIMessage[]
@@ -70,8 +89,8 @@ export async function updateConversationTitle(
   const { text } = await generateText({
     model,
     system:
-      "Your job is to generate a title for a conversation based on the messages. The title should never be longer than 3 words. Only return the title, no other text.",
-    messages: await convertToModelMessages(messages),
+      "Your job is to generate a title for a conversation based on the messages. The title must always be exactly 4 words. Only return the title, no other text.",
+    messages: await convertToModelMessages(truncateMessagesForTitler(messages)),
   });
 
   const updatedConversation = await saveConversationTitle(conversationId, text);
