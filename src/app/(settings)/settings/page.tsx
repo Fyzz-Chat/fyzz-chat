@@ -2,10 +2,10 @@ import {
   ArrowLeft,
   Brain,
   Key,
+  LightbulbIcon,
   Monitor,
   Puzzle,
   Shield,
-  Sparkles,
   User,
 } from "lucide-react";
 import { FastLink } from "@/components/fast-link";
@@ -125,7 +125,7 @@ export default async function SettingsPage() {
                   value="skills"
                   className="flex min-w-20 items-center justify-center px-3 py-2"
                 >
-                  <Sparkles className="mr-2 h-4 w-4" />
+                  <LightbulbIcon className="mr-2 h-4 w-4" />
                   Skills
                 </TabsTrigger>
               </TabsList>

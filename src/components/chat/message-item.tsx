@@ -20,6 +20,7 @@ import {
 } from "@/components/ai-elements/reasoning";
 import {
   OpenAICodeInterpreterOutput,
+  SkillToolHeader,
   Tool,
   ToolContent,
   ToolHeader,
@@ -193,6 +194,33 @@ function MessageItem({
                 <ToolContent>
                   <ToolInput input={part.input} />
                   <ToolOutput output={""} errorText={part.errorText} />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "tool-activate_skill": {
+            const output = part.output as
+              | { success?: boolean; name?: string; content?: string; error?: string }
+              | undefined;
+            const input = part.input as { id?: string } | undefined;
+            const body =
+              output?.success && output.content ? (
+                <pre className="whitespace-pre-wrap rounded-md bg-muted px-3 py-2 text-xs">
+                  {output.content}
+                </pre>
+              ) : (
+                ""
+              );
+            return (
+              <Tool key={`${message.id}-tool-activate_skill-${i}`}>
+                <SkillToolHeader
+                  state={part.state}
+                  skillName={output?.name}
+                  skillId={input?.id}
+                />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                  <ToolOutput output={body} errorText={part.errorText ?? output?.error} />
                 </ToolContent>
               </Tool>
             );

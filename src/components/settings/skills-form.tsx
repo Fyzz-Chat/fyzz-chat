@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
+import { LightbulbIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -125,7 +125,7 @@ export default function SkillsForm({
 
       {skills.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-md border border-dashed py-10 text-center">
-          <Sparkles className="h-6 w-6 text-muted-foreground" />
+          <LightbulbIcon className="h-6 w-6 text-muted-foreground" />
           <p className="text-muted-foreground text-sm">No skills yet.</p>
         </div>
       ) : (
