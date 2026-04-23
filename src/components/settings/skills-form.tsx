@@ -1,6 +1,6 @@
 "use client";
 
-import { LightbulbIcon, Pencil, Plus, Trash2 } from "lucide-react";
+import { Check, Copy, LightbulbIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -26,6 +26,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   useCreateSkill,
   useDeleteSkill,
@@ -60,6 +66,14 @@ type ParsedSkillPaste = {
   description?: string;
   content: string;
 };
+
+function buildSkillMarkdown(skill: {
+  name: string;
+  description: string;
+  content: string;
+}): string {
+  return `---\nname: ${skill.name}\ndescription: ${skill.description}\n---\n\n${skill.content}\n`;
+}
 
 function parseSkillPaste(raw: string): ParsedSkillPaste | null {
   const match = raw.match(FRONTMATTER_RE);
@@ -101,6 +115,7 @@ export default function SkillsForm({
   const [skillsEnabled, setSkillsEnabled] = useState(initialSkillsEnabled);
   const [dialogSkill, setDialogSkill] = useState<SkillItem | null | "new">(null);
   const [skillToDelete, setSkillToDelete] = useState<SkillItem | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   function handleToggleFeature(enabled: boolean) {
     setSkillsEnabled(enabled);
@@ -119,6 +134,18 @@ export default function SkillsForm({
         onError: () => toast.error("Failed to update skill"),
       }
     );
+  }
+
+  async function handleCopy(skill: SkillItem) {
+    try {
+      await navigator.clipboard.writeText(buildSkillMarkdown(skill));
+      setCopiedId(skill.id);
+      setTimeout(() => {
+        setCopiedId((current) => (current === skill.id ? null : current));
+      }, 1500);
+    } catch {
+      toast.error("Failed to copy skill");
+    }
   }
 
   function handleDeleteConfirmed() {
@@ -190,6 +217,27 @@ export default function SkillsForm({
                   onCheckedChange={(v) => handleToggleSkill(skill, v)}
                   aria-label={`Toggle ${skill.name}`}
                 />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleCopy(skill)}
+                        aria-label={`Copy ${skill.name} as SKILL.md`}
+                      >
+                        {copiedId === skill.id ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{copiedId === skill.id ? "Copied!" : "Copy as SKILL.md"}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <Button
                   variant="ghost"
                   size="icon"
