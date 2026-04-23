@@ -4,6 +4,8 @@ import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
 import { getSkillPrompt } from "@/lib/backend/prompts/skill-prompt";
 import { createMemoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
+import { createActivateSkillTool } from "@/lib/backend/tools/skills";
+import { countEnabledUserSkills } from "@/lib/dao/skills";
 import type { SessionUser } from "@/lib/dao/users";
 import { getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import type { ModelRuntime } from "@/types/provider";
@@ -20,6 +22,13 @@ export async function buildToolsForRuntime(
 
   if (user.memoryEnabled) {
     tools.memory = createMemoryTool(user.id, projectId);
+  }
+
+  if (user.skillsEnabled) {
+    const skillCount = await countEnabledUserSkills(user.id);
+    if (skillCount > 0) {
+      tools.activate_skill = createActivateSkillTool(user.id);
+    }
   }
 
   if (search) {
