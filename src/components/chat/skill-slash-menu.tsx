@@ -1,6 +1,8 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { SparklesIcon } from "lucide-react";
+import { useParams, usePathname } from "next/navigation";
 import { type KeyboardEvent, type ReactNode, useEffect, useMemo, useState } from "react";
 import { usePromptInputController } from "@/components/ai-elements/prompt-input";
 import {
@@ -11,7 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
-import { useSkills } from "@/lib/queries/skills";
+import { useTRPC } from "@/lib/trpc/client";
 
 const SLASH_RE = /(?:^|\s)\/([a-z0-9-]*)$/;
 
@@ -27,7 +29,21 @@ export function SkillSlashMenu({
   supportsTools,
 }: SkillSlashMenuProps) {
   const { textInput } = usePromptInputController();
-  const { data: skills = [] } = useSkills();
+
+  const trpc = useTRPC();
+  const pathname = usePathname();
+  const params = useParams();
+  const pathId = typeof params.id === "string" ? params.id : undefined;
+  const projectIdFromPath = pathname.startsWith("/projects/") ? pathId : undefined;
+  const conversationIdFromPath = pathname.startsWith("/chat/") ? pathId : undefined;
+
+  const { data: skills = [] } = useQuery({
+    ...trpc.skillsInScope.queryOptions({
+      conversationId: conversationIdFromPath,
+      projectId: projectIdFromPath,
+    }),
+    enabled: skillsEnabled && supportsTools,
+  });
 
   const slug = useMemo(() => {
     if (!skillsEnabled || !supportsTools) return null;
@@ -37,9 +53,8 @@ export function SkillSlashMenu({
 
   const matches = useMemo(() => {
     if (slug === null) return [];
-    const enabled = skills.filter((s) => s.enabled);
-    if (slug === "") return enabled;
-    return enabled.filter((s) => s.name.includes(slug));
+    if (slug === "") return skills;
+    return skills.filter((s) => s.name.includes(slug));
   }, [skills, slug]);
 
   const open = slug !== null && matches.length > 0;

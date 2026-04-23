@@ -37,6 +37,14 @@ export async function getConversation(id: string) {
   return conversation;
 }
 
+export async function getConversationProjectId(id: string, userId: string) {
+  const conversation = await prisma.conversation.findUnique({
+    where: { id, userId },
+    select: { projectId: true },
+  });
+  return conversation?.projectId ?? null;
+}
+
 const conversationSelect = {
   id: true,
   userId: true,

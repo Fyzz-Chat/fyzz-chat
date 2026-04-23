@@ -4,7 +4,11 @@ import { z } from "zod";
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
-import { getConversation, getConversationsByCursor } from "@/lib/dao/conversations";
+import {
+  getConversation,
+  getConversationProjectId,
+  getConversationsByCursor,
+} from "@/lib/dao/conversations";
 import { getProjectMemories } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
@@ -12,6 +16,8 @@ import { getSharesByConversationId } from "@/lib/dao/shares";
 import {
   getAllProjectSkillsForSettings,
   getAllUserSkillsForSettings,
+  getProjectSkills,
+  getUserSkills,
 } from "@/lib/dao/skills";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
@@ -109,6 +115,31 @@ export const appRouter = createTRPCRouter({
     .input(z.object({ projectId: z.string() }))
     .query(async (opts) => {
       return getAllProjectSkillsForSettings(opts.input.projectId);
+    }),
+  skillsInScope: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string().optional(),
+        projectId: z.string().optional(),
+      })
+    )
+    .query(async (opts) => {
+      const userId = opts.ctx.user.id;
+      const { conversationId, projectId: explicitProjectId } = opts.input;
+      const projectId =
+        explicitProjectId ??
+        (conversationId
+          ? ((await getConversationProjectId(conversationId, userId)) ?? undefined)
+          : undefined);
+
+      const [userSkills, projectSkillList] = await Promise.all([
+        getUserSkills(userId),
+        projectId ? getProjectSkills(projectId) : Promise.resolve([]),
+      ]);
+      const byId = new Map<string, (typeof userSkills)[number]>();
+      for (const s of userSkills) byId.set(s.id, s);
+      for (const s of projectSkillList) byId.set(s.id, s);
+      return Array.from(byId.values());
     }),
 });
 // export type definition of API
