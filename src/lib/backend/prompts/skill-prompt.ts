@@ -1,7 +1,14 @@
-import { getUserSkills } from "@/lib/dao/skills";
+import { getProjectSkills, getUserSkills } from "@/lib/dao/skills";
 
-export async function getSkillPrompt(userId: string): Promise<string> {
-  const skills = await getUserSkills(userId);
+export async function getSkillPrompt(
+  userId: string,
+  projectId?: string
+): Promise<string> {
+  const [userSkills, projectSkills] = await Promise.all([
+    getUserSkills(userId),
+    projectId ? getProjectSkills(projectId) : Promise.resolve([]),
+  ]);
+  const skills = [...userSkills, ...projectSkills];
   if (skills.length === 0) return "";
 
   const formatted = skills

@@ -5,7 +5,7 @@ import { getSkillPrompt } from "@/lib/backend/prompts/skill-prompt";
 import { createMemoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
 import { createActivateSkillTool } from "@/lib/backend/tools/skills";
-import { countEnabledUserSkills } from "@/lib/dao/skills";
+import { countEnabledSkillsInScope } from "@/lib/dao/skills";
 import type { SessionUser } from "@/lib/dao/users";
 import { getMcpClients, getMcpTools } from "@/lib/services/mcp";
 import type { ModelRuntime } from "@/types/provider";
@@ -25,7 +25,7 @@ export async function buildToolsForRuntime(
   }
 
   if (user.skillsEnabled) {
-    const skillCount = await countEnabledUserSkills(user.id);
+    const skillCount = await countEnabledSkillsInScope(user.id, projectId);
     if (skillCount > 0) {
       tools.activate_skill = createActivateSkillTool(user.id);
     }
@@ -64,6 +64,6 @@ export async function buildSystemPrompt({
 }) {
   const memoryPrompt =
     memoryEnabled && !temporaryChat ? await getMemoryPrompt(userId, projectId) : "";
-  const skillPrompt = skillsEnabled ? await getSkillPrompt(userId) : "";
+  const skillPrompt = skillsEnabled ? await getSkillPrompt(userId, projectId) : "";
   return `${baseSystemPrompt}${memoryPrompt}${skillPrompt}`;
 }

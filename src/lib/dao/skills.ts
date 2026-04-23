@@ -48,9 +48,25 @@ export async function getUserSkills(userId: string) {
   });
 }
 
+export async function getProjectSkills(projectId: string) {
+  return prisma.skill.findMany({
+    where: { projectId, enabled: true },
+    orderBy: [{ lastActivatedAt: { sort: "desc", nulls: "last" } }, { name: "asc" }],
+    take: FRONTMATTER_SOFT_CAP,
+    select: skillPromptSelect,
+  });
+}
+
 export async function getAllUserSkillsForSettings(userId: string) {
   return prisma.skill.findMany({
     where: { userId, projectId: null },
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function getAllProjectSkillsForSettings(projectId: string) {
+  return prisma.skill.findMany({
+    where: { projectId },
     orderBy: { name: "asc" },
   });
 }
@@ -61,9 +77,12 @@ export async function getSkillById(id: string, userId: string) {
   });
 }
 
-export async function countEnabledUserSkills(userId: string) {
+export async function countEnabledSkillsInScope(userId: string, projectId?: string) {
   return prisma.skill.count({
-    where: { userId, projectId: null, enabled: true },
+    where: {
+      enabled: true,
+      OR: [{ userId, projectId: null }, ...(projectId ? [{ projectId }] : [])],
+    },
   });
 }
 
