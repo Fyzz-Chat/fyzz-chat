@@ -1,3 +1,11 @@
+# [0.34.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.33.0...v0.34.0) (2026-04-23)
+
+
+### Features
+
+* **chat:** integrate SkillSlashMenu for skill command input ([619e443](https://github.com/Fyzz-Chat/fyzz-chat/commit/619e44328b0241666f3b74b14915494de822d2a0))
+* **skills:** enhance SkillSlashMenu with project skills ([aecf512](https://github.com/Fyzz-Chat/fyzz-chat/commit/aecf5123805eb1e7d6349c2acd741388d72e9963))
+
 # [0.33.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.32.1...v0.33.0) (2026-04-23)
 
 
