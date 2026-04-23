@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { CheckIcon } from "lucide-react";
 import { type ChangeEvent, useCallback, useContext, useMemo, useState } from "react";
 import {
@@ -30,9 +31,11 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import ChatSettingsMenu from "@/components/chat/chat-settings-menu";
+import { SkillSlashMenu } from "@/components/chat/skill-slash-menu";
 import { useSession } from "@/lib/auth-client";
 import { AuthContext } from "@/lib/contexts/auth-context";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
+import { useTRPC } from "@/lib/trpc/client";
 import { debounce, INPUT_STORAGE_KEY } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useUIStore } from "@/stores/ui-store";
@@ -72,6 +75,11 @@ export default function ChatInput() {
       selectedModelData?.features?.some((feature) => feature.icon === "brain") ?? false,
     [selectedModelData]
   );
+  const supportsTools = selectedModelData?.tools ?? false;
+
+  const trpc = useTRPC();
+  const { data: featureFlags } = useQuery(trpc.userFeatureFlags.queryOptions());
+  const skillsEnabled = featureFlags?.skillsEnabled ?? false;
 
   const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     persistInput(e.currentTarget.value);
@@ -106,73 +114,81 @@ export default function ChatInput() {
   return (
     <PromptInputProvider initialInput={initialInput}>
       <ChatLayoutWrapper className="bg-background">
-        <PromptInput
-          globalDrop
-          multiple
-          blocked={["streaming", "submitted"].includes(status)}
-          onSubmit={handleSubmit}
-          accept={model?.extensions?.join(",")}
-          maxFileSize={1024 * 1024 * 20}
-        >
-          <PromptInputAttachments>
-            {(attachment) => (
-              <PromptInputAttachment data={attachment} isUploading={areFilesUploading} />
-            )}
-          </PromptInputAttachments>
-          <PromptInputBody>
-            <PromptInputTextarea
-              placeholder="Type a message to start..."
-              onChange={handleInputChange}
-            />
-          </PromptInputBody>
-          <PromptInputFooter className="space-x-1">
-            <PromptInputTools className="flex w-full items-center">
-              <ChatSettingsMenu
-                supportsAttachments={0 < (model.extensions?.length || 0)}
-                supportsReasoning={supportsReasoning}
+        <SkillSlashMenu skillsEnabled={skillsEnabled} supportsTools={supportsTools}>
+          <PromptInput
+            globalDrop
+            multiple
+            blocked={["streaming", "submitted"].includes(status)}
+            onSubmit={handleSubmit}
+            accept={model?.extensions?.join(",")}
+            maxFileSize={1024 * 1024 * 20}
+          >
+            <PromptInputAttachments>
+              {(attachment) => (
+                <PromptInputAttachment
+                  data={attachment}
+                  isUploading={areFilesUploading}
+                />
+              )}
+            </PromptInputAttachments>
+            <PromptInputBody>
+              <PromptInputTextarea
+                placeholder="Type a message to start..."
+                onChange={handleInputChange}
               />
-              <ModelSelector onOpenChange={setModelSelectorOpen} open={modelSelectorOpen}>
-                <ModelSelectorTrigger asChild>
-                  <PromptInputButton>
-                    {modelProvider?.id && (
-                      <ModelSelectorLogo provider={modelProvider.id} />
-                    )}
-                    {selectedModelData?.name && (
-                      <ModelSelectorName>{selectedModelData.name}</ModelSelectorName>
-                    )}
-                  </PromptInputButton>
-                </ModelSelectorTrigger>
-                <ModelSelectorContent>
-                  <ModelSelectorInput placeholder="Search models..." />
-                  <ModelSelectorList>
-                    <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
-                    {providers.map((provider) => (
-                      <ModelSelectorGroup heading={provider.name} key={provider.id}>
-                        {provider.models.map((providerModel) => (
-                          <ModelSelectorItem
-                            key={providerModel.id}
-                            onSelect={() => handleModelSelect(providerModel.id)}
-                            value={providerModel.id}
-                          >
-                            <ModelSelectorLogo provider={provider.id} />
-                            <ModelSelectorName>{providerModel.name}</ModelSelectorName>
-                            <ModelSelectorFeatures features={providerModel.features} />
-                            {model.id === providerModel.id ? (
-                              <CheckIcon className="ml-auto size-4" />
-                            ) : (
-                              <div className="ml-auto size-4" />
-                            )}
-                          </ModelSelectorItem>
-                        ))}
-                      </ModelSelectorGroup>
-                    ))}
-                  </ModelSelectorList>
-                </ModelSelectorContent>
-              </ModelSelector>
-            </PromptInputTools>
-            <PromptInputSubmit status={status} onClick={handleStop} />
-          </PromptInputFooter>
-        </PromptInput>
+            </PromptInputBody>
+            <PromptInputFooter className="space-x-1">
+              <PromptInputTools className="flex w-full items-center">
+                <ChatSettingsMenu
+                  supportsAttachments={0 < (model.extensions?.length || 0)}
+                  supportsReasoning={supportsReasoning}
+                />
+                <ModelSelector
+                  onOpenChange={setModelSelectorOpen}
+                  open={modelSelectorOpen}
+                >
+                  <ModelSelectorTrigger asChild>
+                    <PromptInputButton>
+                      {modelProvider?.id && (
+                        <ModelSelectorLogo provider={modelProvider.id} />
+                      )}
+                      {selectedModelData?.name && (
+                        <ModelSelectorName>{selectedModelData.name}</ModelSelectorName>
+                      )}
+                    </PromptInputButton>
+                  </ModelSelectorTrigger>
+                  <ModelSelectorContent>
+                    <ModelSelectorInput placeholder="Search models..." />
+                    <ModelSelectorList>
+                      <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+                      {providers.map((provider) => (
+                        <ModelSelectorGroup heading={provider.name} key={provider.id}>
+                          {provider.models.map((providerModel) => (
+                            <ModelSelectorItem
+                              key={providerModel.id}
+                              onSelect={() => handleModelSelect(providerModel.id)}
+                              value={providerModel.id}
+                            >
+                              <ModelSelectorLogo provider={provider.id} />
+                              <ModelSelectorName>{providerModel.name}</ModelSelectorName>
+                              <ModelSelectorFeatures features={providerModel.features} />
+                              {model.id === providerModel.id ? (
+                                <CheckIcon className="ml-auto size-4" />
+                              ) : (
+                                <div className="ml-auto size-4" />
+                              )}
+                            </ModelSelectorItem>
+                          ))}
+                        </ModelSelectorGroup>
+                      ))}
+                    </ModelSelectorList>
+                  </ModelSelectorContent>
+                </ModelSelector>
+              </PromptInputTools>
+              <PromptInputSubmit status={status} onClick={handleStop} />
+            </PromptInputFooter>
+          </PromptInput>
+        </SkillSlashMenu>
       </ChatLayoutWrapper>
     </PromptInputProvider>
   );

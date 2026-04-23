@@ -23,6 +23,12 @@ export const appRouter = createTRPCRouter({
   defaultModel: protectedProcedure.query(async (opts) => {
     return opts.ctx.user.defaultModel;
   }),
+  userFeatureFlags: protectedProcedure.query(async (opts) => {
+    return {
+      memoryEnabled: opts.ctx.user.memoryEnabled,
+      skillsEnabled: opts.ctx.user.skillsEnabled,
+    };
+  }),
   messages: protectedProcedure
     .input(
       z.object({
