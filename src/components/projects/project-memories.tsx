@@ -20,6 +20,7 @@ export function ProjectMemories({ projectId, initialMemories }: ProjectMemoriesP
   const { data: memories } = useQuery({
     ...trpc.projectMemories.queryOptions({ projectId }),
     initialData: initialMemories,
+    refetchOnMount: "always",
   });
 
   function onDelete(memoryId: string) {

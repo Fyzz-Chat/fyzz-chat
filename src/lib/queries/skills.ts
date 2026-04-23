@@ -111,6 +111,7 @@ export function useProjectSkills(projectId: string, initialData?: SkillItem[]) {
   return useQuery({
     ...trpc.projectSkills.queryOptions({ projectId }),
     initialData,
+    refetchOnMount: "always",
   });
 }
 
