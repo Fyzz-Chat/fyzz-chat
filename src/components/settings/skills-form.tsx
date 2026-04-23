@@ -48,10 +48,41 @@ type SkillItem = {
 };
 
 const KEBAB_CASE_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
 
 function formatLastActivated(date: Date | null): string {
   if (!date) return "Never used";
   return `Last used ${new Date(date).toLocaleDateString()}`;
+}
+
+type ParsedSkillPaste = {
+  name?: string;
+  description?: string;
+  content: string;
+};
+
+function parseSkillPaste(raw: string): ParsedSkillPaste | null {
+  const match = raw.match(FRONTMATTER_RE);
+  if (!match) return null;
+  const [, yamlBlock, body] = match;
+
+  const fields: Record<string, string> = {};
+  for (const line of yamlBlock.split(/\r?\n/)) {
+    const colon = line.indexOf(":");
+    if (colon === -1) continue;
+    const key = line.slice(0, colon).trim();
+    const value = line
+      .slice(colon + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
+    if (key) fields[key] = value;
+  }
+
+  return {
+    name: fields.name,
+    description: fields.description,
+    content: body.trim(),
+  };
 }
 
 export default function SkillsForm({
@@ -248,6 +279,26 @@ function SkillDialog({
   const [content, setContent] = useState(skill?.content ?? "");
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [pasteNotice, setPasteNotice] = useState<string | null>(null);
+
+  function handleFrontmatterPaste(event: React.ClipboardEvent) {
+    const pasted = event.clipboardData.getData("text");
+    const parsed = parseSkillPaste(pasted);
+    if (!parsed) return;
+    event.preventDefault();
+    const filled: string[] = [];
+    if (parsed.name) {
+      setName(parsed.name);
+      filled.push("name");
+    }
+    if (parsed.description) {
+      setDescription(parsed.description);
+      filled.push("description");
+    }
+    setContent(parsed.content);
+    filled.push("instructions");
+    setPasteNotice(`Parsed frontmatter: populated ${filled.join(", ")}.`);
+  }
 
   const trimmedName = name.trim();
   const nameInvalid = trimmedName.length > 0 && !KEBAB_CASE_RE.test(trimmedName);
@@ -285,7 +336,8 @@ function SkillDialog({
           <DialogTitle>{skill ? "Edit skill" : "New skill"}</DialogTitle>
           <DialogDescription>
             Define a reusable instruction set the AI will activate when your request
-            matches the description.
+            matches the description. You can also paste a full SKILL.md (YAML frontmatter
+            + body) into any field and we'll split it across the inputs.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
@@ -295,6 +347,7 @@ function SkillDialog({
               id="skill-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onPaste={handleFrontmatterPaste}
               placeholder="code-reviewer"
               autoFocus
               className="font-mono"
@@ -312,6 +365,7 @@ function SkillDialog({
               id="skill-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              onPaste={handleFrontmatterPaste}
               placeholder="Use when the user asks to review code."
             />
             <p className="text-muted-foreground text-xs">
@@ -324,11 +378,17 @@ function SkillDialog({
               id="skill-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onPaste={handleFrontmatterPaste}
               rows={8}
               className="resize-none font-mono text-sm"
               placeholder="The full instructions the AI should follow when this skill is activated."
             />
+            <p className="text-muted-foreground text-xs">
+              Skills are standalone — external file or script references (e.g.{" "}
+              <code>./tools/x.ts</code>) aren't fetched or executed.
+            </p>
           </div>
+          {pasteNotice && <p className="text-muted-foreground text-xs">{pasteNotice}</p>}
           {serverError && <p className="text-destructive text-sm">{serverError}</p>}
         </div>
         <DialogFooter>
