@@ -38,6 +38,7 @@ model User {
   projects      Project[]
   memories      Memory[]
   skills        Skill[]
+  ratings       Rating[]
   apiKeys       ApiKey[]
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
@@ -107,6 +108,7 @@ model Message {
   conversationId     String       @map("conversation_id")
   conversation       Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   shares             Share[]
+  ratings            Rating[]
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
 
@@ -136,6 +138,21 @@ model Share {
   @@index([conversationId])
   @@index([messageId])
   @@map("shares")
+}
+
+model Rating {
+  id             String   @id @default(uuid())
+  value          Int
+  messageId      String   @map("message_id")
+  message        Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  conversationId String   @map("conversation_id")
+  userId         String   @map("user_id")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@unique([messageId])
+  @@index([userId, createdAt])
+  @@map("ratings")
 }
 
 enum MemoryType {
