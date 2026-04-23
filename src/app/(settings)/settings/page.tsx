@@ -1,4 +1,13 @@
-import { ArrowLeft, Brain, Key, Monitor, Puzzle, Shield, User } from "lucide-react";
+import {
+  ArrowLeft,
+  Brain,
+  Key,
+  Monitor,
+  Puzzle,
+  Shield,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { FastLink } from "@/components/fast-link";
 import { ApiKeysTab } from "@/components/settings/api-keys-tab";
 import DeleteAccountForm from "@/components/settings/delete-account-form";
@@ -6,6 +15,7 @@ import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
 import { McpTab } from "@/components/settings/mcp-tab";
 import MemoryForm from "@/components/settings/memory-form";
 import PasswordForm from "@/components/settings/password-form";
+import SkillsForm from "@/components/settings/skills-form";
 import {
   Card,
   CardContent,
@@ -20,6 +30,7 @@ import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
 import { getUserMemories } from "@/lib/dao/memories";
+import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 
@@ -32,6 +43,7 @@ export default async function SettingsPage() {
     },
     select: {
       memoryEnabled: true,
+      skillsEnabled: true,
       mcpServers: true,
       defaultModel: true,
       accounts: {
@@ -43,6 +55,7 @@ export default async function SettingsPage() {
   });
   const memories = await getUserMemories(userId);
   const apiKeys = await getApiKeysByUser(userId);
+  const skills = await getAllUserSkillsForSettings(userId);
   const providers = getProvidersPublic();
   const hasPassword = user?.accounts?.some((account) => account.password);
 
@@ -56,7 +69,7 @@ export default async function SettingsPage() {
           <ArrowLeft size={20} />
           <p className="text-muted-foreground text-sm">Back to chat</p>
         </FastLink>
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <div className="flex flex-col gap-2">
             <h1 className="font-bold text-2xl">{translations.settings.title}</h1>
             <p className="text-muted-foreground text-sm">
@@ -65,7 +78,7 @@ export default async function SettingsPage() {
           </div>
           <Tabs defaultValue="memory" className="w-full pb-5">
             <div className="overflow-x-auto md:overflow-x-visible">
-              <TabsList className="grid h-auto w-full grid-cols-3 px-1 md:grid-cols-6 md:gap-0">
+              <TabsList className="grid h-auto w-full grid-cols-3 px-1 md:grid-cols-7 md:gap-0">
                 <TabsTrigger
                   value="memory"
                   className="flex min-w-20 items-center justify-center px-3 py-2"
@@ -107,6 +120,13 @@ export default async function SettingsPage() {
                 >
                   <Puzzle className="mr-2 h-4 w-4" />
                   MCP
+                </TabsTrigger>
+                <TabsTrigger
+                  value="skills"
+                  className="flex min-w-20 items-center justify-center px-3 py-2"
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Skills
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -164,6 +184,22 @@ export default async function SettingsPage() {
             </TabsContent>
             <TabsContent value="mcp">
               <McpTab userMcpServers={user?.mcpServers} />
+            </TabsContent>
+            <TabsContent value="skills">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skills</CardTitle>
+                  <CardDescription>
+                    Reusable instruction sets the AI activates based on your request.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SkillsForm
+                    initialSkills={skills}
+                    initialSkillsEnabled={user?.skillsEnabled ?? false}
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
