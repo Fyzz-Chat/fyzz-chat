@@ -30,6 +30,7 @@ import {
 } from "@/components/ai-elements/tool";
 import MessageBranchAction from "@/components/chat/message-branch-action";
 import MessageCopyAction from "@/components/chat/message-copy-action";
+import MessageRating from "@/components/chat/message-rating";
 import MessageRegenerateAction from "@/components/chat/message-regenerate-action";
 import MessageShareAction from "@/components/chat/message-share-action";
 import ImageFilePart from "@/components/message/parts/image-file-part";
@@ -333,6 +334,7 @@ function MessageItem({
               share={share}
             />
             <MessageBranchAction conversationId={conversationId} messageId={message.id} />
+            <MessageRating conversationId={conversationId} messageId={message.id} />
           </MessageActions>
           <p className="mr-auto text-muted-foreground text-xs">{model?.name}</p>
         </MessageToolbar>
