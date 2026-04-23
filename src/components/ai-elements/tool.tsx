@@ -2,7 +2,7 @@
 
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import type { ToolUIPart } from "ai";
-import { ChevronDownIcon, LightbulbIcon, WrenchIcon } from "lucide-react";
+import { BrainIcon, ChevronDownIcon, LightbulbIcon, WrenchIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useMemo } from "react";
 import { CodeBlock } from "@/components/ai-elements/code-block";
@@ -131,6 +131,64 @@ export const SkillToolHeader = memo(
           <div className="flex items-center gap-2">
             <LightbulbIcon size={16} />
             <p>{label ? `Skill: ${label}` : "Activated skill"}</p>
+          </div>
+        )}
+        <ChevronDownIcon
+          className={cn(
+            "size-4 text-muted-foreground opacity-0 transition-all group-hover/tool:opacity-100",
+            isOpen ? "rotate-0 opacity-100" : "-rotate-90"
+          )}
+        />
+      </CollapsibleTrigger>
+    );
+  }
+);
+
+const MEMORY_TOOL_LABELS: Record<string, { running: string; done: string }> = {
+  "tool-store_fact": { running: "Remembering a fact", done: "Remembered a fact" },
+  "tool-store_opinion": { running: "Forming an opinion", done: "Formed an opinion" },
+  "tool-store_learning": {
+    running: "Capturing a learning",
+    done: "Captured a learning",
+  },
+  "tool-store_feedback": { running: "Noting feedback", done: "Noted feedback" },
+  "tool-update_opinion": {
+    running: "Updating an opinion",
+    done: "Updated an opinion",
+  },
+  "tool-delete_memory": { running: "Removing a memory", done: "Removed a memory" },
+};
+
+export type MemoryToolHeaderProps = {
+  type: ToolUIPart["type"];
+  state: ToolUIPart["state"];
+  className?: string;
+};
+
+export const MemoryToolHeader = memo(
+  ({ className, type, state }: MemoryToolHeaderProps) => {
+    const { isOpen } = useTool();
+    const labels = MEMORY_TOOL_LABELS[type] ?? {
+      running: "Using memory tool",
+      done: "Used memory tool",
+    };
+    const isRunning = state === "input-streaming" || state === "input-available";
+
+    return (
+      <CollapsibleTrigger
+        className={cn(
+          "group/tool flex items-center gap-2 text-muted-foreground text-sm",
+          className
+        )}
+      >
+        {isRunning ? (
+          <p className="animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
+            <ShiningText>{labels.running}...</ShiningText>
+          </p>
+        ) : (
+          <div className="flex items-center gap-2">
+            <BrainIcon size={16} />
+            <p>{labels.done}</p>
           </div>
         )}
         <ChevronDownIcon

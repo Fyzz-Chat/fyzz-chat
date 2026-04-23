@@ -29,9 +29,10 @@ import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
-import { getUserMemories } from "@/lib/dao/memories";
+import { getMemoriesByType } from "@/lib/dao/memories";
 import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
 import { getUserIdFromSession } from "@/lib/dao/users";
+import { MemoryType } from "@/lib/prisma/generated/client";
 import prisma from "@/lib/prisma/prisma";
 
 export default async function SettingsPage() {
@@ -53,7 +54,7 @@ export default async function SettingsPage() {
       },
     },
   });
-  const memories = await getUserMemories(userId);
+  const memories = await getMemoriesByType(userId, MemoryType.fact);
   const apiKeys = await getApiKeysByUser(userId);
   const skills = await getAllUserSkillsForSettings(userId);
   const providers = getProvidersPublic();

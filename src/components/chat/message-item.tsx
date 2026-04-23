@@ -19,6 +19,7 @@ import {
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
 import {
+  MemoryToolHeader,
   OpenAICodeInterpreterOutput,
   SkillToolHeader,
   Tool,
@@ -191,6 +192,22 @@ function MessageItem({
             return (
               <Tool key={`${message.id}-tool-memory-${i}`}>
                 <ToolHeader type="tool-memory" state={part.state} />
+                <ToolContent>
+                  <ToolInput input={part.input} />
+                  <ToolOutput output={""} errorText={part.errorText} />
+                </ToolContent>
+              </Tool>
+            );
+          }
+          case "tool-store_fact":
+          case "tool-store_opinion":
+          case "tool-store_learning":
+          case "tool-store_feedback":
+          case "tool-update_opinion":
+          case "tool-delete_memory": {
+            return (
+              <Tool key={`${message.id}-${part.type}-${i}`}>
+                <MemoryToolHeader type={part.type} state={part.state} />
                 <ToolContent>
                   <ToolInput input={part.input} />
                   <ToolOutput output={""} errorText={part.errorText} />

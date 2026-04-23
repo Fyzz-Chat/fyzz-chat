@@ -1,8 +1,8 @@
 import type { MCPClient } from "@ai-sdk/mcp";
 import type { Tool } from "ai";
-import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
+import { getAgentMemoryPrompt } from "@/lib/backend/prompts/agent-memory-prompt";
 import { getSkillPrompt } from "@/lib/backend/prompts/skill-prompt";
-import { createMemoryTool } from "@/lib/backend/tools/memory";
+import { createAgentMemoryTools } from "@/lib/backend/tools/agent-memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
 import { createActivateSkillTool } from "@/lib/backend/tools/skills";
 import { countEnabledSkillsInScope } from "@/lib/dao/skills";
@@ -21,7 +21,7 @@ export async function buildToolsForRuntime(
   const tools: { [key: string]: Tool } = {};
 
   if (user.memoryEnabled) {
-    tools.memory = createMemoryTool(user.id, projectId);
+    Object.assign(tools, createAgentMemoryTools(user.id, projectId));
   }
 
   if (user.skillsEnabled) {
@@ -63,7 +63,7 @@ export async function buildSystemPrompt({
   projectId?: string;
 }) {
   const memoryPrompt =
-    memoryEnabled && !temporaryChat ? await getMemoryPrompt(userId, projectId) : "";
+    memoryEnabled && !temporaryChat ? await getAgentMemoryPrompt(userId, projectId) : "";
   const skillPrompt = skillsEnabled ? await getSkillPrompt(userId, projectId) : "";
   return `${baseSystemPrompt}${memoryPrompt}${skillPrompt}`;
 }
