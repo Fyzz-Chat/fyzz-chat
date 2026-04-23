@@ -12,6 +12,7 @@ import {
 import { getProjectMemories } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
+import { getRatingsForConversation } from "@/lib/dao/ratings";
 import { getSharesByConversationId } from "@/lib/dao/shares";
 import {
   getAllProjectSkillsForSettings,
@@ -115,6 +116,11 @@ export const appRouter = createTRPCRouter({
     .input(z.object({ projectId: z.string() }))
     .query(async (opts) => {
       return getAllProjectSkillsForSettings(opts.input.projectId);
+    }),
+  ratingsForConversation: protectedProcedure
+    .input(z.object({ conversationId: z.string() }))
+    .query(async (opts) => {
+      return getRatingsForConversation(opts.input.conversationId, opts.ctx.user.id);
     }),
   skillsInScope: protectedProcedure
     .input(

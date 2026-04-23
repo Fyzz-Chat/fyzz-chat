@@ -47,6 +47,12 @@ export async function getRatingsForUser(userId: string) {
   });
 }
 
+export async function getRatingsForConversation(conversationId: string, userId: string) {
+  return prisma.rating.findMany({
+    where: { conversationId, userId },
+  });
+}
+
 export async function deleteRating(messageId: string, userId: string) {
   const existing = await prisma.rating.findUnique({
     where: { messageId, userId },
