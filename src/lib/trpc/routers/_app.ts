@@ -9,6 +9,7 @@ import { getProjectMemories } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
 import { getSharesByConversationId } from "@/lib/dao/shares";
+import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 
@@ -91,6 +92,9 @@ export const appRouter = createTRPCRouter({
   }),
   apiKeys: protectedProcedure.query(async (opts) => {
     return getApiKeysByUser(opts.ctx.user.id);
+  }),
+  skills: protectedProcedure.query(async (opts) => {
+    return getAllUserSkillsForSettings(opts.ctx.user.id);
   }),
 });
 // export type definition of API
