@@ -31,11 +31,13 @@ model User {
   customerId    String?        @map("customer_id")
   freeMessages  Int            @default(10) @map("free_messages")
   memoryEnabled Boolean        @default(false) @map("memory_enabled")
+  skillsEnabled Boolean        @default(false) @map("skills_enabled")
   mcpServers    Json?          @map("mcp_servers")
   defaultModel  String?        @map("default_model")
   conversations Conversation[]
   projects      Project[]
   memories      Memory[]
+  skills        Skill[]
   apiKeys       ApiKey[]
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
@@ -51,6 +53,7 @@ model Project {
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversations Conversation[]
   memories      Memory[]
+  skills        Skill[]
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
 
@@ -146,6 +149,27 @@ model Memory {
   @@index([userId])
   @@index([projectId])
   @@map("memories")
+}
+
+model Skill {
+  id              String    @id @default(uuid())
+  name            String
+  description     String
+  content         String
+  enabled         Boolean   @default(true)
+  lastActivatedAt DateTime? @map("last_activated_at")
+  userId          String    @map("user_id")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId       String?   @map("project_id")
+  project         Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([userId, lastActivatedAt])
+  @@unique([userId, name])
+  @@map("skills")
 }
 
 model ApiKey {
