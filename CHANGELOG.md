@@ -1,3 +1,21 @@
+# [0.33.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.32.1...v0.33.0) (2026-04-23)
+
+
+### Features
+
+* **settings:** add skills management section and integrate skills form ([564ba83](https://github.com/Fyzz-Chat/fyzz-chat/commit/564ba836ee0607619a1f06a9a4c6f087e33fe635))
+* **skills:** add activate skill tool and integrate into runtime ([db51e13](https://github.com/Fyzz-Chat/fyzz-chat/commit/db51e13c5fe84ef9d4abdc41644a7b24dc940afa))
+* **skills:** add copy functionality for skills with tooltip feedback ([7abd23a](https://github.com/Fyzz-Chat/fyzz-chat/commit/7abd23aeb19f1452b8308537148e86d42f700352))
+* **skills:** add frontmatter parsing for skill input fields ([16e20dc](https://github.com/Fyzz-Chat/fyzz-chat/commit/16e20dc70ed739884ca30a2857f9746229ff12bc))
+* **skills:** implement skill dao ([e8d422c](https://github.com/Fyzz-Chat/fyzz-chat/commit/e8d422c533d1cea51b1f6df7165153b214e475df))
+* **skills:** implement skill management actions and integrate into TRPC router ([c418507](https://github.com/Fyzz-Chat/fyzz-chat/commit/c418507f69ab525fc1dda44c5f84cbbc1f1d007b))
+* **skills:** integrate project skills ([6ae68ed](https://github.com/Fyzz-Chat/fyzz-chat/commit/6ae68edeaa78424943cb776d37b4026c97952497))
+* **skills:** introduce skills table ([ca4a747](https://github.com/Fyzz-Chat/fyzz-chat/commit/ca4a747641853a2b03b4898a95969bb8b3bcd511))
+* **skills:** show skill activation in chat ([87a8649](https://github.com/Fyzz-Chat/fyzz-chat/commit/87a8649331129be7e6e207c157cbbb09bfa684ea))
+* **skills:** start supporting project-specific skills ([bc90ae9](https://github.com/Fyzz-Chat/fyzz-chat/commit/bc90ae9cb0b0b3161e9febf986f988d1be7654d9))
+* **skills:** support optional project association ([90c8b12](https://github.com/Fyzz-Chat/fyzz-chat/commit/90c8b12d5074ebfa0bdcacb8cb66484df2d29c71))
+* **system-prompt:** refactor system prompt generation to include skills ([ad900e4](https://github.com/Fyzz-Chat/fyzz-chat/commit/ad900e4cc3a6e4bb3bf895b142206e4e9bae7b34))
+
 ## [0.32.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.32.0...v0.32.1) (2026-04-22)
 
 
