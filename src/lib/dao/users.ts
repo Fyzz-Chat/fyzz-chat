@@ -27,6 +27,7 @@ export type SessionUser = {
   freeMessages: number;
   customerId: string | null;
   memoryEnabled: boolean;
+  skillsEnabled: boolean;
   defaultModel: string | null;
 };
 
@@ -64,6 +65,7 @@ export const getUserFromSession = cache(async (): Promise<SessionUser> => {
       freeMessages: true,
       customerId: true,
       memoryEnabled: true,
+      skillsEnabled: true,
       defaultModel: true,
     },
   });
@@ -97,6 +99,7 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       freeMessages: true,
       customerId: true,
       memoryEnabled: true,
+      skillsEnabled: true,
       defaultModel: true,
     },
   });

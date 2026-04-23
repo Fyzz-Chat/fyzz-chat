@@ -15,10 +15,7 @@ import { z } from "zod";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import { mapMessageFilePartsForRead } from "@/lib/backend/message-mapper";
-import {
-  buildSystemPromptWithMemory,
-  buildToolsForRuntime,
-} from "@/lib/backend/model-runtime";
+import { buildSystemPrompt, buildToolsForRuntime } from "@/lib/backend/model-runtime";
 import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
@@ -466,15 +463,16 @@ export async function POST(req: NextRequest) {
   }
   const { tools, mcpClients } = toolsState;
 
-  const extendedSystemPrompt = await buildSystemPromptWithMemory({
+  const extendedSystemPrompt = await buildSystemPrompt({
     baseSystemPrompt: await getSystemPrompt(conversationState.project),
     memoryEnabled: user.memoryEnabled,
+    skillsEnabled: user.skillsEnabled,
     temporaryChat,
     userId: user.id,
     projectId: conversationState.project?.id,
   });
 
-  logDuration(start, "Memory prompt fetched");
+  logDuration(start, "System prompt composed");
 
   const abortController = new CompositeAbortController(req.signal);
   abortController.abortIn(maxDuration - 5);

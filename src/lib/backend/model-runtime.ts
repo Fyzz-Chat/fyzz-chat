@@ -1,6 +1,7 @@
 import type { MCPClient } from "@ai-sdk/mcp";
 import type { Tool } from "ai";
 import { getMemoryPrompt } from "@/lib/backend/prompts/memory-prompt";
+import { getSkillPrompt } from "@/lib/backend/prompts/skill-prompt";
 import { createMemoryTool } from "@/lib/backend/tools/memory";
 import { readUrlTool } from "@/lib/backend/tools/read-url";
 import type { SessionUser } from "@/lib/dao/users";
@@ -37,23 +38,23 @@ export async function buildToolsForRuntime(
   return { tools, mcpClients };
 }
 
-export async function buildSystemPromptWithMemory({
+export async function buildSystemPrompt({
   baseSystemPrompt,
   memoryEnabled,
+  skillsEnabled,
   temporaryChat,
   userId,
   projectId,
 }: {
   baseSystemPrompt: string;
   memoryEnabled: boolean;
+  skillsEnabled: boolean;
   temporaryChat: boolean;
   userId: string;
   projectId?: string;
 }) {
-  if (!memoryEnabled || temporaryChat) {
-    return baseSystemPrompt;
-  }
-
-  const memoryPrompt = await getMemoryPrompt(userId, projectId);
-  return `${baseSystemPrompt}${memoryPrompt}`;
+  const memoryPrompt =
+    memoryEnabled && !temporaryChat ? await getMemoryPrompt(userId, projectId) : "";
+  const skillPrompt = skillsEnabled ? await getSkillPrompt(userId) : "";
+  return `${baseSystemPrompt}${memoryPrompt}${skillPrompt}`;
 }
