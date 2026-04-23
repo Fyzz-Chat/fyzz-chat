@@ -53,6 +53,18 @@ export async function getRatingsForConversation(conversationId: string, userId: 
   });
 }
 
+export async function getRecentLowRatedMessages(userId: string, limit = 5) {
+  return prisma.rating.findMany({
+    where: { userId, value: { lt: 0 } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      createdAt: true,
+      message: { select: { content: true } },
+    },
+  });
+}
+
 export async function deleteRating(messageId: string, userId: string) {
   const existing = await prisma.rating.findUnique({
     where: { messageId, userId },

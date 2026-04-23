@@ -1,4 +1,5 @@
 import { getMemoriesByType, getProjectMemoriesByType } from "@/lib/dao/memories";
+import { getRecentLowRatedMessages } from "@/lib/dao/ratings";
 import { MemoryType } from "@/lib/prisma/generated/client";
 
 type MemoryRow = {
@@ -13,6 +14,8 @@ const FACT_LIMIT = 50;
 const OPINION_LIMIT = 30;
 const FEEDBACK_LIMIT = 20;
 const LEARNING_LIMIT = 10;
+const LOW_RATED_LIMIT = 5;
+const LOW_RATED_SNIPPET_CHARS = 240;
 
 function formatFact(m: MemoryRow): string {
   const cat = m.category ? ` [${m.category}]` : "";
@@ -39,6 +42,16 @@ function section(title: string, lines: string[]): string | null {
   return `## ${title}\n${lines.join("\n")}`;
 }
 
+function formatLowRated(r: { createdAt: Date; message: { content: string | null } }) {
+  const date = r.createdAt.toISOString().slice(0, 10);
+  const raw = r.message.content ?? "";
+  const snippet =
+    raw.length > LOW_RATED_SNIPPET_CHARS
+      ? `${raw.slice(0, LOW_RATED_SNIPPET_CHARS)}…`
+      : raw;
+  return `- [${date}] ${snippet.replace(/\s+/g, " ").trim()}`;
+}
+
 const MEMORY_INSTRUCTIONS = `## Memory tools
 
 You have tools to maintain your knowledge about the user across conversations. Use them proactively — do not ask permission.
@@ -56,7 +69,7 @@ export async function getAgentMemoryPrompt(
   userId: string,
   projectId?: string
 ): Promise<string> {
-  const [facts, opinions, feedback, learnings, context] = await Promise.all([
+  const [facts, opinions, feedback, learnings, context, lowRated] = await Promise.all([
     getMemoriesByType(userId, MemoryType.fact, { limit: FACT_LIMIT }),
     getMemoriesByType(userId, MemoryType.opinion, { limit: OPINION_LIMIT }),
     getMemoriesByType(userId, MemoryType.feedback, { limit: FEEDBACK_LIMIT }),
@@ -65,6 +78,7 @@ export async function getAgentMemoryPrompt(
       recent: true,
     }),
     getMemoriesByType(userId, MemoryType.context),
+    getRecentLowRatedMessages(userId, LOW_RATED_LIMIT),
   ]);
 
   const [projectFacts, projectLearnings, projectContext] = projectId
@@ -82,6 +96,10 @@ export async function getAgentMemoryPrompt(
     section("Facts about the user", facts.map(formatFact)),
     section("User preferences (opinions)", opinions.map(formatOpinion)),
     section("Feedback from the user about how to work", feedback.map(formatPlain)),
+    section(
+      "Previous responses the user marked as bad — avoid repeating these patterns",
+      lowRated.map(formatLowRated)
+    ),
     section("Recent learnings", learnings.map(formatDated)),
     section("User context", context.map(formatPlain)),
     projectId ? section("Facts about this project", projectFacts.map(formatFact)) : null,
