@@ -34,6 +34,7 @@ export async function createSkill(data: {
   name: string;
   description: string;
   content: string;
+  projectId?: string | null;
 }): Promise<SkillActionResult<{ id: string }>> {
   const userId = await getUserIdFromSession();
   try {

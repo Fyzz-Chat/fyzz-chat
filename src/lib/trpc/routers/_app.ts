@@ -9,7 +9,10 @@ import { getProjectMemories } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
 import { getSharesByConversationId } from "@/lib/dao/shares";
-import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
+import {
+  getAllProjectSkillsForSettings,
+  getAllUserSkillsForSettings,
+} from "@/lib/dao/skills";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 
@@ -96,6 +99,11 @@ export const appRouter = createTRPCRouter({
   skills: protectedProcedure.query(async (opts) => {
     return getAllUserSkillsForSettings(opts.ctx.user.id);
   }),
+  projectSkills: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async (opts) => {
+      return getAllProjectSkillsForSettings(opts.input.projectId);
+    }),
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

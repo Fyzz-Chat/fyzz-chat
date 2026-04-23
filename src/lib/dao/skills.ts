@@ -97,13 +97,15 @@ type CreateSkillInput = {
   name: string;
   description: string;
   content: string;
+  projectId?: string | null;
 };
 
 export async function createSkill(userId: string, data: CreateSkillInput) {
   assertValidSkillName(data.name);
+  const { projectId, ...rest } = data;
   try {
     return await prisma.skill.create({
-      data: { ...data, userId },
+      data: { ...rest, userId, projectId: projectId ?? null },
     });
   } catch (error) {
     if (isUniqueConstraintViolation(error)) {
