@@ -5,7 +5,9 @@ import { ProjectInfo } from "@/components/projects/project-page";
 import {
   ConversationsListSkeleton,
   MemoriesSkeleton,
+  SkillsSkeleton,
 } from "@/components/projects/project-page-skeletons";
+import { ProjectSkills } from "@/components/projects/project-skills";
 import { caller } from "@/lib/trpc/server";
 
 async function ProjectConversationsLoader({ id }: Readonly<{ id: string }>) {
@@ -22,6 +24,11 @@ async function ProjectMemoriesLoader({ id }: Readonly<{ id: string }>) {
   return <ProjectMemories projectId={id} initialMemories={memories} />;
 }
 
+async function ProjectSkillsLoader({ id }: Readonly<{ id: string }>) {
+  const skills = await caller.projectSkills({ projectId: id });
+  return <ProjectSkills projectId={id} initialSkills={skills} />;
+}
+
 export default async function ProjectPageRoute({
   params,
 }: Readonly<{ params: Promise<{ id: string }> }>) {
@@ -36,9 +43,12 @@ export default async function ProjectPageRoute({
           <ProjectConversationsLoader id={id} />
         </Suspense>
       </div>
-      <aside className="h-fit w-full max-w-2xl rounded-lg border p-6 lg:mt-12 lg:w-96 lg:shrink-0">
+      <aside className="flex h-fit w-full max-w-2xl flex-col gap-6 rounded-lg border p-6 lg:mt-12 lg:w-96 lg:shrink-0">
         <Suspense fallback={<MemoriesSkeleton />}>
           <ProjectMemoriesLoader id={id} />
+        </Suspense>
+        <Suspense fallback={<SkillsSkeleton />}>
+          <ProjectSkillsLoader id={id} />
         </Suspense>
       </aside>
     </div>

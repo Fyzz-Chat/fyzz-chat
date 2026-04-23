@@ -105,3 +105,93 @@ export function useUpdateSkillsEnabled() {
     mutationFn: (enabled: boolean) => updateUserSkillsEnabled(enabled),
   });
 }
+
+export function useProjectSkills(projectId: string, initialData?: SkillItem[]) {
+  const trpc = useTRPC();
+  return useQuery({
+    ...trpc.projectSkills.queryOptions({ projectId }),
+    initialData,
+  });
+}
+
+export function useCreateProjectSkill(projectId: string) {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation({
+    mutationFn: (input: { name: string; description: string; content: string }) =>
+      createSkill({ ...input, projectId }),
+    onSuccess: (result) => {
+      if (result.ok) {
+        queryClient.invalidateQueries(trpc.projectSkills.queryFilter({ projectId }));
+      }
+    },
+  });
+}
+
+export function useUpdateProjectSkill(projectId: string) {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation({
+    mutationFn: (input: {
+      id: string;
+      data: Partial<{
+        name: string;
+        description: string;
+        content: string;
+        enabled: boolean;
+      }>;
+    }) => updateSkill(input.id, input.data),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries(trpc.projectSkills.queryFilter({ projectId }));
+      const previous = queryClient.getQueryData(
+        trpc.projectSkills.queryKey({ projectId })
+      );
+      queryClient.setQueryData(
+        trpc.projectSkills.queryKey({ projectId }),
+        (old: SkillsData) => old?.map((s) => (s.id === id ? { ...s, ...data } : s))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(
+          trpc.projectSkills.queryKey({ projectId }),
+          context.previous
+        );
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(trpc.projectSkills.queryFilter({ projectId }));
+    },
+  });
+}
+
+export function useDeleteProjectSkill(projectId: string) {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteSkill(id),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(trpc.projectSkills.queryFilter({ projectId }));
+      const previous = queryClient.getQueryData(
+        trpc.projectSkills.queryKey({ projectId })
+      );
+      queryClient.setQueryData(
+        trpc.projectSkills.queryKey({ projectId }),
+        (old: SkillsData) => old?.filter((s) => s.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(
+          trpc.projectSkills.queryKey({ projectId }),
+          context.previous
+        );
+      }
+    },
+  });
+}

@@ -35,3 +35,24 @@ export function MemoriesSkeleton() {
     </div>
   );
 }
+
+export function SkillsSkeleton() {
+  return (
+    <div className="flex flex-col gap-3">
+      <div>
+        <h3 className="font-medium text-sm">Skills</h3>
+        <p className="text-muted-foreground text-xs">
+          Reusable instructions the AI activates for this project.
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        {Array.from({ length: 2 }, (_, i) => (
+          <div key={i} className="border-b py-2 last:border-b-0">
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="mt-2 h-3 w-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
