@@ -66,6 +66,7 @@ model Conversation {
   title         String
   messages      Message[]
   shares        Share[]
+  memories      Memory[]
   model         String
   locked        Boolean        @default(false)
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -137,17 +138,35 @@ model Share {
   @@map("shares")
 }
 
+enum MemoryType {
+  fact
+  opinion
+  learning
+  context
+  feedback
+}
+
 model Memory {
-  id        String   @id @default(uuid())
-  content   String
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projectId String?  @map("project_id")
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now()) @map("created_at")
+  id             String        @id @default(uuid())
+  type           MemoryType    @default(fact)
+  content        String
+  confidence     Float?
+  category       String?
+  source         String?
+  userId         String        @map("user_id")
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId      String?       @map("project_id")
+  project        Project?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  conversationId String?       @map("conversation_id")
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
 
   @@index([userId])
   @@index([projectId])
+  @@index([userId, type])
+  @@index([userId, type, confidence])
+  @@index([projectId, type])
   @@map("memories")
 }
 
