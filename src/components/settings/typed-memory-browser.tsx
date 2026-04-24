@@ -86,6 +86,32 @@ function formatDate(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
+function ConfidenceBar({ confidence }: { confidence: number }) {
+  const pct = Math.max(0, Math.min(1, confidence)) * 100;
+  const tone =
+    confidence >= 0.7
+      ? "bg-primary"
+      : confidence < 0.3
+        ? "bg-destructive"
+        : "bg-muted-foreground";
+  return (
+    <span
+      className="inline-flex items-center gap-1.5"
+      title={`Confidence ${confidence.toFixed(2)}`}
+    >
+      <span className="h-1.5 w-14 overflow-hidden rounded-full bg-muted">
+        <span
+          className={`block h-full ${tone} transition-all`}
+          style={{ width: `${pct}%` }}
+        />
+      </span>
+      <span className="font-mono text-muted-foreground text-xs">
+        {confidence.toFixed(2)}
+      </span>
+    </span>
+  );
+}
+
 function MemoryRow({
   memory,
   onDelete,
@@ -100,9 +126,7 @@ function MemoryRow({
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-1.5">
           {memory.type === MemoryType.opinion && memory.confidence !== null && (
-            <Badge variant="secondary" className="font-mono text-xs">
-              {memory.confidence.toFixed(2)}
-            </Badge>
+            <ConfidenceBar confidence={memory.confidence} />
           )}
           {memory.category && (
             <Badge variant="outline" className="text-xs">
