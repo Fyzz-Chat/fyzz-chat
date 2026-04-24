@@ -3,12 +3,14 @@ import { z } from "zod";
 import {
   createTypedMemory,
   deleteMemory,
-  updateOpinionConfidence,
+  getOpinionConfidence,
+  setOpinionConfidence,
 } from "@/lib/dao/memories";
 import { MemoryType } from "@/lib/prisma/generated/client";
 
 const STRENGTHEN_DELTA = 0.1;
 const WEAKEN_DELTA = -0.2;
+const OPINION_RETIRE_THRESHOLD = 0.2;
 
 export function createAgentMemoryTools(userId: string, projectId?: string) {
   return {
@@ -94,16 +96,25 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
     }),
 
     update_opinion: tool({
-      description: `Adjust confidence on an existing opinion. Use 'strengthen' when the user confirms the opinion (+0.1), 'weaken' when the user contradicts it (-0.2).`,
+      description: `Adjust confidence on an existing opinion. Use 'strengthen' when the user confirms the opinion (+0.1), 'weaken' when the user contradicts it (-0.2). If weakening would drop confidence below 0.2 the opinion is retired (deleted) instead — you'll see a retired result and the id will no longer be valid.`,
       inputSchema: z.object({
         id: z.string().describe("The opinion ID from the context"),
         action: z.enum(["strengthen", "weaken"]),
       }),
       execute: async ({ id, action }) => {
+        const current = await getOpinionConfidence(id, userId);
+        if (current === null) return "Opinion not found or not an opinion type.";
+
         const delta = action === "strengthen" ? STRENGTHEN_DELTA : WEAKEN_DELTA;
-        const updated = await updateOpinionConfidence(id, userId, delta);
-        if (!updated) return "Opinion not found or not an opinion type.";
-        return `Opinion confidence now ${updated.confidence?.toFixed(2) ?? "unknown"}.`;
+        const next = Math.max(0, Math.min(1, current + delta));
+
+        if (next < OPINION_RETIRE_THRESHOLD) {
+          await deleteMemory(id, userId);
+          return `Opinion retired — confidence fell below 0.2 (was ${current.toFixed(2)}). Memory has been deleted.`;
+        }
+
+        await setOpinionConfidence(id, userId, next);
+        return `Opinion confidence now ${next.toFixed(2)}.`;
       },
     }),
 

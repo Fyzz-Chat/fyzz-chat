@@ -206,12 +206,18 @@ function MessageItem({
           case "tool-store_feedback":
           case "tool-update_opinion":
           case "tool-delete_memory": {
+            const memoryOutput =
+              typeof part.output === "string" ? part.output : undefined;
             return (
               <Tool key={`${message.id}-${part.type}-${i}`}>
-                <MemoryToolHeader type={part.type} state={part.state} />
+                <MemoryToolHeader
+                  type={part.type}
+                  state={part.state}
+                  output={part.output}
+                />
                 <ToolContent>
                   <ToolInput input={part.input} />
-                  <ToolOutput output={""} errorText={part.errorText} />
+                  <ToolOutput output={memoryOutput ?? ""} errorText={part.errorText} />
                 </ToolContent>
               </Tool>
             );

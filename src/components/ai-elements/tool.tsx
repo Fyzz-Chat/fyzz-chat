@@ -2,7 +2,13 @@
 
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import type { ToolUIPart } from "ai";
-import { BrainIcon, ChevronDownIcon, LightbulbIcon, WrenchIcon } from "lucide-react";
+import {
+  BrainIcon,
+  ChevronDownIcon,
+  LightbulbIcon,
+  TrashIcon,
+  WrenchIcon,
+} from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useMemo } from "react";
 import { CodeBlock } from "@/components/ai-elements/code-block";
@@ -162,17 +168,26 @@ const MEMORY_TOOL_LABELS: Record<string, { running: string; done: string }> = {
 export type MemoryToolHeaderProps = {
   type: ToolUIPart["type"];
   state: ToolUIPart["state"];
+  output?: unknown;
   className?: string;
 };
 
+function isRetiredOutput(output: unknown): boolean {
+  return typeof output === "string" && output.startsWith("Opinion retired");
+}
+
 export const MemoryToolHeader = memo(
-  ({ className, type, state }: MemoryToolHeaderProps) => {
+  ({ className, type, state, output }: MemoryToolHeaderProps) => {
     const { isOpen } = useTool();
-    const labels = MEMORY_TOOL_LABELS[type] ?? {
-      running: "Using memory tool",
-      done: "Used memory tool",
-    };
+    const retired = type === "tool-update_opinion" && isRetiredOutput(output);
+    const labels = retired
+      ? { running: "Retiring an opinion", done: "Retired an opinion" }
+      : (MEMORY_TOOL_LABELS[type] ?? {
+          running: "Using memory tool",
+          done: "Used memory tool",
+        });
     const isRunning = state === "input-streaming" || state === "input-available";
+    const Icon = retired ? TrashIcon : BrainIcon;
 
     return (
       <CollapsibleTrigger
@@ -187,7 +202,7 @@ export const MemoryToolHeader = memo(
           </p>
         ) : (
           <div className="flex items-center gap-2">
-            <BrainIcon size={16} />
+            <Icon size={16} />
             <p>{labels.done}</p>
           </div>
         )}

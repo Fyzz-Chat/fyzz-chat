@@ -131,13 +131,25 @@ export async function createTypedMemory(userId: string, data: CreateTypedMemoryI
   });
 }
 
-export async function updateOpinionConfidence(id: string, userId: string, delta: number) {
-  const memory = await prisma.memory.findUnique({ where: { id, userId } });
-  if (!memory || memory.type !== MemoryType.opinion) return null;
-  const current = memory.confidence ?? 0.5;
-  const next = Math.max(0, Math.min(1, current + delta));
+export async function getOpinionConfidence(
+  id: string,
+  userId: string
+): Promise<number | null> {
+  const memory = await prisma.memory.findUnique({
+    where: { id, userId },
+    select: { type: true, confidence: true },
+  });
+  if (memory?.type !== MemoryType.opinion) return null;
+  return memory.confidence ?? 0.5;
+}
+
+export async function setOpinionConfidence(
+  id: string,
+  userId: string,
+  confidence: number
+) {
   return prisma.memory.update({
     where: { id, userId },
-    data: { confidence: next },
+    data: { confidence: Math.max(0, Math.min(1, confidence)) },
   });
 }
