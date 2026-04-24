@@ -9,7 +9,11 @@ import {
   getConversationProjectId,
   getConversationsByCursor,
 } from "@/lib/dao/conversations";
-import { getAllUserMemoriesGrouped, getProjectMemories } from "@/lib/dao/memories";
+import {
+  getAllProjectMemoriesGrouped,
+  getAllUserMemoriesGrouped,
+  getProjectMemories,
+} from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
 import { getRatingsForConversation } from "@/lib/dao/ratings";
@@ -105,6 +109,11 @@ export const appRouter = createTRPCRouter({
   userMemories: protectedProcedure.query(async (opts) => {
     return getAllUserMemoriesGrouped(opts.ctx.user.id);
   }),
+  projectMemoriesGrouped: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async (opts) => {
+      return getAllProjectMemoriesGrouped(opts.input.projectId);
+    }),
   projects: protectedProcedure.query(async () => {
     const projects = await getProjects();
     return { projects };
