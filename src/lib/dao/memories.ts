@@ -3,13 +3,6 @@ import "server-only";
 import { MemoryType } from "@/lib/prisma/generated/client";
 import prisma from "@/lib/prisma/prisma";
 
-export async function getUserMemories(userId: string) {
-  return prisma.memory.findMany({
-    where: { userId, projectId: null },
-    orderBy: { createdAt: "asc" },
-  });
-}
-
 const browserMemorySelect = {
   id: true,
   type: true,
@@ -52,20 +45,6 @@ export async function getAllProjectMemoriesGrouped(projectId: string) {
   };
   for (const row of rows) grouped[row.type].push(row);
   return grouped;
-}
-
-const memorySelect = {
-  id: true,
-  content: true,
-  createdAt: true,
-} as const;
-
-export async function getProjectMemories(projectId: string) {
-  return prisma.memory.findMany({
-    where: { projectId },
-    orderBy: { createdAt: "asc" },
-    select: memorySelect,
-  });
 }
 
 export async function appendMemory(userId: string, content: string, projectId?: string) {

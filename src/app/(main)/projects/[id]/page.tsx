@@ -20,7 +20,7 @@ async function ProjectConversationsLoader({ id }: Readonly<{ id: string }>) {
 }
 
 async function ProjectMemoriesLoader({ id }: Readonly<{ id: string }>) {
-  const memories = await caller.projectMemories({ projectId: id });
+  const memories = await caller.projectMemoriesGrouped({ projectId: id });
   return <ProjectMemories projectId={id} initialMemories={memories} />;
 }
 

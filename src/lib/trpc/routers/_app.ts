@@ -12,7 +12,6 @@ import {
 import {
   getAllProjectMemoriesGrouped,
   getAllUserMemoriesGrouped,
-  getProjectMemories,
 } from "@/lib/dao/memories";
 import { getMessages } from "@/lib/dao/messages";
 import { getProject, getProjects } from "@/lib/dao/projects";
@@ -101,11 +100,6 @@ export const appRouter = createTRPCRouter({
   project: protectedProcedure.input(z.object({ id: z.string() })).query(async (opts) => {
     return getProject(opts.input.id);
   }),
-  projectMemories: protectedProcedure
-    .input(z.object({ projectId: z.string() }))
-    .query(async (opts) => {
-      return getProjectMemories(opts.input.projectId);
-    }),
   userMemories: protectedProcedure.query(async (opts) => {
     return getAllUserMemoriesGrouped(opts.ctx.user.id);
   }),
