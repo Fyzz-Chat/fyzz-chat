@@ -1,3 +1,33 @@
+# [0.35.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.34.0...v0.35.0) (2026-04-24)
+
+
+### Features
+
+* **accordion:** add new component ([00209ce](https://github.com/Fyzz-Chat/fyzz-chat/commit/00209ce8bd41b848647ed5a92c46f7388e484833))
+* **memories:** add browser memory selection and user memory queries ([875fa73](https://github.com/Fyzz-Chat/fyzz-chat/commit/875fa73faa336d48be50c6f41a6ab080d80da7d8))
+* **memories:** add ConfidenceBar component to display memory confidence visually ([d31d735](https://github.com/Fyzz-Chat/fyzz-chat/commit/d31d7354520139c8516c6bccfa8e0d1d1aa42f21))
+* **memories:** add function to group project memories by type ([e7d528c](https://github.com/Fyzz-Chat/fyzz-chat/commit/e7d528ccc826ca4e0efbe23624af9766be596f5b))
+* **memories:** implement memory removal function and enhance project memory deletion ([249c625](https://github.com/Fyzz-Chat/fyzz-chat/commit/249c625eaaed9373aade4f813e41c42f888698b0))
+* **memories:** refactor memory retrieval to group user memories by type ([cb8b097](https://github.com/Fyzz-Chat/fyzz-chat/commit/cb8b097e162d6ca3068df962728e9402c3aeda49))
+* **memory-browser:** introduce TypedMemoryBrowser component ([29db50e](https://github.com/Fyzz-Chat/fyzz-chat/commit/29db50e0db5d4dae9b0ab1c2e5ed020fcacd0aeb))
+* **memory:** add agent memory prompt for retrieving user and project memories ([57d4f32](https://github.com/Fyzz-Chat/fyzz-chat/commit/57d4f32c52526b9262b76e379911fd702d3bea85))
+* **memory:** add functionality to retrieve recent low-rated messages in agent memory prompt ([7a87edc](https://github.com/Fyzz-Chat/fyzz-chat/commit/7a87edcb9f769033d8557f08c89c04992be65b57))
+* **memory:** add functions for querying and creating typed memories ([33c4e83](https://github.com/Fyzz-Chat/fyzz-chat/commit/33c4e83d98ff760573b324fbbeaa27544fa125c3))
+* **memory:** add project metadata retrieval to agent memory prompt generation ([3462639](https://github.com/Fyzz-Chat/fyzz-chat/commit/346263964d1a1b695a3f76bb18ea7fb555663bf5))
+* **memory:** enhance opinion management by implementing retirement logic ([7b0a50d](https://github.com/Fyzz-Chat/fyzz-chat/commit/7b0a50d950443476c2c4f48a82d59570930b25e4))
+* **memory:** implement agent memory tools for storing facts, opinions, learnings, feedback ([2fa3df4](https://github.com/Fyzz-Chat/fyzz-chat/commit/2fa3df4501df767fb11e9653b0aecd51d8f53df3))
+* **memory:** implement fair packing of memory items and enforce character limits for memory content ([67eb7d8](https://github.com/Fyzz-Chat/fyzz-chat/commit/67eb7d8d7d74962405e4ced56f72571effb70fdb))
+* **memory:** integrate user persona retrieval into agent memory prompt generation ([d3bcd97](https://github.com/Fyzz-Chat/fyzz-chat/commit/d3bcd97244c3f0aba8622ed5d498f6ea6815c92f))
+* **memory:** introduce typed memory ([680573d](https://github.com/Fyzz-Chat/fyzz-chat/commit/680573d0b18adf271e94bac7d51a93942cc0c2b7))
+* **memory:** update memory handling to use agent memory tools and prompts ([98a4ed9](https://github.com/Fyzz-Chat/fyzz-chat/commit/98a4ed92bba652d31eea131f7315c16a2d4fcad2))
+* **persona:** add PersonaForm component for user display and agent name management ([51c74c7](https://github.com/Fyzz-Chat/fyzz-chat/commit/51c74c7ef4a891cb4c2caff474cc4a0b84f69fa0))
+* **queries:** enable refetching of project memories and skills on mount ([fab99df](https://github.com/Fyzz-Chat/fyzz-chat/commit/fab99dfbb78836cb464cf595a4930e41de57acdf))
+* **ratings:** add rating actions for messaging with upsert and delete functionality ([243d098](https://github.com/Fyzz-Chat/fyzz-chat/commit/243d098ce9a907206a3b0bba23c6cdb40113ce7f))
+* **ratings:** add ratings model ([e1aac6e](https://github.com/Fyzz-Chat/fyzz-chat/commit/e1aac6e148dc687864bdd518123818d4144f0cfb))
+* **ratings:** implement rating functionality with upsert, retrieval, and deletion methods ([930d0b6](https://github.com/Fyzz-Chat/fyzz-chat/commit/930d0b6ebba98042f0ccd0aa2feeecf9a2fae13c))
+* **ratings:** integrate MessageRating component for user feedback on messages ([232dcaf](https://github.com/Fyzz-Chat/fyzz-chat/commit/232dcafd466ad3d6ddf46fd7fa11dddf794e2a3f))
+* **user:** add agentName and displayName fields to User model ([3fd722d](https://github.com/Fyzz-Chat/fyzz-chat/commit/3fd722dfc1d8effdc5e2fd55a2d5cb0bb20189b7))
+
 # [0.34.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.33.0...v0.34.0) (2026-04-23)
 
 
