@@ -18,6 +18,13 @@ export async function getUserByEmail(email: string) {
   return user;
 }
 
+export async function getUserPersona(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { displayName: true, agentName: true },
+  });
+}
+
 export type SessionUser = {
   id: string;
   name: string;

@@ -1,5 +1,6 @@
 import { getMemoriesByType, getProjectMemoriesByType } from "@/lib/dao/memories";
 import { getRecentLowRatedMessages } from "@/lib/dao/ratings";
+import { getUserPersona } from "@/lib/dao/users";
 import { MemoryType } from "@/lib/prisma/generated/client";
 
 type MemoryRow = {
@@ -105,21 +106,40 @@ You have tools to maintain your knowledge about the user across conversations. U
 
 Reference memories by their [id: ...] when updating or deleting.`;
 
+function buildPersonaLines(
+  persona: {
+    displayName: string | null;
+    agentName: string | null;
+  } | null
+): string | null {
+  if (!persona) return null;
+  const lines: string[] = [];
+  if (persona.displayName) {
+    lines.push(`The user prefers to be called ${persona.displayName}.`);
+  }
+  if (persona.agentName) {
+    lines.push(`Refer to yourself as ${persona.agentName}.`);
+  }
+  return lines.length === 0 ? null : lines.join(" ");
+}
+
 export async function getAgentMemoryPrompt(
   userId: string,
   projectId?: string
 ): Promise<string> {
-  const [facts, opinions, feedback, learnings, context, lowRated] = await Promise.all([
-    getMemoriesByType(userId, MemoryType.fact, { limit: FACT_LIMIT }),
-    getMemoriesByType(userId, MemoryType.opinion, { limit: OPINION_LIMIT }),
-    getMemoriesByType(userId, MemoryType.feedback, { limit: FEEDBACK_LIMIT }),
-    getMemoriesByType(userId, MemoryType.learning, {
-      limit: LEARNING_LIMIT,
-      recent: true,
-    }),
-    getMemoriesByType(userId, MemoryType.context),
-    getRecentLowRatedMessages(userId, LOW_RATED_LIMIT),
-  ]);
+  const [persona, facts, opinions, feedback, learnings, context, lowRated] =
+    await Promise.all([
+      getUserPersona(userId),
+      getMemoriesByType(userId, MemoryType.fact, { limit: FACT_LIMIT }),
+      getMemoriesByType(userId, MemoryType.opinion, { limit: OPINION_LIMIT }),
+      getMemoriesByType(userId, MemoryType.feedback, { limit: FEEDBACK_LIMIT }),
+      getMemoriesByType(userId, MemoryType.learning, {
+        limit: LEARNING_LIMIT,
+        recent: true,
+      }),
+      getMemoriesByType(userId, MemoryType.context),
+      getRecentLowRatedMessages(userId, LOW_RATED_LIMIT),
+    ]);
 
   const [projectFacts, projectLearnings, projectContext] = projectId
     ? await Promise.all([
@@ -178,10 +198,12 @@ export async function getAgentMemoryPrompt(
   ];
 
   const body = sections.filter((s): s is string => s !== null).join("\n\n");
+  const personaLines = buildPersonaLines(persona);
+  const personaBlock = personaLines ? `${personaLines}\n\n` : "";
 
   if (body.length === 0) {
-    return `\n\n${MEMORY_INSTRUCTIONS}`;
+    return `\n\n${personaBlock}${MEMORY_INSTRUCTIONS}`;
   }
 
-  return `\n\nYou are operating with persistent memory. Here is what you know about the user and their work:\n\n${body}\n\n${MEMORY_INSTRUCTIONS}`;
+  return `\n\n${personaBlock}You are operating with persistent memory. Here is what you know about the user and their work:\n\n${body}\n\n${MEMORY_INSTRUCTIONS}`;
 }
