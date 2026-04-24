@@ -17,6 +17,46 @@ const LEARNING_LIMIT = 10;
 const LOW_RATED_LIMIT = 5;
 const LOW_RATED_SNIPPET_CHARS = 240;
 
+const CATEGORY_CHAR_BUDGET = {
+  fact: 10000,
+  opinion: 6000,
+  learning: 3000,
+  feedback: 4000,
+  context: 2000,
+} as const;
+
+const TRUNCATION_SUFFIX = "[…]";
+
+// Water-filling char allocation: each item gets at most charBudget/count, but
+// items smaller than their share pass through untouched and their leftover
+// is redistributed — so one huge memory can't starve newer ones out of the prompt.
+function packFairly<T>(
+  items: T[],
+  format: (item: T) => string,
+  charBudget: number
+): string[] {
+  if (items.length === 0) return [];
+  const formatted = items.map(format);
+  const indexed = formatted.map((text, i) => ({ i, text }));
+  indexed.sort((a, b) => a.text.length - b.text.length);
+  const result: string[] = new Array(items.length);
+  let remaining = charBudget;
+  let count = indexed.length;
+  for (const { i, text } of indexed) {
+    const share = Math.floor(remaining / Math.max(count, 1));
+    if (text.length <= share) {
+      result[i] = text;
+      remaining -= text.length;
+    } else {
+      const cutoff = Math.max(0, share - TRUNCATION_SUFFIX.length);
+      result[i] = text.slice(0, cutoff) + TRUNCATION_SUFFIX;
+      remaining -= share;
+    }
+    count--;
+  }
+  return result;
+}
+
 function formatFact(m: MemoryRow): string {
   const cat = m.category ? ` [${m.category}]` : "";
   return `- [id: ${m.id}]${cat} ${m.content}`;
@@ -93,20 +133,48 @@ export async function getAgentMemoryPrompt(
     : [[], [], []];
 
   const sections: (string | null)[] = [
-    section("Facts about the user", facts.map(formatFact)),
-    section("User preferences (opinions)", opinions.map(formatOpinion)),
-    section("Feedback from the user about how to work", feedback.map(formatPlain)),
+    section(
+      "Facts about the user",
+      packFairly(facts, formatFact, CATEGORY_CHAR_BUDGET.fact)
+    ),
+    section(
+      "User preferences (opinions)",
+      packFairly(opinions, formatOpinion, CATEGORY_CHAR_BUDGET.opinion)
+    ),
+    section(
+      "Feedback from the user about how to work",
+      packFairly(feedback, formatPlain, CATEGORY_CHAR_BUDGET.feedback)
+    ),
     section(
       "Previous responses the user marked as bad — avoid repeating these patterns",
       lowRated.map(formatLowRated)
     ),
-    section("Recent learnings", learnings.map(formatDated)),
-    section("User context", context.map(formatPlain)),
-    projectId ? section("Facts about this project", projectFacts.map(formatFact)) : null,
+    section(
+      "Recent learnings",
+      packFairly(learnings, formatDated, CATEGORY_CHAR_BUDGET.learning)
+    ),
+    section(
+      "User context",
+      packFairly(context, formatPlain, CATEGORY_CHAR_BUDGET.context)
+    ),
     projectId
-      ? section("Recent project learnings", projectLearnings.map(formatDated))
+      ? section(
+          "Facts about this project",
+          packFairly(projectFacts, formatFact, CATEGORY_CHAR_BUDGET.fact)
+        )
       : null,
-    projectId ? section("Project context", projectContext.map(formatPlain)) : null,
+    projectId
+      ? section(
+          "Recent project learnings",
+          packFairly(projectLearnings, formatDated, CATEGORY_CHAR_BUDGET.learning)
+        )
+      : null,
+    projectId
+      ? section(
+          "Project context",
+          packFairly(projectContext, formatPlain, CATEGORY_CHAR_BUDGET.context)
+        )
+      : null,
   ];
 
   const body = sections.filter((s): s is string => s !== null).join("\n\n");

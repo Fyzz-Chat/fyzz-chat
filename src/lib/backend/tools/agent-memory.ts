@@ -11,11 +11,18 @@ import { MemoryType } from "@/lib/prisma/generated/client";
 const STRENGTHEN_DELTA = 0.1;
 const WEAKEN_DELTA = -0.2;
 const OPINION_RETIRE_THRESHOLD = 0.2;
+const MAX_MEMORY_CHARS = 500;
+
+function clampContent(content: string): string {
+  return content.length > MAX_MEMORY_CHARS ? content.slice(0, MAX_MEMORY_CHARS) : content;
+}
+
+const LENGTH_GUIDANCE = `Keep content under ${MAX_MEMORY_CHARS} characters — break longer thoughts into multiple memories. Longer content is silently truncated.`;
 
 export function createAgentMemoryTools(userId: string, projectId?: string) {
   return {
     store_fact: tool({
-      description: `Record a factual detail about the user — preferences, role, location, personal context. Use when the user reveals something worth remembering across conversations.`,
+      description: `Record a factual detail about the user — preferences, role, location, personal context. Use when the user reveals something worth remembering across conversations. ${LENGTH_GUIDANCE}`,
       inputSchema: z.object({
         content: z.string().describe("The fact to remember"),
         category: z
@@ -26,7 +33,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
       execute: async ({ content, category }) => {
         await createTypedMemory(userId, {
           type: MemoryType.fact,
-          content,
+          content: clampContent(content),
           category,
           source: "agent",
           projectId: projectId ?? null,
@@ -36,7 +43,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
     }),
 
     store_opinion: tool({
-      description: `Record an opinion about the user's preference or behavior. Start new opinions at 0.5 confidence; strengthen/weaken them later with update_opinion.`,
+      description: `Record an opinion about the user's preference or behavior. Start new opinions at 0.5 confidence; strengthen/weaken them later with update_opinion. ${LENGTH_GUIDANCE}`,
       inputSchema: z.object({
         content: z.string().describe("The opinion (e.g. 'prefers terse responses')"),
         confidence: z
@@ -53,7 +60,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
       execute: async ({ content, confidence, category }) => {
         await createTypedMemory(userId, {
           type: MemoryType.opinion,
-          content,
+          content: clampContent(content),
           confidence,
           category,
           source: "agent",
@@ -64,14 +71,14 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
     }),
 
     store_learning: tool({
-      description: `Capture a reusable insight from this session — something that would help future conversations but isn't a fact or a preference.`,
+      description: `Capture a reusable insight from this session — something that would help future conversations but isn't a fact or a preference. ${LENGTH_GUIDANCE}`,
       inputSchema: z.object({
         content: z.string().describe("The learning to capture"),
       }),
       execute: async ({ content }) => {
         await createTypedMemory(userId, {
           type: MemoryType.learning,
-          content,
+          content: clampContent(content),
           source: "agent",
           projectId: projectId ?? null,
         });
@@ -80,14 +87,14 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
     }),
 
     store_feedback: tool({
-      description: `Store behavioral guidance the user gave about how you should work — corrections, preferences for your approach, things to avoid. Different from opinions about the user; this is the user telling you how to behave.`,
+      description: `Store behavioral guidance the user gave about how you should work — corrections, preferences for your approach, things to avoid. Different from opinions about the user; this is the user telling you how to behave. ${LENGTH_GUIDANCE}`,
       inputSchema: z.object({
         content: z.string().describe("The feedback to store"),
       }),
       execute: async ({ content }) => {
         await createTypedMemory(userId, {
           type: MemoryType.feedback,
-          content,
+          content: clampContent(content),
           source: "agent",
           projectId: projectId ?? null,
         });
