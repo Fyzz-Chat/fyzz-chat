@@ -4,8 +4,8 @@ import type {
   MemoryItem,
 } from "@/components/settings/typed-memory-browser";
 import { deleteMemoryAction } from "@/lib/actions/projects";
-import { MemoryType } from "@/lib/prisma/generated/client";
 import { useTRPC } from "@/lib/trpc/client";
+import { MemoryType } from "@/types/memory";
 
 export function useUserMemories(initialData?: GroupedMemories) {
   const trpc = useTRPC();

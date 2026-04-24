@@ -1,9 +1,11 @@
 "use client";
 
 import { use, useEffect, useRef, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import {
+  type GroupedMemories,
+  TypedMemoryBrowser,
+} from "@/components/settings/typed-memory-browser";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -15,43 +17,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  updateDefaultModel,
-  updateUserMemory,
-  updateUserMemoryEnabled,
-} from "@/lib/actions/users";
+import { updateDefaultModel, updateUserMemoryEnabled } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import { useDeleteUserMemory, useUserMemories } from "@/lib/queries/memories";
 import type { PublicProvider } from "@/types/provider";
 
 export default function MemoryForm({
   defaultModel,
-  memory,
+  initialMemories,
   memoryEnabled,
   providers,
 }: Readonly<{
   defaultModel?: string;
-  memory?: string;
+  initialMemories: GroupedMemories;
   memoryEnabled: boolean;
   providers: PublicProvider[];
 }>) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
-  const { handleSubmit } = useForm<{ memory: string }>();
-  const [content, setContent] = useState(memory ?? "");
   const [enabled, setEnabled] = useState(memoryEnabled);
   const [selectedModel, setSelectedModel] = useState<string | undefined>(defaultModel);
   const isFirstRender = useRef(true);
 
-  async function onSubmit() {
-    startTransition(async () => {
-      const state = await updateUserMemory(content);
-      toast.success(state.message, {
-        description: state.description,
-      });
-    });
-  }
+  const { data: memories = initialMemories } = useUserMemories(initialMemories);
+  const deleteMutation = useDeleteUserMemory();
 
   useEffect(() => {
     if (selectedModel && selectedModel !== defaultModel) {
@@ -74,17 +64,15 @@ export default function MemoryForm({
       return;
     }
 
-    updateUserMemoryEnabled(enabled).then((enabled: boolean) => {
-      const title = enabled
+    startTransition(async () => {
+      const nextEnabled = await updateUserMemoryEnabled(enabled);
+      const title = nextEnabled
         ? translations.settings.memory.sonner.enabled.title
         : translations.settings.memory.sonner.disabled.title;
-      const description = enabled
+      const description = nextEnabled
         ? translations.settings.memory.sonner.enabled.description
         : translations.settings.memory.sonner.disabled.description;
-
-      toast(title, {
-        description,
-      });
+      toast(title, { description });
     });
   }, [
     enabled,
@@ -102,58 +90,43 @@ export default function MemoryForm({
       <p className="text-muted-foreground text-sm">
         {translations.settings.memory.defaultModel.description}
       </p>
-      <div>
-        <Select value={selectedModel} onValueChange={setSelectedModel}>
-          <SelectTrigger>
-            <SelectValue
-              placeholder={translations.settings.memory.defaultModel.placeholder}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {providers.map((provider, index) => (
-              <SelectGroup key={`${provider.id}-${index}`}>
-                <SelectLabel>{provider.name}</SelectLabel>
-                {provider.models.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
-                    {model.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <Select value={selectedModel} onValueChange={setSelectedModel}>
+        <SelectTrigger>
+          <SelectValue
+            placeholder={translations.settings.memory.defaultModel.placeholder}
+          />
+        </SelectTrigger>
+        <SelectContent>
+          {providers.map((provider, index) => (
+            <SelectGroup key={`${provider.id}-${index}`}>
+              <SelectLabel>{provider.name}</SelectLabel>
+              {provider.models.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  {model.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          ))}
+        </SelectContent>
+      </Select>
+
       <h4 className="font-medium text-sm">{translations.settings.memory.sectionTitle}</h4>
       <div className="flex items-center gap-2">
         <Switch id="memory" checked={enabled} onCheckedChange={setEnabled} />
         <Label htmlFor="memory">{translations.settings.memory.toggle.title}</Label>
       </div>
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-sm">
-          {translations.settings.memory.toggle.description}
-        </p>
-        <p className="text-muted-foreground text-sm">
-          {enabled
-            ? translations.settings.memory.toggle.descriptionEnabled
-            : translations.settings.memory.toggle.descriptionDisabled}
-        </p>
-      </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex w-full flex-col items-start gap-4"
-      >
-        <Textarea
-          name="memory"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+      <p className="text-muted-foreground text-sm">
+        {translations.settings.memory.toggle.description}
+      </p>
+
+      <div className="w-full">
+        <TypedMemoryBrowser
+          memories={memories}
+          onDelete={(id) => deleteMutation.mutateAsync(id)}
+          isDeleting={deleteMutation.isPending}
           disabled={!enabled}
-          rows={6}
-          className="resize-none"
         />
-        <Button type="submit" className="self-end px-5" disabled={!enabled || isPending}>
-          {translations.settings.memory.saveButton}
-        </Button>
-      </form>
+      </div>
     </div>
   );
 }

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MemoryType } from "@/lib/prisma/generated/client";
+import { MemoryType } from "@/types/memory";
 
 export type MemoryItem = {
   id: string;

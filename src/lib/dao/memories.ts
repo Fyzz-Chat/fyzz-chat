@@ -61,19 +61,6 @@ export async function appendMemory(userId: string, content: string, projectId?: 
   });
 }
 
-export async function replaceUserMemories(userId: string, entries: string[]) {
-  await prisma.$transaction([
-    prisma.memory.deleteMany({
-      where: { userId, projectId: null, type: MemoryType.fact },
-    }),
-    ...entries.map((content) =>
-      prisma.memory.create({
-        data: { content, userId, projectId: null, type: MemoryType.fact },
-      })
-    ),
-  ]);
-}
-
 export async function deleteMemory(id: string, userId: string) {
   return prisma.memory.delete({
     where: { id, userId },

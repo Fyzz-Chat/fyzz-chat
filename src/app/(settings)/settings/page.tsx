@@ -142,7 +142,7 @@ export default async function SettingsPage() {
                   <CardContent>
                     <MemoryForm
                       defaultModel={user?.defaultModel ?? undefined}
-                      memory={memories.fact.map((m) => m.content).join("\n") || undefined}
+                      initialMemories={memories}
                       memoryEnabled={user?.memoryEnabled ?? false}
                       providers={providers}
                     />
