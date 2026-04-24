@@ -10,10 +10,21 @@ export async function getUserMemories(userId: string) {
   });
 }
 
+const browserMemorySelect = {
+  id: true,
+  type: true,
+  content: true,
+  confidence: true,
+  category: true,
+  source: true,
+  createdAt: true,
+} as const;
+
 export async function getAllUserMemoriesGrouped(userId: string) {
   const rows = await prisma.memory.findMany({
     where: { userId, projectId: null },
     orderBy: { createdAt: "desc" },
+    select: browserMemorySelect,
   });
   const grouped: Record<MemoryType, typeof rows> = {
     [MemoryType.fact]: [],
