@@ -2,6 +2,7 @@
 
 import { use, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { PersonaForm } from "@/components/settings/persona-form";
 import {
   type GroupedMemories,
   TypedMemoryBrowser,
@@ -25,11 +26,15 @@ import type { PublicProvider } from "@/types/provider";
 export default function MemoryForm({
   defaultModel,
   initialMemories,
+  initialDisplayName,
+  initialAgentName,
   memoryEnabled,
   providers,
 }: Readonly<{
   defaultModel?: string;
   initialMemories: GroupedMemories;
+  initialDisplayName: string | null;
+  initialAgentName: string | null;
   memoryEnabled: boolean;
   providers: PublicProvider[];
 }>) {
@@ -118,6 +123,12 @@ export default function MemoryForm({
       <p className="text-muted-foreground text-sm">
         {translations.settings.memory.toggle.description}
       </p>
+
+      <PersonaForm
+        initialDisplayName={initialDisplayName}
+        initialAgentName={initialAgentName}
+        disabled={!enabled}
+      />
 
       <div className="w-full">
         <TypedMemoryBrowser

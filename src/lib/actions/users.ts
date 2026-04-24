@@ -284,6 +284,36 @@ export async function updateDefaultModel(defaultModel: string): Promise<string> 
   return defaultModel;
 }
 
+const PERSONA_MAX_CHARS = 60;
+
+function normalizePersonaField(value: string): string | null {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  return trimmed.slice(0, PERSONA_MAX_CHARS);
+}
+
+export async function updateUserPersona(input: {
+  displayName?: string;
+  agentName?: string;
+}): Promise<void> {
+  const userId = await getUserIdFromSession();
+
+  const data: { displayName?: string | null; agentName?: string | null } = {};
+  if (input.displayName !== undefined) {
+    data.displayName = normalizePersonaField(input.displayName);
+  }
+  if (input.agentName !== undefined) {
+    data.agentName = normalizePersonaField(input.agentName);
+  }
+
+  if (Object.keys(data).length === 0) return;
+
+  await prisma.user.update({
+    where: { id: userId },
+    data,
+  });
+}
+
 export async function getMcpServers(): Promise<JsonValue | undefined> {
   const userId = await getUserIdFromSession();
 

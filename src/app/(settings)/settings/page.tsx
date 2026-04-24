@@ -46,6 +46,8 @@ export default async function SettingsPage() {
       skillsEnabled: true,
       mcpServers: true,
       defaultModel: true,
+      displayName: true,
+      agentName: true,
       accounts: {
         select: {
           password: true,
@@ -143,6 +145,8 @@ export default async function SettingsPage() {
                     <MemoryForm
                       defaultModel={user?.defaultModel ?? undefined}
                       initialMemories={memories}
+                      initialDisplayName={user?.displayName ?? null}
+                      initialAgentName={user?.agentName ?? null}
                       memoryEnabled={user?.memoryEnabled ?? false}
                       providers={providers}
                     />
