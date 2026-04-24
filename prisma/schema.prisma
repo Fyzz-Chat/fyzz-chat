@@ -32,6 +32,8 @@ model User {
   freeMessages  Int            @default(10) @map("free_messages")
   memoryEnabled Boolean        @default(false) @map("memory_enabled")
   skillsEnabled Boolean        @default(false) @map("skills_enabled")
+  displayName   String?        @map("display_name")
+  agentName     String?        @map("agent_name")
   mcpServers    Json?          @map("mcp_servers")
   defaultModel  String?        @map("default_model")
   conversations Conversation[]
