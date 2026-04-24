@@ -10,6 +10,22 @@ export async function getUserMemories(userId: string) {
   });
 }
 
+export async function getAllUserMemoriesGrouped(userId: string) {
+  const rows = await prisma.memory.findMany({
+    where: { userId, projectId: null },
+    orderBy: { createdAt: "desc" },
+  });
+  const grouped: Record<MemoryType, typeof rows> = {
+    [MemoryType.fact]: [],
+    [MemoryType.opinion]: [],
+    [MemoryType.learning]: [],
+    [MemoryType.context]: [],
+    [MemoryType.feedback]: [],
+  };
+  for (const row of rows) grouped[row.type].push(row);
+  return grouped;
+}
+
 const memorySelect = {
   id: true,
   content: true,

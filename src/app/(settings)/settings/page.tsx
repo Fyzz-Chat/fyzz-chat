@@ -29,10 +29,9 @@ import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
-import { getMemoriesByType } from "@/lib/dao/memories";
+import { getAllUserMemoriesGrouped } from "@/lib/dao/memories";
 import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
 import { getUserIdFromSession } from "@/lib/dao/users";
-import { MemoryType } from "@/lib/prisma/generated/client";
 import prisma from "@/lib/prisma/prisma";
 
 export default async function SettingsPage() {
@@ -54,7 +53,7 @@ export default async function SettingsPage() {
       },
     },
   });
-  const memories = await getMemoriesByType(userId, MemoryType.fact);
+  const memories = await getAllUserMemoriesGrouped(userId);
   const apiKeys = await getApiKeysByUser(userId);
   const skills = await getAllUserSkillsForSettings(userId);
   const providers = getProvidersPublic();
@@ -143,7 +142,7 @@ export default async function SettingsPage() {
                   <CardContent>
                     <MemoryForm
                       defaultModel={user?.defaultModel ?? undefined}
-                      memory={memories.map((m) => m.content).join("\n") || undefined}
+                      memory={memories.fact.map((m) => m.content).join("\n") || undefined}
                       memoryEnabled={user?.memoryEnabled ?? false}
                       providers={providers}
                     />
