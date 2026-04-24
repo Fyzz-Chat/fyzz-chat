@@ -13,6 +13,13 @@ export async function getProject(id: string) {
   });
 }
 
+export async function getProjectMeta(id: string) {
+  return prisma.project.findUnique({
+    where: { id },
+    select: { name: true, description: true },
+  });
+}
+
 export async function getProjects(): Promise<ProjectWithCount[]> {
   const userId = await getUserIdFromSession();
 

@@ -1,4 +1,5 @@
 import { getMemoriesByType, getProjectMemoriesByType } from "@/lib/dao/memories";
+import { getProjectMeta } from "@/lib/dao/projects";
 import { getRecentLowRatedMessages } from "@/lib/dao/ratings";
 import { getUserPersona } from "@/lib/dao/users";
 import { MemoryType } from "@/lib/prisma/generated/client";
@@ -123,6 +124,15 @@ function buildPersonaLines(
   return lines.length === 0 ? null : lines.join(" ");
 }
 
+function buildProjectLine(
+  project: { name: string; description: string | null } | null
+): string | null {
+  if (!project) return null;
+  return project.description
+    ? `You are working in the project "${project.name}": ${project.description}`
+    : `You are working in the project "${project.name}".`;
+}
+
 export async function getAgentMemoryPrompt(
   userId: string,
   projectId?: string
@@ -141,8 +151,9 @@ export async function getAgentMemoryPrompt(
       getRecentLowRatedMessages(userId, LOW_RATED_LIMIT),
     ]);
 
-  const [projectFacts, projectLearnings, projectContext] = projectId
+  const [projectMeta, projectFacts, projectLearnings, projectContext] = projectId
     ? await Promise.all([
+        getProjectMeta(projectId),
         getProjectMemoriesByType(projectId, MemoryType.fact, { limit: FACT_LIMIT }),
         getProjectMemoriesByType(projectId, MemoryType.learning, {
           limit: LEARNING_LIMIT,
@@ -150,7 +161,7 @@ export async function getAgentMemoryPrompt(
         }),
         getProjectMemoriesByType(projectId, MemoryType.context),
       ])
-    : [[], [], []];
+    : [null, [], [], []];
 
   const sections: (string | null)[] = [
     section(
@@ -199,11 +210,13 @@ export async function getAgentMemoryPrompt(
 
   const body = sections.filter((s): s is string => s !== null).join("\n\n");
   const personaLines = buildPersonaLines(persona);
-  const personaBlock = personaLines ? `${personaLines}\n\n` : "";
+  const projectLine = buildProjectLine(projectMeta);
+  const headerParts = [personaLines, projectLine].filter((s): s is string => s !== null);
+  const headerBlock = headerParts.length > 0 ? `${headerParts.join("\n\n")}\n\n` : "";
 
   if (body.length === 0) {
-    return `\n\n${personaBlock}${MEMORY_INSTRUCTIONS}`;
+    return `\n\n${headerBlock}${MEMORY_INSTRUCTIONS}`;
   }
 
-  return `\n\n${personaBlock}You are operating with persistent memory. Here is what you know about the user and their work:\n\n${body}\n\n${MEMORY_INSTRUCTIONS}`;
+  return `\n\n${headerBlock}You are operating with persistent memory. Here is what you know about the user and their work:\n\n${body}\n\n${MEMORY_INSTRUCTIONS}`;
 }
