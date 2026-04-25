@@ -1,3 +1,16 @@
+# [0.36.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.35.0...v0.36.0) (2026-04-25)
+
+
+### Bug Fixes
+
+* **openai:** update image generation output format and parameters to improve quality ([b4f32c8](https://github.com/Fyzz-Chat/fyzz-chat/commit/b4f32c85adc2e7f93752a379357e3ed72ee303d4))
+
+
+### Features
+
+* **openai:** update image generation model to gpt-image-2 ([60c8e3b](https://github.com/Fyzz-Chat/fyzz-chat/commit/60c8e3b4b277d2538b4e41da1581ca5f2cb2b131))
+* **providers:** add GPT-5.4 nano, GPT-5.4 mini, GPT-5.5, Kimi K2.6 ([6254dea](https://github.com/Fyzz-Chat/fyzz-chat/commit/6254dea8435448e98714c646f52de05199c56f66))
+
 # [0.35.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.34.0...v0.35.0) (2026-04-24)
 
 
