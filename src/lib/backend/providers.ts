@@ -299,7 +299,7 @@ export function getProviderTools({
 
     if (supportsOpenAIImageGeneration) {
       tools.image_generation = openai.tools.imageGeneration({
-        model: "gpt-image-1.5",
+        model: "gpt-image-2",
         outputFormat: "jpeg",
         outputCompression: 50,
       }) as Tool;
