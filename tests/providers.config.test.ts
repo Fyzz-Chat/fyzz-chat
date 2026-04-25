@@ -52,7 +52,10 @@ const expectedCatalogShape: {
       { id: "gpt-5.2", runtimePreset: "chat" },
       { id: "gpt-5.2-codex", runtimePreset: "chat" },
       { id: "gpt-5.3-codex", runtimePreset: "chat" },
+      { id: "gpt-5.4-nano", runtimePreset: "chat" },
+      { id: "gpt-5.4-mini", runtimePreset: "chat" },
       { id: "gpt-5.4", runtimePreset: "chat" },
+      { id: "gpt-5.5", runtimePreset: "chat" },
       { id: "o3-mini", runtimePreset: "chat" },
       { id: "o4-mini", runtimePreset: "chat" },
     ],
@@ -104,6 +107,7 @@ const expectedCatalogShape: {
     id: "other",
     models: [
       { id: "accounts/fireworks/models/kimi-k2p5", runtimePreset: "chat" },
+      { id: "accounts/fireworks/models/kimi-k2p6", runtimePreset: "chat" },
       { id: "accounts/fireworks/models/glm-5", runtimePreset: "chat" },
     ],
   },

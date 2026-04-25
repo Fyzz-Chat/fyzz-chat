@@ -21,7 +21,10 @@ export const OPENAI_IMAGE_GENERATION_MODELS = [
   "gpt-5",
   "gpt-5.1",
   "gpt-5.2",
+  "gpt-5.4-nano",
+  "gpt-5.4-mini",
   "gpt-5.4",
+  "gpt-5.5",
 ] as const;
 
 export const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
