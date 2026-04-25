@@ -2,7 +2,7 @@
 
 import "server-only";
 
-import { convertToModelMessages, generateText } from "ai";
+import { generateText } from "ai";
 import { deleteFile } from "@/lib/aws/s3";
 import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { getModelRuntime } from "@/lib/backend/providers";
@@ -61,36 +61,32 @@ async function saveConversationTitle(conversationId: string, title: string) {
   return updatedConversation;
 }
 
-const TITLER_MAX_MESSAGES = 4;
 const TITLER_MAX_CHARS = 2000;
 
-function truncateMessagesForTitler(messages: CustomUIMessage[]): CustomUIMessage[] {
-  let remaining = TITLER_MAX_CHARS;
-  return messages.slice(0, TITLER_MAX_MESSAGES).map((message) => {
-    const parts: CustomUIMessage["parts"] = [];
-    for (const part of message.parts) {
-      if (remaining <= 0) break;
-      if (part.type === "text" && typeof part.text === "string") {
-        const text = part.text.slice(0, remaining);
-        remaining -= text.length;
-        parts.push({ ...part, text });
-      }
-    }
-    return { ...message, parts };
-  });
+function extractFirstUserPrompt(messages: CustomUIMessage[]): string {
+  const firstUserMessage = messages.find((message) => message.role === "user");
+  if (!firstUserMessage) return "";
+  const text = firstUserMessage.parts
+    .filter((part) => part.type === "text" && typeof part.text === "string")
+    .map((part) => (part as { text: string }).text)
+    .join("\n");
+  return text.slice(0, TITLER_MAX_CHARS);
 }
 
 export async function updateConversationTitle(
   conversationId: string,
   messages: CustomUIMessage[]
 ) {
+  const prompt = extractFirstUserPrompt(messages);
+  if (!prompt) return null;
+
   const modelId = "gpt-5-nano";
   const { model } = getModelRuntime(modelId);
   const { text } = await generateText({
     model,
     system:
-      "Your job is to generate a title for a conversation based on the messages. The title must always be exactly 4 words. Only return the title, no other text.",
-    messages: await convertToModelMessages(truncateMessagesForTitler(messages)),
+      "Your job is to generate a title for a conversation based on the user's first message. The title must always be exactly 4 words. Only return the title, no other text.",
+    prompt,
   });
 
   const updatedConversation = await saveConversationTitle(conversationId, text);
