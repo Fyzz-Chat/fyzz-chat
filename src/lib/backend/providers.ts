@@ -300,8 +300,10 @@ export function getProviderTools({
     if (supportsOpenAIImageGeneration) {
       tools.image_generation = openai.tools.imageGeneration({
         model: "gpt-image-2",
-        outputFormat: "jpeg",
-        outputCompression: 50,
+        outputFormat: "png",
+        background: "auto",
+        quality: "auto",
+        size: "auto",
       }) as Tool;
     }
 
