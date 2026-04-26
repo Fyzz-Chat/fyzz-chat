@@ -21,6 +21,7 @@ import {
 import {
   MemoryToolHeader,
   OpenAICodeInterpreterOutput,
+  SearchToolHeader,
   SkillToolHeader,
   Tool,
   ToolContent,
@@ -33,6 +34,7 @@ import MessageCopyAction from "@/components/chat/message-copy-action";
 import MessageRating from "@/components/chat/message-rating";
 import MessageRegenerateAction from "@/components/chat/message-regenerate-action";
 import MessageShareAction from "@/components/chat/message-share-action";
+import { MessageSources } from "@/components/chat/message-sources";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";
@@ -271,12 +273,21 @@ function MessageItem({
               </Tool>
             );
           }
-          case "tool-web_search": {
+          case "tool-web_search":
+          case "tool-x_search": {
+            const searchOutput = "output" in part ? part.output : undefined;
+            const providerExecuted =
+              "providerExecuted" in part ? part.providerExecuted : undefined;
             return (
-              <Tool key={`${message.id}-tool-search_web-${i}`}>
-                <ToolHeader type="tool-search_web" state={part.state} />
+              <Tool key={`${message.id}-${part.type}-${i}`}>
+                <SearchToolHeader
+                  state={part.state}
+                  input={part.input}
+                  output={searchOutput}
+                  providerExecuted={providerExecuted}
+                />
                 <ToolContent>
-                  <ToolInput input={part.input} />
+                  <ToolInput input={part.input} output={searchOutput} />
                 </ToolContent>
               </Tool>
             );
@@ -326,6 +337,9 @@ function MessageItem({
           }
         }
       })}
+      {message.role === "assistant" && sourceUrls.length > 0 && (
+        <MessageSources sources={sourceUrls} />
+      )}
       {!isStreaming && message.role === "assistant" && (
         <MessageToolbar>
           <MessageActions>

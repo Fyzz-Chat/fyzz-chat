@@ -5,13 +5,13 @@ import type { ToolUIPart } from "ai";
 import {
   BrainIcon,
   ChevronDownIcon,
+  GlobeIcon,
   LightbulbIcon,
   TrashIcon,
   WrenchIcon,
 } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useMemo } from "react";
-import { CodeBlock } from "@/components/ai-elements/code-block";
 import ShiningText from "@/components/shining-text";
 import {
   Collapsible,
@@ -232,17 +232,161 @@ export const ToolContent = ({ className, ...props }: ToolContentProps) => (
 
 export type ToolInputProps = ComponentProps<"div"> & {
   input: ToolUIPart["input"];
+  output?: unknown;
 };
 
-export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
-  <div className={cn("space-y-2 overflow-hidden p-4", className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-      Parameters
-    </h4>
-    <div className="rounded-md bg-muted/50">
-      <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
+function isEmptyObject(value: unknown): boolean {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value as Record<string, unknown>).length === 0
+  );
+}
+
+// Provider-defined tools (e.g. OpenAI web_search) ship an empty `input` and put
+// the actual call details in `output.action`. Prefer that when the input is empty.
+function pickDisplayedInput(input: ToolUIPart["input"], output: unknown): unknown {
+  if (!isEmptyObject(input) || !output || typeof output !== "object") return input;
+  const action = (output as Record<string, unknown>).action;
+  return action ?? input;
+}
+
+export const ToolInput = ({ className, input, output, ...props }: ToolInputProps) => {
+  const displayed = pickDisplayedInput(input, output);
+  return (
+    <div className={cn("space-y-2 p-4", className)} {...props}>
+      <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+        Parameters
+      </h4>
+      <pre className="max-h-96 overflow-y-auto whitespace-pre-wrap break-words rounded-md bg-muted/50 p-3 font-mono text-foreground text-xs leading-relaxed">
+        {JSON.stringify(displayed, null, 2)}
+      </pre>
     </div>
-  </div>
+  );
+};
+
+export type SearchToolHeaderProps = {
+  state: ToolUIPart["state"];
+  input: ToolUIPart["input"];
+  output?: unknown;
+  providerExecuted?: boolean;
+  className?: string;
+};
+
+type SearchAction = { runningVerb: string; doneVerb: string; target: string };
+
+function asObject(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function firstString(obj: Record<string, unknown>, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "string" && value.trim().length > 0) return value;
+  }
+  return undefined;
+}
+
+// Different providers expose the search query in different places:
+// - Anthropic / Google: input.query
+// - OpenAI: output.action.{query,url,pattern}
+// - xAI (web_search, x_search): output.query (top-level)
+function extractSearchAction(
+  input: ToolUIPart["input"],
+  output: unknown
+): SearchAction | undefined {
+  const outputObj = asObject(output);
+  const action = asObject(outputObj?.action);
+
+  if (action?.type === "openPage") {
+    const url = typeof action.url === "string" ? action.url : undefined;
+    if (url) return { runningVerb: "Opening", doneVerb: "Opened", target: url };
+  }
+  if (action?.type === "findInPage") {
+    const pattern = typeof action.pattern === "string" ? action.pattern : undefined;
+    if (pattern) {
+      return {
+        runningVerb: "Searching in page for",
+        doneVerb: "Searched in page for",
+        target: `"${pattern}"`,
+      };
+    }
+  }
+
+  const query =
+    (action?.type === "search" && typeof action.query === "string"
+      ? action.query
+      : undefined) ??
+    firstString(outputObj ?? {}, ["query", "q", "search_query", "searchQuery"]) ??
+    firstString(asObject(input) ?? {}, ["query", "q", "search_query", "searchQuery"]);
+
+  if (query) {
+    return {
+      runningVerb: "Searching the web for",
+      doneVerb: "Searched the web for",
+      target: `"${query}"`,
+    };
+  }
+
+  const queries = asObject(input)?.queries ?? outputObj?.queries;
+  if (Array.isArray(queries)) {
+    const joined = queries.filter((q): q is string => typeof q === "string").join(", ");
+    if (joined.length > 0) {
+      return {
+        runningVerb: "Searching the web for",
+        doneVerb: "Searched the web for",
+        target: `"${joined}"`,
+      };
+    }
+  }
+
+  return undefined;
+}
+
+export const SearchToolHeader = memo(
+  ({ className, state, input, output, providerExecuted }: SearchToolHeaderProps) => {
+    const { isOpen } = useTool();
+    const action = extractSearchAction(input, output);
+    // xAI's web_search / x_search are provider-executed and never emit a
+    // tool-result, so state stays at `input-available` forever. Treat that
+    // terminal state as "done" for any provider-executed tool.
+    const hasOutput = output !== undefined && output !== null;
+    const stuckProviderTool = providerExecuted && state === "input-available";
+    const isRunning = !hasOutput && !stuckProviderTool && state !== "output-available";
+
+    return (
+      <CollapsibleTrigger
+        className={cn(
+          "group/tool flex items-center gap-2 text-muted-foreground text-sm",
+          className
+        )}
+      >
+        {isRunning ? (
+          <p className="animate-pulse text-primary drop-shadow-[0_0_3px_var(--ring)]">
+            <ShiningText>
+              {action
+                ? `${action.runningVerb} ${action.target}...`
+                : "Searching the web..."}
+            </ShiningText>
+          </p>
+        ) : (
+          <div className="flex items-center gap-2">
+            <GlobeIcon size={16} />
+            <p>{action ? `${action.doneVerb} ${action.target}` : "Searched the web"}</p>
+          </div>
+        )}
+        <ChevronDownIcon
+          className={cn(
+            "size-4 text-muted-foreground opacity-0 transition-all group-hover/tool:opacity-100",
+            isOpen ? "rotate-0 opacity-100" : "-rotate-90"
+          )}
+        />
+      </CollapsibleTrigger>
+    );
+  }
 );
 
 export type ToolOutputProps = ComponentProps<"div"> & {
