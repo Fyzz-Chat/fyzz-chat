@@ -18,6 +18,7 @@ import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
 import {
+  MESSAGES_DEFAULT_LIMIT,
   useAddMessage,
   useConversation,
   useCreateConversationOptimistic,
@@ -30,7 +31,7 @@ import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";
 
-const MESSAGE_WINDOW_SIZE = 16;
+const MESSAGE_WINDOW_SIZE = MESSAGES_DEFAULT_LIMIT;
 
 export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const router = useRouter();

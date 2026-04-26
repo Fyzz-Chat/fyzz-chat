@@ -29,6 +29,11 @@ import type {
   PartialConversation,
 } from "@/types/chat";
 
+// Shared by usePrefetchConversation and useMessages so prefetch and the actual
+// fetch land on the same React Query cache key.
+export const MESSAGES_DEFAULT_PAGE = 1;
+export const MESSAGES_DEFAULT_LIMIT = 16;
+
 function prependConversationToFirstPage(
   old: ConversationsInfiniteData,
   conversation: PartialConversation
@@ -206,7 +211,13 @@ export function usePrefetchConversation() {
   return useCallback(
     (id: string) => {
       queryClient.prefetchQuery(trpc.conversation.queryOptions({ id }));
-      queryClient.prefetchQuery(trpc.messages.queryOptions({ id }));
+      queryClient.prefetchQuery(
+        trpc.messages.queryOptions({
+          id,
+          page: MESSAGES_DEFAULT_PAGE,
+          limit: MESSAGES_DEFAULT_LIMIT,
+        })
+      );
     },
     [queryClient, trpc]
   );
@@ -229,7 +240,11 @@ export function useMessages(
   };
 
   const myQuery = trpc.messages.queryOptions(
-    { id, page: overrides?.page, limit: overrides?.limit },
+    {
+      id,
+      page: overrides?.page ?? MESSAGES_DEFAULT_PAGE,
+      limit: overrides?.limit ?? MESSAGES_DEFAULT_LIMIT,
+    },
     options
   );
 
