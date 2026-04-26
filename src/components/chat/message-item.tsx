@@ -70,7 +70,6 @@ function MessageItem({
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
 
   const attachments: FileUIPart[] = useMemo(() => {
     return message.parts.filter((part): part is FileUIPart => part.type === "file");
@@ -96,19 +95,17 @@ function MessageItem({
     setEditedContent("");
   }, []);
 
-  const handleSaveEdit = useCallback(async () => {
+  const handleSaveEdit = useCallback(() => {
     if (!onEdit || !editedContent.trim() || editedContent === textContent) {
       setIsEditing(false);
       return;
     }
 
-    setIsSaving(true);
-    try {
-      await onEdit(message.id, editedContent);
-      setIsEditing(false);
-    } finally {
-      setIsSaving(false);
-    }
+    // Close the editor immediately; `onEdit` resolves only when the model finishes streaming.
+    const contentToSubmit = editedContent;
+    setIsEditing(false);
+    setEditedContent("");
+    void onEdit(message.id, contentToSubmit);
   }, [onEdit, editedContent, textContent, message.id]);
 
   useEffect(() => {
@@ -354,7 +351,7 @@ function MessageItem({
                   label="Save"
                   tooltip="Save changes"
                   onClick={handleSaveEdit}
-                  disabled={isSaving || !editedContent.trim()}
+                  disabled={!editedContent.trim()}
                 >
                   <Check className="size-4" />
                 </MessageAction>
@@ -362,7 +359,6 @@ function MessageItem({
                   label="Cancel"
                   tooltip="Cancel editing"
                   onClick={handleCancelEdit}
-                  disabled={isSaving}
                 >
                   <X className="size-4" />
                 </MessageAction>

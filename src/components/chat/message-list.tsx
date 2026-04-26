@@ -26,7 +26,7 @@ import {
 } from "@/lib/queries/conversations";
 import { useOptimisticallyTrimMessagesUpToAnchor } from "@/lib/queries/messages";
 import { useShares } from "@/lib/queries/shares";
-import { cn, uploadFileParts } from "@/lib/utils";
+import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";
 
@@ -189,6 +189,9 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       }
 
       const rollback = trimPersistedMessages(messageId, newContent);
+      setMessagesRef.current(
+        filterMessagesUpToAnchor(messagesRef.current, messageId, newContent)
+      );
 
       try {
         await regenerateRef.current({
