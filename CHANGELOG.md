@@ -1,3 +1,20 @@
+# [0.37.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.36.0...v0.37.0) (2026-04-26)
+
+
+### Bug Fixes
+
+* **chat:** prefetch with same key as the actual page load ([ec0f6bc](https://github.com/Fyzz-Chat/fyzz-chat/commit/ec0f6bc26355dd179917ca0af2958ac861274585))
+* **chat:** simplify message editing by removing saving state and improving edit handling ([6cf9f73](https://github.com/Fyzz-Chat/fyzz-chat/commit/6cf9f73f5b1109eaaf239770501559d97971d34a))
+* **conversations:** simplify title generation by extracting the first user prompt ([6736fce](https://github.com/Fyzz-Chat/fyzz-chat/commit/6736fce8a959cc0b25c0d06c4d748cad0dff3653))
+* **sidebar:** pass user prop to prevent hydration error ([3a81612](https://github.com/Fyzz-Chat/fyzz-chat/commit/3a8161206b447afc9278b2faf897f77d561e62e7))
+* **title:** allow shorter than 4 word titles ([02ed5c3](https://github.com/Fyzz-Chat/fyzz-chat/commit/02ed5c3c907bc6586970624ae9feacdac495948e))
+
+
+### Features
+
+* **google:** add gemma 4 models ([ebda74d](https://github.com/Fyzz-Chat/fyzz-chat/commit/ebda74d4869876e1b6e590eb7873ad79f24c3ba4))
+* **tool:** show search results and queries better ([0563e5e](https://github.com/Fyzz-Chat/fyzz-chat/commit/0563e5ec98a08cabc5e9ea8eabf59bd5544b4bf0))
+
 # [0.36.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.35.0...v0.36.0) (2026-04-25)
 
 
