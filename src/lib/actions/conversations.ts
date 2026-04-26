@@ -85,7 +85,7 @@ export async function updateConversationTitle(
   const { text } = await generateText({
     model,
     system:
-      "Your job is to generate a title for a conversation based on the user's first message. The title must always be exactly 4 words. Only return the title, no other text.",
+      "Your job is to generate a title for a conversation based on the user's first message. The title must always be 4 words or less. Only return the title, no other text.",
     prompt,
   });
 
