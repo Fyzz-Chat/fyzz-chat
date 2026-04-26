@@ -20,11 +20,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { getVersion } from "@/lib/backend/utils";
-import { getUserFromSessionPublic } from "@/lib/dao/users";
+import type { SessionUser } from "@/lib/dao/users";
 
-export async function AppSidebar({ children }: Readonly<{ children: ReactNode }>) {
+export function AppSidebar({
+  user,
+  children,
+}: Readonly<{ user: SessionUser | null; children: ReactNode }>) {
   const version = getVersion();
-  const user = await getUserFromSessionPublic();
 
   return (
     <>

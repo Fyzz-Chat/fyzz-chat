@@ -56,7 +56,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         <ModelStoreInitializer providers={providers} defaultModel={user?.defaultModel} />
         <ChatLayoutProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSidebar>
+            <AppSidebar user={user}>
               <ChatSidebarWithProjects
                 conversations={initialConversationsData}
                 projects={initialProjectsData}
