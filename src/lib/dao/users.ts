@@ -4,9 +4,26 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { auth } from "@/auth";
+import { logger } from "@/lib/logger";
+import { Prisma } from "@/lib/prisma/generated/client";
 import prisma from "@/lib/prisma/prisma";
 
 const unauthenticatedRedirect = "/login";
+
+export async function updateUserById(
+  userId: string,
+  data: Prisma.UserUpdateInput
+): Promise<void> {
+  try {
+    await prisma.user.update({ where: { id: userId }, data });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      logger.warn(`Stale session: user ${userId} no longer exists; redirecting to login`);
+      redirect(unauthenticatedRedirect);
+    }
+    throw error;
+  }
+}
 
 export async function getUserByEmail(email: string) {
   const user = await prisma.user.findUnique({

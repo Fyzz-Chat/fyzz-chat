@@ -7,7 +7,11 @@ import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 import conf from "@/lib/config";
-import { getUserFromSession, getUserIdFromSession } from "@/lib/dao/users";
+import {
+  getUserFromSession,
+  getUserIdFromSession,
+  updateUserById,
+} from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import publicConf from "@/lib/public-config";
@@ -262,25 +266,13 @@ export async function deleteUser(): Promise<FormState> {
 
 export async function updateUserMemoryEnabled(memoryEnabled: boolean): Promise<boolean> {
   const userId = await getUserIdFromSession();
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      memoryEnabled,
-    },
-  });
-
+  await updateUserById(userId, { memoryEnabled });
   return memoryEnabled;
 }
 
 export async function updateDefaultModel(defaultModel: string): Promise<string> {
   const userId = await getUserIdFromSession();
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: { defaultModel },
-  });
-
+  await updateUserById(userId, { defaultModel });
   return defaultModel;
 }
 
@@ -308,10 +300,7 @@ export async function updateUserPersona(input: {
 
   if (Object.keys(data).length === 0) return;
 
-  await prisma.user.update({
-    where: { id: userId },
-    data,
-  });
+  await updateUserById(userId, data);
 }
 
 export async function getMcpServers(): Promise<JsonValue | undefined> {
@@ -346,12 +335,7 @@ export async function saveMcpServers(mcpServers: string): Promise<string> {
     }
   }
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      mcpServers,
-    },
-  });
+  await updateUserById(userId, { mcpServers });
 
   return "success";
 }

@@ -9,9 +9,8 @@ import {
   InvalidSkillNameError,
   updateSkill as updateSkillDao,
 } from "@/lib/dao/skills";
-import { getUserIdFromSession } from "@/lib/dao/users";
+import { getUserIdFromSession, updateUserById } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
-import prisma from "@/lib/prisma/prisma";
 
 type SkillActionError = "duplicate_name" | "invalid_name" | "server";
 
@@ -76,9 +75,6 @@ export async function deleteSkill(id: string): Promise<SkillActionResult<null>> 
 
 export async function updateUserSkillsEnabled(skillsEnabled: boolean): Promise<boolean> {
   const userId = await getUserIdFromSession();
-  await prisma.user.update({
-    where: { id: userId },
-    data: { skillsEnabled },
-  });
+  await updateUserById(userId, { skillsEnabled });
   return skillsEnabled;
 }
