@@ -97,26 +97,35 @@ enum MessageRole {
   assistant
 }
 
-model Message {
-  id                 String       @id @default(uuid())
-  role               MessageRole
-  parts              Json?
-  metadata           Json         @default("{}")
-  content            String?
-  // TODO[SEQ_CUTOVER]: Make this required (Int) after prod backfill is fully complete.
-  sequence           Int?
-  promptTokens       Int?         @default(0) @map("prompt_tokens")
-  completionTokens   Int?         @default(0) @map("completion_tokens")
-  conversationId     String       @map("conversation_id")
-  conversation       Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  shares             Share[]
-  ratings            Rating[]
-  createdAt          DateTime     @default(now()) @map("created_at")
-  updatedAt          DateTime     @updatedAt @map("updated_at")
+enum MessageStatus {
+  complete
+  pending
+  failed
+}
 
+model Message {
+  id               String        @id @default(uuid())
+  role             MessageRole
+  parts            Json?
+  metadata         Json          @default("{}")
+  content          String?
+  // TODO[SEQ_CUTOVER]: Make this required (Int) after prod backfill is fully complete.
+  sequence         Int?
+  promptTokens     Int?          @default(0) @map("prompt_tokens")
+  completionTokens Int?          @default(0) @map("completion_tokens")
+  status           MessageStatus @default(complete)
+  externalId       String?       @map("external_id")
+  failedReason     String?       @map("failed_reason")
+  conversationId   String        @map("conversation_id")
+  conversation     Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  shares           Share[]
+  ratings          Rating[]
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  @@unique([conversationId, sequence])
   @@index([conversationId, createdAt])
   @@index([conversationId, sequence])
-  @@unique([conversationId, sequence])
   @@map("messages")
 }
 
@@ -203,10 +212,10 @@ model Skill {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
+  @@unique([userId, name])
   @@index([userId])
   @@index([projectId])
   @@index([userId, lastActivatedAt])
-  @@unique([userId, name])
   @@map("skills")
 }
 

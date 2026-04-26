@@ -25,8 +25,10 @@ import {
 } from "@/lib/dao/skills";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
+import { researchRouter } from "@/lib/trpc/routers/research";
 
 export const appRouter = createTRPCRouter({
+  research: researchRouter,
   status: publicProcedure.query(() => status()),
   providers: publicProcedure.query(() => getProvidersPublic()),
   numModels: publicProcedure.query(() => countModels()),
