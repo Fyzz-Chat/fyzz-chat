@@ -82,6 +82,12 @@ export default function ChatSettingsMenu({
   }, [browse, browseRef]);
 
   useEffect(() => {
+    if ((deepResearch || hasPendingResearch) && !browse) {
+      setBrowse(true);
+    }
+  }, [deepResearch, hasPendingResearch, browse]);
+
+  useEffect(() => {
     reasoningEffortRef.current = supportsReasoning ? reasoningEffort : undefined;
   }, [reasoningEffort, supportsReasoning, reasoningEffortRef]);
 
@@ -119,9 +125,15 @@ export default function ChatSettingsMenu({
           browse &&
             "text-(--theme-blue) hover:bg-(--theme-blue)/10 hover:text-(--theme-blue) dark:hover:bg-(--theme-blue)/10"
         )}
+        disabled={deepResearch || hasPendingResearch}
         onClick={() => setBrowse(!browse)}
         type="button"
         variant="ghost"
+        title={
+          deepResearch || hasPendingResearch
+            ? "Deep research has its own web search"
+            : undefined
+        }
       >
         <GlobeIcon className="size-4" />
         <span>Web search</span>

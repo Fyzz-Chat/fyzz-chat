@@ -51,7 +51,9 @@ const persistInput = debounce((input: string) => {
 
 export default function ChatInput() {
   const { handlersRef } = useChatInput();
-  const { status, areFilesUploading, hasPendingResearch } = useChatInputStatus();
+  const { status, areFilesUploading, deepResearch, hasPendingResearch } =
+    useChatInputStatus();
+  const modelSelectorLocked = deepResearch || hasPendingResearch;
   const { data: session } = useSession();
   const { setDialogOpen } = useContext(AuthContext);
   const providers = useModelStore((state) => state.providers);
@@ -153,11 +155,18 @@ export default function ChatInput() {
                   supportsReasoning={supportsReasoning}
                 />
                 <ModelSelector
-                  onOpenChange={setModelSelectorOpen}
-                  open={modelSelectorOpen}
+                  onOpenChange={modelSelectorLocked ? undefined : setModelSelectorOpen}
+                  open={modelSelectorLocked ? false : modelSelectorOpen}
                 >
                   <ModelSelectorTrigger asChild>
-                    <PromptInputButton>
+                    <PromptInputButton
+                      disabled={modelSelectorLocked}
+                      title={
+                        modelSelectorLocked
+                          ? "Model is locked while deep research is selected"
+                          : undefined
+                      }
+                    >
                       {modelProvider?.id && (
                         <ModelSelectorLogo provider={modelProvider.id} />
                       )}
