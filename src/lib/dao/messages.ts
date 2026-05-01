@@ -226,15 +226,6 @@ export async function deleteMessageChainAfterPersisted(
     throw new Error("Message not found");
   }
 
-  if (message.sequence === null) {
-    logger.warn({
-      message:
-        "Using createdAt fallback for deleteMessageChainAfterPersisted because sequence is null.",
-      conversationId,
-      messageId,
-    });
-  }
-
   await prisma.message.deleteMany({
     where: {
       conversation: {

@@ -17,72 +17,22 @@ beforeAll(async () => {
 });
 
 describe("message order policy", () => {
-  it("keeps ascending and descending order constants stable", () => {
-    expect(MESSAGE_ORDER_ASC).toEqual([
-      { createdAt: "asc" },
-      { sequence: "asc" },
-      { id: "asc" },
-    ]);
-    expect(MESSAGE_ORDER_DESC).toEqual([
-      { createdAt: "desc" },
-      { sequence: "desc" },
-      { id: "desc" },
-    ]);
+  it("orders by sequence first, with id as deterministic tiebreaker", () => {
+    expect(MESSAGE_ORDER_ASC).toEqual([{ sequence: "asc" }, { id: "asc" }]);
+    expect(MESSAGE_ORDER_DESC).toEqual([{ sequence: "desc" }, { id: "desc" }]);
   });
 
-  it("builds up-to predicate with createdAt fallback when sequence is null", () => {
-    const createdAt = new Date("2026-02-28T10:00:00.000Z");
-    expect(whereMessagesUpToAnchor({ sequence: null, createdAt })).toEqual({
-      createdAt: {
-        lte: createdAt,
-      },
-    });
-  });
-
-  it("builds up-to predicate using sequence with createdAt fallback", () => {
+  it("builds up-to predicate using sequence", () => {
     const createdAt = new Date("2026-02-28T10:00:00.000Z");
     expect(whereMessagesUpToAnchor({ sequence: 42, createdAt })).toEqual({
-      OR: [
-        {
-          sequence: {
-            lte: 42,
-          },
-        },
-        {
-          sequence: null,
-          createdAt: {
-            lte: createdAt,
-          },
-        },
-      ],
+      sequence: { lte: 42 },
     });
   });
 
-  it("builds after predicate with createdAt fallback when sequence is null", () => {
-    const createdAt = new Date("2026-02-28T10:00:00.000Z");
-    expect(whereMessagesAfterAnchor({ sequence: null, createdAt })).toEqual({
-      createdAt: {
-        gt: createdAt,
-      },
-    });
-  });
-
-  it("builds after predicate using sequence with createdAt fallback", () => {
+  it("builds after predicate using sequence", () => {
     const createdAt = new Date("2026-02-28T10:00:00.000Z");
     expect(whereMessagesAfterAnchor({ sequence: 42, createdAt })).toEqual({
-      OR: [
-        {
-          sequence: {
-            gt: 42,
-          },
-        },
-        {
-          sequence: null,
-          createdAt: {
-            gt: createdAt,
-          },
-        },
-      ],
+      sequence: { gt: 42 },
     });
   });
 });

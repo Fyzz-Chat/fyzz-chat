@@ -63,7 +63,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     page: 1,
     limit: persistedWindowLimit,
   });
-  const persistedMessages = persistedMessagesData.data?.messages || [];
+  const persistedMessages = useMemo(() => {
+    const raw = persistedMessagesData.data?.messages || [];
+    return [...raw].sort(
+      (a, b) =>
+        (a.metadata?.sequence ?? Number.POSITIVE_INFINITY) -
+        (b.metadata?.sequence ?? Number.POSITIVE_INFINITY)
+    );
+  }, [persistedMessagesData.data?.messages]);
   const hasMorePersistedMessages = Boolean(persistedMessagesData.data?.hasMore);
   const trimPersistedMessages = useOptimisticallyTrimMessagesUpToAnchor(id);
 

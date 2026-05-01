@@ -8,6 +8,7 @@ export const metadataSchema = z.object({
   content: z.string().optional(),
   providerResponseId: z.string().optional(),
   createdAt: z.coerce.date(),
+  sequence: z.number().optional(),
   reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).optional(),
 });
 

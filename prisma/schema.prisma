@@ -109,8 +109,7 @@ model Message {
   parts            Json?
   metadata         Json          @default("{}")
   content          String?
-  // TODO[SEQ_CUTOVER]: Make this required (Int) after prod backfill is fully complete.
-  sequence         Int?
+  sequence         Int
   promptTokens     Int?          @default(0) @map("prompt_tokens")
   completionTokens Int?          @default(0) @map("completion_tokens")
   status           MessageStatus @default(complete)

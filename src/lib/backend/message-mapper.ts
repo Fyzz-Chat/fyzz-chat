@@ -46,12 +46,16 @@ export function mapDbMessageToUiMessage(
   const parts = safeParseJson<CustomUIMessage["parts"]>(message.parts, []);
 
   const metadataResult = metadataSchema.safeParse(message.metadata);
-  const metadata = metadataResult.success
+  const baseMetadata = metadataResult.success
     ? metadataResult.data
     : {
         content: message.content ?? undefined,
         createdAt: message.createdAt ?? new Date(),
       };
+  const metadata = {
+    ...baseMetadata,
+    sequence: message.sequence,
+  };
 
   return {
     ...message,
