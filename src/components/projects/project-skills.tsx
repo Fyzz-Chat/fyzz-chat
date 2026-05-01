@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
@@ -36,11 +37,12 @@ import {
 
 interface ProjectSkillsProps {
   projectId: string;
-  initialSkills?: SkillItem[];
 }
 
-export function ProjectSkills({ projectId, initialSkills }: ProjectSkillsProps) {
-  const { data: skills = [] } = useProjectSkills(projectId, initialSkills);
+const SKILL_SKELETON_KEYS = ["sk1", "sk2"];
+
+export function ProjectSkills({ projectId }: ProjectSkillsProps) {
+  const { data: skills = [], isPending } = useProjectSkills(projectId);
   const createMutation = useCreateProjectSkill(projectId);
   const updateMutation = useUpdateProjectSkill(projectId);
   const deleteMutation = useDeleteProjectSkill(projectId);
@@ -94,7 +96,16 @@ export function ProjectSkills({ projectId, initialSkills }: ProjectSkillsProps) 
         </Button>
       </div>
 
-      {skills.length === 0 ? (
+      {isPending ? (
+        <div className="flex flex-col gap-2">
+          {SKILL_SKELETON_KEYS.map((key) => (
+            <div key={key} className="border-b py-2 last:border-b-0">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="mt-2 h-3 w-full" />
+            </div>
+          ))}
+        </div>
+      ) : skills.length === 0 ? (
         <p className="text-muted-foreground text-xs italic">
           No skills yet. Add one to shape how the AI responds in this project.
         </p>

@@ -60,15 +60,15 @@ export default function ChatInput() {
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const modelProvider = useMemo(
-    () => providers.find((p) => p.models.some((m) => m.id === model.id)),
-    [providers, model.id]
+    () => providers.find((p) => p.models.some((m) => m.id === model?.id)),
+    [providers, model?.id]
   );
   const modelSelectorOpen = useUIStore((state) => state.modelMenuOpen);
   const setModelSelectorOpen = useUIStore((state) => state.setModelMenuOpen);
   const models = useModelStore((state) => state.availableModels);
   const selectedModelData = useMemo(
-    () => models.find((m) => m.id === model.id),
-    [models, model.id]
+    () => models.find((m) => m.id === model?.id),
+    [models, model?.id]
   );
   const [initialInput] = useState(getPersistedInput);
 
@@ -190,7 +190,7 @@ export default function ChatInput() {
                               <ModelSelectorLogo provider={provider.id} />
                               <ModelSelectorName>{providerModel.name}</ModelSelectorName>
                               <ModelSelectorFeatures features={providerModel.features} />
-                              {model.id === providerModel.id ? (
+                              {model?.id === providerModel.id ? (
                                 <CheckIcon className="ml-auto size-4" />
                               ) : (
                                 <div className="ml-auto size-4" />

@@ -52,12 +52,13 @@ export const useModelStore = create<ModelStore>()((set, get) => ({
     getModelById(get().availableModels, modelId || get().model?.id),
   setDefaultModel: (modelId?: string) => {
     const { availableModels } = get();
+    if (availableModels.length === 0) return;
     const geminiFlashLiteId = findGeminiId(availableModels);
-    set({
-      model: getModelById(
-        availableModels,
-        modelId || geminiFlashLiteId || availableModels[0]?.id
-      ),
-    });
+    const next = getModelById(
+      availableModels,
+      modelId || geminiFlashLiteId || availableModels[0]?.id
+    );
+    if (!next) return;
+    set({ model: next });
   },
 }));

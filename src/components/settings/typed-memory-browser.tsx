@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MemoryType } from "@/types/memory";
 
 export type MemoryItem = {
@@ -161,11 +162,13 @@ export function TypedMemoryBrowser({
   onDelete,
   isDeleting = false,
   disabled = false,
+  isLoading = false,
 }: {
   memories: GroupedMemories;
   onDelete: (id: string) => Promise<void> | void;
   isDeleting?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
 }) {
   const [memoryToDelete, setMemoryToDelete] = useState<MemoryItem | null>(null);
   const totalCount = TYPE_ORDER.reduce((sum, t) => sum + (memories[t]?.length ?? 0), 0);
@@ -181,7 +184,7 @@ export function TypedMemoryBrowser({
     }
   }
 
-  if (totalCount === 0) {
+  if (!isLoading && totalCount === 0) {
     return (
       <div className="flex flex-col items-center gap-2 rounded-md border border-dashed py-10 text-center">
         <Brain className="h-6 w-6 text-muted-foreground" />
@@ -193,15 +196,9 @@ export function TypedMemoryBrowser({
     );
   }
 
-  const defaultOpen = TYPE_ORDER.find((t) => (memories[t]?.length ?? 0) > 0);
-
   return (
     <div className={disabled ? "pointer-events-none opacity-60" : undefined}>
-      <Accordion
-        type="multiple"
-        defaultValue={defaultOpen ? [defaultOpen] : []}
-        className="w-full"
-      >
+      <Accordion type="multiple" defaultValue={[]} className="w-full">
         {TYPE_ORDER.map((type) => {
           const items = memories[type] ?? [];
           const meta = TYPE_META[type];
@@ -212,9 +209,13 @@ export function TypedMemoryBrowser({
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-muted-foreground" />
                   <span>{meta.label}</span>
-                  <Badge variant="secondary" className="ml-1 font-mono text-xs">
-                    {items.length}
-                  </Badge>
+                  {isLoading ? (
+                    <Skeleton className="ml-1 h-5 w-7 rounded-md" />
+                  ) : (
+                    <Badge variant="secondary" className="ml-1 font-mono text-xs">
+                      {items.length}
+                    </Badge>
+                  )}
                 </div>
               </AccordionTrigger>
               <AccordionContent>

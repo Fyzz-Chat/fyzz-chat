@@ -8,32 +8,30 @@ import {
   useDeleteProjectMemory,
   useProjectMemoriesGrouped,
 } from "@/lib/queries/memories";
+import { MemoryType } from "@/types/memory";
+
+const EMPTY_MEMORIES: GroupedMemories = {
+  [MemoryType.fact]: [],
+  [MemoryType.opinion]: [],
+  [MemoryType.learning]: [],
+  [MemoryType.feedback]: [],
+  [MemoryType.context]: [],
+};
 
 interface ProjectMemoriesProps {
   projectId: string;
-  initialMemories: GroupedMemories;
 }
 
-export function ProjectMemories({ projectId, initialMemories }: ProjectMemoriesProps) {
-  const { data: memories = initialMemories } = useProjectMemoriesGrouped(
-    projectId,
-    initialMemories
-  );
+export function ProjectMemories({ projectId }: ProjectMemoriesProps) {
+  const { data: memories, isPending } = useProjectMemoriesGrouped(projectId);
   const deleteMutation = useDeleteProjectMemory(projectId);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div>
-        <h3 className="font-medium text-sm">Memories</h3>
-        <p className="text-muted-foreground text-xs">
-          Information the AI remembers about this project.
-        </p>
-      </div>
-      <TypedMemoryBrowser
-        memories={memories}
-        onDelete={(id) => deleteMutation.mutateAsync(id)}
-        isDeleting={deleteMutation.isPending}
-      />
-    </div>
+    <TypedMemoryBrowser
+      memories={memories ?? EMPTY_MEMORIES}
+      onDelete={(id) => deleteMutation.mutateAsync(id)}
+      isDeleting={deleteMutation.isPending}
+      isLoading={isPending}
+    />
   );
 }
