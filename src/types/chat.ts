@@ -10,6 +10,10 @@ export const metadataSchema = z.object({
   createdAt: z.coerce.date(),
   sequence: z.number().optional(),
   reasoningDurations: z.array(z.object({ id: z.string(), ms: z.number() })).optional(),
+  status: z.enum(["complete", "pending", "failed"]).optional(),
+  externalId: z.string().optional(),
+  failedReason: z.string().optional(),
+  deepResearch: z.object({ query: z.string() }).optional(),
 });
 
 export type CustomMetadata = z.infer<typeof metadataSchema>;

@@ -51,7 +51,7 @@ const persistInput = debounce((input: string) => {
 
 export default function ChatInput() {
   const { handlersRef } = useChatInput();
-  const { status, areFilesUploading } = useChatInputStatus();
+  const { status, areFilesUploading, hasPendingResearch } = useChatInputStatus();
   const { data: session } = useSession();
   const { setDialogOpen } = useContext(AuthContext);
   const providers = useModelStore((state) => state.providers);
@@ -102,6 +102,10 @@ export default function ChatInput() {
     handlersRef.current.onStop?.();
   }, [handlersRef]);
 
+  const handleCancelResearch = useCallback(() => {
+    handlersRef.current.onCancelResearch?.();
+  }, [handlersRef]);
+
   const handleModelSelect = useCallback(
     (modelId: string) => {
       setModel(modelId);
@@ -118,7 +122,7 @@ export default function ChatInput() {
           <PromptInput
             globalDrop
             multiple
-            blocked={["streaming", "submitted"].includes(status)}
+            blocked={["streaming", "submitted"].includes(status) || hasPendingResearch}
             onSubmit={handleSubmit}
             accept={model?.extensions?.join(",")}
             maxFileSize={1024 * 1024 * 20}
@@ -133,7 +137,12 @@ export default function ChatInput() {
             </PromptInputAttachments>
             <PromptInputBody>
               <PromptInputTextarea
-                placeholder="Type a message to start..."
+                placeholder={
+                  hasPendingResearch
+                    ? "Research is running. You can chat again once it finishes…"
+                    : "Type a message to start..."
+                }
+                disabled={hasPendingResearch}
                 onChange={handleInputChange}
               />
             </PromptInputBody>
@@ -185,7 +194,10 @@ export default function ChatInput() {
                   </ModelSelectorContent>
                 </ModelSelector>
               </PromptInputTools>
-              <PromptInputSubmit status={status} onClick={handleStop} />
+              <PromptInputSubmit
+                status={hasPendingResearch ? "streaming" : status}
+                onClick={hasPendingResearch ? handleCancelResearch : handleStop}
+              />
             </PromptInputFooter>
           </PromptInput>
         </SkillSlashMenu>

@@ -34,6 +34,14 @@ export const researchRouter = createTRPCRouter({
         response = await retrieveDeepResearch(message.externalId);
       } catch (error) {
         logger.error({ message: "Deep research retrieve failed", error });
+        const status = (error as { status?: number } | null)?.status;
+        if (status === 404) {
+          const updated = await markResearchFailed(
+            message.id,
+            "Research result is no longer available."
+          );
+          return { ...message, ...updated };
+        }
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
       }
 

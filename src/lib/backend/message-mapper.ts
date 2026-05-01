@@ -55,6 +55,9 @@ export function mapDbMessageToUiMessage(
   const metadata = {
     ...baseMetadata,
     sequence: message.sequence,
+    status: message.status,
+    externalId: message.externalId ?? undefined,
+    failedReason: message.failedReason ?? undefined,
   };
 
   return {

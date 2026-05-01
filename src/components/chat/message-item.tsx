@@ -1,7 +1,7 @@
 "use client";
 
 import type { FileUIPart, SourceUrlUIPart, ToolUIPart } from "ai";
-import { Check, Pencil, X } from "lucide-react";
+import { AlertCircleIcon, Check, MicroscopeIcon, Pencil, X } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Message,
@@ -36,6 +36,7 @@ import MessageRegenerateAction from "@/components/chat/message-regenerate-action
 import MessageShareAction from "@/components/chat/message-share-action";
 import { MessageSources } from "@/components/chat/message-sources";
 import ImageFilePart from "@/components/message/parts/image-file-part";
+import { useResearchPolling } from "@/lib/queries/research";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
@@ -72,6 +73,16 @@ function MessageItem({
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
+
+  const messageStatus = message.metadata?.status;
+  const isResearchPending = messageStatus === "pending" && message.role === "assistant";
+  const isResearchFailed = messageStatus === "failed" && message.role === "assistant";
+
+  useResearchPolling({
+    messageId: message.id,
+    conversationId,
+    enabled: isResearchPending,
+  });
 
   const attachments: FileUIPart[] = useMemo(() => {
     return message.parts.filter((part): part is FileUIPart => part.type === "file");
@@ -130,6 +141,37 @@ function MessageItem({
       globalThis.removeEventListener("keydown", handleEscape);
     };
   }, [isEditing, handleCancelEdit]);
+
+  if (isResearchPending) {
+    return (
+      <Message from="assistant" key={message.id}>
+        <MessageContent>
+          <div className="flex items-center gap-3">
+            <MicroscopeIcon className="size-4 shrink-0 text-(--theme-blue)" />
+            <span className="text-muted-foreground text-sm">
+              Researching… this usually takes 5–15 minutes.
+            </span>
+            <TypingIndicator />
+          </div>
+        </MessageContent>
+      </Message>
+    );
+  }
+
+  if (isResearchFailed) {
+    return (
+      <Message from="assistant" key={message.id}>
+        <MessageContent>
+          <div className="flex items-center gap-3 text-destructive">
+            <AlertCircleIcon className="size-4 shrink-0" />
+            <span className="text-sm">
+              Research failed: {message.metadata?.failedReason || "Unknown error"}
+            </span>
+          </div>
+        </MessageContent>
+      </Message>
+    );
+  }
 
   let reasoningIndex = 0;
 

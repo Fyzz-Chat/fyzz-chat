@@ -16,6 +16,7 @@ import type { ReasoningEffort } from "@/types/provider";
 interface ChatInputHandlers {
   onSubmit: (message: PromptInputMessage) => void;
   onStop?: () => void;
+  onCancelResearch?: () => void;
   onModelChange?: (conversationId: string, modelId: string) => void;
 }
 
@@ -23,14 +24,19 @@ interface ChatInputContextType {
   handlersRef: React.RefObject<ChatInputHandlers>;
   browseRef: React.RefObject<boolean>;
   reasoningEffortRef: React.RefObject<ReasoningEffort | undefined>;
+  deepResearchRef: React.RefObject<boolean>;
   setStatus: (status: ChatStatus) => void;
   setAreFilesUploading: (uploading: boolean) => void;
   setHandlers: (handlers: ChatInputHandlers) => void;
+  setDeepResearch: (value: boolean) => void;
+  setHasPendingResearch: (value: boolean) => void;
 }
 
 interface ChatInputStatusContextType {
   status: ChatStatus;
   areFilesUploading: boolean;
+  deepResearch: boolean;
+  hasPendingResearch: boolean;
 }
 
 const ChatInputContext = createContext<ChatInputContextType | undefined>(undefined);
@@ -46,11 +52,19 @@ export function ChatInputProvider({ children }: Readonly<{ children: ReactNode }
   });
   const browseRef = useRef(true);
   const reasoningEffortRef = useRef<ReasoningEffort | undefined>(undefined);
+  const deepResearchRef = useRef(false);
   const [status, setStatus] = useState<ChatStatus>("ready");
   const [areFilesUploading, setAreFilesUploading] = useState(false);
+  const [deepResearch, setDeepResearchState] = useState(false);
+  const [hasPendingResearch, setHasPendingResearch] = useState(false);
 
   const setHandlers = useCallback((handlers: ChatInputHandlers) => {
     handlersRef.current = handlers;
+  }, []);
+
+  const setDeepResearch = useCallback((value: boolean) => {
+    deepResearchRef.current = value;
+    setDeepResearchState(value);
   }, []);
 
   const stableValue = useMemo(
@@ -58,19 +72,24 @@ export function ChatInputProvider({ children }: Readonly<{ children: ReactNode }
       handlersRef,
       browseRef,
       reasoningEffortRef,
+      deepResearchRef,
       setStatus,
       setAreFilesUploading,
       setHandlers,
+      setDeepResearch,
+      setHasPendingResearch,
     }),
-    [setHandlers]
+    [setHandlers, setDeepResearch]
   );
 
   const statusValue = useMemo(
     () => ({
       status,
       areFilesUploading,
+      deepResearch,
+      hasPendingResearch,
     }),
-    [status, areFilesUploading]
+    [status, areFilesUploading, deepResearch, hasPendingResearch]
   );
 
   return (

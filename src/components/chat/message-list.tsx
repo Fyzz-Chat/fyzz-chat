@@ -1,9 +1,11 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DefaultChatTransport } from "ai";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import {
   Conversation,
@@ -14,6 +16,7 @@ import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ChatLayoutWrapper } from "@/components/chat/chat-layout-wrapper";
 import MessageItem from "@/components/chat/message-item";
 import { Button } from "@/components/ui/button";
+import { cancelDeepResearch, startDeepResearch } from "@/lib/actions/research";
 import { useChatInput } from "@/lib/contexts/chat-input-context";
 import { useChatLayout } from "@/lib/contexts/chat-layout-context";
 import { useInitialMessage } from "@/lib/contexts/initial-message-context";
@@ -27,6 +30,7 @@ import {
 } from "@/lib/queries/conversations";
 import { useOptimisticallyTrimMessagesUpToAnchor } from "@/lib/queries/messages";
 import { useShares } from "@/lib/queries/shares";
+import { useTRPC } from "@/lib/trpc/client";
 import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage, ShareInfo } from "@/types/chat";
@@ -40,8 +44,18 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const model = useModelStore((state) => state.model);
   const setModel = useModelStore((state) => state.setModel);
   const updateModel = useUpdateConversationModel();
-  const { setHandlers, setStatus, setAreFilesUploading, browseRef, reasoningEffortRef } =
-    useChatInput();
+  const {
+    setHandlers,
+    setStatus,
+    setAreFilesUploading,
+    browseRef,
+    reasoningEffortRef,
+    deepResearchRef,
+    setDeepResearch,
+    setHasPendingResearch,
+  } = useChatInput();
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
   const addMessage = useAddMessage(id);
   const createConversationOptimistic = useCreateConversationOptimistic();
   const {
@@ -237,6 +251,37 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         return;
       }
 
+      if (deepResearchRef.current && hasText) {
+        setDeepResearch(false);
+        const userMessageId = nextMessageId.current;
+        const queryText = message.text || "";
+        const userMessage: CustomUIMessage = {
+          id: userMessageId,
+          role: "user",
+          parts: [{ type: "text" as const, text: queryText }],
+          metadata: { content: queryText, createdAt: new Date() },
+        };
+
+        await addMessage.mutateAsync({ message: userMessage });
+
+        try {
+          await startDeepResearch({
+            conversationId: id,
+            query: queryText,
+            userMessageId,
+          });
+          await queryClient.invalidateQueries(trpc.messages.queryFilter({ id }));
+        } catch (err) {
+          console.error("startDeepResearch failed", err);
+          toast.error("Could not start deep research. Please try again.");
+          // Server didn't persist anything; refetching restores truth and removes the optimistic user message.
+          await queryClient.invalidateQueries(trpc.messages.queryFilter({ id }));
+        }
+
+        nextMessageId.current = uuidv4();
+        return;
+      }
+
       const newMessage: CustomUIMessage = {
         id: nextMessageId.current,
         role: "user",
@@ -295,6 +340,10 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       setAreFilesUploading,
       browseRef,
       reasoningEffortRef,
+      deepResearchRef,
+      setDeepResearch,
+      queryClient,
+      trpc,
       initialProjectId,
     ]
   );
@@ -449,10 +498,41 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     setStatus(status);
   }, [status, setStatus]);
 
+  const hasPendingResearch = useMemo(
+    () =>
+      persistedMessages.some(
+        (m) => m.role === "assistant" && m.metadata?.status === "pending"
+      ),
+    [persistedMessages]
+  );
+
+  useEffect(() => {
+    setHasPendingResearch(hasPendingResearch);
+    if (hasPendingResearch) {
+      setDeepResearch(false);
+    }
+    return () => setHasPendingResearch(false);
+  }, [hasPendingResearch, setHasPendingResearch, setDeepResearch]);
+
+  const handleCancelResearch = useCallback(async () => {
+    const pending = persistedMessagesRef.current.find(
+      (m) => m.role === "assistant" && m.metadata?.status === "pending"
+    );
+    if (!pending) return;
+    try {
+      await cancelDeepResearch(pending.id);
+    } catch (err) {
+      console.error("cancelDeepResearch failed", err);
+      toast.error("Could not cancel research. Please try again.");
+    }
+    await queryClient.invalidateQueries(trpc.messages.queryFilter({ id }));
+  }, [id, queryClient, trpc]);
+
   useEffect(() => {
     setHandlers({
       onSubmit: handleSubmit,
       onStop: handleStop,
+      onCancelResearch: handleCancelResearch,
       onModelChange: (_, modelId) => {
         const previousModel = model.id;
         updateModel.mutateAsync({ conversationId: id, model: modelId }).catch(() => {
@@ -460,7 +540,16 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         });
       },
     });
-  }, [handleSubmit, handleStop, updateModel, id, setHandlers, model.id, setModel]);
+  }, [
+    handleSubmit,
+    handleStop,
+    handleCancelResearch,
+    updateModel,
+    id,
+    setHandlers,
+    model.id,
+    setModel,
+  ]);
 
   return (
     <div className="flex h-[calc(100svh-132px)] flex-col overflow-auto md:h-[calc(100svh-164px)]">

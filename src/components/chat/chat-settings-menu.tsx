@@ -1,6 +1,13 @@
 "use client";
 
-import { BrainIcon, CheckIcon, GlobeIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import {
+  BrainIcon,
+  CheckIcon,
+  GlobeIcon,
+  MicroscopeIcon,
+  PaperclipIcon,
+  PlusIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   PromptInputButton,
@@ -17,7 +24,7 @@ import {
 } from "@/components/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { useChatInput } from "@/lib/contexts/chat-input-context";
+import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { ReasoningEffort } from "@/types/provider";
@@ -56,7 +63,8 @@ export default function ChatSettingsMenu({
   supportsReasoning: boolean;
 }>) {
   const attachments = usePromptInputAttachments();
-  const { browseRef, reasoningEffortRef } = useChatInput();
+  const { browseRef, reasoningEffortRef, setDeepResearch } = useChatInput();
+  const { deepResearch, hasPendingResearch } = useChatInputStatus();
   const isDesktop = useMediaQuery("(min-width: 640px)");
   const [open, setOpen] = useState(false);
   const [rendered, setRendered] = useState(false);
@@ -119,6 +127,29 @@ export default function ChatSettingsMenu({
         <span>Web search</span>
         <div className="ml-auto size-4">
           {browse ? <CheckIcon className="size-4" /> : <span className="size-4" />}
+        </div>
+      </Button>
+
+      <Button
+        className={cn(
+          "w-full justify-between rounded-[8px]",
+          deepResearch &&
+            "text-(--theme-blue) hover:bg-(--theme-blue)/10 hover:text-(--theme-blue) dark:hover:bg-(--theme-blue)/10"
+        )}
+        disabled={hasPendingResearch}
+        onClick={() => setDeepResearch(!deepResearch)}
+        type="button"
+        variant="ghost"
+        title={
+          hasPendingResearch
+            ? "A research is already running in this conversation"
+            : undefined
+        }
+      >
+        <MicroscopeIcon className="size-4" />
+        <span>Deep research</span>
+        <div className="ml-auto size-4">
+          {deepResearch ? <CheckIcon className="size-4" /> : <span className="size-4" />}
         </div>
       </Button>
 

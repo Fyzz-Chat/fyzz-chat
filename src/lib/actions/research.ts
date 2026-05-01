@@ -4,12 +4,13 @@ import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
 import {
+  cancelDeepResearch as cancelOpenAIResearch,
   createDeepResearch,
   DEFAULT_DEEP_RESEARCH_MODEL,
   type DeepResearchModel,
 } from "@/lib/backend/openai-research";
 import { getOrCreateConversation } from "@/lib/dao/conversations";
-import { createPendingResearchMessage } from "@/lib/dao/research";
+import { markResearchFailed } from "@/lib/dao/research";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
@@ -18,6 +19,7 @@ export async function startDeepResearch(params: {
   conversationId: string;
   query: string;
   model?: DeepResearchModel;
+  userMessageId?: string;
 }): Promise<{ messageId: string; conversationId: string }> {
   const userId = await getUserIdFromSession();
   const model = params.model ?? DEFAULT_DEEP_RESEARCH_MODEL;
@@ -31,27 +33,6 @@ export async function startDeepResearch(params: {
     throw new Error(`Could not access conversation: ${error ?? "unknown"}`);
   }
 
-  await prisma.$transaction(async (tx) => {
-    const seqAgg = await tx.message.aggregate({
-      where: { conversationId: conversation.id },
-      _max: { sequence: true },
-    });
-    const nextSequence = (seqAgg._max.sequence ?? 0) + 1;
-    await tx.message.create({
-      data: {
-        role: "user",
-        content: params.query,
-        parts: [{ type: "text", text: params.query }] as InputJsonValue,
-        conversationId: conversation.id,
-        sequence: nextSequence,
-        metadata: {
-          createdAt: new Date().toISOString(),
-          content: params.query,
-        } as InputJsonValue,
-      },
-    });
-  });
-
   let response: Awaited<ReturnType<typeof createDeepResearch>>;
   try {
     response = await createDeepResearch({ model, query: params.query });
@@ -60,15 +41,81 @@ export async function startDeepResearch(params: {
     throw new Error("Failed to start deep research");
   }
 
-  const assistantMessage = await createPendingResearchMessage({
-    conversationId: conversation.id,
-    externalId: response.id,
-    model,
-    query: params.query,
+  const assistantMessage = await prisma.$transaction(async (tx) => {
+    const userSeqAgg = await tx.message.aggregate({
+      where: { conversationId: conversation.id },
+      _max: { sequence: true },
+    });
+    const userSequence = (userSeqAgg._max.sequence ?? 0) + 1;
+    await tx.message.create({
+      data: {
+        ...(params.userMessageId && { id: params.userMessageId }),
+        role: "user",
+        content: params.query,
+        parts: [{ type: "text", text: params.query }] as InputJsonValue,
+        conversationId: conversation.id,
+        sequence: userSequence,
+        metadata: {
+          createdAt: new Date(),
+          content: params.query,
+        } as InputJsonValue,
+      },
+    });
+
+    const assistant = await tx.message.create({
+      data: {
+        role: "assistant",
+        status: "pending",
+        externalId: response.id,
+        parts: [] as InputJsonValue,
+        content: null,
+        conversationId: conversation.id,
+        sequence: userSequence + 1,
+        metadata: {
+          model,
+          createdAt: new Date(),
+          deepResearch: { query: params.query },
+        } as InputJsonValue,
+      },
+    });
+
+    await tx.conversation.update({
+      where: { id: conversation.id },
+      data: { lastMessageAt: new Date() },
+    });
+
+    return assistant;
   });
 
   return {
     messageId: assistantMessage.id,
     conversationId: conversation.id,
   };
+}
+
+export async function cancelDeepResearch(messageId: string): Promise<void> {
+  const userId = await getUserIdFromSession();
+  const message = await prisma.message.findFirst({
+    where: { id: messageId, conversation: { userId } },
+    select: { id: true, status: true, externalId: true },
+  });
+  if (!message) {
+    throw new Error("Research message not found");
+  }
+  if (message.status !== "pending") {
+    return;
+  }
+
+  if (message.externalId) {
+    try {
+      await cancelOpenAIResearch(message.externalId);
+    } catch (err) {
+      logger.warn({
+        message: "OpenAI cancel failed; marking message failed anyway",
+        error: err,
+      });
+    }
+  }
+
+  await markResearchFailed(message.id, "Cancelled by user");
 }
