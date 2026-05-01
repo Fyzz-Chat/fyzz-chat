@@ -91,19 +91,33 @@ async function SidebarData({ isLoggedIn }: { isLoggedIn: boolean }) {
   );
 }
 
-const SKELETON_KEYS = ["s1", "s2", "s3", "s4", "s5", "s6"];
+const CHAT_SKELETON_KEYS = ["c1", "c2", "c3", "c4", "c5", "c6"];
 
 function SidebarDataSkeleton() {
   return (
-    <div className="flex flex-col gap-2 px-2 py-2">
-      <Skeleton className="h-6 w-24" />
-      <Skeleton className="h-8 w-full" />
-      <Skeleton className="h-8 w-full" />
-      <div className="my-2 h-px bg-border" />
-      <Skeleton className="h-6 w-32" />
-      {SKELETON_KEYS.map((key) => (
-        <Skeleton key={key} className="h-7 w-full" />
-      ))}
-    </div>
+    <>
+      <div className="flex w-full flex-col p-2">
+        <div className="flex h-8 items-center px-1">
+          <Skeleton className="h-3 w-16" />
+        </div>
+        <div className="flex flex-col gap-1">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
+      </div>
+      <div className="px-2">
+        <div className="h-px bg-border" />
+      </div>
+      <div className="flex w-full flex-col p-2">
+        <div className="flex h-8 items-center px-1">
+          <Skeleton className="h-3 w-12" />
+        </div>
+        <div className="flex flex-col gap-3">
+          {CHAT_SKELETON_KEYS.map((key) => (
+            <Skeleton key={key} className="h-16 w-full sm:h-14" />
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
