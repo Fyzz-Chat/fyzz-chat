@@ -3,17 +3,19 @@
 import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
+import { updateConversationTitle } from "@/lib/actions/conversations";
 import {
   cancelDeepResearch as cancelOpenAIResearch,
   createDeepResearch,
   DEFAULT_DEEP_RESEARCH_MODEL,
   type DeepResearchModel,
 } from "@/lib/backend/openai-research";
-import { getOrCreateConversation } from "@/lib/dao/conversations";
+import { getOrCreateConversation, hasDefaultTitle } from "@/lib/dao/conversations";
 import { markResearchFailed } from "@/lib/dao/research";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
+import type { CustomUIMessage } from "@/types/chat";
 
 export async function startDeepResearch(params: {
   conversationId: string;
@@ -86,6 +88,24 @@ export async function startDeepResearch(params: {
 
     return assistant;
   });
+
+  try {
+    if (await hasDefaultTitle(conversation.id)) {
+      const titlerMessage: CustomUIMessage = {
+        id: params.userMessageId ?? "research-titler",
+        role: "user",
+        parts: [{ type: "text", text: params.query }],
+        metadata: { content: params.query, createdAt: new Date() },
+      };
+      await updateConversationTitle(conversation.id, [titlerMessage]);
+    }
+  } catch (err) {
+    logger.warn({
+      message: "Failed to update conversation title for deep research",
+      conversationId: conversation.id,
+      error: err,
+    });
+  }
 
   return {
     messageId: assistantMessage.id,

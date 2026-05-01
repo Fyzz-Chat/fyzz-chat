@@ -270,7 +270,13 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             query: queryText,
             userMessageId,
           });
-          await queryClient.invalidateQueries(trpc.messages.queryFilter({ id }));
+          await Promise.all([
+            queryClient.invalidateQueries(trpc.messages.queryFilter({ id })),
+            queryClient.invalidateQueries(trpc.conversation.queryFilter({ id })),
+            queryClient.invalidateQueries(
+              trpc.infiniteConversations.infiniteQueryFilter()
+            ),
+          ]);
         } catch (err) {
           console.error("startDeepResearch failed", err);
           toast.error("Could not start deep research. Please try again.");
