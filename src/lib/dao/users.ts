@@ -42,6 +42,27 @@ export async function getUserPersona(userId: string) {
   });
 }
 
+export const getUserSettingsProfile = cache(async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      memoryEnabled: true,
+      skillsEnabled: true,
+      mcpServers: true,
+      defaultModel: true,
+      displayName: true,
+      agentName: true,
+      accounts: { select: { password: true } },
+    },
+  });
+  if (!user) return null;
+  const { accounts, ...rest } = user;
+  return {
+    ...rest,
+    hasPassword: accounts.some((a) => Boolean(a.password)),
+  };
+});
+
 export type SessionUser = {
   id: string;
   name: string;

@@ -8,12 +8,16 @@ import {
   Shield,
   User,
 } from "lucide-react";
+import { Suspense } from "react";
 import { FastLink } from "@/components/fast-link";
 import { ApiKeysTab } from "@/components/settings/api-keys-tab";
 import DeleteAccountForm from "@/components/settings/delete-account-form";
 import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
 import { McpTab } from "@/components/settings/mcp-tab";
-import MemoryForm from "@/components/settings/memory-form";
+import DefaultModelSelect from "@/components/settings/memory/default-model-select";
+import MemoryListSection from "@/components/settings/memory/memory-list-section";
+import MemoryToggle from "@/components/settings/memory/memory-toggle";
+import PersonaInput from "@/components/settings/memory/persona-input";
 import PasswordForm from "@/components/settings/password-form";
 import SkillsForm from "@/components/settings/skills-form";
 import {
@@ -23,7 +27,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
@@ -31,35 +37,13 @@ import { getProvidersPublic } from "@/lib/backend/providers";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
 import { getAllUserMemoriesGrouped } from "@/lib/dao/memories";
 import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
-import { getUserIdFromSession } from "@/lib/dao/users";
-import prisma from "@/lib/prisma/prisma";
+import { getUserIdFromSession, getUserSettingsProfile } from "@/lib/dao/users";
 
 export default async function SettingsPage() {
-  const translations = await getTranslations();
-  const userId = await getUserIdFromSession();
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      memoryEnabled: true,
-      skillsEnabled: true,
-      mcpServers: true,
-      defaultModel: true,
-      displayName: true,
-      agentName: true,
-      accounts: {
-        select: {
-          password: true,
-        },
-      },
-    },
-  });
-  const memories = await getAllUserMemoriesGrouped(userId);
-  const apiKeys = await getApiKeysByUser(userId);
-  const skills = await getAllUserSkillsForSettings(userId);
-  const providers = getProvidersPublic();
-  const hasPassword = user?.accounts?.some((account) => account.password);
+  const [translations, userId] = await Promise.all([
+    getTranslations(),
+    getUserIdFromSession(),
+  ]);
 
   return (
     <div className="flex min-w-[320px] flex-1 flex-col items-center justify-start bg-background p-4 md:max-h-[calc(100svh-1rem)] md:rounded-[20px]">
@@ -142,14 +126,64 @@ export default async function SettingsPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <MemoryForm
-                      defaultModel={user?.defaultModel ?? undefined}
-                      initialMemories={memories}
-                      initialDisplayName={user?.displayName ?? null}
-                      initialAgentName={user?.agentName ?? null}
-                      memoryEnabled={user?.memoryEnabled ?? false}
-                      providers={providers}
-                    />
+                    <div className="flex flex-col items-start gap-4">
+                      <h4 className="font-medium text-sm">
+                        {translations.settings.memory.defaultModel.title}
+                      </h4>
+                      <p className="text-muted-foreground text-sm">
+                        {translations.settings.memory.defaultModel.description}
+                      </p>
+                      <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                        <DefaultModelSelectLoader userId={userId} />
+                      </Suspense>
+
+                      <h4 className="font-medium text-sm">
+                        {translations.settings.memory.sectionTitle}
+                      </h4>
+                      <Suspense
+                        fallback={
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="h-6 w-11 rounded-full" />
+                            <Skeleton className="h-4 w-32" />
+                          </div>
+                        }
+                      >
+                        <MemoryToggleLoader userId={userId} />
+                      </Suspense>
+                      <p className="text-muted-foreground text-sm">
+                        {translations.settings.memory.toggle.description}
+                      </p>
+
+                      <div className="grid w-full gap-4 sm:grid-cols-2">
+                        <div className="flex flex-col gap-1.5">
+                          <Label htmlFor="display-name">Your name</Label>
+                          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                            <PersonaInputLoader userId={userId} field="displayName" />
+                          </Suspense>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <Label htmlFor="agent-name">Agent name</Label>
+                          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                            <PersonaInputLoader userId={userId} field="agentName" />
+                          </Suspense>
+                        </div>
+                      </div>
+
+                      <div className="w-full">
+                        <Suspense
+                          fallback={
+                            <div className="flex flex-col gap-2">
+                              <Skeleton className="h-12 w-full" />
+                              <Skeleton className="h-12 w-full" />
+                              <Skeleton className="h-12 w-full" />
+                              <Skeleton className="h-12 w-full" />
+                            </div>
+                          }
+                        >
+                          <MemoryListLoader userId={userId} />
+                        </Suspense>
+                      </div>
+                    </div>
                   </CardContent>
                 </ScrollArea>
               </Card>
@@ -163,7 +197,9 @@ export default async function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <PasswordForm hasPassword={hasPassword} />
+                  <Suspense fallback={<SecurityTabSkeleton />}>
+                    <SecurityTab userId={userId} />
+                  </Suspense>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -184,10 +220,14 @@ export default async function SettingsPage() {
               <DisplaySettingsTab />
             </TabsContent>
             <TabsContent value="api-keys">
-              <ApiKeysTab initialKeys={apiKeys} />
+              <Suspense fallback={<ApiKeysTabSkeleton />}>
+                <ApiKeysTabLoader userId={userId} />
+              </Suspense>
             </TabsContent>
             <TabsContent value="mcp">
-              <McpTab userMcpServers={user?.mcpServers} />
+              <Suspense fallback={<McpTabSkeleton />}>
+                <McpTabLoader userId={userId} />
+              </Suspense>
             </TabsContent>
             <TabsContent value="skills">
               <Card>
@@ -198,16 +238,127 @@ export default async function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <SkillsForm
-                    initialSkills={skills}
-                    initialSkillsEnabled={user?.skillsEnabled ?? false}
-                  />
+                  <Suspense fallback={<SkillsTabSkeleton />}>
+                    <SkillsTabLoader userId={userId} />
+                  </Suspense>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
         </div>
       </ViewTransitionWrapper>
+    </div>
+  );
+}
+
+async function DefaultModelSelectLoader({ userId }: { userId: string }) {
+  const profile = await getUserSettingsProfile(userId);
+  const providers = getProvidersPublic();
+  return (
+    <DefaultModelSelect
+      defaultModel={profile?.defaultModel ?? undefined}
+      providers={providers}
+    />
+  );
+}
+
+async function MemoryToggleLoader({ userId }: { userId: string }) {
+  const profile = await getUserSettingsProfile(userId);
+  return <MemoryToggle initialEnabled={profile?.memoryEnabled ?? false} />;
+}
+
+async function PersonaInputLoader({
+  userId,
+  field,
+}: {
+  userId: string;
+  field: "displayName" | "agentName";
+}) {
+  const profile = await getUserSettingsProfile(userId);
+  const initialValue =
+    field === "displayName"
+      ? (profile?.displayName ?? null)
+      : (profile?.agentName ?? null);
+  return <PersonaInput field={field} initialValue={initialValue} />;
+}
+
+async function MemoryListLoader({ userId }: { userId: string }) {
+  const memories = await getAllUserMemoriesGrouped(userId);
+  return <MemoryListSection initialMemories={memories} />;
+}
+
+async function SecurityTab({ userId }: { userId: string }) {
+  const profile = await getUserSettingsProfile(userId);
+  return <PasswordForm hasPassword={profile?.hasPassword ?? false} />;
+}
+
+async function ApiKeysTabLoader({ userId }: { userId: string }) {
+  const apiKeys = await getApiKeysByUser(userId);
+  return <ApiKeysTab initialKeys={apiKeys} />;
+}
+
+async function McpTabLoader({ userId }: { userId: string }) {
+  const profile = await getUserSettingsProfile(userId);
+  return <McpTab userMcpServers={profile?.mcpServers} />;
+}
+
+async function SkillsTabLoader({ userId }: { userId: string }) {
+  const [profile, skills] = await Promise.all([
+    getUserSettingsProfile(userId),
+    getAllUserSkillsForSettings(userId),
+  ]);
+  return (
+    <SkillsForm
+      initialSkills={skills}
+      initialSkillsEnabled={profile?.skillsEnabled ?? false}
+    />
+  );
+}
+
+function SecurityTabSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 py-2">
+      <Skeleton className="h-9 w-full" />
+      <Skeleton className="h-9 w-full" />
+      <Skeleton className="h-9 w-32" />
+    </div>
+  );
+}
+
+const API_KEYS_KEYS = ["k1", "k2", "k3"];
+
+function ApiKeysTabSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 py-2">
+      {API_KEYS_KEYS.map((key) => (
+        <Skeleton key={key} className="h-16 w-full" />
+      ))}
+    </div>
+  );
+}
+
+const MCP_KEYS = ["mc1", "mc2"];
+
+function McpTabSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 py-2">
+      <Skeleton className="h-9 w-32" />
+      {MCP_KEYS.map((key) => (
+        <Skeleton key={key} className="h-20 w-full" />
+      ))}
+    </div>
+  );
+}
+
+const SKILLS_KEYS = ["s1", "s2", "s3", "s4"];
+
+function SkillsTabSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 py-2">
+      <Skeleton className="h-6 w-48" />
+      {SKILLS_KEYS.map((key) => (
+        <Skeleton key={key} className="h-14 w-full" />
+      ))}
     </div>
   );
 }
