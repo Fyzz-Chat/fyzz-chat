@@ -84,6 +84,45 @@ until all resolve. Instead:
 
 This lets the shell render instantly while expensive data streams in progressively.
 
+### Boilerplate-first rendering
+
+For any page with data-bound widgets, default to **boilerplate-first**: render the static
+structure synchronously in the page server component, and wrap only data-bound widgets in
+`<Suspense>` islands. Extends the rules above with five concrete habits:
+
+1. **Hoist static layout into the page.** Headings, descriptions, container chrome, form
+   labels, navigation links, "back" buttons — all of this can render before any data
+   resolves. Pull it out of feature components and write it directly in the page so a
+   reader can see at a glance what costs data and what's free.
+2. **One Suspense per data slice, not per feature.** A page with a model select, a toggle,
+   two name inputs, and a memory list gets four Suspense islands — not one wrapping the
+   whole form. Each island uses the React-cached DAO (`React.cache(...)`) so multiple
+   loaders for the same query still hit the DB once per request.
+3. **Match the full rendered box, not just the height class.** The rule is: when the
+   skeleton swaps for the real widget, **nothing on the page should move**. That means
+   matching everything that contributes to layout — height (including border + padding +
+   content line-height, not just the upstream Tailwind class), width, border-radius, and
+   the surrounding spacing (gap, margin, parent grid/flex). Don't trust shadcn defaults
+   like `h-9` blindly — the project overrides them in places (e.g. `Input` renders at
+   `h-10`, not `h-9`). When sizing skeletons, **read the actual component source and any
+   global CSS that touches it**, or boot the app and measure the rendered element.
+   If a skeleton causes the page to jump on load, the skeleton is wrong — fix it, don't
+   ship it.
+4. **For long-lived client components (accordions, lists), prefer an `isLoading` prop
+   over Suspense replacement.** The component renders its full structure and shows
+   skeleton placeholders only where data lives (count badges, row contents). The shell
+   stays mounted across the loading transition — no DOM thrash, less perceived flicker.
+   See `TypedMemoryBrowser` for the canonical example.
+5. **Cross-island shared client state goes through a tiny Zustand store in
+   `src/stores/`.** When two independently-suspended islands need to share state (e.g.
+   the memory toggle disabling form inputs in another island), don't lift state into a
+   parent client component just to thread props — put it in a store. The toggle
+   initializes from server-loaded data on mount.
+
+The verb is "hoist": every time you write a server component that awaits data and
+returns a feature, ask whether the static parts of that feature can be hoisted up to the
+page so they render with the shell.
+
 ## Creating and using components
 
 By default, rely on preinstalled Shadcn UI components and AI elements. If you cannot find a
