@@ -1,3 +1,18 @@
+# [0.38.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.37.0...v0.38.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* **chat:** rely on sequence for message ordering ([b170c33](https://github.com/Fyzz-Chat/fyzz-chat/commit/b170c3395107bbcb70dbacb3d958d100fff0a78c))
+
+
+### Features
+
+* **research:** enhance chat input and settings for deep research integration ([5546582](https://github.com/Fyzz-Chat/fyzz-chat/commit/55465824bb3b6ddca2f26c62defefadf03702ac7))
+* **research:** enhance deep research functionality and UI integration ([f1bb9b3](https://github.com/Fyzz-Chat/fyzz-chat/commit/f1bb9b3a7eb57b5a537c764ed1b58a9e17443d8f))
+* **research:** implement deep research functionality with OpenAI integration ([e5a72cd](https://github.com/Fyzz-Chat/fyzz-chat/commit/e5a72cd97166468d7197311ce2dc1fb2fcda5857))
+* **research:** update conversation title during deep research initiation ([0abce26](https://github.com/Fyzz-Chat/fyzz-chat/commit/0abce2637a3a7768d9713660ed2cea390537ffe3))
+
 # [0.37.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.36.0...v0.37.0) (2026-04-26)
 
 
