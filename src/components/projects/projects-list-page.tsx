@@ -138,101 +138,97 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
 
   return (
     <>
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-4 pt-12 md:p-8 md:pt-12">
-        <h1 className="font-semibold text-2xl">Projects</h1>
+      {projects.length === 0 ? (
+        <p className="text-muted-foreground text-sm">
+          No projects yet. Create one from the sidebar.
+        </p>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {projects.map((project) => (
+            <div key={project.id} className="group/project relative">
+              <Link
+                href={`/projects/${project.id}`}
+                onClick={(event) => {
+                  if (isMobile && consumeLongPressPayload() === project.id) {
+                    event.preventDefault();
+                  }
+                }}
+                onTouchStart={() => onProjectLongPressStart(project.id)}
+                onTouchEnd={onProjectLongPressEnd}
+                onTouchMove={onProjectLongPressMove}
+              >
+                <Card className="transition-colors hover:bg-muted/50 group-hover/project:bg-muted/50">
+                  <CardHeader className="pr-12">
+                    <div className="flex items-center gap-2">
+                      <Folder className="size-4 shrink-0 text-muted-foreground" />
+                      <CardTitle className="min-w-0 truncate text-base">
+                        {project.name}
+                      </CardTitle>
+                    </div>
+                    {project.description ? (
+                      <CardDescription className="line-clamp-2">
+                        {project.description}
+                      </CardDescription>
+                    ) : null}
+                  </CardHeader>
+                  <CardFooter className="flex items-center justify-between text-muted-foreground text-xs">
+                    <p>
+                      Updated{" "}
+                      {formatTimeAgo(
+                        new Date(project.lastActivityAt || project.updatedAt)
+                      )}
+                    </p>
+                    <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
+                      <MessageSquare className="size-3" />
+                      <span className="text-sm">{project.conversationCount}</span>
+                    </span>
+                  </CardFooter>
+                </Card>
+              </Link>
 
-        {projects.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No projects yet. Create one from the sidebar.
-          </p>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {projects.map((project) => (
-              <div key={project.id} className="group/project relative">
-                <Link
-                  href={`/projects/${project.id}`}
-                  onClick={(event) => {
-                    if (isMobile && consumeLongPressPayload() === project.id) {
-                      event.preventDefault();
-                    }
-                  }}
-                  onTouchStart={() => onProjectLongPressStart(project.id)}
-                  onTouchEnd={onProjectLongPressEnd}
-                  onTouchMove={onProjectLongPressMove}
-                >
-                  <Card className="transition-colors hover:bg-muted/50 group-hover/project:bg-muted/50">
-                    <CardHeader className="pr-12">
-                      <div className="flex items-center gap-2">
-                        <Folder className="size-4 shrink-0 text-muted-foreground" />
-                        <CardTitle className="min-w-0 truncate text-base">
-                          {project.name}
-                        </CardTitle>
-                      </div>
-                      {project.description ? (
-                        <CardDescription className="line-clamp-2">
-                          {project.description}
-                        </CardDescription>
-                      ) : null}
-                    </CardHeader>
-                    <CardFooter className="flex items-center justify-between text-muted-foreground text-xs">
-                      <p>
-                        Updated{" "}
-                        {formatTimeAgo(
-                          new Date(project.lastActivityAt || project.updatedAt)
-                        )}
-                      </p>
-                      <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
-                        <MessageSquare className="size-3" />
-                        <span className="text-sm">{project.conversationCount}</span>
-                      </span>
-                    </CardFooter>
-                  </Card>
-                </Link>
-
-                {!isMobile && (
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-3 right-3 z-10 size-8 rounded-lg opacity-0 transition-opacity focus-visible:opacity-100 group-hover/project:opacity-100 data-[state=open]:opacity-100"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                        }}
-                      >
-                        <MoreVertical className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" sideOffset={6}>
-                      <DropdownMenuItem
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          openEditDialog(project);
-                        }}
-                      >
-                        <Pencil className="mr-2 size-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          openDeleteDialog(project);
-                        }}
-                      >
-                        <Trash2 className="mr-2 size-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              {!isMobile && (
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-3 right-3 z-10 size-8 rounded-lg opacity-0 transition-opacity focus-visible:opacity-100 group-hover/project:opacity-100 data-[state=open]:opacity-100"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    >
+                      <MoreVertical className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" sideOffset={6}>
+                    <DropdownMenuItem
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        openEditDialog(project);
+                      }}
+                    >
+                      <Pencil className="mr-2 size-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        openDeleteDialog(project);
+                      }}
+                    >
+                      <Trash2 className="mr-2 size-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       <Drawer
         open={projectOverlay?.mode === "actions"}
