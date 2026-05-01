@@ -1,3 +1,17 @@
+# [0.39.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.38.0...v0.39.0) (2026-05-01)
+
+
+### Bug Fixes
+
+* **chat:** remove metadata generation from ChatIdPage and set document title in ChatMessageList ([d6c99bc](https://github.com/Fyzz-Chat/fyzz-chat/commit/d6c99bc08cfddf0a5d2e84bb157e1bbbf9dafcd7))
+
+
+### Features
+
+* **agents:** introduce boilerplate-first rendering guidelines for data-bound widgets ([5eb66a8](https://github.com/Fyzz-Chat/fyzz-chat/commit/5eb66a83bf6e501de4c5ff0b7309a808e3ea63c7))
+* **chat:** implement prefetching for conversation and messages in ChatIdPage ([31fbdde](https://github.com/Fyzz-Chat/fyzz-chat/commit/31fbddeca5d0bb21a6ca0ac0c2ab6f4ea1eb07e3))
+* **projects:** enhance project page with new header, handlers, and loading skeletons ([82af2c1](https://github.com/Fyzz-Chat/fyzz-chat/commit/82af2c1111a89439b55723c8b6ec92284460a260))
+
 # [0.38.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.37.0...v0.38.0) (2026-05-01)
 
 
