@@ -147,7 +147,7 @@ export default function ChatSettingsMenu({
         }
       >
         <MicroscopeIcon className="size-4" />
-        <span>Deep research</span>
+        <span>Deep research (o4-mini)</span>
         <div className="ml-auto size-4">
           {deepResearch ? <CheckIcon className="size-4" /> : <span className="size-4" />}
         </div>
