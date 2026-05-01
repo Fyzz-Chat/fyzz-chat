@@ -70,6 +70,11 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   } = useInitialMessage();
   const isNewConversation = Boolean(initialMessage);
   const conversationData = useConversation(id);
+  const conversationTitle = conversationData.data?.title;
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.title = conversationTitle ? `Fyzz chat - ${conversationTitle}` : "Fyzz chat";
+  }, [conversationTitle]);
   const [persistedWindowLimit, setPersistedWindowLimit] = useState(MESSAGE_WINDOW_SIZE);
 
   const persistedMessagesData = useMessages(id, {
