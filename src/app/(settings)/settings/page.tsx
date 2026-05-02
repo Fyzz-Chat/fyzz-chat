@@ -31,7 +31,6 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ViewTransitionWrapper from "@/components/view-transition-wrapper";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
@@ -47,7 +46,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex min-w-[320px] flex-1 flex-col items-center justify-start bg-background p-4 md:max-h-[calc(100svh-1rem)] md:rounded-[20px]">
-      <ViewTransitionWrapper className="relative flex w-full flex-1 items-start justify-center pt-10 md:overflow-y-auto">
+      <div className="relative flex w-full flex-1 items-start justify-center pt-10 md:overflow-y-auto">
         <FastLink
           href="/chat"
           className="absolute top-0 left-0 flex items-center justify-start gap-2"
@@ -246,7 +245,7 @@ export default async function SettingsPage() {
             </TabsContent>
           </Tabs>
         </div>
-      </ViewTransitionWrapper>
+      </div>
     </div>
   );
 }
