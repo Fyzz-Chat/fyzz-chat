@@ -1,22 +1,14 @@
 import "server-only";
 
 import type { InputJsonValue } from "@prisma/client/runtime/client";
-import { mapDbMessagesToUiMessages, safeParseJson } from "@/lib/backend/message-mapper";
+import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { isUniqueConstraintViolation } from "@/lib/backend/utils";
-import {
-  MESSAGE_ORDER_ASC,
-  MESSAGE_ORDER_DESC,
-  whereMessagesUpToAnchor,
-} from "@/lib/dao/message-order";
+import { MESSAGE_ORDER_ASC, whereMessagesUpToAnchor } from "@/lib/dao/message-order";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { getMessageContent } from "@/lib/utils";
-import {
-  type ConversationPage,
-  type CustomUIMessage,
-  metadataSchema,
-} from "@/types/chat";
+import type { ConversationPage, CustomUIMessage } from "@/types/chat";
 
 export async function getConversation(id: string) {
   const userId = await getUserIdFromSession();
@@ -179,16 +171,6 @@ export async function getConversationsByCursor(
       model: true,
       branchedFrom: true,
       projectId: true,
-      messages: {
-        select: {
-          id: true,
-          role: true,
-          parts: true,
-          metadata: true,
-        },
-        take: 1,
-        orderBy: MESSAGE_ORDER_DESC,
-      },
     },
     orderBy: [
       { lastMessageAt: "desc" },
@@ -208,14 +190,7 @@ export async function getConversationsByCursor(
   }
 
   return {
-    items: items.map((item) => ({
-      ...item,
-      messages: item.messages.map((message) => ({
-        ...message,
-        parts: safeParseJson(message.parts, []),
-        metadata: metadataSchema.parse(message.metadata),
-      })),
-    })),
+    items,
     nextCursor,
   };
 }

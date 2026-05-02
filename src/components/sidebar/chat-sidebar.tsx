@@ -48,7 +48,7 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { getProviderIcon } from "@/lib/providers";
 import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
 import { useAssignConversationToProject, useProjects } from "@/lib/queries/projects";
-import { cn, getMessageContent } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import { useSearchStore } from "@/stores/search-store";
 import type { PartialConversation } from "@/types/chat";
@@ -296,16 +296,6 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
             )}
             <span className="inline-block truncate whitespace-nowrap">{chat.title}</span>
           </div>
-          {chat?.messages?.length > 0 && (
-            <p
-              className={cn(
-                "w-full truncate text-muted-foreground text-xs",
-                currentId === chat.id && "text-accent-foreground"
-              )}
-            >
-              {getMessageContent(chat.messages[chat.messages.length - 1])}
-            </p>
-          )}
         </Link>
 
         {/* Desktop: 3-dot menu */}

@@ -340,9 +340,6 @@ export function useAddMessage(id: string) {
       const previousMessages = queryClient.getQueryData(
         trpc.messages.queryKey({ id: conversationId })
       );
-      const previousConversationLists = queryClient.getQueriesData(
-        trpc.infiniteConversations.infiniteQueryFilter()
-      );
 
       updateConversationMessageCaches(queryClient, trpc, conversationId, (old) => {
         if (old.messages.some((existing) => existing.id === message.id)) {
@@ -355,22 +352,7 @@ export function useAddMessage(id: string) {
         };
       });
 
-      updateInfiniteConversationCaches(queryClient, trpc, (old) => ({
-        ...old,
-        pages: old.pages.map((page) => ({
-          ...page,
-          items: page.items.map((conv: PartialConversation) =>
-            conv.id === conversationId
-              ? {
-                  ...conv,
-                  messages: [...conv.messages, message],
-                }
-              : conv
-          ),
-        })),
-      }));
-
-      return { previousMessages, previousConversationLists };
+      return { previousMessages };
     },
     onError: (_, __, context) => {
       if (!context) return;
@@ -378,9 +360,6 @@ export function useAddMessage(id: string) {
         trpc.messages.queryKey({ id: conversationId }),
         context.previousMessages
       );
-      context.previousConversationLists.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
-      });
     },
   });
 }
@@ -442,12 +421,7 @@ export function useCreateConversationOptimistic() {
         trpc.conversation.queryKey({ id: conversation.id }),
         conversation
       );
-      setConversationMessagesCache(
-        queryClient,
-        trpc,
-        conversation.id,
-        conversation.messages
-      );
+      setConversationMessagesCache(queryClient, trpc, conversation.id, []);
 
       updateInfiniteConversationCaches(
         queryClient,
@@ -508,7 +482,6 @@ export function useBranchConversation() {
           id: result.newConversationId,
           title: originalConversation.title,
           model: originalConversation.model,
-          messages: originalMessages.messages,
           lastMessageAt: new Date(),
           branchedFrom: conversationId,
           projectId: originalConversation.projectId,

@@ -114,7 +114,7 @@ function SidebarDataSkeleton() {
         </div>
         <div className="flex flex-col gap-3">
           {CHAT_SKELETON_KEYS.map((key) => (
-            <Skeleton key={key} className="h-16 w-full sm:h-14" />
+            <Skeleton key={key} className="h-16 w-full sm:h-9" />
           ))}
         </div>
       </div>

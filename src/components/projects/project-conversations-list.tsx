@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useConversations } from "@/lib/queries/conversations";
-import { getMessageContent } from "@/lib/utils";
 import type { ConversationPage } from "@/types/chat";
 
 interface ProjectConversationsListProps {
@@ -38,13 +37,6 @@ export function ProjectConversationsList({
         >
           <div className="min-w-0 flex-1">
             <div className="truncate">{conversation.title}</div>
-            {conversation.messages.length > 0 && (
-              <p className="truncate text-muted-foreground text-xs">
-                {getMessageContent(
-                  conversation.messages[conversation.messages.length - 1]
-                )}
-              </p>
-            )}
           </div>
           <span className="shrink-0 text-muted-foreground text-xs">
             {new Date(conversation.lastMessageAt).toLocaleDateString()}

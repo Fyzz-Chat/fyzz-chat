@@ -389,7 +389,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             id,
             title: "New Chat",
             model: model.id,
-            messages: [],
             lastMessageAt: new Date(),
             branchedFrom: null,
             projectId: initialProjectId ?? null,

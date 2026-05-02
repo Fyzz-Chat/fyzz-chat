@@ -27,7 +27,7 @@ export type ShareInfo = {
 export type CustomUIMessage = UIMessage<CustomMetadata>;
 
 export type PartialConversation = Omit<
-  Conversation & { messages: CustomUIMessage[] },
+  Conversation,
   "userId" | "createdAt" | "updatedAt" | "locked"
 >;
 
