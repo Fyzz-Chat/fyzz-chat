@@ -40,6 +40,12 @@ export const auth = betterAuth({
       trustedProviders: ["google"],
     },
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
   plugins: [lastLoginMethod(), nextCookies()],
   user: {
     additionalFields: {
