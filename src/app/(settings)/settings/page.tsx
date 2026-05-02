@@ -8,8 +8,8 @@ import {
   Shield,
   User,
 } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
-import { FastLink } from "@/components/fast-link";
 import { ApiKeysTab } from "@/components/settings/api-keys-tab";
 import DeleteAccountForm from "@/components/settings/delete-account-form";
 import { DisplaySettingsTab } from "@/components/settings/display-settings-tab";
@@ -47,13 +47,13 @@ export default async function SettingsPage() {
   return (
     <div className="flex min-w-[320px] flex-1 flex-col items-center justify-start bg-background p-4 md:max-h-[calc(100svh-1rem)] md:rounded-[20px]">
       <div className="relative flex w-full flex-1 items-start justify-center pt-10 md:overflow-y-auto">
-        <FastLink
+        <Link
           href="/chat"
           className="absolute top-0 left-0 flex items-center justify-start gap-2"
         >
           <ArrowLeft size={20} />
           <p className="text-muted-foreground text-sm">Back to chat</p>
-        </FastLink>
+        </Link>
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
           <div className="flex flex-col gap-2">
             <h1 className="font-bold text-2xl">{translations.settings.title}</h1>

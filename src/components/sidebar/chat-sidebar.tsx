@@ -1,12 +1,12 @@
 "use client";
 
 import { Check, FolderInput, Loader2, MoreVertical, Split, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import type React from "react";
 import { memo, use, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
-import { FastLink } from "@/components/fast-link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,11 +46,7 @@ import { useLongPress } from "@/hooks/use-long-press";
 import { useTranslations } from "@/lib/contexts/translations-context";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { getProviderIcon } from "@/lib/providers";
-import {
-  useConversations,
-  useDeleteConversation,
-  usePrefetchConversation,
-} from "@/lib/queries/conversations";
+import { useConversations, useDeleteConversation } from "@/lib/queries/conversations";
 import { useAssignConversationToProject, useProjects } from "@/lib/queries/projects";
 import { cn, getMessageContent } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
@@ -221,7 +217,6 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
     () => getProviderIcon(providers, chat.model),
     [providers, chat.model]
   );
-  const prefetchConversation = usePrefetchConversation();
 
   const projects = projectsData?.projects ?? [];
 
@@ -279,9 +274,8 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
   return (
     <>
       <div className="group/chat relative">
-        <FastLink
+        <Link
           href={`/chat/${chat.id}`}
-          prefetchFunction={() => prefetchConversation(chat.id)}
           className={cn(
             "flex min-h-16 w-full touch-manipulation select-none flex-col items-start gap-1 rounded-lg p-3.5 text-left text-[15px] transition-colors sm:min-h-0 sm:p-3 sm:text-sm",
             currentId === chat.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"
@@ -312,7 +306,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
               {getMessageContent(chat.messages[chat.messages.length - 1])}
             </p>
           )}
-        </FastLink>
+        </Link>
 
         {/* Desktop: 3-dot menu */}
         {!isMobile && (

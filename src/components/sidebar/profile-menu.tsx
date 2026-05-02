@@ -1,8 +1,8 @@
 "use client";
 
 import { Command, ExternalLink, FileText, Settings } from "lucide-react";
+import Link from "next/link";
 import { use } from "react";
-import { FastLink } from "@/components/fast-link";
 import GitHub from "@/components/icons/github";
 import { SignOut } from "@/components/sidebar/signout-button";
 import {
@@ -66,13 +66,10 @@ export default function ProfileMenu({
         <Kbd className="ml-auto">?</Kbd>
       </DropdownMenuItem>
       <DropdownMenuItem className="cursor-pointer p-0" asChild>
-        <FastLink
-          href="/settings"
-          className="flex size-full items-center gap-2 px-2 py-1.5"
-        >
+        <Link href="/settings" className="flex size-full items-center gap-2 px-2 py-1.5">
           <Settings className="shrink-0" />
           <span>{translations.sidebar.menu.settings}</span>
-        </FastLink>
+        </Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem className="p-0">

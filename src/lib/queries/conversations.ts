@@ -6,7 +6,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
-import { useCallback } from "react";
 import {
   branchConversationAction,
   deleteConversation,
@@ -202,25 +201,6 @@ export function useConversation(id: string) {
   const myQuery = trpc.conversation.queryOptions({ id }, options);
 
   return useQuery(myQuery);
-}
-
-export function usePrefetchConversation() {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
-
-  return useCallback(
-    (id: string) => {
-      queryClient.prefetchQuery(trpc.conversation.queryOptions({ id }));
-      queryClient.prefetchQuery(
-        trpc.messages.queryOptions({
-          id,
-          page: MESSAGES_DEFAULT_PAGE,
-          limit: MESSAGES_DEFAULT_LIMIT,
-        })
-      );
-    },
-    [queryClient, trpc]
-  );
 }
 
 export function useMessages(

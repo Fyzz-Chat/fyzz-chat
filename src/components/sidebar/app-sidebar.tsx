@@ -1,7 +1,7 @@
 import { ChevronsUpDown } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { SignInButton } from "@/components/auth/sign-in-button";
-import { FastLink } from "@/components/fast-link";
 import { FyzzLogo } from "@/components/fyzz-logo";
 import { NewChatButton } from "@/components/sidebar/new-chat-button";
 import ProfileMenu from "@/components/sidebar/profile-menu";
@@ -34,9 +34,9 @@ export function AppSidebar({
         <SidebarHeader>
           <div className="flex w-full items-center justify-between gap-2">
             <div className="flex gap-2">
-              <FastLink href="/chat" className="flex items-center justify-start gap-2">
+              <Link href="/chat" className="flex items-center justify-start gap-2">
                 <FyzzLogo width={50} height={24} />
-              </FastLink>
+              </Link>
               <div className="flex place-items-end">
                 <a
                   href={`https://github.com/Fyzz-Chat/fyzz-chat/releases/tag/v${version}`}
