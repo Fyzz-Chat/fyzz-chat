@@ -1,3 +1,10 @@
+## [0.40.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.40.0...v0.40.1) (2026-05-07)
+
+
+### Bug Fixes
+
+* check token limit in entire message history ([e2951db](https://github.com/Fyzz-Chat/fyzz-chat/commit/e2951db8494267aa8e022ae752b8ea368fe582b9))
+
 # [0.40.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.39.0...v0.40.0) (2026-05-07)
 
 
