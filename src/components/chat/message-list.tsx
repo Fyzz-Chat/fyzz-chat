@@ -118,7 +118,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     []
   );
 
-  const { messages, setMessages, sendMessage, status, stop, regenerate } =
+  const { messages, setMessages, sendMessage, status, stop, regenerate, clearError } =
     useChat<CustomUIMessage>({
       transport,
       id,
@@ -132,6 +132,12 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         toast.error(error?.message?.trim() || fallback);
       },
     });
+
+  useEffect(() => {
+    if (status === "error") {
+      clearError();
+    }
+  }, [status, clearError]);
 
   const stopRef = useRef(stop);
   stopRef.current = stop;
