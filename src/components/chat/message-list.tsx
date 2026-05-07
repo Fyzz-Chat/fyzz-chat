@@ -127,6 +127,10 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       onFinish: async ({ message }: { message: CustomUIMessage }) => {
         await addMessage.mutateAsync({ message });
       },
+      onError: (error) => {
+        const fallback = "Something went wrong. Please try again.";
+        toast.error(error?.message?.trim() || fallback);
+      },
     });
 
   const stopRef = useRef(stop);

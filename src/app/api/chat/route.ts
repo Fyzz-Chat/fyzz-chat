@@ -20,6 +20,10 @@ import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import {
+  enforceTokenLimitForMessage,
+  enforceTokenLimitForText,
+} from "@/lib/backend/token-limits";
+import {
   getUnsupportedFileTypes,
   hasInputPart,
   logDuration,
@@ -390,6 +394,16 @@ export async function POST(req: NextRequest) {
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
+  }
+
+  if (newMessage?.role === "user") {
+    const rejection = enforceTokenLimitForMessage(newMessage);
+    if (rejection) return rejection;
+  }
+
+  if (trigger === "regenerate-message" && newContent) {
+    const rejection = enforceTokenLimitForText(newContent);
+    if (rejection) return rejection;
   }
 
   if (!temporaryChat && trigger === "regenerate-message" && messageId) {
