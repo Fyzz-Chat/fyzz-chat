@@ -1,17 +1,21 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
 import { encode } from "gpt-tokenizer";
 import { extractText, getDocumentProxy } from "unpdf";
 import { getObjectBytes, headObjectSize } from "@/lib/aws/s3";
 import conf from "@/lib/config";
+import {
+  cacheFileTokens,
+  getCachedFileTokens,
+  getCachedFileTokensBatch,
+} from "@/lib/dao/file-tokens";
 import { logger } from "@/lib/logger";
 import type { CustomUIMessage } from "@/types/chat";
 
-// Hard ceiling on how many bytes we will fetch+extract per attachment.
-// Anything larger is rejected without download — both as a cost guard and to
-// prevent OOM during PDF extraction. This is independent of the user-facing
-// token limit; it is the safety net.
 const MAX_ATTACHMENT_FETCH_BYTES = 10 * 1024 * 1024; // 10 MB
+
+const PER_PDF_PAGE_VISION_TOKENS = 1500;
 
 const TEXT_LIKE_MEDIA_TYPES = new Set([
   "application/json",
@@ -24,6 +28,15 @@ const TEXT_LIKE_MEDIA_TYPES = new Set([
 function isTextLikeMediaType(mediaType: string): boolean {
   if (mediaType.startsWith("text/")) return true;
   return TEXT_LIKE_MEDIA_TYPES.has(mediaType);
+}
+
+type FilePart = { url: string; mediaType: string; filename?: string };
+
+function fileCacheKey(filePart: FilePart): string {
+  if (filePart.url.startsWith("data:")) {
+    return `sha256:${createHash("sha256").update(filePart.url).digest("hex")}`;
+  }
+  return `s3:${filePart.url}`;
 }
 
 export function countTextTokens(text: string): number {
@@ -46,7 +59,6 @@ function decodeDataUrl(url: string): Uint8Array | null {
   const header = url.slice(0, commaIndex);
   const body = url.slice(commaIndex + 1);
   if (!header.includes(";base64")) {
-    // Plain text data URL; encode as UTF-8 bytes for downstream tokenization.
     return new TextEncoder().encode(decodeURIComponent(body));
   }
   const binary = atob(body);
@@ -56,7 +68,7 @@ function decodeDataUrl(url: string): Uint8Array | null {
 }
 
 async function fetchAttachmentBytes(
-  filePart: { url: string },
+  filePart: FilePart,
   s3KeyPrefix: string
 ): Promise<Uint8Array> {
   if (filePart.url.startsWith("data:")) {
@@ -85,10 +97,6 @@ async function fetchAttachmentBytes(
   return bytes;
 }
 
-// Conservative per-page bound for PDFs whose text we cannot extract — covers the
-// vision-token cost a model pays when ingesting a page as an image.
-const PER_PDF_PAGE_VISION_TOKENS = 1500;
-
 async function tokenizeBytesByMediaType(
   bytes: Uint8Array,
   mediaType: string
@@ -104,8 +112,6 @@ async function tokenizeBytesByMediaType(
     const merged = Array.isArray(result.text) ? result.text.join("\n") : result.text;
     const extractedTokens = encode(merged).length;
     const pageBased = (result.totalPages ?? 0) * PER_PDF_PAGE_VISION_TOKENS;
-    // Use the larger of the two: text-PDFs report real text tokens, scanned or
-    // unparseable PDFs are bounded by page count × vision cost.
     return Math.max(extractedTokens, pageBased);
   }
 
@@ -114,12 +120,63 @@ async function tokenizeBytesByMediaType(
   return 0;
 }
 
-async function countAttachmentTokens(
-  filePart: { url: string; mediaType: string },
+async function liveCountAttachmentTokens(
+  filePart: FilePart,
   s3KeyPrefix: string
 ): Promise<number> {
   const bytes = await fetchAttachmentBytes(filePart, s3KeyPrefix);
   return tokenizeBytesByMediaType(bytes, filePart.mediaType);
+}
+
+async function countAttachmentTokens(
+  filePart: FilePart,
+  s3KeyPrefix: string
+): Promise<number> {
+  const cacheKey = fileCacheKey(filePart);
+
+  try {
+    const cached = await getCachedFileTokens(cacheKey);
+    if (cached !== null) return cached;
+  } catch (error) {
+    logger.warn({
+      message: "[Chat] FileTokenCache lookup failed; falling back to live extract.",
+      cacheKey,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  const tokens = await liveCountAttachmentTokens(filePart, s3KeyPrefix);
+
+  try {
+    await cacheFileTokens(cacheKey, tokens, filePart.mediaType);
+  } catch (error) {
+    logger.warn({
+      message: "[Chat] FileTokenCache write failed; not fatal.",
+      cacheKey,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  return tokens;
+}
+
+function getFileParts(message: CustomUIMessage): FilePart[] {
+  return message.parts.filter(
+    (p): p is Extract<CustomUIMessage["parts"][number], { type: "file" }> =>
+      p.type === "file"
+  );
+}
+
+async function countMessageAttachmentTokens(
+  message: CustomUIMessage,
+  s3KeyPrefix: string
+): Promise<number> {
+  const fileParts = getFileParts(message);
+  if (fileParts.length === 0) return 0;
+  const counts = await Promise.all(
+    fileParts.map((part) => countAttachmentTokens(part, s3KeyPrefix))
+  );
+  return counts.reduce((sum, n) => sum + n, 0);
 }
 
 function formatTokenLimitMessage(tokens: number, limit: number): string {
@@ -137,6 +194,13 @@ function buildAttachmentValidationError(): Response {
   );
 }
 
+function buildHistoryRejection(limit: number): Response {
+  return new Response(
+    `This conversation contains a message that exceeds the current ${limit.toLocaleString()}-token limit. Please start a new chat.`,
+    { status: 413 }
+  );
+}
+
 export async function enforceTokenLimitForMessage(
   message: CustomUIMessage,
   s3KeyPrefix: string
@@ -144,31 +208,22 @@ export async function enforceTokenLimitForMessage(
   const limit = conf.perMessageTokenLimit;
   if (limit === undefined) return null;
 
-  let total = countMessageTextTokens(message);
-  if (total > limit) return buildLimitResponse(total, limit);
+  const textTokens = countMessageTextTokens(message);
+  if (textTokens > limit) return buildLimitResponse(textTokens, limit);
 
-  const fileParts = message.parts.filter(
-    (p): p is Extract<CustomUIMessage["parts"][number], { type: "file" }> =>
-      p.type === "file"
-  );
-
-  for (const part of fileParts) {
-    let attachmentTokens: number;
-    try {
-      attachmentTokens = await countAttachmentTokens(part, s3KeyPrefix);
-    } catch (error) {
-      logger.warn({
-        message: "[Chat] Attachment token validation failed; rejecting message.",
-        filename: part.filename,
-        mediaType: part.mediaType,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return buildAttachmentValidationError();
-    }
-    total += attachmentTokens;
-    if (total > limit) return buildLimitResponse(total, limit);
+  let attachmentTokens: number;
+  try {
+    attachmentTokens = await countMessageAttachmentTokens(message, s3KeyPrefix);
+  } catch (error) {
+    logger.warn({
+      message: "[Chat] Attachment token validation failed; rejecting message.",
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return buildAttachmentValidationError();
   }
 
+  const total = textTokens + attachmentTokens;
+  if (total > limit) return buildLimitResponse(total, limit);
   return null;
 }
 
@@ -178,4 +233,47 @@ export function enforceTokenLimitForText(text: string): Response | null {
   const tokens = countTextTokens(text);
   if (tokens <= limit) return null;
   return buildLimitResponse(tokens, limit);
+}
+
+export async function enforceHistoryWithinLimit(
+  messages: CustomUIMessage[],
+  s3KeyPrefix: string
+): Promise<Response | null> {
+  const limit = conf.perMessageTokenLimit;
+  if (limit === undefined) return null;
+  if (messages.length === 0) return null;
+
+  const allFileParts = messages.flatMap(getFileParts);
+  if (allFileParts.length > 0) {
+    try {
+      await getCachedFileTokensBatch(allFileParts.map(fileCacheKey));
+    } catch (error) {
+      logger.warn({
+        message: "[Chat] History cache prewarm failed; continuing per-row.",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  const perMessageTotals = await Promise.all(
+    messages.map(async (message) => {
+      const textTokens = countMessageTextTokens(message);
+      try {
+        const attachmentTokens = await countMessageAttachmentTokens(message, s3KeyPrefix);
+        return textTokens + attachmentTokens;
+      } catch (error) {
+        logger.warn({
+          message: "[Chat] Historical attachment token validation failed.",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        // Fail closed: any uncountable attachment in history blocks the chat.
+        return Number.POSITIVE_INFINITY;
+      }
+    })
+  );
+
+  for (const total of perMessageTotals) {
+    if (total > limit) return buildHistoryRejection(limit);
+  }
+  return null;
 }

@@ -20,6 +20,7 @@ import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import {
+  enforceHistoryWithinLimit,
   enforceTokenLimitForMessage,
   enforceTokenLimitForText,
 } from "@/lib/backend/token-limits";
@@ -436,6 +437,12 @@ export async function POST(req: NextRequest) {
   }
 
   const existingMessages = conversationState.messages || [];
+
+  const historyRejection = await enforceHistoryWithinLimit(
+    existingMessages,
+    `${user.id}/${id}`
+  );
+  if (historyRejection) return historyRejection;
 
   const latestMessage = existingMessages.at(-1);
   if (latestMessage?.role === "user") {
