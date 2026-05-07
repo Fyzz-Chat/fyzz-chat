@@ -1,3 +1,19 @@
+# [0.40.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.39.0...v0.40.0) (2026-05-07)
+
+
+### Bug Fixes
+
+* **auth:** cache session in cookie ([ff35d49](https://github.com/Fyzz-Chat/fyzz-chat/commit/ff35d49608c6455a7905312a9c563f9183557efe))
+* clear error state on error ([271f8d7](https://github.com/Fyzz-Chat/fyzz-chat/commit/271f8d7acc20623672bda87e4fd47a30886e0449))
+* **input:** break long words ([8d0306a](https://github.com/Fyzz-Chat/fyzz-chat/commit/8d0306aa45662f3726f20fc84b8b356633d22f71))
+
+
+### Features
+
+* **errors:** add error boundary components for app and global error handling ([77dd8c5](https://github.com/Fyzz-Chat/fyzz-chat/commit/77dd8c509efc64c8bc5b5c7f643559f8a2c9c647))
+* **token-limits:** implement token limit enforcement for messages and texts ([942e806](https://github.com/Fyzz-Chat/fyzz-chat/commit/942e806a5022b7b7aaf0dc63380f4535ad43f5f2))
+* **unpdf:** add unpdf dependency and implement attachment token counter ([ad84200](https://github.com/Fyzz-Chat/fyzz-chat/commit/ad84200b11b466c5a8235979d63b2bff93cf3662))
+
 # [0.39.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.38.0...v0.39.0) (2026-05-01)
 
 
