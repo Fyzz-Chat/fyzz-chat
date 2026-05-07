@@ -397,7 +397,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (newMessage?.role === "user") {
-    const rejection = enforceTokenLimitForMessage(newMessage);
+    const rejection = await enforceTokenLimitForMessage(newMessage, `${user.id}/${id}`);
     if (rejection) return rejection;
   }
 

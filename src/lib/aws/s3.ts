@@ -1,6 +1,8 @@
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -65,6 +67,27 @@ export async function generatePresignedUploadUrl(
   });
 
   return url;
+}
+
+export async function headObjectSize(key: string): Promise<number | null> {
+  if (!client) return null;
+  const command = new HeadObjectCommand({
+    Bucket: conf.awsUploadsBucket,
+    Key: key,
+  });
+  const response = await client.send(command);
+  return response.ContentLength ?? null;
+}
+
+export async function getObjectBytes(key: string): Promise<Uint8Array | null> {
+  if (!client) return null;
+  const command = new GetObjectCommand({
+    Bucket: conf.awsUploadsBucket,
+    Key: key,
+  });
+  const response = await client.send(command);
+  if (!response.Body) return null;
+  return response.Body.transformToByteArray();
 }
 
 export async function copyFile(sourceKey: string, destinationKey: string) {
