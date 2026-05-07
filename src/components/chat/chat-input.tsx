@@ -146,6 +146,7 @@ export default function ChatInput() {
                 }
                 disabled={hasPendingResearch}
                 onChange={handleInputChange}
+                className="wrap-anywhere"
               />
             </PromptInputBody>
             <PromptInputFooter className="space-x-1">
