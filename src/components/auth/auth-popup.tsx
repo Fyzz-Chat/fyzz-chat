@@ -104,6 +104,7 @@ export default function AuthPopup({
                     <div className="flex w-max animate-scroll-infinite gap-4 motion-reduce:animate-none">
                       {[...PROVIDERS, ...PROVIDERS].map((provider, index) => (
                         <div
+                          // biome-ignore lint/suspicious/noArrayIndexKey: doubled marquee list, static order, index disambiguates the duplicate pass
                           key={`${provider}-${index}`}
                           className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
                         >

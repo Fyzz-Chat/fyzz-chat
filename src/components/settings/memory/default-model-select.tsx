@@ -49,8 +49,8 @@ export default function DefaultModelSelect({
         />
       </SelectTrigger>
       <SelectContent>
-        {providers.map((provider, index) => (
-          <SelectGroup key={`${provider.id}-${index}`}>
+        {providers.map((provider) => (
+          <SelectGroup key={provider.id}>
             <SelectLabel>{provider.name}</SelectLabel>
             {provider.models.map((model) => (
               <SelectItem key={model.id} value={model.id}>

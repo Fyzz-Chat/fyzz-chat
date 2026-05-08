@@ -68,7 +68,7 @@ export default async function SharePage({
 
   const conversation = await public_getConversationUntilMessage(share.messageId);
 
-  if (!conversation || !conversation.messages) {
+  if (!conversation?.messages) {
     return notFound();
   }
 
@@ -87,6 +87,7 @@ export default async function SharePage({
                     switch (part.type) {
                       case "text": {
                         return (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: message parts are append-only and never reorder
                           <MessageResponse key={`${message.id}-${i}`}>
                             {part.text}
                           </MessageResponse>

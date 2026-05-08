@@ -16,6 +16,7 @@ export default function CatalystBadge() {
       href={`https://catalyst.konvert7.com/?${source}&${medium}&${campaign}`}
       target="_blank"
       className="flex items-center gap-1.5 rounded border bg-card px-2 py-1 text-foreground text-sm shadow-md transition-colors hover:bg-input/50 dark:bg-input"
+      rel="noopener"
     >
       <span>Made with</span>
       <img

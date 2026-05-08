@@ -5,6 +5,7 @@ export function ConversationsListSkeleton() {
     <div className="flex flex-col gap-1">
       {Array.from({ length: 4 }, (_, i) => (
         <div
+          // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length skeleton placeholders, never reorder
           key={i}
           className="flex items-start justify-between gap-5 rounded-lg px-3 py-3.5"
         >

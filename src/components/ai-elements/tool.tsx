@@ -427,6 +427,7 @@ type OpenAICodeInterpreterOutputProps = ComponentProps<"div"> & {
 export const OpenAICodeInterpreterOutput = memo(
   ({ className, output, errorText, ...props }: OpenAICodeInterpreterOutputProps) => {
     const formattedOutput = output?.outputs?.map((output, index) => (
+      // biome-ignore lint/suspicious/noArrayIndexKey: vendored from ai-elements; output array is append-only per tool execution
       <div key={`${index}-output`} className="flex flex-col gap-2">
         {output.type === "logs" && <div className="font-mono">{output.logs}</div>}
         {output.type === "image" && <div>{output.url}</div>}

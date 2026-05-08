@@ -42,7 +42,7 @@ export async function getMcpClients(): Promise<MCPClient[]> {
       continue;
     }
 
-    if (!serverUrl || !serverUrl.startsWith("http")) {
+    if (!serverUrl?.startsWith("http")) {
       continue;
     }
 

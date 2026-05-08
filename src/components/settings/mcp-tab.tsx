@@ -115,6 +115,7 @@ export function McpTab({ userMcpServers }: Readonly<{ userMcpServers?: JsonValue
           <div className="flex w-full flex-col gap-4">
             {servers.map((server, index) => (
               <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: form field array; index is the row identity used by updateServer/removeServer
                 key={index}
                 className="grid w-full grid-cols-1 gap-2 sm:grid-cols-[1fr_minmax(0,2fr)_auto_auto] sm:gap-3"
               >

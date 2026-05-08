@@ -1,3 +1,5 @@
+// biome-ignore-all lint/suspicious/noArrayIndexKey: message parts are append-only during streaming and never reorder; index identity matches the useChat per-token re-render contract that this file is built around (see CLAUDE.md).
+
 "use client";
 
 import type { FileUIPart, SourceUrlUIPart, ToolUIPart } from "ai";
