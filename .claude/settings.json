@@ -18,6 +18,10 @@
           },
           {
             "type": "command",
+            "command": "bun .agents/hooks/knip.ts"
+          },
+          {
+            "type": "command",
             "command": "bun .agents/hooks/build.ts"
           }
         ]
@@ -29,10 +33,12 @@
       "Bash(bun run check-write:*)",
       "Bash(bun run type-check:*)",
       "Bash(bun run test:*)",
+      "Bash(bun run knip:*)",
       "Bash(bun run build:*)",
       "Bash(bun check-write:*)",
       "Bash(bun type-check:*)",
       "Bash(bun test:*)",
+      "Bash(bun knip:*)",
       "Bash(bun build:*)"
     ]
   }

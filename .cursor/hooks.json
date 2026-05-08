@@ -10,6 +10,12 @@
       },
       {
         "command": "bun .agents/hooks/test.ts"
+      },
+      {
+        "command": "bun .agents/hooks/knip.ts"
+      },
+      {
+        "command": "bun .agents/hooks/build.ts"
       }
     ]
   }
