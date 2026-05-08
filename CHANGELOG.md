@@ -1,3 +1,17 @@
+# [0.41.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.40.1...v0.41.0) (2026-05-08)
+
+
+### Bug Fixes
+
+* lint code ([aff01e8](https://github.com/Fyzz-Chat/fyzz-chat/commit/aff01e805f42654b7535885a8fbb1cc19041a0dd))
+
+
+### Features
+
+* add knip ([6a8df81](https://github.com/Fyzz-Chat/fyzz-chat/commit/6a8df816e93070b94266648626cbe181a7cfdf7e))
+* add userId parameter to conversation title updates and model runtime ([fc3367f](https://github.com/Fyzz-Chat/fyzz-chat/commit/fc3367f0105f53e571bbcec942a61364a675350b))
+* run knip in hooks ([9856b6a](https://github.com/Fyzz-Chat/fyzz-chat/commit/9856b6a98fbfb6bc4748e3a764ce54b6bccdc7de))
+
 ## [0.40.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.40.0...v0.40.1) (2026-05-07)
 
 
