@@ -1,192 +1,203 @@
-# <img src="src/app/icon.svg" alt="Fyzz Chat" width="28" height="28" /> Fyzz Chat
+<div align="center">
 
-![GitHub Workflow Status](https://github.com/Fyzz-Chat/fyzz-chat/actions/workflows/prod.yml/badge.svg)
+<img src="src/app/icon.svg" alt="" width="56" height="56" />
 
-## About Fyzz Chat
+# Fyzz Chat
 
-Fyzz Chat is an open-source & self-hostable alternative to ChatGPT, Claude, Gemini, Perplexity, or actually any other LLM you can think of.
+### Chat with the best AI models, all in one place
 
-Although it comes with some of the most popular models preconfigured for you (you only need some API keys to get started), you can easily add your own models to it if you'd like because Fyzz Chat is built on top of the [Vercel AI SDK](https://ai-sdk.dev/docs/introduction).
+Bring your own keys, deploy in one click, or use the hosted version.
 
-## Quick Start
+[![Build](https://img.shields.io/github/actions/workflow/status/Fyzz-Chat/fyzz-chat/prod.yml?label=build)](https://github.com/Fyzz-Chat/fyzz-chat/actions/workflows/prod.yml) [![Release](https://img.shields.io/github/v/release/Fyzz-Chat/fyzz-chat?color=3b82f6)](https://github.com/Fyzz-Chat/fyzz-chat/releases) [![License](https://img.shields.io/github/license/Fyzz-Chat/fyzz-chat)](LICENSE) [![Docker](https://img.shields.io/badge/ghcr.io-fyzz--chat-0b0b0b?logo=docker&logoColor=white)](https://github.com/Fyzz-Chat/fyzz-chat/pkgs/container/fyzz-chat) 
+
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20an%20auth%20secret%20to%20be%20used%20with%20Auth.js%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat"><img src="https://vercel.com/button" alt="Deploy with Vercel" height="32" /></a>&nbsp;<a href="https://coolify.io"><img src="https://img.shields.io/badge/Deploy%20to%20Coolify-coming%20soon-9ca3af?labelColor=8b5cf6&logo=coolify&logoColor=white" alt="Deploy to Coolify (coming soon)" height="28" /></a>
+
+<a href="https://www.fyzz.chat/chat"><img src="https://img.shields.io/badge/Try%20the%20hosted%20version-→-3b82f6?style=for-the-badge&labelColor=3b82f6" alt="Try the hosted version →" height="40" /></a>
+
+</div>
+
+---
+
+## Why Fyzz Chat
+
+- **One chat for every model.** OpenAI, Anthropic, Google, xAI, Perplexity, Fireworks, Azure — and anything else the [Vercel AI SDK](https://ai-sdk.dev/docs/introduction) supports.
+- **Tools, MCP, and the web built in.** Function calling, [MCP](https://modelcontextprotocol.io) server support, and web browsing without extra setup.
+- **Self-host or hosted.** One-click Vercel, the official Docker image, or AWS CloudFormation — or skip setup with the hosted plan at [fyzz.chat](https://www.fyzz.chat/chat).
+
+`OpenAI` · `Anthropic` · `Google` · `xAI` · `Perplexity` · `Fireworks` · `Azure`
+
+## Quick start
 
 > [!NOTE]
-> Regardless of where you deploy Fyzz Chat, you will need a PostgreSQL database first to store your data.
+> Fyzz Chat needs a PostgreSQL database wherever you deploy it.
 
 ### Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20an%20auth%20secret%20to%20be%20used%20with%20Auth.js%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat)
 
-### Coolify
+### Docker
 
-Coming soon!
+```bash
+docker run -p 3000:3000 \
+  -e BETTER_AUTH_SECRET=... \
+  -e BETTER_AUTH_URL=https://your-domain.com \
+  -e DATABASE_URL=postgres://... \
+  -e DIRECT_DATABASE_URL=postgres://... \
+  -e OPENAI_API_KEY=... \
+  ghcr.io/fyzz-chat/fyzz-chat:latest
+```
+
+To build your own image, run `bun run build:standalone` and use the resulting standalone output.
+
+### Local development
+
+```bash
+bun install
+cp .env.sample .env   # then fill in the values
+bun db:deploy         # apply database migrations
+bun dev               # start the dev server on http://localhost:3000
+```
+
+To preview transactional emails: `bun run dev:email` (port 3001).
 
 ## Hosted version
 
-Interested in the hosted version? Check out [Fyzz Chat](https://www.fyzz.chat/chat) in action. We have everything configured for you, plus some extra features.
+Don't want to self-host? [fyzz.chat](https://www.fyzz.chat/chat) runs the same project, fully managed — zero setup, automatic updates. Self-hosting stays free and supported; the hosted plan is just there if you'd rather not manage infrastructure.
 
-However, if you prefer to host it yourself, read on!
+## Self-hosting
 
-## Docs for Self-hosters
+Two ways to self-host:
 
-There are two ways to self-host Fyzz Chat:
-
-- You can deploy it from the repository as a Next.js project
-- You can use the [Docker image](https://github.com/Fyzz-Chat/fyzz-chat/pkgs/container/fyzz-chat) (which is a containerized version of the Next.js project)
+- Deploy from the repository as a Next.js project.
+- Use the [Docker image](https://github.com/Fyzz-Chat/fyzz-chat/pkgs/container/fyzz-chat) (a containerized version of the Next.js project).
 
 ### Database
 
-Fyzz Chat uses Prisma to interact with the database. By default, it uses PostgreSQL as the database engine.
-
-Regardless of where you will host it, you will have to migrate it first to create the database schema. (You will need to have the `DATABASE_URL` environment variable set up for this to work.)
+Fyzz Chat uses Prisma with PostgreSQL. Before the app can start, run the migrations (with `DATABASE_URL` set):
 
 ```bash
 bun run db:deploy
-
 # or
-
 bunx prisma migrate deploy
 ```
 
-The next step is to set up the environment variables.
+### Environment variables
 
-### Environment Variables
+**Required:**
 
-The following environment variables are required:
+- `BETTER_AUTH_SECRET` — random string, at least 32 characters.
+- `BETTER_AUTH_URL` — public URL of your application.
+- `DATABASE_URL` — pooled Postgres URL.
+- `DIRECT_DATABASE_URL` — direct (non-pooled) Postgres URL.
+- `OPENAI_API_KEY` — create one [here](https://platform.openai.com/api-keys).
 
-- `BETTER_AUTH_SECRET`: A random string of at least 32 characters.
-- `BETTER_AUTH_URL`: The URL of your application.
-- `DATABASE_URL`: The URL of your database.
-- `DIRECT_DATABASE_URL`: The URL of your database.
-- `OPENAI_API_KEY`: The API key for OpenAI. Create one [here](https://platform.openai.com/api-keys).
+**Authentication (optional):**
 
-The following environment variables are optional and influence the authentication process:
+- `ANONYMOUS_LOGIN` — allow single-click anonymous logins.
+- `AUTHORIZED_EMAIL_DOMAINS` — comma-separated allow-list of email domains.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — enable Google sign-in.
 
-- `ANONYMOUS_LOGIN`: Whether to allow single-click anonymous logins.
-- `AUTHORIZED_EMAIL_DOMAINS`: A comma-separated list of email domains that are allowed to sign up and log in.
-- To enable login with Google, you need to set the following environment variables:
-- `GOOGLE_CLIENT_ID`: The Google client ID.
-- `GOOGLE_CLIENT_SECRET`: The Google client secret.
+**Additional model providers (optional):**
 
-The following environment variables are optional and control which additional models are available for use:
+- `ANTHROPIC_API_KEY` — Anthropic ([create](https://platform.claude.com/settings/keys))
+- `XAI_API_KEY` — xAI ([create](https://console.x.ai))
+- `GOOGLE_GENERATIVE_AI_API_KEY` — Google AI ([create](https://aistudio.google.com/app/api-keys))
+- `PERPLEXITY_API_KEY` — Perplexity ([create](https://www.perplexity.ai/account/api/keys); you may need to create an [API group](https://www.perplexity.ai/account/api/group?create=true) first)
+- `FIREWORKS_API_KEY` — Fireworks ([create](https://app.fireworks.ai/settings/users/api-keys))
 
-- `ANTHROPIC_API_KEY`: The API key for Anthropic. Create one [here](https://platform.claude.com/settings/keys).
-- `XAI_API_KEY`: The API key for XAI. Create it one [here](https://console.x.ai).
-- `GOOGLE_GENERATIVE_AI_API_KEY`: The API key for Google Generative AI. Create one [here](https://aistudio.google.com/app/api-keys).
-- `PERPLEXITY_API_KEY`: The API key for Perplexity. Create one [here](https://www.perplexity.ai/account/api/keys). You might need to create an API Group first [here](https://www.perplexity.ai/account/api/group?create=true).
-- `FIREWORKS_API_KEY`: The API key for Fireworks. Create one [here](https://app.fireworks.ai/settings/users/api-keys).
+Without these, the app still runs but only OpenAI models are available.
 
-If you don't set any of these, the application will still start up, but you will only be able to use models from OpenAI.
+**File uploads to S3 + CloudFront (optional):**
 
-The following environment variables are also optional and control whether uploaded files will be persisted in a CDN or in the database:
-
-- `AWS_ACCESS_KEY_ID`: Your AWS access key ID.
-- `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key.
-- `AWS_REGION`: The AWS region of your bucket.
-- `AWS_UPLOADS_BUCKET`: The AWS bucket for uploads.
-- `AWS_CLOUDFRONT_KEY_PAIR_ID`: AWS CloudFront key pair ID.
-- `AWS_CLOUDFRONT_PRIVATE_KEY`: AWS CloudFront private key with | as line breaks (deprecated).
-- `AWS_CLOUDFRONT_PRIVATE_KEY_BASE64`: AWS CloudFront private key in base64 format.
-    * Quick way to convert to base64 format: `cat key.pem | base64 > base64_key.pem`
-- `AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN`: AWS CloudFront distribution domain. Falls back to `AWS_UPLOADS_BUCKET` if not set. The fallback only works if your bucket's name is the same as your distribution domain.
-
-The last two are required to create signed URLs for uploaded files.
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_UPLOADS_BUCKET`
+- `AWS_CLOUDFRONT_KEY_PAIR_ID`
+- `AWS_CLOUDFRONT_PRIVATE_KEY` — private key with `|` as line breaks (deprecated).
+- `AWS_CLOUDFRONT_PRIVATE_KEY_BASE64` — base64-encoded private key. Convert with `cat key.pem | base64 > base64_key.pem`.
+- `AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN` — falls back to `AWS_UPLOADS_BUCKET` if your bucket name matches the distribution domain.
 
 > [!WARNING]
-> If any of the above `AWS_` variables is not set, the application will still work, but uploaded files will be persisted in the database.
+> If any `AWS_` variable is missing, uploads are persisted in the database instead of S3.
 
-#### AWS
+### AWS (CloudFormation)
 
-Deploy Fyzz Chat to AWS using one of the provided CloudFormation templates in [aws/](aws/). The templates create an ECS cluster with RDS PostgreSQL, Application Load Balancer, and all necessary networking.
+Two ready-made stacks live in [`aws/`](aws/) — they create an ECS cluster with RDS PostgreSQL, an Application Load Balancer, and the necessary networking.
 
-There are two templates available:
-- [cloudformation-ec2.json](aws/cloudformation-ec2.json): Deploy Fyzz Chat to AWS using EC2.
-- [cloudformation-fargate.json](aws/cloudformation-fargate.json): Deploy Fyzz Chat to AWS using Fargate.
+- [`cloudformation-ec2.json`](aws/cloudformation-ec2.json) — ECS on EC2.
+- [`cloudformation-fargate.json`](aws/cloudformation-fargate.json) — ECS on Fargate.
 
-If you'd like to visualize the templates, you can use the [AWS CloudFormation Infrastructure Composer](https://eu-central-1.console.aws.amazon.com/composer/home). Click on **Create project**, choose the **Template** tab, set the file type to JSON, then copy and paste the template content. Finally, switch back to the **Canvas** tab to visualize the infrastructure.
+To visualize either template, open the [AWS CloudFormation Infrastructure Composer](https://eu-central-1.console.aws.amazon.com/composer/home), choose **Create project → Template tab → JSON**, and paste the contents.
 
-**Prerequisites:**
+**Prerequisites — store secrets in AWS Secrets Manager:**
 
-1. Create secrets in AWS Secrets Manager:
-   - Go to **Secrets Manager** → **Store a new secret**
-   - Select **Other type of secret**
-   - Select **Plaintext**
-   - Create a secret named `fyzz-chat/better-auth-secret` with a random string of at least 32 characters
-   - Create a secret named `fyzz-chat/openai-api-key` with your OpenAI API key
-   - Note the ARN of each secret (you'll need them for the stack parameters)
+1. Go to **Secrets Manager → Store a new secret → Other type of secret → Plaintext**.
+2. Create `fyzz-chat/better-auth-secret` (random string, 32+ chars).
+3. Create `fyzz-chat/openai-api-key` with your OpenAI key.
+4. Note the ARNs — you'll pass them as stack parameters.
 
 **Deploy:**
 
-1. Go to **CloudFormation** → **Create stack** → **With new resources (standard)**
-2. Upload `cloudformation.json` as the template
-3. Enter stack name: `fyzz-chat`
-4. Fill in the required parameters:
-   - `BetterAuthSecretArn`: ARN of your BETTER_AUTH_SECRET
-   - `OpenaiApiKeySecretArn`: ARN of your OPENAI_API_KEY
-   - `BetterAuthUrl`: Your application URL (e.g., `https://your-domain.com`)
-5. Review and create the stack
-6. Wait for stack creation to complete (takes ~10-15 minutes)
+1. **CloudFormation → Create stack → With new resources (standard)**.
+2. Upload the chosen template, name the stack `fyzz-chat`.
+3. Fill in:
+   - `BetterAuthSecretArn` — ARN from above.
+   - `OpenaiApiKeySecretArn` — ARN from above.
+   - `BetterAuthUrl` — your public URL (e.g. `https://your-domain.com`).
+4. Review and create. Stack creation takes ~10–15 minutes.
 
 > [!NOTE]
-> When deleting the stack, the database will NOT be deleted. You will need to turn off deletion protection and delete the database manually.
+> Deleting the stack does **not** delete the database. Disable deletion protection and remove it manually if you want it gone.
 
-**Run Database Migrations:**
+**Run database migrations:**
 
-1. Go to **ECS** → **Clusters** → Select your cluster
-2. Go to the **Tasks** tab
-3. Click **Run new task**
-4. Configure:
-   - **Task definition family**: `fyzz-chat-migration`
-   - **Launch type**: Fargate
-5. Networking
-   - VPC: Select `fyzz-chat-vpc`
-   - Security group: Select `fyzz-chat-ecs-sg`
-5. Click **Create** and wait for completion
+1. **ECS → Clusters → your cluster → Tasks tab → Run new task**.
+2. Configure: task definition family `fyzz-chat-migration`, launch type Fargate.
+3. Networking: VPC `fyzz-chat-vpc`, security group `fyzz-chat-ecs-sg`.
+4. **Create** and wait for completion.
 
-**Enable HTTPS (Optional):**
+**Enable HTTPS (optional):**
 
-1. Go to **Certificate Manager** → **Request a certificate**
-2. Request a public certificate for your domain
-3. Add the DNS validation records to your DNS provider
-4. Wait for certificate validation
-5. Go back to **CloudFormation** → Select your stack → **Update**
-6. Use current template and update the `CertificateArn` parameter with your certificate ARN
-7. Complete the stack update
+1. **Certificate Manager → Request a certificate** for your domain.
+2. Add the DNS validation records and wait for validation.
+3. **CloudFormation → your stack → Update**, set the `CertificateArn` parameter, and complete the update.
 
-The template will automatically redirect HTTP to HTTPS when a certificate is provided.
+The template auto-redirects HTTP to HTTPS once a certificate is attached.
 
-## Docs for Builders
+## Contributing
 
-### Prerequisites
-
-Ensure that you have the following tools installed on your machine:
-
-- [Bun](https://bun.sh): Install Bun via the command line by running:
+Install [Bun](https://bun.sh):
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
-```
-
-or
-
-```bash
+# Windows:
 powershell -c "irm bun.sh/install.ps1 | iex"
 ```
 
-Or if you prefer, you can use other package managers like npm, yarn, or pnpm.
+Then follow [Local development](#local-development) above. Other package managers (npm, yarn, pnpm) work too.
 
-### Development
+### Useful scripts
 
-Copy the [`.env.sample`](.env.sample) file to `.env` to set up the environment variables. Then, run the development server:
+| Script | What it does |
+|---|---|
+| `bun dev` | Start the dev server |
+| `bun build` | Build for production |
+| `bun build:standalone` | Build for Docker / standalone deploy |
+| `bun start` | Run the production build |
+| `bun db:migrate` | Apply Prisma migrations (development) |
+| `bun db:deploy` | Apply Prisma migrations (production) |
+| `bun test` | Run unit tests |
+| `bun test:integration` | Run integration tests |
+| `bun check-write` | Lint + format with Biome |
+| `bun type-check` | Type-check with TypeScript |
+| `bun dev:email` | Preview transactional emails (port 3001) |
 
-```bash
-bun dev
-# or
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[Next.js](https://nextjs.org) · [Bun](https://bun.sh) · [Prisma](https://www.prisma.io) · [Vercel AI SDK](https://ai-sdk.dev) · [Better Auth](https://www.better-auth.com) · [tRPC](https://trpc.io) · [Tailwind CSS](https://tailwindcss.com) · [shadcn/ui](https://ui.shadcn.com) · [Biome](https://biomejs.dev)
+
+---
+
+<div align="center">
+
+If Fyzz Chat is useful to you, consider [starring the repo](https://github.com/Fyzz-Chat/fyzz-chat/stargazers) — it helps others find it.
+
+</div>
