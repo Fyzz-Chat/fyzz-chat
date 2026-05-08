@@ -1,5 +1,6 @@
 import "server-only";
 
+import { hash } from "node:crypto";
 import { type AnthropicProviderOptions, anthropic } from "@ai-sdk/anthropic";
 import { type FireworksLanguageModelOptions, fireworks } from "@ai-sdk/fireworks";
 import { type GoogleGenerativeAIProviderOptions, google } from "@ai-sdk/google";
@@ -74,7 +75,8 @@ function wrapModel(
 
 export function getModelRuntime(
   modelId: string,
-  reasoningEffort?: ReasoningEffort
+  reasoningEffort?: ReasoningEffort,
+  userId?: string
 ): ModelRuntime {
   const runtimeModel = filterProviders()
     .flatMap((provider) =>
@@ -109,7 +111,7 @@ export function getModelRuntime(
       const previousResponseId = getPreviousResponseId(messages);
       return {
         anthropic: getAnthropicProviderOptions(modelId, selectedReasoningEffort),
-        openai: getOpenaiProviderOptions(modelId, selectedReasoningEffort),
+        openai: getOpenaiProviderOptions(modelId, selectedReasoningEffort, userId),
         google: getGoogleProviderOptions(modelId, selectedReasoningEffort),
         xai: getXaiProviderOptions(
           runtimePreset,
@@ -185,27 +187,39 @@ function decorateAssistantMetadata(
 
 export function getAnthropicProviderOptions(
   modelId: string,
-  reasoningEffort?: ReasoningEffort
+  reasoningEffort?: ReasoningEffort,
+  userId?: string
 ): AnthropicProviderOptions {
   return {
     thinking: isThinkingModel(modelId, "anthropic")
       ? { type: "enabled", budgetTokens: 5000 }
       : { type: "disabled" },
     effort: isThinkingModel(modelId, "anthropic") ? reasoningEffort : undefined,
+    metadata: {
+      userId: hash("sha256", userId ?? "no-user_id"),
+    },
   };
 }
 
 export function getOpenaiProviderOptions(
   modelId: string,
-  reasoningEffort?: ReasoningEffort
+  reasoningEffort?: ReasoningEffort,
+  userId?: string
 ): OpenAIResponsesProviderOptions {
   const provider = azureConfigured ? "azure" : openaiConfiguredAzureNot ? "openai" : "";
+  const hashedId = hash("sha256", userId ?? "no-user_id");
 
   return {
     reasoningEffort: isThinkingModel(modelId, provider)
       ? reasoningEffort || "low"
       : undefined,
     reasoningSummary: isThinkingModel(modelId, provider) ? "detailed" : undefined,
+    user: hashedId,
+    safetyIdentifier: hashedId,
+    metadata: {
+      userId: hashedId,
+    },
+    store: false,
   };
 }
 

@@ -97,7 +97,7 @@ export async function startDeepResearch(params: {
         parts: [{ type: "text", text: params.query }],
         metadata: { content: params.query, createdAt: new Date() },
       };
-      await updateConversationTitle(conversation.id, [titlerMessage]);
+      await updateConversationTitle(conversation.id, [titlerMessage], userId);
     }
   } catch (err) {
     logger.warn({

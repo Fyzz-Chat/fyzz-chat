@@ -75,13 +75,14 @@ function extractFirstUserPrompt(messages: CustomUIMessage[]): string {
 
 export async function updateConversationTitle(
   conversationId: string,
-  messages: CustomUIMessage[]
+  messages: CustomUIMessage[],
+  userId?: string
 ) {
   const prompt = extractFirstUserPrompt(messages);
   if (!prompt) return null;
 
   const modelId = "gpt-5-nano";
-  const { model } = getModelRuntime(modelId);
+  const { model } = getModelRuntime(modelId, undefined, userId);
   const { text } = await generateText({
     model,
     system:

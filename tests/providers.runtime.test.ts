@@ -170,12 +170,22 @@ describe("providers runtime behavior", () => {
     expect(openaiReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
       reasoningEffort: "high",
       reasoningSummary: "detailed",
+      user: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      safetyIdentifier:
+        "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      metadata: {
+        userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      },
+      store: false,
     });
 
     const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", "low");
     expect(anthropicReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
       effort: "low",
+      metadata: {
+        userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      },
     });
 
     const googleReasoning = getModelRuntime("gemini-3.1-pro-preview", "medium");
@@ -190,6 +200,13 @@ describe("providers runtime behavior", () => {
     expect(openaiNonReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
       reasoningEffort: undefined,
       reasoningSummary: undefined,
+      user: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      safetyIdentifier:
+        "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      metadata: {
+        userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      },
+      store: false,
     });
   });
 });
@@ -235,6 +252,13 @@ describe("critical model policy: provider options", () => {
       ).toEqual({
         reasoningEffort: "low",
         reasoningSummary: "detailed",
+        user: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+        safetyIdentifier:
+          "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+        metadata: {
+          userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+        },
+        store: false,
       });
     }
 
@@ -248,6 +272,9 @@ describe("critical model policy: provider options", () => {
         .anthropic
     ).toEqual({
       thinking: { type: "enabled", budgetTokens: 5000 },
+      metadata: {
+        userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+      },
     });
 
     for (const modelId of GEMINI_REASONING_MODELS) {

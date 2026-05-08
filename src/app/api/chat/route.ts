@@ -292,6 +292,7 @@ async function persistStreamResult({
   messages,
   responseMessage,
   isAborted,
+  userId,
 }: {
   result: ReturnType<typeof streamText>;
   runtime: ReturnType<typeof getModelRuntime>;
@@ -299,6 +300,7 @@ async function persistStreamResult({
   messages: CustomUIMessage[];
   responseMessage: CustomUIMessage;
   isAborted: boolean;
+  userId?: string;
 }) {
   const response = await result.response;
   responseMessage.metadata = runtime.decorateAssistantMetadata({
@@ -344,7 +346,7 @@ async function persistStreamResult({
   try {
     if (await hasDefaultTitle(conversationId)) {
       logger.debug(`Updating conversation title for ${conversationId}`);
-      await updateConversationTitle(conversationId, messages);
+      await updateConversationTitle(conversationId, messages, userId);
     }
   } catch (error) {
     const prefix = "[Chat] Error updating conversation title";
@@ -390,7 +392,7 @@ export async function POST(req: NextRequest) {
     projectId,
   } = parsedRequest.data;
   const newMessage = messages.at(-1);
-  const runtime = getModelRuntime(modelId, parsedRequest.data.reasoningEffort);
+  const runtime = getModelRuntime(modelId, parsedRequest.data.reasoningEffort, user.id);
   const { model } = runtime;
 
   if (!model) {
@@ -588,6 +590,7 @@ export async function POST(req: NextRequest) {
             messages,
             responseMessage,
             isAborted,
+            userId: user.id,
           });
         } finally {
           await endConversation();
