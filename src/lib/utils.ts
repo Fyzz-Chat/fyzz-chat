@@ -45,6 +45,9 @@ export function addDurationToDate(date: Date, duration: string): Date | null {
   return result;
 }
 
+/**
+ * @lintignore
+ */
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -64,6 +67,9 @@ export function debounce(func: Function, wait = 100) {
   return executedFunction;
 }
 
+/**
+ * @lintignore
+ */
 export function ensure(condition: unknown, message: string): asserts condition {
   if (!condition) {
     throw new Error(message);
@@ -110,19 +116,7 @@ export function filterMessagesUpToAnchor(
     });
 }
 
-export function isFileList(value: unknown): value is FileList {
-  if (value == null || typeof value !== "object") {
-    return false;
-  }
-  return (
-    "length" in value &&
-    typeof (value as { length: unknown }).length === "number" &&
-    "item" in value &&
-    typeof (value as { item: unknown }).item === "function"
-  );
-}
-
-export async function getFileId(fileUIPart: FileUIPart): Promise<string> {
+async function getFileId(fileUIPart: FileUIPart): Promise<string> {
   const msgBuffer = new TextEncoder().encode(fileUIPart.url);
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -174,65 +168,7 @@ export async function uploadFileParts(
   return uploadedFiles;
 }
 
-export async function uploadFiles(
-  conversationId: string,
-  fileList?: FileList | FileUIPart[]
-): Promise<FileUIPart[]> {
-  if (!fileList) {
-    return [];
-  }
-
-  if (!isFileList(fileList)) {
-    return fileList;
-  }
-
-  const uploadResults = await standaloneTrpc.getUploadUrls.query({
-    conversationId,
-    count: fileList.length,
-  });
-
-  const uploads = await Promise.all(
-    Array.from(fileList).map(async (file, index) => {
-      console.debug(`Uploading file ${index + 1} of ${fileList.length}...`);
-
-      const { key, url } = uploadResults[index];
-
-      if (!url) {
-        const base64 = await fileToBase64(file);
-        return fileToFileUIPart(file, base64);
-      }
-
-      const response = await fetch(url, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload file");
-      }
-
-      console.debug(`File ${index + 1} of ${fileList.length} uploaded successfully.`);
-
-      return fileToFileUIPart(file, key);
-    })
-  );
-
-  return uploads;
-}
-
-export function fileToFileUIPart(file: File, key: string): FileUIPart {
-  return {
-    type: "file",
-    mediaType: file.type,
-    filename: file.name,
-    url: key,
-  };
-}
-
-export async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
+async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
   const response = await fetch(fileUIPart.url);
   if (!response.ok) {
     throw new Error("Failed to fetch file for upload");
@@ -243,17 +179,6 @@ export async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
   });
 
   return file;
-}
-
-export function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      resolve(reader.result as string);
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
-  });
 }
 
 export function getMessageContent(message: CustomUIMessage): string {
@@ -267,12 +192,4 @@ export function getMessageContent(message: CustomUIMessage): string {
       .map((part) => part.text)
       .join("\n") || ""
   );
-}
-
-export function tryParseJson(data: string): [unknown, "json" | "text"] {
-  try {
-    return [JSON.parse(data), "json"];
-  } catch {
-    return [data, "text"];
-  }
 }

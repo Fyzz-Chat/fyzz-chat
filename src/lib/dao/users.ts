@@ -25,16 +25,6 @@ export async function updateUserById(
   }
 }
 
-export async function getUserByEmail(email: string) {
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  return user;
-}
-
 export async function getUserPersona(userId: string) {
   return prisma.user.findUnique({
     where: { id: userId },

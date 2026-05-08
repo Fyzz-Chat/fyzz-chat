@@ -21,7 +21,7 @@ export class InvalidSkillNameError extends Error {
 
 const KEBAB_CASE_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-export function isValidSkillName(name: string): boolean {
+function isValidSkillName(name: string): boolean {
   return KEBAB_CASE_RE.test(name);
 }
 

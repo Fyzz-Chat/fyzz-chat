@@ -34,19 +34,6 @@ export async function upsertRating(userId: string, messageId: string, value: num
   });
 }
 
-export async function getRatingForMessage(messageId: string, userId: string) {
-  return prisma.rating.findUnique({
-    where: { messageId, userId },
-  });
-}
-
-export async function getRatingsForUser(userId: string) {
-  return prisma.rating.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
-}
-
 export async function getRatingsForConversation(conversationId: string, userId: string) {
   return prisma.rating.findMany({
     where: { conversationId, userId },

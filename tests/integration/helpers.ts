@@ -1,6 +1,6 @@
 import { TEST_PASSWORD, TEST_USER_EMAIL } from "./test-user";
 
-export const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
 export const CONCURRENCY = 8;
 export const MODEL_FILTER = process.env.TEST_MODEL;
 
@@ -9,7 +9,7 @@ export function matchesFilter(modelId: string): boolean {
   return modelId.toLowerCase().includes(MODEL_FILTER.toLowerCase());
 }
 
-export type PublicModel = {
+type PublicModel = {
   id: string;
   name: string;
   features?: Array<{ name: string }>;
@@ -134,7 +134,7 @@ async function consumeStream(
   return { ok: true, text };
 }
 
-export function readFixtureAsBase64(fixturesDir: string, filename: string): string {
+function readFixtureAsBase64(fixturesDir: string, filename: string): string {
   const path = `${fixturesDir}/${filename}`;
   const buffer = require("node:fs").readFileSync(path);
   return buffer.toString("base64");
@@ -238,23 +238,4 @@ export function throwOnFailures(results: TestResult[]) {
       .join("\n");
     throw new Error(`${failures.length}/${results.length} failed:\n${summary}`);
   }
-}
-
-export function runModelTest(
-  fn: (model: { modelId: string; label: string }) => Promise<string>
-) {
-  return async (model: { id: string; name: string }): Promise<TestResult> => {
-    const label = `${model.name} \x1b[2m(${model.id})\x1b[0m`;
-    try {
-      const output = await fn({ modelId: model.id, label });
-      const result: TestResult = { label, modelId: model.id, output };
-      logResult(result);
-      return result;
-    } catch (e) {
-      const error = e instanceof Error ? e.message : String(e);
-      const result: TestResult = { label, modelId: model.id, error };
-      logResult(result);
-      return result;
-    }
-  };
 }

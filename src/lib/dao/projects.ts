@@ -129,35 +129,3 @@ export async function assignConversationToProject(
 
   return updatedConversation;
 }
-
-export async function getConversationsByProject(projectId: string | null) {
-  const userId = await getUserIdFromSession();
-
-  const conversations = await prisma.conversation.findMany({
-    where: {
-      userId,
-      projectId,
-    },
-    orderBy: [{ lastMessageAt: "desc" }, { id: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      model: true,
-      lastMessageAt: true,
-      branchedFrom: true,
-      projectId: true,
-      messages: {
-        select: {
-          id: true,
-          role: true,
-          parts: true,
-          metadata: true,
-        },
-        take: 1,
-        orderBy: { sequence: "desc" },
-      },
-    },
-  });
-
-  return conversations;
-}

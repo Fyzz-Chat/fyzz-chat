@@ -25,6 +25,9 @@ jobs:
       - name: Lint, type-check
         run: bun run check && bun run type-check
       
+      - name: Check unused code
+        run: bun run knip
+      
       - name: Run test
         run: bun run test
 

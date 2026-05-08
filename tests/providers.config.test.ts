@@ -3,7 +3,7 @@ import type { ProviderId, RuntimePreset } from "../src/types/provider";
 import {
   OPENAI_CODE_INTERPRETER_DENYLIST,
   OPENAI_IMAGE_GENERATION_MODELS,
-  XAI_SEARCH_TOOLS_MODELS,
+  XAI_RESPONSES_MODELS,
 } from "./providers.policy.fixtures";
 import { restoreProviderTestEnv, setupProviderTestEnv } from "./providers.test-utils";
 
@@ -247,7 +247,7 @@ describe("providers config invariants", () => {
       .filter((model) => model.capabilities?.supportsXaiSearchTools === true)
       .map((model) => model.id)
       .sort();
-    expect(xaiSearchToolsEnabled).toEqual([...XAI_SEARCH_TOOLS_MODELS].sort());
+    expect(xaiSearchToolsEnabled).toEqual([...XAI_RESPONSES_MODELS].sort());
   });
 
   it("respects provider availability env matrix", async () => {

@@ -26,7 +26,7 @@ const providerTestEnv: Record<ProviderEnvKey, string | undefined> = {
   AZURE_RESOURCE_NAME: undefined,
 };
 
-export const originalProviderEnv = providerEnvKeys.reduce<
+const originalProviderEnv = providerEnvKeys.reduce<
   Partial<Record<ProviderEnvKey, string | undefined>>
 >((acc, key) => {
   acc[key] = process.env[key];

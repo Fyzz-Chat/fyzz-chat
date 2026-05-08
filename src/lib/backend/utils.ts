@@ -105,10 +105,6 @@ export function streamSentence(
   return response;
 }
 
-export function hasTextPart(message: CustomUIMessage) {
-  return message.parts?.some((part) => part.type === "text" && part.text);
-}
-
 export function hasInputPart(message: CustomUIMessage) {
   return message.parts?.some((part) => {
     if (part.type === "text") {

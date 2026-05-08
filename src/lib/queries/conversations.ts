@@ -9,7 +9,6 @@ import type { inferReactQueryProcedureOptions } from "@trpc/react-query";
 import {
   branchConversationAction,
   deleteConversation,
-  saveConversation,
   saveConversationModel,
 } from "@/lib/actions/conversations";
 import {
@@ -85,16 +84,6 @@ function updateInfiniteConversationCaches(
       return updater(old);
     });
   });
-}
-
-function invalidateConversationCaches(
-  queryClient: ReturnType<typeof useQueryClient>,
-  trpc: ReturnType<typeof useTRPC>,
-  conversationId: string
-) {
-  queryClient.invalidateQueries(trpc.conversation.queryFilter({ id: conversationId }));
-  queryClient.invalidateQueries(trpc.messages.queryFilter({ id: conversationId }));
-  queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
 }
 
 async function cancelConversationQueries(
@@ -364,45 +353,6 @@ export function useAddMessage(id: string) {
   });
 }
 
-export function useCreateConversation() {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
-
-  return useMutation({
-    mutationFn: (conversation: PartialConversation) => saveConversation(conversation),
-    onSuccess: (newConversation) => {
-      if (newConversation) {
-        // Update conversation detail
-        queryClient.setQueryData(
-          trpc.conversation.queryKey({ id: newConversation.id }),
-          newConversation
-        );
-        setConversationMessagesCache(
-          queryClient,
-          trpc,
-          newConversation.id,
-          newConversation.messages
-        );
-
-        updateInfiniteConversationCaches(
-          queryClient,
-          trpc,
-          (old) => prependConversationToFirstPage(old, newConversation),
-          {
-            skipFilteredSearch: true,
-            onlyForConversation: newConversation,
-          }
-        );
-
-        updateProjectCaches(queryClient, trpc, newConversation);
-      }
-    },
-    onError: (error, newConversation) => {
-      console.error("Error creating conversation:", error);
-      invalidateConversationCaches(queryClient, trpc, newConversation.id);
-    },
-  });
-}
 export function useCreateConversationOptimistic() {
   const queryClient = useQueryClient();
   const trpc = useTRPC();

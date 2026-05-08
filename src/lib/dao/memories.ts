@@ -47,16 +47,6 @@ export async function getAllProjectMemoriesGrouped(projectId: string) {
   return grouped;
 }
 
-export async function appendMemory(userId: string, content: string, projectId?: string) {
-  return prisma.memory.create({
-    data: {
-      content,
-      userId,
-      projectId: projectId ?? null,
-    },
-  });
-}
-
 export async function deleteMemory(id: string, userId: string) {
   return prisma.memory.delete({
     where: { id, userId },

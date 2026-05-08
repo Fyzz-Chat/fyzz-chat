@@ -39,11 +39,11 @@ function fileCacheKey(filePart: FilePart): string {
   return `s3:${filePart.url}`;
 }
 
-export function countTextTokens(text: string): number {
+function countTextTokens(text: string): number {
   return encode(text).length;
 }
 
-export function countMessageTextTokens(message: CustomUIMessage): number {
+function countMessageTextTokens(message: CustomUIMessage): number {
   let total = 0;
   for (const part of message.parts) {
     if (part.type === "text") {

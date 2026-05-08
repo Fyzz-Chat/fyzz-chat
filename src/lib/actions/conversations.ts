@@ -4,7 +4,6 @@ import "server-only";
 
 import { generateText } from "ai";
 import { deleteFile } from "@/lib/aws/s3";
-import { mapDbMessagesToUiMessages } from "@/lib/backend/message-mapper";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { branchConversation } from "@/lib/dao/branching";
 import { createShare } from "@/lib/dao/shares";
@@ -12,43 +11,7 @@ import { getUserIdFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import prisma from "@/lib/prisma/prisma";
 import { addDurationToDate } from "@/lib/utils";
-import type { CustomUIMessage, PartialConversation } from "@/types/chat";
-
-export async function saveConversation(conversation: PartialConversation) {
-  const userId = await getUserIdFromSession();
-
-  const newConversation = await prisma.conversation.create({
-    data: {
-      id: conversation.id,
-      title: conversation.title,
-      model: conversation.model,
-      user: {
-        connect: {
-          id: userId,
-        },
-      },
-      ...(conversation.projectId && {
-        project: {
-          connect: {
-            id: conversation.projectId,
-          },
-        },
-      }),
-    },
-    include: {
-      messages: true,
-    },
-  });
-
-  return {
-    ...newConversation,
-    messages: mapDbMessagesToUiMessages(
-      userId,
-      newConversation.id,
-      newConversation.messages
-    ),
-  };
-}
+import type { CustomUIMessage } from "@/types/chat";
 
 async function saveConversationTitle(conversationId: string, title: string) {
   const userId = await getUserIdFromSession();

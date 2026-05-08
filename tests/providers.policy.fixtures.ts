@@ -52,5 +52,3 @@ export const TOOLS_DISABLED_MODELS = [
   "sonar",
   "sonar-pro",
 ] as const;
-
-export const XAI_SEARCH_TOOLS_MODELS = XAI_RESPONSES_MODELS;

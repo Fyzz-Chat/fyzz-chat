@@ -10,10 +10,10 @@ export type Feature = {
 };
 
 export const imageTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"] as const;
-export type ImageType = (typeof imageTypes)[number];
+type ImageType = (typeof imageTypes)[number];
 
 export const pdfType = "application/pdf" as const;
-export type PDFType = typeof pdfType;
+type PDFType = typeof pdfType;
 
 export const audioType = [
   "audio/mp3",
@@ -24,15 +24,15 @@ export const audioType = [
   "audio/aac",
   "audio/x-m4a",
 ] as const;
-export type AudioType = (typeof audioType)[number];
+type AudioType = (typeof audioType)[number];
 
 export const videoType = "video/mp4" as const;
-export type VideoType = typeof videoType;
+type VideoType = typeof videoType;
 
 export const plaintextType = ["text/plain", "text/markdown", "text/csv"] as const;
-export type PlaintextType = (typeof plaintextType)[number];
+type PlaintextType = (typeof plaintextType)[number];
 
-export type ExtensionType = ImageType | PDFType | AudioType | VideoType | PlaintextType;
+type ExtensionType = ImageType | PDFType | AudioType | VideoType | PlaintextType;
 export type RuntimePreset = "chat" | "responses";
 export type ReasoningEffort = "low" | "medium" | "high";
 
@@ -42,7 +42,7 @@ export type ModelCapabilities = {
   supportsXaiSearchTools?: boolean;
 };
 
-export type Model = {
+type Model = {
   id: string;
   name: string;
   features?: Feature[];
