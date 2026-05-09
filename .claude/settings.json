@@ -39,7 +39,8 @@
       "Bash(bun type-check:*)",
       "Bash(bun test:*)",
       "Bash(bun knip:*)",
-      "Bash(bun build:*)"
+      "Bash(bun build:*)",
+      "Bash(bunx tsc --noEmit:*)"
     ]
   }
 }
