@@ -190,11 +190,11 @@ export function getAnthropicProviderOptions(
   reasoningEffort?: ReasoningEffort,
   userId?: string
 ): AnthropicProviderOptions {
+  const isThinking = isThinkingModel(modelId, "anthropic") ?? false;
+
   return {
-    thinking: isThinkingModel(modelId, "anthropic")
-      ? { type: "enabled", budgetTokens: 5000 }
-      : { type: "disabled" },
-    effort: isThinkingModel(modelId, "anthropic") ? reasoningEffort : undefined,
+    thinking: isThinking ? { type: "enabled", budgetTokens: 5000 } : { type: "disabled" },
+    effort: isThinking ? reasoningEffort : undefined,
     metadata: {
       userId: hash("sha256", userId ?? "no-user_id"),
     },
@@ -207,13 +207,12 @@ export function getOpenaiProviderOptions(
   userId?: string
 ): OpenAIResponsesProviderOptions {
   const provider = azureConfigured ? "azure" : openaiConfiguredAzureNot ? "openai" : "";
+  const isThinking = isThinkingModel(modelId, provider) ?? false;
   const hashedId = hash("sha256", userId ?? "no-user_id");
 
   return {
-    reasoningEffort: isThinkingModel(modelId, provider)
-      ? reasoningEffort || "low"
-      : undefined,
-    reasoningSummary: isThinkingModel(modelId, provider) ? "detailed" : undefined,
+    reasoningEffort: isThinking ? reasoningEffort || "low" : undefined,
+    reasoningSummary: isThinking ? "detailed" : undefined,
     user: hashedId,
     safetyIdentifier: hashedId,
     metadata: {
@@ -227,9 +226,9 @@ export function getGoogleProviderOptions(
   modelId: string,
   reasoningEffort?: ReasoningEffort
 ): GoogleGenerativeAIProviderOptions {
-  const thinkingModel = isThinkingModel(modelId, "google");
+  const isThinking = isThinkingModel(modelId, "google") ?? false;
 
-  return thinkingModel
+  return isThinking
     ? {
         thinkingConfig: {
           includeThoughts: true,
@@ -270,11 +269,11 @@ export function getFireworksProviderOptions(
     return {};
   }
 
-  const thinkingModel = isThinkingModel(modelId, providerId);
+  const isThinking = isThinkingModel(modelId, providerId) ?? false;
   const budgetTokens =
     reasoningEffort === "low" ? 1024 : reasoningEffort === "medium" ? 4096 : 8192;
 
-  return thinkingModel
+  return isThinking
     ? {
         thinking: { type: "enabled", budgetTokens },
         reasoningHistory: "preserved",
