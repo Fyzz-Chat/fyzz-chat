@@ -76,7 +76,7 @@ function createMessage(
 
 describe("providers runtime behavior", () => {
   it("uses responses runtime behavior for xAI responses models", () => {
-    const runtime = getModelRuntime("grok-4-1-fast-non-reasoning");
+    const runtime = getModelRuntime("grok-4.20-0309-reasoning");
     expect(runtime.runtimePreset).toBe("responses");
 
     const messages = [
@@ -299,7 +299,7 @@ describe("critical model policy: provider options", () => {
 
     expect(
       getModelRuntime(
-        "accounts/fireworks/models/deepseek-v3p2",
+        "accounts/fireworks/models/deepseek-v4-pro",
         "medium"
       ).getProviderOptionsFromHistory(messages).fireworks
     ).toEqual({
@@ -340,7 +340,7 @@ describe("critical model policy: tool behavior", () => {
     }
 
     const xaiResponsesNoSearch = getModelRuntime(
-      "grok-4-1-fast-non-reasoning"
+      "grok-4.20-0309-reasoning"
     ).getProviderTools(false);
     expect(xaiResponsesNoSearch.x_search).toBeUndefined();
     expect(xaiResponsesNoSearch.web_search).toBeUndefined();

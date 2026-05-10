@@ -83,7 +83,6 @@ const expectedCatalogShape: {
       { id: "gemini-2.5-flash-image", runtimePreset: "chat" },
       { id: "gemini-3.1-flash-image-preview", runtimePreset: "chat" },
       { id: "gemini-3-pro-image-preview", runtimePreset: "chat" },
-      { id: "gemma-3-27b-it", runtimePreset: "chat" },
       { id: "gemma-4-26b-a4b-it", runtimePreset: "chat" },
       { id: "gemma-4-31b-it", runtimePreset: "chat" },
     ],
@@ -91,26 +90,20 @@ const expectedCatalogShape: {
   {
     id: "xai",
     models: [
-      { id: "grok-3-mini", runtimePreset: "chat" },
-      { id: "grok-3", runtimePreset: "chat" },
-      { id: "grok-4-fast-non-reasoning", runtimePreset: "responses" },
-      { id: "grok-code-fast-1", runtimePreset: "chat" },
-      { id: "grok-4-1-fast-non-reasoning", runtimePreset: "responses" },
+      { id: "grok-4.20-0309-reasoning", runtimePreset: "responses" },
+      { id: "grok-4.3", runtimePreset: "responses" },
     ],
   },
   {
     id: "deepseek",
-    models: [
-      { id: "accounts/fireworks/models/deepseek-v3p1", runtimePreset: "chat" },
-      { id: "accounts/fireworks/models/deepseek-v3p2", runtimePreset: "chat" },
-    ],
+    models: [{ id: "accounts/fireworks/models/deepseek-v4-pro", runtimePreset: "chat" }],
   },
   {
     id: "other",
     models: [
       { id: "accounts/fireworks/models/kimi-k2p5", runtimePreset: "chat" },
       { id: "accounts/fireworks/models/kimi-k2p6", runtimePreset: "chat" },
-      { id: "accounts/fireworks/models/glm-5", runtimePreset: "chat" },
+      { id: "accounts/fireworks/models/glm-5p1", runtimePreset: "chat" },
     ],
   },
   {

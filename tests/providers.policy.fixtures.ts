@@ -1,9 +1,6 @@
-export const XAI_RESPONSES_MODELS = [
-  "grok-4-fast-non-reasoning",
-  "grok-4-1-fast-non-reasoning",
-] as const;
+export const XAI_RESPONSES_MODELS = ["grok-4.20-0309-reasoning", "grok-4.3"] as const;
 
-export const XAI_CHAT_MODELS = ["grok-3", "grok-code-fast-1"] as const;
+export const XAI_CHAT_MODELS = [] as const;
 
 export const OPENAI_CODE_INTERPRETER_DENYLIST = [
   "gpt-5-codex",
@@ -36,19 +33,16 @@ export const GEMINI_REASONING_MODELS = [
 ] as const;
 
 export const FIREWORKS_REASONING_MODELS = [
-  "accounts/fireworks/models/deepseek-v3p2",
+  "accounts/fireworks/models/deepseek-v4-pro",
   "accounts/fireworks/models/kimi-k2p5",
-  "accounts/fireworks/models/glm-5",
+  "accounts/fireworks/models/glm-5p1",
 ] as const;
 
-export const FIREWORKS_NON_REASONING_MODELS = [
-  "accounts/fireworks/models/deepseek-v3p1",
-] as const;
+export const FIREWORKS_NON_REASONING_MODELS = [] as const;
 
 export const TOOLS_DISABLED_MODELS = [
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash-image",
-  "gemma-3-27b-it",
   "sonar",
   "sonar-pro",
 ] as const;
