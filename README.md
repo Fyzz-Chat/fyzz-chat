@@ -10,7 +10,7 @@ Bring your own keys, deploy in one click, or use the hosted version.
 
 [![Build](https://img.shields.io/github/actions/workflow/status/Fyzz-Chat/fyzz-chat/prod.yml?label=build)](https://github.com/Fyzz-Chat/fyzz-chat/actions/workflows/prod.yml) [![Release](https://img.shields.io/github/v/release/Fyzz-Chat/fyzz-chat?color=3b82f6)](https://github.com/Fyzz-Chat/fyzz-chat/releases) [![License](https://img.shields.io/github/license/Fyzz-Chat/fyzz-chat)](LICENSE) [![Docker](https://img.shields.io/badge/ghcr.io-fyzz--chat-0b0b0b?logo=docker&logoColor=white)](https://github.com/Fyzz-Chat/fyzz-chat/pkgs/container/fyzz-chat) 
 
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20an%20auth%20secret%20to%20be%20used%20with%20Auth.js%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat"><img src="https://vercel.com/button" alt="Deploy with Vercel" height="32" /></a>&nbsp;<a href="https://coolify.io"><img src="https://img.shields.io/badge/Deploy%20to%20Coolify-coming%20soon-9ca3af?labelColor=8b5cf6&logo=coolify&logoColor=white" alt="Deploy to Coolify (coming soon)" height="28" /></a>
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=BETTER_AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20a%20Better%20Auth%20secret%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat"><img src="https://vercel.com/button" alt="Deploy with Vercel" height="32" /></a>&nbsp;<a href="https://coolify.io"><img src="https://img.shields.io/badge/Deploy%20to%20Coolify-coming%20soon-9ca3af?labelColor=8b5cf6&logo=coolify&logoColor=white" alt="Deploy to Coolify (coming soon)" height="28" /></a>
 
 <a href="https://www.fyzz.chat/chat"><img src="https://img.shields.io/badge/Try%20the%20hosted%20version-→-3b82f6?style=for-the-badge&labelColor=3b82f6" alt="Try the hosted version →" height="40" /></a>
 
@@ -33,7 +33,7 @@ Bring your own keys, deploy in one click, or use the hosted version.
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20an%20auth%20secret%20to%20be%20used%20with%20Auth.js%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FFyzz-Chat%2Ffyzz-chat&env=BETTER_AUTH_SECRET,DATABASE_URL,OPENAI_API_KEY&envDescription=Set%20a%20Better%20Auth%20secret%20(at%20least%2032%20characters%20long%20random%20string)%2C%20and%20your%20database%20URL.&project-name=fyzz-chat&repository-name=fyzz-chat)
 
 ### Docker
 
@@ -53,9 +53,10 @@ To build your own image, run `bun run build:standalone` and use the resulting st
 
 ```bash
 bun install
-cp .env.sample .env   # then fill in the values
-bun db:deploy         # apply database migrations
-bun dev               # start the dev server on http://localhost:3000
+cp .env.sample .env             # then fill in the values (OPENAI_API_KEY at minimum)
+docker compose up -d database   # start a local Postgres on port 5433
+bun db:migrate                  # apply Prisma migrations to the local DB
+bun dev                         # start the dev server on http://localhost:3000
 ```
 
 To preview transactional emails: `bun run dev:email` (port 3001).
