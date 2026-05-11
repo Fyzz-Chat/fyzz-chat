@@ -101,10 +101,17 @@ function setConversationMessagesCache(
   conversationId: string,
   messages: CustomUIMessage[]
 ) {
-  queryClient.setQueryData(trpc.messages.queryKey({ id: conversationId }), {
-    messages,
-    hasMore: false,
-  });
+  queryClient.setQueryData(
+    trpc.messages.queryKey({
+      id: conversationId,
+      page: MESSAGES_DEFAULT_PAGE,
+      limit: MESSAGES_DEFAULT_LIMIT,
+    }),
+    {
+      messages,
+      hasMore: false,
+    }
+  );
 }
 
 function updateConversationMessageCaches(
