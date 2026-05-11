@@ -1,4 +1,4 @@
-name: build
+name: test-release-build-deploy-prod
 
 on:
   push:
