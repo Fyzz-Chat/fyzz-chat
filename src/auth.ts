@@ -76,6 +76,11 @@ export const auth = betterAuth({
         required: true,
         defaultValue: false,
       },
+      skillsEnabled: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+      },
       mcpServers: {
         type: "json",
         required: false,

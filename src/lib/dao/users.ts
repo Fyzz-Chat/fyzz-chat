@@ -83,14 +83,12 @@ export const getUserFromSession = cache(async (): Promise<SessionUser> => {
     headers: await headers(),
   });
 
-  if (!session) {
+  if (!session?.user) {
     return redirect(unauthenticatedRedirect);
   }
 
   const user = await prisma.user.findUnique({
-    where: {
-      email: session.user?.email || "",
-    },
+    where: { id: session.user.id },
     select: {
       id: true,
       name: true,
@@ -117,14 +115,12 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
     headers: await headers(),
   });
 
-  if (!session) {
+  if (!session?.user) {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user?.email || "",
-    },
+  return prisma.user.findUnique({
+    where: { id: session.user.id },
     select: {
       id: true,
       name: true,
@@ -138,6 +134,4 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       defaultModel: true,
     },
   });
-
-  return user;
 });
