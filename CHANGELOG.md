@@ -1,3 +1,32 @@
+# [0.42.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.41.0...v0.42.0) (2026-05-11)
+
+
+### Bug Fixes
+
+* **chat:** allow model ID override in message submission and initial conversation creation ([d40f448](https://github.com/Fyzz-Chat/fyzz-chat/commit/d40f448d1a94bbe497c55b5e466de34fab439f51))
+* **chat:** prevent navigation to chat page during data fetching ([0d2fe5b](https://github.com/Fyzz-Chat/fyzz-chat/commit/0d2fe5ba11d5d058867653147230a22323c47066))
+* **chat:** update MessageToolbar visibility based on streaming state ([c4d1a6f](https://github.com/Fyzz-Chat/fyzz-chat/commit/c4d1a6f08c9544e453975c0caeefe07ccad6a08e))
+* **claude:** enable auto running bunx tsc ([6d57934](https://github.com/Fyzz-Chat/fyzz-chat/commit/6d57934bbd3abc9ddcf3e0f65a20346ab56a391f))
+* **conversations:** dot refetch on mount ([b0ab898](https://github.com/Fyzz-Chat/fyzz-chat/commit/b0ab898a65f1c3962b3042b72f2f2fedf7ffedea))
+* **conversations:** include default pagination parameters in cache query key ([a9893ab](https://github.com/Fyzz-Chat/fyzz-chat/commit/a9893ab194a8d1a92368029858771d323c11f873))
+* **hooks:** remove build step, run on stop ([9ce8e0e](https://github.com/Fyzz-Chat/fyzz-chat/commit/9ce8e0e5b8509db722e9266cc207dd18b46ecc9f))
+* **media:** make image uploads work again ([67ba56b](https://github.com/Fyzz-Chat/fyzz-chat/commit/67ba56b0db6ae064ba46c94bea8d84e1f805f85d))
+* remove dynamically loaded assets ([36583f6](https://github.com/Fyzz-Chat/fyzz-chat/commit/36583f6acf165b50c70e8eb4f458be3cc05fa12e))
+* **share:** move load into share action ([9619a1b](https://github.com/Fyzz-Chat/fyzz-chat/commit/9619a1b087e21470ca02ad8d627814633af4f2d6))
+
+
+### Features
+
+* add new models, deprecate old ones ([0dbbce4](https://github.com/Fyzz-Chat/fyzz-chat/commit/0dbbce440fb3c5c9a00037ed206d4695f53706af))
+* **chat:** enhance loading state with skeleton components and simplify chat page data fetching ([d94b3cb](https://github.com/Fyzz-Chat/fyzz-chat/commit/d94b3cb0936bca611968d26aee197ecfbcac1eff))
+
+
+### Performance Improvements
+
+* **chat:** add back prefetch on hover ([ad51659](https://github.com/Fyzz-Chat/fyzz-chat/commit/ad516599267bc960c26f2dbc189437604c663447))
+* load user from the session, without db query ([b02bf9c](https://github.com/Fyzz-Chat/fyzz-chat/commit/b02bf9ca917301d4e9965f8635cbbc63e4ce3a1e))
+* **nextjs:** cache rsc payloads for 5 minutes ([018521a](https://github.com/Fyzz-Chat/fyzz-chat/commit/018521a473e95df3e3470227174f7a0d596a6a49))
+
 # [0.41.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.40.1...v0.41.0) (2026-05-08)
 
 
