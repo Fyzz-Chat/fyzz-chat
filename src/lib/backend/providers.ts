@@ -40,7 +40,8 @@ const googleConfigured = process.env.GOOGLE_GENERATIVE_AI_API_KEY !== undefined;
 const xaiConfigured = process.env.XAI_API_KEY !== undefined;
 const fireworksConfigured = process.env.FIREWORKS_API_KEY !== undefined;
 const perplexityConfigured = process.env.PERPLEXITY_API_KEY !== undefined;
-const CHAT_INPUT_WINDOW_SIZE = 16;
+
+const CHAT_INPUT_WINDOW_SIZE = -1; // -1 = unlimited; set to a positive integer to cap history
 
 export function getProvidersPublic(): PublicProvider[] {
   return filterProviders().map((provider) => ({
@@ -151,7 +152,9 @@ function resolveMessagesForRuntimePreset(
   runtimePreset: RuntimePreset
 ) {
   if (runtimePreset === "chat") {
-    return messages.slice(-CHAT_INPUT_WINDOW_SIZE);
+    return CHAT_INPUT_WINDOW_SIZE === -1
+      ? messages
+      : messages.slice(-CHAT_INPUT_WINDOW_SIZE);
   }
 
   if (runtimePreset === "responses") {

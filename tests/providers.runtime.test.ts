@@ -133,7 +133,7 @@ describe("providers runtime behavior", () => {
     expect(responseMetadata.createdAt).toBeInstanceOf(Date);
   });
 
-  it("limits chat runtime input history to the latest 16 messages", () => {
+  it("passes full history to chat runtime when window size is -1", () => {
     const runtime = getModelRuntime("gpt-4.1-mini");
     expect(runtime.runtimePreset).toBe("chat");
 
@@ -150,9 +150,9 @@ describe("providers runtime behavior", () => {
     );
 
     const selectedMessages = runtime.selectInputMessages(messages);
-    expect(selectedMessages).toHaveLength(16);
+    expect(selectedMessages).toHaveLength(messages.length);
     expect(selectedMessages.map((message) => message.id)).toEqual(
-      messages.slice(-16).map((message) => message.id)
+      messages.map((message) => message.id)
     );
   });
 
