@@ -66,24 +66,6 @@ export type SessionUser = {
   defaultModel: string | null;
 };
 
-export const getUserIdFromSession = cache(async (): Promise<string> => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.user?.id) {
-    return redirect(unauthenticatedRedirect);
-  }
-
-  return session.user.id;
-});
-
-export const getUserFromSession = cache(async (): Promise<SessionUser> => {
-  const user = await getUserFromSessionPublic();
-  if (!user) return redirect(unauthenticatedRedirect);
-  return user;
-});
-
 export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | null> => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -108,4 +90,16 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       defaultModel: true,
     },
   });
+});
+
+export const getUserFromSession = cache(async (): Promise<SessionUser> => {
+  const user = await getUserFromSessionPublic();
+  if (!user) return redirect(unauthenticatedRedirect);
+  return user;
+});
+
+export const getUserIdFromSession = cache(async (): Promise<string> => {
+  const user = await getUserFromSessionPublic();
+  if (!user?.id) return redirect(unauthenticatedRedirect);
+  return user.id;
 });
