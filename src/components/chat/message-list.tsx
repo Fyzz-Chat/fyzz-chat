@@ -495,10 +495,15 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   );
 
   useEffect(() => {
-    if (!initialMessage && !hasSentInitial.current && conversationData.data === null) {
+    if (
+      !initialMessage &&
+      !hasSentInitial.current &&
+      conversationData.data === null &&
+      !conversationData.isFetching
+    ) {
       router.replace("/chat");
     }
-  }, [initialMessage, conversationData.data, router]);
+  }, [initialMessage, conversationData.data, conversationData.isFetching, router]);
 
   useEffect(() => {
     setStatus(status);
