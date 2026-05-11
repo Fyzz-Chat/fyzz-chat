@@ -137,31 +137,43 @@ export async function getAgentMemoryPrompt(
   userId: string,
   projectId?: string
 ): Promise<string> {
-  const [persona, facts, opinions, feedback, learnings, context, lowRated] =
-    await Promise.all([
-      getUserPersona(userId),
-      getMemoriesByType(userId, MemoryType.fact, { limit: FACT_LIMIT }),
-      getMemoriesByType(userId, MemoryType.opinion, { limit: OPINION_LIMIT }),
-      getMemoriesByType(userId, MemoryType.feedback, { limit: FEEDBACK_LIMIT }),
-      getMemoriesByType(userId, MemoryType.learning, {
-        limit: LEARNING_LIMIT,
-        recent: true,
-      }),
-      getMemoriesByType(userId, MemoryType.context),
-      getRecentLowRatedMessages(userId, LOW_RATED_LIMIT),
-    ]);
-
-  const [projectMeta, projectFacts, projectLearnings, projectContext] = projectId
-    ? await Promise.all([
-        getProjectMeta(projectId),
-        getProjectMemoriesByType(projectId, MemoryType.fact, { limit: FACT_LIMIT }),
-        getProjectMemoriesByType(projectId, MemoryType.learning, {
+  const [
+    persona,
+    facts,
+    opinions,
+    feedback,
+    learnings,
+    context,
+    lowRated,
+    projectMeta,
+    projectFacts,
+    projectLearnings,
+    projectContext,
+  ] = await Promise.all([
+    getUserPersona(userId),
+    getMemoriesByType(userId, MemoryType.fact, { limit: FACT_LIMIT }),
+    getMemoriesByType(userId, MemoryType.opinion, { limit: OPINION_LIMIT }),
+    getMemoriesByType(userId, MemoryType.feedback, { limit: FEEDBACK_LIMIT }),
+    getMemoriesByType(userId, MemoryType.learning, {
+      limit: LEARNING_LIMIT,
+      recent: true,
+    }),
+    getMemoriesByType(userId, MemoryType.context),
+    getRecentLowRatedMessages(userId, LOW_RATED_LIMIT),
+    projectId ? getProjectMeta(projectId) : Promise.resolve(null),
+    projectId
+      ? getProjectMemoriesByType(projectId, MemoryType.fact, { limit: FACT_LIMIT })
+      : Promise.resolve([]),
+    projectId
+      ? getProjectMemoriesByType(projectId, MemoryType.learning, {
           limit: LEARNING_LIMIT,
           recent: true,
-        }),
-        getProjectMemoriesByType(projectId, MemoryType.context),
-      ])
-    : [null, [], [], []];
+        })
+      : Promise.resolve([]),
+    projectId
+      ? getProjectMemoriesByType(projectId, MemoryType.context)
+      : Promise.resolve([]),
+  ]);
 
   const sections: (string | null)[] = [
     section(
