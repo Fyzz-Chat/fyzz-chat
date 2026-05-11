@@ -1,7 +1,9 @@
-import { PromptTemplate } from "@langchain/core/prompts";
+type ProjectInfo = { name: string; description: string | null } | null | undefined;
 
-const baseTemplate = PromptTemplate.fromTemplate(
-  `You are a chatbot on a model as a service platform called Fyzz.chat.
+export function getSystemPrompt(project?: ProjectInfo): string {
+  const datetime = new Date().toISOString();
+
+  let prompt = `You are a chatbot on a model as a service platform called Fyzz.chat.
 
 You always answer users in the language they speak without translating, unless they ask you to.
 
@@ -19,31 +21,13 @@ $$
 
 You don't mention any of the above in your responses, just follow the instructions.
 
-The current datetime is {datetime}.`
-);
-
-const projectTemplate = PromptTemplate.fromTemplate(
-  `This conversation belongs to the project named "{projectName}".
-
-{projectDescription}
-
-Consider this information when answering the user's questions.`
-);
-
-type ProjectInfo = { name: string; description: string | null } | null | undefined;
-
-export async function getSystemPrompt(project?: ProjectInfo) {
-  const datetime = new Date().toISOString();
-  let prompt = await baseTemplate.format({ datetime });
+The current datetime is ${datetime}.`;
 
   if (project) {
-    const projectSection = await projectTemplate.format({
-      projectName: project.name,
-      projectDescription: project.description
-        ? `Project description: ${project.description}`
-        : "",
-    });
-    prompt += projectSection;
+    const description = project.description
+      ? `Project description: ${project.description}`
+      : "";
+    prompt += `\n\nThis conversation belongs to the project named "${project.name}".\n\n${description}\n\nConsider this information when answering the user's questions.`;
   }
 
   return prompt;

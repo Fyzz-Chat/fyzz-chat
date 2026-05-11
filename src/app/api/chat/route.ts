@@ -496,7 +496,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const baseSystemPrompt = await getSystemPrompt(conversationState.project);
+  const baseSystemPrompt = getSystemPrompt(conversationState.project);
   const extendedSystemPrompt = `${baseSystemPrompt}${promptAddons}`;
   const { tools, mcpClients } = toolsState;
 
