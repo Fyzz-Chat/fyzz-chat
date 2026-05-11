@@ -1,3 +1,16 @@
+# [0.43.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.42.0...v0.43.0) (2026-05-11)
+
+
+### Bug Fixes
+
+* **chat:** allow unlimited chat input history with configurable window size ([06ba348](https://github.com/Fyzz-Chat/fyzz-chat/commit/06ba34836c0e28d228cab6b3febe82d64c32a57d))
+
+
+### Features
+
+* **auth:** add skillsEnabled property to authentication configuration ([7bca8b1](https://github.com/Fyzz-Chat/fyzz-chat/commit/7bca8b1cfdd2f2d1e7390e401210141b61959d80))
+* **projects:** enhance project page with loading skeletons and initial data support ([e4958dd](https://github.com/Fyzz-Chat/fyzz-chat/commit/e4958dd6f56ea3121cc07ad36530e9719c582842))
+
 # [0.42.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.41.0...v0.42.0) (2026-05-11)
 
 
