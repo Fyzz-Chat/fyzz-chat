@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { getUserIdFromSession } from "@/lib/dao/users";
 import prisma from "@/lib/prisma/prisma";
 import type { ProjectWithCount } from "@/types/chat";
@@ -20,7 +21,7 @@ export async function getProjectMeta(id: string) {
   });
 }
 
-export async function getProjects(): Promise<ProjectWithCount[]> {
+export const getProjects = cache(async (): Promise<ProjectWithCount[]> => {
   const userId = await getUserIdFromSession();
 
   const projects = await prisma.project.findMany({
@@ -56,7 +57,7 @@ export async function getProjects(): Promise<ProjectWithCount[]> {
       lastActivityAt,
     };
   });
-}
+});
 
 export async function createProject(name: string, description?: string | null) {
   const userId = await getUserIdFromSession();

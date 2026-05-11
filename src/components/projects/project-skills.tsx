@@ -37,12 +37,13 @@ import {
 
 interface ProjectSkillsProps {
   projectId: string;
+  initialData?: SkillItem[];
 }
 
 const SKILL_SKELETON_KEYS = ["sk1", "sk2"];
 
-export function ProjectSkills({ projectId }: ProjectSkillsProps) {
-  const { data: skills = [], isPending } = useProjectSkills(projectId);
+export function ProjectSkills({ projectId, initialData }: ProjectSkillsProps) {
+  const { data: skills = [], isPending } = useProjectSkills(projectId, initialData);
   const createMutation = useCreateProjectSkill(projectId);
   const updateMutation = useUpdateProjectSkill(projectId);
   const deleteMutation = useDeleteProjectSkill(projectId);

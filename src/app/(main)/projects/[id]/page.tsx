@@ -6,7 +6,11 @@ import { ProjectConversationsList } from "@/components/projects/project-conversa
 import ProjectHandlers from "@/components/projects/project-handlers";
 import ProjectHeader from "@/components/projects/project-header";
 import { ProjectMemories } from "@/components/projects/project-memories";
-import { ConversationsListSkeleton } from "@/components/projects/project-page-skeletons";
+import {
+  ConversationsListSkeleton,
+  MemoriesSkeleton,
+  SkillsSkeleton,
+} from "@/components/projects/project-page-skeletons";
 import { ProjectSkills } from "@/components/projects/project-skills";
 import { Skeleton } from "@/components/ui/skeleton";
 import { caller } from "@/lib/trpc/server";
@@ -23,6 +27,16 @@ async function ProjectConversationsLoader({ id }: Readonly<{ id: string }>) {
     projectId: id,
   });
   return <ProjectConversationsList id={id} initialConversations={conversations} />;
+}
+
+async function ProjectMemoriesLoader({ id }: Readonly<{ id: string }>) {
+  const memories = await caller.projectMemoriesGrouped({ projectId: id });
+  return <ProjectMemories projectId={id} initialData={memories} />;
+}
+
+async function ProjectSkillsLoader({ id }: Readonly<{ id: string }>) {
+  const skills = await caller.projectSkills({ projectId: id });
+  return <ProjectSkills projectId={id} initialData={skills} />;
 }
 
 function ProjectHeaderSkeleton() {
@@ -66,9 +80,13 @@ export default async function ProjectPageRoute({
               Information the AI remembers about this project.
             </p>
           </div>
-          <ProjectMemories projectId={id} />
+          <Suspense fallback={<MemoriesSkeleton />}>
+            <ProjectMemoriesLoader id={id} />
+          </Suspense>
         </div>
-        <ProjectSkills projectId={id} />
+        <Suspense fallback={<SkillsSkeleton />}>
+          <ProjectSkillsLoader id={id} />
+        </Suspense>
       </aside>
     </div>
   );

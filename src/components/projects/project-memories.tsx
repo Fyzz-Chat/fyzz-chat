@@ -4,6 +4,7 @@ import {
   type GroupedMemories,
   TypedMemoryBrowser,
 } from "@/components/settings/typed-memory-browser";
+
 import {
   useDeleteProjectMemory,
   useProjectMemoriesGrouped,
@@ -20,10 +21,11 @@ const EMPTY_MEMORIES: GroupedMemories = {
 
 interface ProjectMemoriesProps {
   projectId: string;
+  initialData?: GroupedMemories;
 }
 
-export function ProjectMemories({ projectId }: ProjectMemoriesProps) {
-  const { data: memories, isPending } = useProjectMemoriesGrouped(projectId);
+export function ProjectMemories({ projectId, initialData }: ProjectMemoriesProps) {
+  const { data: memories, isPending } = useProjectMemoriesGrouped(projectId, initialData);
   const deleteMutation = useDeleteProjectMemory(projectId);
 
   return (
