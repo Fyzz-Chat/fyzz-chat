@@ -1,7 +1,5 @@
 import type { FileUIPart, TextUIPart } from "ai";
 import { type ClassValue, clsx } from "clsx";
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
 import { twMerge } from "tailwind-merge";
 import { standaloneTrpc } from "@/lib/trpc/client";
 import type { CustomUIMessage } from "@/types/chat";
@@ -24,11 +22,23 @@ export const initialState: FormState = {
   success: undefined,
 };
 
-TimeAgo.addDefaultLocale(en);
-const timeAgo = new TimeAgo("en-US");
+const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
-export function formatTimeAgo(date: Date) {
-  return timeAgo.format(date);
+export function formatTimeAgo(date: Date): string {
+  const seconds = Math.round((date.getTime() - Date.now()) / 1000);
+  const abs = Math.abs(seconds);
+  if (abs < 60) return rtf.format(seconds, "second");
+  const minutes = Math.round(seconds / 60);
+  if (Math.abs(minutes) < 60) return rtf.format(minutes, "minute");
+  const hours = Math.round(minutes / 60);
+  if (Math.abs(hours) < 24) return rtf.format(hours, "hour");
+  const days = Math.round(hours / 24);
+  if (Math.abs(days) < 7) return rtf.format(days, "day");
+  const weeks = Math.round(days / 7);
+  if (Math.abs(weeks) < 5) return rtf.format(weeks, "week");
+  const months = Math.round(days / 30);
+  if (Math.abs(months) < 12) return rtf.format(months, "month");
+  return rtf.format(Math.round(days / 365), "year");
 }
 
 export function addDurationToDate(date: Date, duration: string): Date | null {

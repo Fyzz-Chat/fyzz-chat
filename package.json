@@ -75,7 +75,6 @@
     "gpt-tokenizer": "3.4.0",
     "hast": "1.0.0",
     "idb-keyval": "6.2.2",
-    "javascript-time-ago": "2.6.4",
     "lucide-react": "1.14.0",
     "nanoid": "5.1.11",
     "negotiator": "1.0.0",
