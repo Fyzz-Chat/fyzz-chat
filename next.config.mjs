@@ -2,6 +2,11 @@ import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    staleTimes: {
+      dynamic: 300,
+    },
+  },
   // Use `bun run build:standalone` if you are using Docker
   output: process.env.EXPORT_MODE,
   images: {
