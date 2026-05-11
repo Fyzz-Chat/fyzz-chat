@@ -39,6 +39,7 @@ import MessageShareAction from "@/components/chat/message-share-action";
 import { MessageSources } from "@/components/chat/message-sources";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useResearchPolling } from "@/lib/queries/research";
+import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
 import type { CustomUIMessage } from "@/types/chat";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
@@ -382,8 +383,11 @@ function MessageItem({
       {message.role === "assistant" && sourceUrls.length > 0 && (
         <MessageSources sources={sourceUrls} />
       )}
-      {!isStreaming && message.role === "assistant" && (
-        <MessageToolbar>
+      {message.role === "assistant" && (
+        <MessageToolbar
+          className={cn(isStreaming && "pointer-events-none invisible")}
+          aria-hidden={isStreaming || undefined}
+        >
           <MessageActions>
             <MessageCopyAction message={message} />
             <MessageRegenerateAction messageId={message.id} onRegenerate={onRegenerate} />
