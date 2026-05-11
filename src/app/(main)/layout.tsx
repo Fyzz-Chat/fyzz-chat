@@ -1,6 +1,5 @@
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { type ReactNode, Suspense } from "react";
-import { auth } from "@/auth";
 import AuthPopup from "@/components/auth/auth-popup";
 import { ChatLayoutProvider } from "@/components/chat/chat-layout-provider";
 import ModelStoreInitializer from "@/components/chat/model-store-initializer";
@@ -18,17 +17,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import conf from "@/lib/config";
 import { ChatInputProvider } from "@/lib/contexts/chat-input-context";
 import { InitialMessageProvider } from "@/lib/contexts/initial-message-context";
-import type { SessionUser } from "@/lib/dao/users";
+import { getUserFromSessionPublic } from "@/lib/dao/users";
 import { caller } from "@/lib/trpc/server";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
-  const [cookieStore, session] = await Promise.all([
-    cookies(),
-    auth.api.getSession({ headers: await headers() }),
-  ]);
-  const user = (
-    session?.user ? { ...session.user, skillsEnabled: false } : null
-  ) as SessionUser | null;
+  const [cookieStore, user] = await Promise.all([cookies(), getUserFromSessionPublic()]);
 
   const sidebarState = cookieStore.get("sidebar:state");
   const isLoggedIn = Boolean(user);
