@@ -472,28 +472,30 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const toolsState = await loadToolsForRequest({
-    runtime,
-    user,
-    browse,
-    temporaryChat,
-    projectId: conversationState.project?.id,
-    start,
-  });
+  const baseSystemPrompt = await getSystemPrompt(conversationState.project);
+  const [toolsState, extendedSystemPrompt] = await Promise.all([
+    loadToolsForRequest({
+      runtime,
+      user,
+      browse,
+      temporaryChat,
+      projectId: conversationState.project?.id,
+      start,
+    }),
+    buildSystemPrompt({
+      baseSystemPrompt,
+      memoryEnabled: user.memoryEnabled,
+      skillsEnabled: user.skillsEnabled,
+      temporaryChat,
+      userId: user.id,
+      projectId: conversationState.project?.id,
+    }),
+  ]);
 
   if (toolsState.errorResponse) {
     return toolsState.errorResponse;
   }
   const { tools, mcpClients } = toolsState;
-
-  const extendedSystemPrompt = await buildSystemPrompt({
-    baseSystemPrompt: await getSystemPrompt(conversationState.project),
-    memoryEnabled: user.memoryEnabled,
-    skillsEnabled: user.skillsEnabled,
-    temporaryChat,
-    userId: user.id,
-    projectId: conversationState.project?.id,
-  });
 
   logDuration(start, "System prompt composed");
 

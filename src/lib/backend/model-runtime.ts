@@ -62,8 +62,11 @@ export async function buildSystemPrompt({
   userId: string;
   projectId?: string;
 }) {
-  const memoryPrompt =
-    memoryEnabled && !temporaryChat ? await getAgentMemoryPrompt(userId, projectId) : "";
-  const skillPrompt = skillsEnabled ? await getSkillPrompt(userId, projectId) : "";
+  const [memoryPrompt, skillPrompt] = await Promise.all([
+    memoryEnabled && !temporaryChat
+      ? getAgentMemoryPrompt(userId, projectId)
+      : Promise.resolve(""),
+    skillsEnabled ? getSkillPrompt(userId, projectId) : Promise.resolve(""),
+  ]);
   return `${baseSystemPrompt}${memoryPrompt}${skillPrompt}`;
 }
