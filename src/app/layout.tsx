@@ -6,7 +6,13 @@ import { Providers } from "@/components/providers";
 import SnowfallCanvas from "@/components/snowfall-canvas";
 import { Toaster } from "@/components/ui/sonner";
 import conf from "@/lib/config";
-import { canonicalUrl, metaDescription, metaTitle, openGraph } from "@/lib/metadata";
+import {
+  canonicalUrl,
+  metaDescription,
+  metaTitle,
+  openGraph,
+  twitter,
+} from "@/lib/metadata";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({
@@ -27,6 +33,7 @@ export const metadata: Metadata = {
   },
   title: metaTitle,
   description: metaDescription,
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/favicon.svg",
     apple: "/apple-icon.png",
@@ -37,11 +44,7 @@ export const metadata: Metadata = {
     ...openGraph,
     url: conf.host,
   },
-  twitter: {
-    card: "summary_large_image",
-    title: metaTitle,
-    description: metaDescription,
-  },
+  twitter,
   category: "",
   keywords: [],
 };

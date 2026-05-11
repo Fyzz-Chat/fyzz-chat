@@ -1,0 +1,33 @@
+{
+  "id": "fyzz-chat",
+  "name": "Fyzz.chat - Chat with the best AI models, all in one place",
+  "short_name": "Fyzz.chat",
+  "description": "One platform for GPT, Perplexity, Gemini, and more. Chat, speak with PDFs, and analyze images.",
+  "start_url": "/chat",
+  "display": "standalone",
+  "icons": [
+    { "src": "/any-icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/any-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/maskable-icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/maskable-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/monochrome-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "monochrome" }
+  ],
+  "screenshots": [
+    { "src": "/screenshot-desktop.png", "sizes": "2880x1456", "type": "image/png", "form_factor": "wide", "label": "Fyzz.chat desktop interface" },
+    { "src": "/screenshot-mobile.png", "sizes": "593x1287", "type": "image/png", "form_factor": "narrow", "label": "Fyzz.chat mobile interface" }
+  ],
+  "background_color": "#1f1f1f",
+  "theme_color": "#1f1f1f",
+  "orientation": "portrait",
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "categories": ["productivity", "utilities", "ai"],
+  "display_override": ["standalone", "browser"],
+  "launch_handler": { "client_mode": ["navigate-existing", "auto"] },
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "handle_links": "preferred",
+  "edge_side_panel": { "preferred_width": 400 },
+  "permissions": ["camera", "clipboard-read", "clipboard-write", "file-system"]
+}
