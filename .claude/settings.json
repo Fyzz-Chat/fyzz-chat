@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
-    "TaskCompleted": [
+    "Stop": [
       {
         "hooks": [
           {
@@ -19,10 +19,6 @@
           {
             "type": "command",
             "command": "bun .agents/hooks/knip.ts"
-          },
-          {
-            "type": "command",
-            "command": "bun .agents/hooks/build.ts"
           }
         ]
       }
