@@ -79,34 +79,8 @@ export const getUserIdFromSession = cache(async (): Promise<string> => {
 });
 
 export const getUserFromSession = cache(async (): Promise<SessionUser> => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.user) {
-    return redirect(unauthenticatedRedirect);
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      subscription: true,
-      freeMessages: true,
-      customerId: true,
-      memoryEnabled: true,
-      skillsEnabled: true,
-      defaultModel: true,
-    },
-  });
-
-  if (!user) {
-    return redirect(unauthenticatedRedirect);
-  }
-
+  const user = await getUserFromSessionPublic();
+  if (!user) return redirect(unauthenticatedRedirect);
   return user;
 });
 
