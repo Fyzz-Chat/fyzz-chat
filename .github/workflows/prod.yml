@@ -1,4 +1,4 @@
-name: test-release-build-deploy-prod
+name: Open source prod pipeline
 
 on:
   push:

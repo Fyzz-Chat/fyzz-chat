@@ -1,4 +1,4 @@
-name: test-build-deploy-stage
+name: Open source stage pipeline
 
 on:
   push:
