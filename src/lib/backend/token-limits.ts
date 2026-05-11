@@ -32,11 +32,23 @@ function isTextLikeMediaType(mediaType: string): boolean {
 
 type FilePart = { url: string; mediaType: string; filename?: string };
 
+// When messages are loaded from the DB, their file URLs are rewritten to signed
+// CloudFront URLs. This recovers the raw S3 key so cache lookups and S3 fetches
+// remain consistent between the new-message check and the history check.
+function extractS3KeyFromSignedUrl(url: string): string | null {
+  const domain = conf.awsCloudfrontDistributionDomain;
+  if (!domain) return null;
+  const prefix = `https://${domain}/`;
+  if (!url.startsWith(prefix)) return null;
+  return url.slice(prefix.length).split("?")[0];
+}
+
 function fileCacheKey(filePart: FilePart): string {
   if (filePart.url.startsWith("data:")) {
     return `sha256:${createHash("sha256").update(filePart.url).digest("hex")}`;
   }
-  return `s3:${filePart.url}`;
+  const s3Key = extractS3KeyFromSignedUrl(filePart.url);
+  return `s3:${s3Key ?? filePart.url}`;
 }
 
 function countTextTokens(text: string): number {
@@ -82,7 +94,8 @@ async function fetchAttachmentBytes(
     return bytes;
   }
 
-  const fullKey = `${s3KeyPrefix}/${filePart.url}`;
+  const rawKey = extractS3KeyFromSignedUrl(filePart.url);
+  const fullKey = rawKey ?? `${s3KeyPrefix}/${filePart.url}`;
   const size = await headObjectSize(fullKey);
   if (size === null) {
     throw new Error("S3 not configured or object missing");
@@ -124,6 +137,8 @@ async function liveCountAttachmentTokens(
   filePart: FilePart,
   s3KeyPrefix: string
 ): Promise<number> {
+  // Images are deferred to Phase 4 — skip the fetch entirely.
+  if (filePart.mediaType.startsWith("image/")) return 0;
   const bytes = await fetchAttachmentBytes(filePart, s3KeyPrefix);
   return tokenizeBytesByMediaType(bytes, filePart.mediaType);
 }
