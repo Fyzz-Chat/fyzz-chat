@@ -37,7 +37,7 @@ export async function buildToolsForRuntime(
 
   Object.assign(tools, providerTools);
 
-  const mcpClients = await getMcpClients();
+  const mcpClients = await getMcpClients(user.mcpServers);
 
   if (mcpClients) {
     const mcpTools = await getMcpTools(mcpClients);

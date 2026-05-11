@@ -1,5 +1,5 @@
 import type { MCPClient } from "@ai-sdk/mcp";
-import { getMcpServers } from "@/lib/actions/users";
+import type { JsonValue } from "@prisma/client/runtime/client";
 import {
   createHttpMcpClient,
   createSseMcpClient,
@@ -15,16 +15,14 @@ export class McpClientInitError extends Error {
   }
 }
 
-export async function getMcpClients(): Promise<MCPClient[]> {
+export async function getMcpClients(mcpServers?: JsonValue | null): Promise<MCPClient[]> {
   const beforeFetch = performance.now();
 
-  const response = await getMcpServers();
-
-  if (!response) {
+  if (!mcpServers) {
     return [];
   }
 
-  const servers = JSON.parse(response as string).mcpServers;
+  const servers = JSON.parse(mcpServers as string).mcpServers;
   const entries: { serverKey: string; promise: Promise<MCPClient> }[] = [];
 
   for (const serverKey of Object.keys(servers)) {

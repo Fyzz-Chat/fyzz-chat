@@ -3,7 +3,6 @@
 import "server-only";
 
 import { randomBytes } from "node:crypto";
-import type { JsonValue } from "@prisma/client/runtime/client";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 import conf from "@/lib/config";
@@ -301,19 +300,6 @@ export async function updateUserPersona(input: {
   if (Object.keys(data).length === 0) return;
 
   await updateUserById(userId, data);
-}
-
-export async function getMcpServers(): Promise<JsonValue | undefined> {
-  const userId = await getUserIdFromSession();
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      mcpServers: true,
-    },
-  });
-
-  return user?.mcpServers;
 }
 
 export async function saveMcpServers(mcpServers: string): Promise<string> {

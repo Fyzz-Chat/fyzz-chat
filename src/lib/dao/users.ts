@@ -64,6 +64,7 @@ export type SessionUser = {
   memoryEnabled: boolean;
   skillsEnabled: boolean;
   defaultModel: string | null;
+  mcpServers: Prisma.JsonValue | null;
 };
 
 export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | null> => {
@@ -88,6 +89,7 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       memoryEnabled: true,
       skillsEnabled: true,
       defaultModel: true,
+      mcpServers: true,
     },
   });
 });
