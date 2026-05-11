@@ -29,7 +29,7 @@ import type {
 
 // Shared by usePrefetchConversation and useMessages so prefetch and the actual
 // fetch land on the same React Query cache key.
-export const MESSAGES_DEFAULT_PAGE = 1;
+const MESSAGES_DEFAULT_PAGE = 1;
 export const MESSAGES_DEFAULT_LIMIT = 16;
 
 function prependConversationToFirstPage(

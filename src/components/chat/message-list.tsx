@@ -495,24 +495,10 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   );
 
   useEffect(() => {
-    if (
-      !initialMessage &&
-      !hasSentInitial.current &&
-      !persistedMessagesData.isPending &&
-      !conversationData.isPending &&
-      streamingMessages.length === 0 &&
-      persistedMessages.length === 0
-    ) {
-      router.push("/chat");
+    if (!initialMessage && !hasSentInitial.current && conversationData.data === null) {
+      router.replace("/chat");
     }
-  }, [
-    initialMessage,
-    persistedMessagesData.isPending,
-    conversationData.isPending,
-    streamingMessages.length,
-    persistedMessages.length,
-    router,
-  ]);
+  }, [initialMessage, conversationData.data, router]);
 
   useEffect(() => {
     setStatus(status);
