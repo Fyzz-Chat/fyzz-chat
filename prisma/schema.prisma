@@ -123,7 +123,6 @@ model Message {
   updatedAt        DateTime      @updatedAt @map("updated_at")
 
   @@unique([conversationId, sequence])
-  @@index([conversationId, createdAt])
   @@index([conversationId, sequence])
   @@map("messages")
 }
@@ -171,6 +170,7 @@ model Rating {
 
   @@unique([messageId])
   @@index([userId, createdAt])
+  @@index([conversationId, userId])
   @@map("ratings")
 }
 
@@ -199,9 +199,10 @@ model Memory {
   updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
 
   @@index([userId])
-  @@index([projectId])
+  @@index([userId, projectId, createdAt])
   @@index([userId, type])
   @@index([userId, type, confidence])
+  @@index([projectId, createdAt])
   @@index([projectId, type])
   @@map("memories")
 }
