@@ -40,7 +40,7 @@ import { MessageSources } from "@/components/chat/message-sources";
 import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useResearchPolling } from "@/lib/queries/research";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage, ShareInfo } from "@/types/chat";
+import type { CustomUIMessage } from "@/types/chat";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 
 function TypingIndicator() {
@@ -56,14 +56,12 @@ function TypingIndicator() {
 function MessageItem({
   message,
   conversationId,
-  share,
   isStreaming = false,
   onRegenerate,
   onEdit,
 }: Readonly<{
   message: CustomUIMessage;
   conversationId: string;
-  share?: ShareInfo;
   isStreaming?: boolean;
   onRegenerate?: (messageId: string) => Promise<void>;
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
@@ -389,11 +387,7 @@ function MessageItem({
           <MessageActions>
             <MessageCopyAction message={message} />
             <MessageRegenerateAction messageId={message.id} onRegenerate={onRegenerate} />
-            <MessageShareAction
-              conversationId={conversationId}
-              messageId={message.id}
-              share={share}
-            />
+            <MessageShareAction conversationId={conversationId} messageId={message.id} />
             <MessageBranchAction conversationId={conversationId} messageId={message.id} />
             <MessageRating conversationId={conversationId} messageId={message.id} />
           </MessageActions>

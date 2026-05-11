@@ -29,11 +29,10 @@ import {
   useUpdateConversationModel,
 } from "@/lib/queries/conversations";
 import { useOptimisticallyTrimMessagesUpToAnchor } from "@/lib/queries/messages";
-import { useShares } from "@/lib/queries/shares";
 import { useTRPC } from "@/lib/trpc/client";
 import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
-import type { CustomUIMessage, ShareInfo } from "@/types/chat";
+import type { CustomUIMessage } from "@/types/chat";
 
 const MESSAGE_WINDOW_SIZE = MESSAGES_DEFAULT_LIMIT;
 
@@ -93,14 +92,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const hasMorePersistedMessages = Boolean(persistedMessagesData.data?.hasMore);
   const trimPersistedMessages = useOptimisticallyTrimMessagesUpToAnchor(id);
 
-  const { data: sharesData } = useShares(id);
-  const sharesByMessageId = useMemo(() => {
-    const map = new Map<string, ShareInfo>();
-    sharesData?.shares.forEach((share) => {
-      map.set(share.messageId, share);
-    });
-    return map;
-  }, [sharesData]);
   const isLoadingOlderMessages =
     persistedMessagesData.isFetching && !persistedMessagesData.isPending;
   const hasSentInitial = useRef(false);
@@ -462,13 +453,12 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           key={message.id}
           conversationId={id}
           message={message}
-          share={sharesByMessageId.get(message.id)}
           isStreaming={false}
           onRegenerate={handleRegenerateMessage}
           onEdit={handleEditMessage}
         />
       )),
-    [id, persistedMessages, sharesByMessageId, handleRegenerateMessage, handleEditMessage]
+    [id, persistedMessages, handleRegenerateMessage, handleEditMessage]
   );
 
   const streamingMessagesList = useMemo(
@@ -478,7 +468,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           key={message.id}
           conversationId={id}
           message={message}
-          share={sharesByMessageId.get(message.id)}
           isStreaming={message.id === activeStreamingAssistantId}
           onRegenerate={handleRegenerateMessage}
           onEdit={handleEditMessage}
@@ -487,7 +476,6 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     [
       id,
       streamingMessages,
-      sharesByMessageId,
       activeStreamingAssistantId,
       handleRegenerateMessage,
       handleEditMessage,

@@ -18,12 +18,6 @@ export const metadataSchema = z.object({
 
 export type CustomMetadata = z.infer<typeof metadataSchema>;
 
-export type ShareInfo = {
-  id: string;
-  messageId: string;
-  expiresAt: Date | null;
-};
-
 export type CustomUIMessage = UIMessage<CustomMetadata>;
 
 export type PartialConversation = Omit<

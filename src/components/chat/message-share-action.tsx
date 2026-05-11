@@ -15,9 +15,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useDeleteShare, useShareConversation } from "@/lib/queries/shares";
+import { useDeleteShare, useShareConversation, useShares } from "@/lib/queries/shares";
 import { cn } from "@/lib/utils";
-import type { ShareInfo } from "@/types/chat";
 
 const DURATIONS = [
   { value: "1D", label: "1 day" },
@@ -45,20 +44,18 @@ function formatExpiration(expiresAt: Date | null): string {
 export default function MessageShareAction({
   conversationId,
   messageId,
-  share,
 }: Readonly<{
   conversationId: string;
   messageId: string;
-  share?: ShareInfo;
 }>) {
   const shareMutation = useShareConversation();
   const deleteShareMutation = useDeleteShare();
+  const { data: sharesData } = useShares(conversationId);
+  const share = sharesData?.shares.find((s) => s.messageId === messageId);
+  const shareUrl = share ? `${globalThis.location.origin}/share/${share.id}` : "";
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [waitForDeleteConfirmation, setWaitForDeleteConfirmation] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string>(
-    share ? `${globalThis.location.origin}/share/${share.id}` : ""
-  );
   const [isLoading, setIsLoading] = useState(false);
 
   const handleShare = async (duration: string) => {
@@ -69,9 +66,9 @@ export default function MessageShareAction({
         messageId,
         duration,
       });
-      const url = `${globalThis.location.origin}/share/${shareId}`;
-      setShareUrl(url);
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(
+        `${globalThis.location.origin}/share/${shareId}`
+      );
       toast.success("Share link copied to clipboard!");
     } catch {
       toast.error("Failed to create share link. Please try again.");
