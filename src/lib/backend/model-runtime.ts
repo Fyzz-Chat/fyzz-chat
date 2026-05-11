@@ -47,26 +47,24 @@ export async function buildToolsForRuntime(
   return { tools, mcpClients };
 }
 
-export async function buildSystemPrompt({
-  baseSystemPrompt,
-  memoryEnabled,
-  skillsEnabled,
-  temporaryChat,
-  userId,
-  projectId,
-}: {
-  baseSystemPrompt: string;
+type PromptAddonParams = {
   memoryEnabled: boolean;
   skillsEnabled: boolean;
   temporaryChat: boolean;
   userId: string;
   projectId?: string;
-}) {
+};
+
+export async function fetchSystemPromptAddons(
+  params: PromptAddonParams
+): Promise<string> {
   const [memoryPrompt, skillPrompt] = await Promise.all([
-    memoryEnabled && !temporaryChat
-      ? getAgentMemoryPrompt(userId, projectId)
+    params.memoryEnabled && !params.temporaryChat
+      ? getAgentMemoryPrompt(params.userId, params.projectId)
       : Promise.resolve(""),
-    skillsEnabled ? getSkillPrompt(userId, projectId) : Promise.resolve(""),
+    params.skillsEnabled
+      ? getSkillPrompt(params.userId, params.projectId)
+      : Promise.resolve(""),
   ]);
-  return `${baseSystemPrompt}${memoryPrompt}${skillPrompt}`;
+  return `${memoryPrompt}${skillPrompt}`;
 }

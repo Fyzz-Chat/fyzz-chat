@@ -15,7 +15,10 @@ import { z } from "zod";
 import { updateConversationTitle } from "@/lib/actions/conversations";
 import { CompositeAbortController } from "@/lib/backend/abort-controller";
 import { mapMessageFilePartsForRead } from "@/lib/backend/message-mapper";
-import { buildSystemPrompt, buildToolsForRuntime } from "@/lib/backend/model-runtime";
+import {
+  buildToolsForRuntime,
+  fetchSystemPromptAddons,
+} from "@/lib/backend/model-runtime";
 import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
 import { getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
@@ -423,19 +426,32 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const conversationState = await loadConversationMessages({
-    id,
-    userId: user.id,
-    modelId,
-    incomingMessages: messages,
-    newMessage,
-    temporaryChat,
-    projectId,
-    start,
-  });
+  const [conversationState, toolsState, promptAddons] = await Promise.all([
+    loadConversationMessages({
+      id,
+      userId: user.id,
+      modelId,
+      incomingMessages: messages,
+      newMessage,
+      temporaryChat,
+      projectId,
+      start,
+    }),
+    loadToolsForRequest({ runtime, user, browse, temporaryChat, projectId, start }),
+    fetchSystemPromptAddons({
+      memoryEnabled: user.memoryEnabled,
+      skillsEnabled: user.skillsEnabled,
+      temporaryChat,
+      userId: user.id,
+      projectId,
+    }),
+  ]);
 
   if (conversationState.errorResponse) {
     return conversationState.errorResponse;
+  }
+  if (toolsState.errorResponse) {
+    return toolsState.errorResponse;
   }
 
   const existingMessages = conversationState.messages || [];
@@ -473,28 +489,7 @@ export async function POST(req: NextRequest) {
   }
 
   const baseSystemPrompt = await getSystemPrompt(conversationState.project);
-  const [toolsState, extendedSystemPrompt] = await Promise.all([
-    loadToolsForRequest({
-      runtime,
-      user,
-      browse,
-      temporaryChat,
-      projectId: conversationState.project?.id,
-      start,
-    }),
-    buildSystemPrompt({
-      baseSystemPrompt,
-      memoryEnabled: user.memoryEnabled,
-      skillsEnabled: user.skillsEnabled,
-      temporaryChat,
-      userId: user.id,
-      projectId: conversationState.project?.id,
-    }),
-  ]);
-
-  if (toolsState.errorResponse) {
-    return toolsState.errorResponse;
-  }
+  const extendedSystemPrompt = `${baseSystemPrompt}${promptAddons}`;
   const { tools, mcpClients } = toolsState;
 
   logDuration(start, "System prompt composed");
