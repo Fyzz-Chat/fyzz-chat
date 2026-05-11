@@ -170,17 +170,25 @@ async function loadConversationMessages({
 
   logDuration(start, "Conversation fetched or created");
 
-  const conversationMessages = await caller.messages({ id });
-  let existingMessages = conversationMessages.messages;
-  const isRegeneratedMessage =
-    newMessage !== undefined &&
-    existingMessages.some((existingMessage) => existingMessage.id === newMessage.id);
+  let existingMessages: CustomUIMessage[];
 
-  if (newMessage && hasInputPart(newMessage) && !isRegeneratedMessage) {
-    await ensureMessageAppended(newMessage, id);
+  if (newMessage && hasInputPart(newMessage)) {
+    const [conversationMessages] = await Promise.all([
+      caller.messages({ id }),
+      ensureMessageAppended(newMessage, id),
+    ]);
+    existingMessages = conversationMessages.messages;
 
-    const mappedMessage = mapMessageFilePartsForRead(userId, id, newMessage);
-    existingMessages = [...existingMessages, mappedMessage];
+    const isRegeneratedMessage = existingMessages.some((m) => m.id === newMessage.id);
+    if (!isRegeneratedMessage) {
+      existingMessages = [
+        ...existingMessages,
+        mapMessageFilePartsForRead(userId, id, newMessage),
+      ];
+    }
+  } else {
+    const conversationMessages = await caller.messages({ id });
+    existingMessages = conversationMessages.messages;
   }
 
   if (existingMessages.length === 0) {
