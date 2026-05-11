@@ -190,7 +190,6 @@ export function useConversation(id: string) {
 
   const options: inferReactQueryProcedureOptions<AppRouter>["conversation"] = {
     enabled: !temporaryChat,
-    refetchOnMount: "always",
     meta: {
       persist: !temporaryChat,
     },
