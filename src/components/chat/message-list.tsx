@@ -249,7 +249,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   );
 
   const handleSubmit = useCallback(
-    async (message: PromptInputMessage) => {
+    async (message: PromptInputMessage, modelIdOverride?: string) => {
       const hasText = Boolean(message.text);
       const hasAttachments = Boolean(message.files?.length);
 
@@ -334,7 +334,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         {
           body: {
             id,
-            model: model.id,
+            model: modelIdOverride ?? model.id,
             temporaryChat: false,
             browse: browseRef.current,
             reasoningEffort: reasoningEffortRef.current,
@@ -377,24 +377,19 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
 
   useEffect(() => {
     const sendInitial = async () => {
-      if (
-        initialMessage &&
-        messages.length === 0 &&
-        !hasSentInitial.current &&
-        model.id &&
-        providers.length > 0
-      ) {
+      const modelId = contextInitialModel ?? model.id;
+      if (initialMessage && messages.length === 0 && !hasSentInitial.current && modelId) {
         hasSentInitial.current = true;
         try {
           await createConversationOptimistic.mutateAsync({
             id,
             title: "New Chat",
-            model: model.id,
+            model: modelId,
             lastMessageAt: new Date(),
             branchedFrom: null,
             projectId: initialProjectId ?? null,
           });
-          await handleSubmit({ text: initialMessage, files: initialFiles });
+          await handleSubmit({ text: initialMessage, files: initialFiles }, modelId);
           setInitialMessage(null);
           setInitialFiles([]);
           setInitialProjectId(null);
@@ -416,8 +411,8 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     setAreFilesUploading,
     initialFiles,
     initialProjectId,
+    contextInitialModel,
     model.id,
-    providers.length,
     id,
   ]);
 
