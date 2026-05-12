@@ -1,3 +1,10 @@
+## [0.43.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.0...v0.43.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* **chat:** synchronize internal chat state with persisted messages to prevent orphaned entries ([4bf20be](https://github.com/Fyzz-Chat/fyzz-chat/commit/4bf20be19677b2110cc964c78b205f29dfa79f34))
+
 # [0.43.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.42.0...v0.43.0) (2026-05-11)
 
 
