@@ -1,3 +1,10 @@
+## [0.43.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.1...v0.43.2) (2026-05-12)
+
+
+### Bug Fixes
+
+* **scan:** use correct script format ([3a0e0c6](https://github.com/Fyzz-Chat/fyzz-chat/commit/3a0e0c68616713730649aa5d30afad3a9fc91872))
+
 ## [0.43.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.0...v0.43.1) (2026-05-12)
 
 
