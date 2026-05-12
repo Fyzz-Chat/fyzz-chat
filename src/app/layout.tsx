@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import type React from "react";
 import { Providers } from "@/components/providers";
 import SnowfallCanvas from "@/components/snowfall-canvas";
@@ -62,17 +63,18 @@ export default function RootLayout({
           inter.variable
         )}
       >
-        {process.env.NODE_ENV === "development" && process.env.REACT_SCAN === "true" && (
-          <script
-            src="https://unpkg.com/react-scan/dist/auto.global.js"
-            crossOrigin="anonymous"
-          />
-        )}
         <Providers>
           {children}
           <Toaster position="top-right" />
           <SnowfallCanvas />
         </Providers>
+        {process.env.NODE_ENV === "development" && process.env.REACT_SCAN === "true" && (
+          <Script
+            src="https://unpkg.com/react-scan/dist/auto.global.js"
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
