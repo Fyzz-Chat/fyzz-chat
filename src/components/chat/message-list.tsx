@@ -158,16 +158,21 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     return false;
   }, []);
 
-  // `useChat` does not re-seed its internal message state when `persistedMessages` arrive
-  // asynchronously (e.g. from IndexedDB). This can cause regenerate/edit to target a message
-  // that exists in the UI (persisted list) but not in the chat state.
+  // Keeps `useChat` internal state in sync with the persisted cache in two directions:
+  // 1. Persisted messages missing from useChat (e.g. async IndexedDB rehydration) → re-seed.
+  // 2. useChat has messages not in the persisted cache (e.g. partial message from a failed
+  //    stream where onFinish never fired) → drop them to prevent stuck messages at the bottom.
   useEffect(() => {
     if (status !== "ready") return;
     if (persistedMessages.length === 0) return;
 
+    const persistedIds = new Set(persistedMessages.map((m) => m.id));
     const chatIds = new Set(messages.map((m) => m.id));
+
     const missingPersisted = persistedMessages.some((m) => !chatIds.has(m.id));
-    if (!missingPersisted) return;
+    const hasOrphanedMessages = messages.some((m) => !persistedIds.has(m.id));
+
+    if (!missingPersisted && !hasOrphanedMessages) return;
 
     setMessages(persistedMessages);
   }, [messages, persistedMessages, setMessages, status]);
