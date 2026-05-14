@@ -837,6 +837,10 @@ export const PromptInputTextarea = ({
       if (e.shiftKey) {
         return;
       }
+      // On touch-primary devices (phones/tablets), Enter inserts a newline; submit via the send button
+      if (globalThis.matchMedia("(pointer: coarse)").matches) {
+        return;
+      }
       e.preventDefault();
 
       // Check if the submit button is disabled before submitting
