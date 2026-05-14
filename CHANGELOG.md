@@ -1,3 +1,10 @@
+## [0.43.3](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.2...v0.43.3) (2026-05-14)
+
+
+### Bug Fixes
+
+* **phone:** do not send automatically on mobile devices ([9117801](https://github.com/Fyzz-Chat/fyzz-chat/commit/9117801f672780517ec36298415b0d96728816f6))
+
 ## [0.43.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.1...v0.43.2) (2026-05-12)
 
 
