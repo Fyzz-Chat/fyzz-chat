@@ -28,7 +28,7 @@ export const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
 
 export const GEMINI_REASONING_MODELS = [
   "gemini-3-flash-preview",
-  "gemini-3.1-flash-lite-preview",
+  "gemini-3.1-flash-lite",
   "gemini-3.1-pro-preview",
 ] as const;
 

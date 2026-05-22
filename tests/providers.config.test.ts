@@ -78,7 +78,7 @@ const expectedCatalogShape: {
       { id: "gemini-2.5-flash-lite", runtimePreset: "chat" },
       { id: "gemini-2.5-pro", runtimePreset: "chat" },
       { id: "gemini-3-flash-preview", runtimePreset: "chat" },
-      { id: "gemini-3.1-flash-lite-preview", runtimePreset: "chat" },
+      { id: "gemini-3.1-flash-lite", runtimePreset: "chat" },
       { id: "gemini-3.1-pro-preview", runtimePreset: "chat" },
       { id: "gemini-2.5-flash-image", runtimePreset: "chat" },
       { id: "gemini-3.1-flash-image-preview", runtimePreset: "chat" },

@@ -745,7 +745,7 @@ const providers: Provider[] = [
         cost: 1,
       },
       {
-        id: "gemini-3.1-flash-lite-preview",
+        id: "gemini-3.1-flash-lite",
         name: "Gemini 3.1 Flash Lite",
         features: [reasoning, search],
         provider: google,
