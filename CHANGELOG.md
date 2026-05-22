@@ -1,3 +1,10 @@
+## [0.43.4](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.3...v0.43.4) (2026-05-22)
+
+
+### Bug Fixes
+
+* **providers:** update gemini 3.1 flash lite from preview to normal ([fb0b457](https://github.com/Fyzz-Chat/fyzz-chat/commit/fb0b4576acdc2658cab8b59aa45352a2c080a2db))
+
 ## [0.43.3](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.2...v0.43.3) (2026-05-14)
 
 
