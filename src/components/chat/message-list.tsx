@@ -70,6 +70,8 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   const isNewConversation = Boolean(initialMessage);
   const conversationData = useConversation(id);
   const conversationTitle = conversationData.data?.title;
+  const conversationProjectId =
+    initialProjectId ?? conversationData.data?.projectId ?? undefined;
   useEffect(() => {
     if (typeof document === "undefined") return;
     document.title = conversationTitle ? `Fyzz chat - ${conversationTitle}` : "Fyzz chat";
@@ -198,6 +200,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             temporaryChat: false,
             browse: browseRef.current,
             reasoningEffort: reasoningEffortRef.current,
+            ...(conversationProjectId && { projectId: conversationProjectId }),
           },
         });
       } catch {
@@ -212,6 +215,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       browseRef,
       reasoningEffortRef,
       trimPersistedMessages,
+      conversationProjectId,
     ]
   );
 
@@ -236,6 +240,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             browse: browseRef.current,
             reasoningEffort: reasoningEffortRef.current,
             newContent,
+            ...(conversationProjectId && { projectId: conversationProjectId }),
           },
         });
       } catch {
@@ -250,6 +255,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       browseRef,
       reasoningEffortRef,
       trimPersistedMessages,
+      conversationProjectId,
     ]
   );
 
@@ -343,7 +349,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
             temporaryChat: false,
             browse: browseRef.current,
             reasoningEffort: reasoningEffortRef.current,
-            ...(initialProjectId && { projectId: initialProjectId }),
+            ...(conversationProjectId && { projectId: conversationProjectId }),
           },
         }
       );
@@ -361,7 +367,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       setDeepResearch,
       queryClient,
       trpc,
-      initialProjectId,
+      conversationProjectId,
     ]
   );
 
