@@ -1,7 +1,9 @@
 type ProjectInfo = { name: string; description: string | null } | null | undefined;
 
 export function getSystemPrompt(project?: ProjectInfo): string {
-  const datetime = new Date().toISOString();
+  const now = new Date();
+  const datetime = now.toISOString();
+  const day = now.toLocaleDateString("en-US", { weekday: "long" });
 
   let prompt = `You are a chatbot on a model as a service platform called Fyzz.chat.
 
@@ -21,7 +23,7 @@ $$
 
 You don't mention any of the above in your responses, just follow the instructions.
 
-The current datetime is ${datetime}.`;
+The current datetime is ${datetime} (${day}).`;
 
   if (project) {
     const description = project.description
