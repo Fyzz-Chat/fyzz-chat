@@ -30,8 +30,23 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
+
+const COST_TIERS: Record<number, { label: string; className: string }> = {
+  1: { label: "Budget", className: "text-muted-foreground" },
+  2: { label: "Economy", className: "text-green-500" },
+  3: { label: "Standard", className: "text-blue-500" },
+  4: { label: "Plus", className: "text-amber-500" },
+  5: { label: "Premium", className: "text-orange-500" },
+  6: { label: "Flagship", className: "text-red-500" },
+  7: { label: "Ultra", className: "text-purple-500" },
+};
 
 const ModelSelectorContext = createContext<{ isDesktop: boolean }>({ isDesktop: true });
 
@@ -315,5 +330,40 @@ export const ModelSelectorFeatures = ({
         );
       })}
     </div>
+  );
+};
+
+function CostDots({ cost, max, color }: { cost: number; max: number; color: string }) {
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: max }, (_, i) => i + 1).map((dot) => (
+        <span
+          key={dot}
+          className={cn("text-[8px]", dot <= cost ? color : "text-muted-foreground/30")}
+        >
+          ●
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export type ModelSelectorCostProps = { cost: number; maxCost: number };
+
+export const ModelSelectorCost = ({ cost, maxCost }: ModelSelectorCostProps) => {
+  const tier = COST_TIERS[cost] ?? { label: "Ultra", className: "text-purple-500" };
+  return (
+    <HoverCard openDelay={300}>
+      <HoverCardTrigger asChild>
+        <span className={cn("font-mono text-xs", tier.className)}>{cost}x</span>
+      </HoverCardTrigger>
+      <HoverCardContent className="flex w-auto flex-col gap-1 p-3">
+        <span className="font-semibold text-xs">{tier.label}</span>
+        <span className="text-muted-foreground text-xs">
+          ~{cost}x the cost of the most affordable model
+        </span>
+        <CostDots cost={cost} max={maxCost} color={tier.className} />
+      </HoverCardContent>
+    </HoverCard>
   );
 };

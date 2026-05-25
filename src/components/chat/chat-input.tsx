@@ -6,6 +6,7 @@ import { type ChangeEvent, useCallback, useContext, useMemo, useState } from "re
 import {
   ModelSelector,
   ModelSelectorContent,
+  ModelSelectorCost,
   ModelSelectorEmpty,
   ModelSelectorFeatures,
   ModelSelectorGroup,
@@ -78,6 +79,10 @@ export default function ChatInput() {
     [selectedModelData]
   );
   const supportsTools = selectedModelData?.tools ?? false;
+  const maxCost = useMemo(
+    () => Math.max(1, ...providers.flatMap((p) => p.models).map((m) => m.cost)),
+    [providers]
+  );
 
   const trpc = useTRPC();
   const { data: featureFlags } = useQuery(trpc.userFeatureFlags.queryOptions());
@@ -189,7 +194,15 @@ export default function ChatInput() {
                               value={providerModel.id}
                             >
                               <ModelSelectorLogo provider={provider.id} />
-                              <ModelSelectorName>{providerModel.name}</ModelSelectorName>
+                              <div className="flex min-w-0 flex-1 items-center gap-2">
+                                <span className="min-w-0 truncate text-left text-sm">
+                                  {providerModel.name}
+                                </span>
+                                <ModelSelectorCost
+                                  cost={providerModel.cost}
+                                  maxCost={maxCost}
+                                />
+                              </div>
                               <ModelSelectorFeatures features={providerModel.features} />
                               {model?.id === providerModel.id ? (
                                 <CheckIcon className="ml-auto size-4" />
