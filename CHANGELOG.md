@@ -1,3 +1,20 @@
+# [0.44.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.4...v0.44.0) (2026-05-25)
+
+
+### Bug Fixes
+
+* **memories:** move memories with conversation between projects ([d8b5c9c](https://github.com/Fyzz-Chat/fyzz-chat/commit/d8b5c9c5a6b6dedd2d1c59edf5f916d2fc588e01))
+* **memories:** store subsequent memories in project conversations under the same project ([883d2bc](https://github.com/Fyzz-Chat/fyzz-chat/commit/883d2bca517c71e130ab18a597fe7a68437024c7))
+* **memories:** store which conversation a memory belongs to ([bfc01f4](https://github.com/Fyzz-Chat/fyzz-chat/commit/bfc01f495622fbd2455cc31d46d9a4ad084cb103))
+* **prompt:** add day of week to system prompt ([cd3dc8e](https://github.com/Fyzz-Chat/fyzz-chat/commit/cd3dc8e16ad6043ee9fc2aa6c0712207ae54cef2))
+* **sidebar:** fix hydration error ([6d21a30](https://github.com/Fyzz-Chat/fyzz-chat/commit/6d21a30de20a8a2e33705b8058aada7f1c1132d6))
+
+
+### Features
+
+* **google:** add gemini 3.5 flash ([e44fb67](https://github.com/Fyzz-Chat/fyzz-chat/commit/e44fb6714f5fc598b14bf9f0d9d68598387cfb9d))
+* **models:** show cost multiplier ([bb4b649](https://github.com/Fyzz-Chat/fyzz-chat/commit/bb4b6493e1d1296c1fbdfec340d4ed39f180a369))
+
 ## [0.43.4](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.3...v0.43.4) (2026-05-22)
 
 

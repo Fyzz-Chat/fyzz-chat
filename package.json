@@ -1,6 +1,6 @@
 {
   "name": "fyzz-chat",
-  "version": "0.43.4",
+  "version": "0.44.0",
   "private": true,
   "type": "module",
   "scripts": {
