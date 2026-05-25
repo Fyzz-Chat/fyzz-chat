@@ -19,7 +19,11 @@ function clampContent(content: string): string {
 
 const LENGTH_GUIDANCE = `Keep content under ${MAX_MEMORY_CHARS} characters — break longer thoughts into multiple memories. Longer content is silently truncated.`;
 
-export function createAgentMemoryTools(userId: string, projectId?: string) {
+export function createAgentMemoryTools(
+  userId: string,
+  projectId?: string,
+  conversationId?: string
+) {
   return {
     store_fact: tool({
       description: `Record a factual detail about the user — preferences, role, location, personal context. Use when the user reveals something worth remembering across conversations. ${LENGTH_GUIDANCE}`,
@@ -37,6 +41,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
           category,
           source: "agent",
           projectId: projectId ?? null,
+          conversationId: conversationId ?? null,
         });
         return "Fact stored.";
       },
@@ -65,6 +70,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
           category,
           source: "agent",
           projectId: projectId ?? null,
+          conversationId: conversationId ?? null,
         });
         return "Opinion recorded.";
       },
@@ -81,6 +87,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
           content: clampContent(content),
           source: "agent",
           projectId: projectId ?? null,
+          conversationId: conversationId ?? null,
         });
         return "Learning stored.";
       },
@@ -97,6 +104,7 @@ export function createAgentMemoryTools(userId: string, projectId?: string) {
           content: clampContent(content),
           source: "agent",
           projectId: projectId ?? null,
+          conversationId: conversationId ?? null,
         });
         return "Feedback stored.";
       },

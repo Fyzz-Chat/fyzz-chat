@@ -204,6 +204,7 @@ async function loadToolsForRequest({
   browse,
   temporaryChat,
   projectId,
+  conversationId,
   start,
 }: {
   runtime: ReturnType<typeof getModelRuntime>;
@@ -211,6 +212,7 @@ async function loadToolsForRequest({
   browse: boolean;
   temporaryChat: boolean;
   projectId?: string;
+  conversationId?: string;
   start: number;
 }): Promise<{
   tools: { [key: string]: Tool };
@@ -222,7 +224,13 @@ async function loadToolsForRequest({
   }
 
   try {
-    const toolsResult = await buildToolsForRuntime(user, browse, runtime, projectId);
+    const toolsResult = await buildToolsForRuntime(
+      user,
+      browse,
+      runtime,
+      projectId,
+      conversationId
+    );
     logDuration(start, "Tools fetched");
     return toolsResult;
   } catch (error) {
@@ -445,7 +453,15 @@ export async function POST(req: NextRequest) {
       projectId,
       start,
     }),
-    loadToolsForRequest({ runtime, user, browse, temporaryChat, projectId, start }),
+    loadToolsForRequest({
+      runtime,
+      user,
+      browse,
+      temporaryChat,
+      projectId,
+      conversationId: id,
+      start,
+    }),
     fetchSystemPromptAddons({
       memoryEnabled: user.memoryEnabled,
       skillsEnabled: user.skillsEnabled,

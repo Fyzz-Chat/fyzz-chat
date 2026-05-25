@@ -14,14 +14,15 @@ export async function buildToolsForRuntime(
   user: SessionUser,
   search: boolean,
   runtime: ModelRuntime,
-  projectId?: string
+  projectId?: string,
+  conversationId?: string
 ): Promise<{ tools: { [key: string]: Tool }; mcpClients: MCPClient[] }> {
   const providerTools = runtime.getProviderTools(search);
 
   const tools: { [key: string]: Tool } = {};
 
   if (user.memoryEnabled) {
-    Object.assign(tools, createAgentMemoryTools(user.id, projectId));
+    Object.assign(tools, createAgentMemoryTools(user.id, projectId, conversationId));
   }
 
   if (user.skillsEnabled) {
