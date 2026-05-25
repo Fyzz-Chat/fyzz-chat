@@ -36,6 +36,7 @@
       "Bash(bun test:*)",
       "Bash(bun knip:*)",
       "Bash(bun build:*)",
+      "Bash(bunx biome check:*)",
       "Bash(bunx tsc --noEmit:*)"
     ]
   }
