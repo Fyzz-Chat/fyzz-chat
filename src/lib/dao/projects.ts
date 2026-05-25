@@ -123,10 +123,16 @@ export async function assignConversationToProject(
     }
   }
 
-  const updatedConversation = await prisma.conversation.update({
-    where: { id: conversationId, userId },
-    data: { projectId },
-  });
+  const [updatedConversation] = await prisma.$transaction([
+    prisma.conversation.update({
+      where: { id: conversationId, userId },
+      data: { projectId },
+    }),
+    prisma.memory.updateMany({
+      where: { conversationId, userId },
+      data: { projectId },
+    }),
+  ]);
 
   return updatedConversation;
 }
