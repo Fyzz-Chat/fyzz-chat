@@ -1,3 +1,16 @@
+# [0.45.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.44.0...v0.45.0) (2026-05-29)
+
+
+### Bug Fixes
+
+* **reasoning:** set correct reasoning efforts ([c0ce720](https://github.com/Fyzz-Chat/fyzz-chat/commit/c0ce720e9cc4cbd82a21e5e4e93442367993f84c))
+* **test:** disable aws during integration tests ([0aebb76](https://github.com/Fyzz-Chat/fyzz-chat/commit/0aebb766a74ca1f8ff0693daea915a7a285f5ee4))
+
+
+### Features
+
+* **providers:** add opus 4.8 ([9b94ec3](https://github.com/Fyzz-Chat/fyzz-chat/commit/9b94ec39c714950bb8d580478d30fc6714d5ecbc))
+
 # [0.44.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.43.4...v0.44.0) (2026-05-25)
 
 
