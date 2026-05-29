@@ -29,26 +29,35 @@ import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { ReasoningEffort } from "@/types/provider";
 
-const REASONING_EFFORTS: ReasoningEffort[] = ["low", "medium", "high"];
+function defaultEffort(levels: readonly ReasoningEffort[]): ReasoningEffort {
+  if (levels.includes("medium")) {
+    return "medium";
+  }
+  return levels[Math.floor(levels.length / 2)] ?? "medium";
+}
 
 function ReasoningBars({
   className,
+  levels,
   effort,
-}: Readonly<{ className?: string; effort: ReasoningEffort }>) {
-  const activeBars = effort === "high" ? 3 : effort === "medium" ? 2 : 1;
+}: Readonly<{
+  className?: string;
+  levels: readonly ReasoningEffort[];
+  effort: ReasoningEffort;
+}>) {
+  const activeBars = levels.indexOf(effort) + 1;
+  const count = levels.length;
 
   return (
     <div className={cn("flex items-end gap-1", className)}>
-      {[0, 1, 2].map((index) => (
+      {levels.map((level, index) => (
         <span
           className={cn(
             "w-1.5 rounded-xs bg-muted-foreground/30",
-            index === 0 && "h-2",
-            index === 1 && "h-3",
-            index === 2 && "h-4",
             index < activeBars && "bg-(--theme-blue)"
           )}
-          key={index}
+          key={level}
+          style={{ height: `${8 + index * (8 / Math.max(count - 1, 1))}px` }}
         />
       ))}
     </div>
@@ -58,9 +67,11 @@ function ReasoningBars({
 export default function ChatSettingsMenu({
   supportsAttachments,
   supportsReasoning,
+  effortLevels,
 }: Readonly<{
   supportsAttachments: boolean;
   supportsReasoning: boolean;
+  effortLevels?: readonly ReasoningEffort[];
 }>) {
   const attachments = usePromptInputAttachments();
   const { browseRef, reasoningEffortRef, setDeepResearch } = useChatInput();
@@ -69,8 +80,8 @@ export default function ChatSettingsMenu({
   const [open, setOpen] = useState(false);
   const [rendered, setRendered] = useState(false);
   const [browse, setBrowse] = useState(browseRef.current);
-  const [reasoningEffort, setReasoningEffort] = useState<ReasoningEffort>(
-    reasoningEffortRef.current || "low"
+  const [reasoningEffort, setReasoningEffort] = useState<ReasoningEffort | undefined>(
+    reasoningEffortRef.current
   );
 
   useEffect(() => {
@@ -88,6 +99,15 @@ export default function ChatSettingsMenu({
   }, [deepResearch, hasPendingResearch, browse]);
 
   useEffect(() => {
+    if (!effortLevels?.length) {
+      return;
+    }
+    setReasoningEffort((current) =>
+      current && effortLevels.includes(current) ? current : defaultEffort(effortLevels)
+    );
+  }, [effortLevels]);
+
+  useEffect(() => {
     reasoningEffortRef.current = supportsReasoning ? reasoningEffort : undefined;
   }, [reasoningEffort, supportsReasoning, reasoningEffortRef]);
 
@@ -97,10 +117,15 @@ export default function ChatSettingsMenu({
   }, [attachments]);
 
   const cycleReasoningEffort = useCallback(() => {
-    const currentIndex = REASONING_EFFORTS.indexOf(reasoningEffort);
-    const nextIndex = currentIndex >= REASONING_EFFORTS.length - 1 ? 0 : currentIndex + 1;
-    setReasoningEffort(REASONING_EFFORTS[nextIndex] || "low");
-  }, [reasoningEffort]);
+    if (!effortLevels?.length) {
+      return;
+    }
+    setReasoningEffort((current) => {
+      const currentIndex = current ? effortLevels.indexOf(current) : -1;
+      const nextIndex = currentIndex >= effortLevels.length - 1 ? 0 : currentIndex + 1;
+      return effortLevels[nextIndex];
+    });
+  }, [effortLevels]);
 
   const menuContent = (
     <div className="flex flex-col gap-1">
@@ -165,18 +190,30 @@ export default function ChatSettingsMenu({
         </div>
       </Button>
 
-      {supportsReasoning ? (
-        <Button
-          className="w-full justify-between rounded-[8px]"
-          onClick={cycleReasoningEffort}
-          type="button"
-          variant="ghost"
-        >
-          <BrainIcon className="size-4" />
-          <span className="capitalize">Reasoning: {reasoningEffort}</span>
-          <ReasoningBars className="ml-auto" effort={reasoningEffort} />
-        </Button>
-      ) : null}
+      {supportsReasoning && effortLevels?.length
+        ? (() => {
+            const displayEffort =
+              reasoningEffort && effortLevels.includes(reasoningEffort)
+                ? reasoningEffort
+                : defaultEffort(effortLevels);
+            return (
+              <Button
+                className="w-full justify-between rounded-[8px]"
+                onClick={cycleReasoningEffort}
+                type="button"
+                variant="ghost"
+              >
+                <BrainIcon className="size-4" />
+                <span className="capitalize">Reasoning: {displayEffort}</span>
+                <ReasoningBars
+                  className="ml-auto"
+                  effort={displayEffort}
+                  levels={effortLevels}
+                />
+              </Button>
+            );
+          })()
+        : null}
     </div>
   );
 

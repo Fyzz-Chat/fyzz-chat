@@ -34,7 +34,17 @@ type PlaintextType = (typeof plaintextType)[number];
 
 type ExtensionType = ImageType | PDFType | AudioType | VideoType | PlaintextType;
 export type RuntimePreset = "chat" | "responses";
-export type ReasoningEffort = "low" | "medium" | "high";
+
+export const reasoningEfforts = [
+  "none",
+  "minimal",
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+] as const;
+export type ReasoningEffort = (typeof reasoningEfforts)[number];
 
 export type ModelCapabilities = {
   supportsCodeInterpreter?: boolean;
@@ -53,6 +63,7 @@ type Model = {
   extensions: readonly ExtensionType[];
   cost: number;
   capabilities?: ModelCapabilities;
+  effortLevels?: readonly ReasoningEffort[];
 };
 
 export type ModelRuntime = {

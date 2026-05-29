@@ -36,6 +36,7 @@ export const GEMINI_REASONING_MODELS = [
 export const FIREWORKS_REASONING_MODELS = [
   "accounts/fireworks/models/deepseek-v4-pro",
   "accounts/fireworks/models/kimi-k2p5",
+  "accounts/fireworks/models/kimi-k2p6",
   "accounts/fireworks/models/glm-5p1",
 ] as const;
 

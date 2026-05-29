@@ -14,6 +14,7 @@ type PublicModel = {
   name: string;
   features?: Array<{ name: string }>;
   extensions: string[];
+  effortLevels?: ReasoningEffort[];
 };
 
 export type PublicProvider = {
@@ -22,7 +23,7 @@ export type PublicProvider = {
   models: PublicModel[];
 };
 
-export type ReasoningEffort = "low" | "medium" | "high";
+type ReasoningEffort = "none" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
 
 export type TestResult = {
   label: string;

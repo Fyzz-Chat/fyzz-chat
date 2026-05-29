@@ -48,7 +48,7 @@ import { logger } from "@/lib/logger";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import { type CustomUIMessage, metadataSchema } from "@/types/chat";
-import type { ReasoningEffort } from "@/types/provider";
+import { type ReasoningEffort, reasoningEfforts } from "@/types/provider";
 
 export const maxDuration = 600;
 
@@ -61,7 +61,7 @@ const chatRequestEnvelopeSchema = z.object({
   newContent: z.string().optional(),
   browse: z.boolean().default(false),
   temporaryChat: z.boolean().default(false),
-  reasoningEffort: z.enum(["low", "medium", "high"]).optional(),
+  reasoningEffort: z.enum(reasoningEfforts).optional(),
   projectId: z.string().optional(),
 });
 

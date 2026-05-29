@@ -8,7 +8,6 @@ import {
   logSummary,
   MODEL_FILTER,
   matchesFilter,
-  type ReasoningEffort,
   runWithConcurrency,
   type TestResult,
   throwOnFailures,
@@ -24,7 +23,7 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - reasoning models", () => {
   test("reasoning models support all effort levels", async () => {
     let reasoningModels = getProviders()
       .flatMap((p) => p.models)
-      .filter((m) => m.features?.some((f) => f.name === "Reasoning"));
+      .filter((m) => (m.effortLevels?.length ?? 0) > 0);
     if (MODEL_FILTER) {
       reasoningModels = reasoningModels.filter((m) => matchesFilter(m.id));
     }
@@ -34,9 +33,8 @@ describe.skipIf(!RUN_INTEGRATION)("Chat API - reasoning models", () => {
       return;
     }
 
-    const efforts: ReasoningEffort[] = ["low", "medium", "high"];
     const tasks = reasoningModels.flatMap((model) =>
-      efforts.map((effort) => async (): Promise<TestResult> => {
+      (model.effortLevels ?? []).map((effort) => async (): Promise<TestResult> => {
         const label = `${model.name} \x1b[2m(${model.id})\x1b[0m \x1b[33m[${effort}]\x1b[0m`;
         try {
           const output = await chatWithModel({

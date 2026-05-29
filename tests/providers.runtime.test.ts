@@ -208,6 +208,63 @@ describe("providers runtime behavior", () => {
       store: false,
     });
   });
+
+  it("supports extended per-provider effort levels", () => {
+    const messages = [createMessage("user-1", "user")];
+
+    expect(
+      getModelRuntime("claude-opus-4-8", "max").getProviderOptionsFromHistory(messages)
+        .anthropic
+    ).toMatchObject({ effort: "max" });
+
+    expect(
+      getModelRuntime("claude-opus-4-8", "xhigh").getProviderOptionsFromHistory(messages)
+        .anthropic
+    ).toMatchObject({ effort: "xhigh" });
+
+    expect(
+      getModelRuntime("gpt-5", "minimal").getProviderOptionsFromHistory(messages).openai
+    ).toMatchObject({ reasoningEffort: "minimal" });
+
+    expect(
+      getModelRuntime("gpt-5", "none").getProviderOptionsFromHistory(messages).openai
+    ).toMatchObject({ reasoningEffort: "none" });
+  });
+
+  it("omits xAI reasoningEffort when effort is none", () => {
+    const messages = [createMessage("user-1", "user")];
+
+    const xaiNone = getModelRuntime("grok-4.3", "none").getProviderOptionsFromHistory(
+      messages
+    ).xai;
+    expect(xaiNone).toMatchObject({ store: true });
+    expect(xaiNone?.reasoningEffort).toBeUndefined();
+
+    expect(
+      getModelRuntime("grok-4.3", "high").getProviderOptionsFromHistory(messages).xai
+        ?.reasoningEffort
+    ).toBe("high");
+  });
+
+  it("clamps an unsupported effort to the model default", () => {
+    const messages = [createMessage("user-1", "user")];
+
+    // "max" is outside Gemini's effort levels -> falls back to default "medium"
+    expect(
+      getModelRuntime("gemini-3.1-pro-preview", "max").getProviderOptionsFromHistory(
+        messages
+      ).google
+    ).toEqual({
+      thinkingConfig: { thinkingLevel: "medium", includeThoughts: true },
+    });
+
+    // "minimal" is outside Anthropic's effort levels -> falls back to default "medium"
+    expect(
+      getModelRuntime("claude-sonnet-4-6", "minimal").getProviderOptionsFromHistory(
+        messages
+      ).anthropic
+    ).toMatchObject({ effort: "medium" });
+  });
 });
 
 describe("critical model policy: runtime classification", () => {
@@ -234,7 +291,7 @@ describe("critical model policy: provider options", () => {
     for (const modelId of XAI_RESPONSES_MODELS) {
       expect(
         getModelRuntime(modelId).getProviderOptionsFromHistory(messages).xai
-      ).toEqual(XAI_RESPONSES_THREADING_OPTIONS);
+      ).toMatchObject(XAI_RESPONSES_THREADING_OPTIONS);
     }
 
     for (const modelId of XAI_CHAT_MODELS) {
@@ -249,7 +306,7 @@ describe("critical model policy: provider options", () => {
       expect(
         getModelRuntime(modelId).getProviderOptionsFromHistory(messages).openai
       ).toEqual({
-        reasoningEffort: "low",
+        reasoningEffort: "medium",
         reasoningSummary: "detailed",
         user: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
         safetyIdentifier:
@@ -270,7 +327,7 @@ describe("critical model policy: provider options", () => {
       getModelRuntime("claude-sonnet-4-6").getProviderOptionsFromHistory(messages)
         .anthropic
     ).toEqual({
-      effort: undefined,
+      effort: "medium",
       metadata: {
         userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
       },
@@ -291,7 +348,7 @@ describe("critical model policy: provider options", () => {
       expect(
         getModelRuntime(modelId).getProviderOptionsFromHistory(messages).fireworks
       ).toEqual({
-        thinking: { type: "enabled", budgetTokens: 8192 },
+        thinking: { type: "enabled", budgetTokens: 4096 },
         reasoningHistory: "preserved",
       });
     }

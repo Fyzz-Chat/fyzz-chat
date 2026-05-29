@@ -43,13 +43,48 @@ const perplexityConfigured = process.env.PERPLEXITY_API_KEY !== undefined;
 
 const CHAT_INPUT_WINDOW_SIZE = -1; // -1 = unlimited; set to a positive integer to cap history
 
+const EFFORT_BUDGET_TOKENS: Partial<Record<ReasoningEffort, number>> = {
+  low: 1024,
+  medium: 4096,
+  high: 8192,
+};
+
 export function getProvidersPublic(): PublicProvider[] {
   return filterProviders().map((provider) => ({
     ...provider,
     models: provider.models.map(({ provider, ...rest }) => ({
       ...rest,
+      features: withReasoningFeature(rest.features, rest.effortLevels),
     })),
   }));
+}
+
+function withReasoningFeature(
+  features: Feature[] | undefined,
+  effortLevels: readonly ReasoningEffort[] | undefined
+): Feature[] | undefined {
+  if (!effortLevels?.length) {
+    return features;
+  }
+  if (features?.some((feature) => feature.icon === reasoning.icon)) {
+    return features;
+  }
+  return [reasoning, ...(features ?? [])];
+}
+
+function resolveEffort(
+  requested: ReasoningEffort | undefined,
+  effortLevels: readonly ReasoningEffort[] | undefined
+): ReasoningEffort | undefined {
+  if (!effortLevels?.length) {
+    return undefined;
+  }
+  if (requested && effortLevels.includes(requested)) {
+    return requested;
+  }
+  return effortLevels.includes("medium")
+    ? "medium"
+    : effortLevels[Math.floor(effortLevels.length / 2)];
 }
 
 export function countModels() {
@@ -96,8 +131,10 @@ export function getModelRuntime(
     providerId,
     model: { id, provider, tools, runtimePreset, capabilities },
   } = runtimeModel;
-  const hasReasoning = runtimeModel.model.features?.includes(reasoning) ?? false;
-  const selectedReasoningEffort = hasReasoning ? reasoningEffort : undefined;
+  const selectedReasoningEffort = resolveEffort(
+    reasoningEffort,
+    runtimeModel.model.effortLevels
+  );
 
   const rawModel = provider(id);
 
@@ -196,7 +233,9 @@ export function getAnthropicProviderOptions(
   const isThinking = isThinkingModel(modelId, "anthropic") ?? false;
 
   return {
-    effort: isThinking ? reasoningEffort : undefined,
+    effort: isThinking
+      ? (reasoningEffort as AnthropicProviderOptions["effort"])
+      : undefined,
     metadata: {
       userId: hash("sha256", userId ?? "no-user_id"),
     },
@@ -213,7 +252,9 @@ export function getOpenaiProviderOptions(
   const hashedId = hash("sha256", userId ?? "no-user_id");
 
   return {
-    reasoningEffort: isThinking ? reasoningEffort || "low" : undefined,
+    reasoningEffort: isThinking
+      ? ((reasoningEffort || "low") as OpenAIResponsesProviderOptions["reasoningEffort"])
+      : undefined,
     reasoningSummary: isThinking ? "detailed" : undefined,
     user: hashedId,
     safetyIdentifier: hashedId,
@@ -234,7 +275,13 @@ export function getGoogleProviderOptions(
     ? {
         thinkingConfig: {
           includeThoughts: true,
-          ...(reasoningEffort ? { thinkingLevel: reasoningEffort } : {}),
+          ...(reasoningEffort
+            ? {
+                thinkingLevel: reasoningEffort as NonNullable<
+                  GoogleGenerativeAIProviderOptions["thinkingConfig"]
+                >["thinkingLevel"],
+              }
+            : {}),
         },
       }
     : {};
@@ -249,10 +296,12 @@ export function getXaiProviderOptions(
     return {};
   }
 
+  const effort = reasoningEffort === "none" ? undefined : reasoningEffort;
+
   return {
     store: true,
     previousResponseId,
-    reasoningEffort,
+    reasoningEffort: effort as XaiResponsesProviderOptions["reasoningEffort"],
   };
 }
 
@@ -272,8 +321,7 @@ export function getFireworksProviderOptions(
   }
 
   const isThinking = isThinkingModel(modelId, providerId) ?? false;
-  const budgetTokens =
-    reasoningEffort === "low" ? 1024 : reasoningEffort === "medium" ? 4096 : 8192;
+  const budgetTokens = (reasoningEffort && EFFORT_BUDGET_TOKENS[reasoningEffort]) || 8192;
 
   return isThinking
     ? {
@@ -370,7 +418,7 @@ function isThinkingModel(modelId: string, providerId: string) {
     .flatMap((provider) => provider.models)
     .find((model) => model.id === modelId);
 
-  return model?.features?.includes(reasoning);
+  return (model?.effortLevels?.length ?? 0) > 0;
 }
 
 function filterProviders(): Provider[] {
@@ -437,6 +485,44 @@ const images: Feature = {
   color: "text-orange-500",
 };
 
+const OPENAI_EFFORTS = [
+  "none",
+  "minimal",
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+] as const satisfies readonly ReasoningEffort[];
+const OPENAI_LEGACY_EFFORTS = [
+  "low",
+  "medium",
+  "high",
+] as const satisfies readonly ReasoningEffort[];
+const ANTHROPIC_EFFORTS = [
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+] as const satisfies readonly ReasoningEffort[];
+const GEMINI_EFFORTS = [
+  "minimal",
+  "low",
+  "medium",
+  "high",
+] as const satisfies readonly ReasoningEffort[];
+const GROK_EFFORTS = [
+  "none",
+  "low",
+  "medium",
+  "high",
+] as const satisfies readonly ReasoningEffort[];
+const FIREWORKS_EFFORTS = [
+  "low",
+  "medium",
+  "high",
+] as const satisfies readonly ReasoningEffort[];
+
 const providers: Provider[] = [
   {
     id: "openai",
@@ -468,7 +554,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5-nano",
         name: "GPT-5 nano",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -479,7 +566,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5-mini",
         name: "GPT-5 mini",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -490,7 +578,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5",
         name: "GPT-5",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -501,7 +590,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5-codex",
         name: "GPT-5 Codex",
-        features: [reasoning, coding],
+        features: [coding],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -512,7 +602,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.1",
         name: "GPT-5.1",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -523,7 +614,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.1-codex",
         name: "GPT-5.1 Codex",
-        features: [reasoning, coding],
+        features: [coding],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -534,7 +626,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.2",
         name: "GPT-5.2",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -545,7 +638,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.2-codex",
         name: "GPT-5.2 Codex",
-        features: [reasoning],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -556,7 +649,7 @@ const providers: Provider[] = [
       {
         id: "gpt-5.3-codex",
         name: "GPT-5.3 Codex",
-        features: [reasoning],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -567,7 +660,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.4-nano",
         name: "GPT-5.4 nano",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -578,7 +672,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.4-mini",
         name: "GPT-5.4 mini",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -589,7 +684,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.4",
         name: "GPT-5.4",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -600,7 +696,8 @@ const providers: Provider[] = [
       {
         id: "gpt-5.5",
         name: "GPT-5.5",
-        features: [reasoning, search, coding, images],
+        features: [search, coding, images],
+        effortLevels: OPENAI_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -611,7 +708,7 @@ const providers: Provider[] = [
       {
         id: "o3-mini",
         name: "o3-mini",
-        features: [reasoning],
+        effortLevels: OPENAI_LEGACY_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -622,7 +719,7 @@ const providers: Provider[] = [
       {
         id: "o4-mini",
         name: "o4-mini",
-        features: [reasoning],
+        effortLevels: OPENAI_LEGACY_EFFORTS,
         provider: openai,
         tools: true,
         runtimePreset: "chat",
@@ -659,7 +756,8 @@ const providers: Provider[] = [
       {
         id: "claude-sonnet-4-6",
         name: "Claude Sonnet 4.6",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",
@@ -669,7 +767,8 @@ const providers: Provider[] = [
       {
         id: "claude-opus-4-5",
         name: "Claude Opus 4.5",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",
@@ -679,7 +778,8 @@ const providers: Provider[] = [
       {
         id: "claude-opus-4-6",
         name: "Claude Opus 4.6",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",
@@ -689,7 +789,8 @@ const providers: Provider[] = [
       {
         id: "claude-opus-4-7",
         name: "Claude Opus 4.7",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",
@@ -699,7 +800,8 @@ const providers: Provider[] = [
       {
         id: "claude-opus-4-8",
         name: "Claude Opus 4.8",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",
@@ -746,7 +848,8 @@ const providers: Provider[] = [
       {
         id: "gemini-3-flash-preview",
         name: "Gemini 3 Flash",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: GEMINI_EFFORTS,
         provider: google,
         tools: true,
         runtimePreset: "chat",
@@ -756,7 +859,8 @@ const providers: Provider[] = [
       {
         id: "gemini-3.1-flash-lite",
         name: "Gemini 3.1 Flash Lite",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: GEMINI_EFFORTS,
         provider: google,
         tools: true,
         runtimePreset: "chat",
@@ -766,7 +870,8 @@ const providers: Provider[] = [
       {
         id: "gemini-3.1-pro-preview",
         name: "Gemini 3.1 Pro",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: GEMINI_EFFORTS,
         provider: google,
         tools: true,
         runtimePreset: "chat",
@@ -776,7 +881,8 @@ const providers: Provider[] = [
       {
         id: "gemini-3.5-flash",
         name: "Gemini 3.5 Flash",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: GEMINI_EFFORTS,
         provider: google,
         tools: true,
         runtimePreset: "chat",
@@ -852,7 +958,8 @@ const providers: Provider[] = [
       {
         id: "grok-4.3",
         name: "Grok 4.3",
-        features: [reasoning, search],
+        features: [search],
+        effortLevels: GROK_EFFORTS,
         provider: xai.responses,
         tools: true,
         runtimePreset: "responses",
@@ -870,7 +977,7 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/deepseek-v4-pro",
         name: "DeepSeek V4 Pro",
-        features: [reasoning],
+        effortLevels: FIREWORKS_EFFORTS,
         provider: fireworks,
         tools: true,
         runtimePreset: "chat",
@@ -887,7 +994,7 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/kimi-k2p5",
         name: "Kimi K2.5",
-        features: [reasoning],
+        effortLevels: FIREWORKS_EFFORTS,
         provider: fireworks,
         tools: true,
         runtimePreset: "chat",
@@ -897,7 +1004,7 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/kimi-k2p6",
         name: "Kimi K2.6",
-        features: [reasoning],
+        effortLevels: FIREWORKS_EFFORTS,
         provider: fireworks,
         tools: true,
         runtimePreset: "chat",
@@ -907,7 +1014,7 @@ const providers: Provider[] = [
       {
         id: "accounts/fireworks/models/glm-5p1",
         name: "GLM 5.1",
-        features: [reasoning],
+        effortLevels: FIREWORKS_EFFORTS,
         provider: fireworks,
         tools: true,
         runtimePreset: "chat",

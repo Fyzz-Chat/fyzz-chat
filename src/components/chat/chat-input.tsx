@@ -73,11 +73,8 @@ export default function ChatInput() {
   );
   const [initialInput] = useState(getPersistedInput);
 
-  const supportsReasoning = useMemo(
-    () =>
-      selectedModelData?.features?.some((feature) => feature.icon === "brain") ?? false,
-    [selectedModelData]
-  );
+  const effortLevels = selectedModelData?.effortLevels;
+  const supportsReasoning = (effortLevels?.length ?? 0) > 0;
   const supportsTools = selectedModelData?.tools ?? false;
   const maxCost = useMemo(
     () => Math.max(1, ...providers.flatMap((p) => p.models).map((m) => m.cost)),
@@ -159,6 +156,7 @@ export default function ChatInput() {
                 <ChatSettingsMenu
                   supportsAttachments={0 < (model.extensions?.length || 0)}
                   supportsReasoning={supportsReasoning}
+                  effortLevels={effortLevels}
                 />
                 <ModelSelector
                   onOpenChange={modelSelectorLocked ? undefined : setModelSelectorOpen}
