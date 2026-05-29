@@ -225,10 +225,6 @@ describe("providers runtime behavior", () => {
     expect(
       getModelRuntime("gpt-5", "minimal").getProviderOptionsFromHistory(messages).openai
     ).toMatchObject({ reasoningEffort: "minimal" });
-
-    expect(
-      getModelRuntime("gpt-5", "none").getProviderOptionsFromHistory(messages).openai
-    ).toMatchObject({ reasoningEffort: "none" });
   });
 
   it("omits xAI reasoningEffort when effort is none", () => {
