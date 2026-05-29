@@ -69,6 +69,7 @@ const envVars = {
     process.env.AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN || process.env.AWS_UPLOADS_BUCKET,
   fromEmailAddress: process.env.FROM_EMAIL_ADDRESS,
   s3Configured:
+    process.env.DISABLE_S3 !== "true" &&
     process.env.AWS_ACCESS_KEY_ID !== undefined &&
     process.env.AWS_SECRET_ACCESS_KEY !== undefined &&
     process.env.AWS_REGION !== undefined &&
