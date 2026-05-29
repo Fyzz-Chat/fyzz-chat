@@ -181,7 +181,6 @@ describe("providers runtime behavior", () => {
 
     const anthropicReasoning = getModelRuntime("claude-sonnet-4-6", "low");
     expect(anthropicReasoning.getProviderOptionsFromHistory(messages).anthropic).toEqual({
-      thinking: { type: "enabled", budgetTokens: 5000 },
       effort: "low",
       metadata: {
         userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
@@ -271,7 +270,7 @@ describe("critical model policy: provider options", () => {
       getModelRuntime("claude-sonnet-4-6").getProviderOptionsFromHistory(messages)
         .anthropic
     ).toEqual({
-      thinking: { type: "enabled", budgetTokens: 5000 },
+      effort: undefined,
       metadata: {
         userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
       },

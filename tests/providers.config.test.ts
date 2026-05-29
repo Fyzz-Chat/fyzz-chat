@@ -69,6 +69,7 @@ const expectedCatalogShape: {
       { id: "claude-opus-4-5", runtimePreset: "chat" },
       { id: "claude-opus-4-6", runtimePreset: "chat" },
       { id: "claude-opus-4-7", runtimePreset: "chat" },
+      { id: "claude-opus-4-8", runtimePreset: "chat" },
     ],
   },
   {

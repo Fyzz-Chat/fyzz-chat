@@ -196,7 +196,6 @@ export function getAnthropicProviderOptions(
   const isThinking = isThinkingModel(modelId, "anthropic") ?? false;
 
   return {
-    thinking: isThinking ? { type: "enabled", budgetTokens: 5000 } : { type: "disabled" },
     effort: isThinking ? reasoningEffort : undefined,
     metadata: {
       userId: hash("sha256", userId ?? "no-user_id"),
@@ -690,7 +689,17 @@ const providers: Provider[] = [
       {
         id: "claude-opus-4-7",
         name: "Claude Opus 4.7",
-        features: [search],
+        features: [reasoning, search],
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 6,
+      },
+      {
+        id: "claude-opus-4-8",
+        name: "Claude Opus 4.8",
+        features: [reasoning, search],
         provider: anthropic,
         tools: true,
         runtimePreset: "chat",
