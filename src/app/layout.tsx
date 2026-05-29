@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter, Schibsted_Grotesk } from "next/font/google";
 import Script from "next/script";
 import type React from "react";
 import { Providers } from "@/components/providers";
@@ -19,6 +19,24 @@ import { cn } from "@/lib/utils";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+});
+
+// Landing "notebook" display + body fonts. Defined globally so the
+// --font-fraunces / --font-schibsted vars always resolve, but next/font only
+// downloads the actual font files on pages that render them (i.e. the landing).
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+const schibsted = Schibsted_Grotesk({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-schibsted",
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -56,11 +74,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="dark scroll-smooth"
+      data-scroll-behavior="smooth"
+    >
       <body
         className={cn(
           "flex min-h-svh min-w-80 flex-col justify-center md:overscroll-none",
-          inter.variable
+          inter.variable,
+          fraunces.variable,
+          schibsted.variable
         )}
       >
         <Providers>
