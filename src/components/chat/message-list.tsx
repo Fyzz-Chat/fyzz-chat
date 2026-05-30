@@ -331,8 +331,14 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
           message.files = await uploadFileParts(id, message.files);
         } catch (err) {
           console.error("uploadFileParts failed", err);
-          toast.error("Could not upload your file(s). Please try again.");
-          return;
+          toast.error(
+            err instanceof Error && err.message
+              ? err.message
+              : "Could not upload your file(s). Please try again."
+          );
+          // Re-throw so the prompt input keeps the text + files for retry
+          // (it clears only when onSubmit resolves successfully).
+          throw err;
         } finally {
           setAreFilesUploading(false);
         }

@@ -149,10 +149,11 @@ export async function uploadFileParts(
     ),
   });
 
-  const uploadedFiles = await Promise.all(
+  const results = await Promise.allSettled(
     fileUIParts.map(async (fileUIPart, index) => {
       const { key, url } = uploadUrls[index];
       if (!url) {
+        // S3 not configured (e.g. OSS self-host) — keep the file as-is.
         return fileUIPart;
       }
 
@@ -165,7 +166,7 @@ export async function uploadFileParts(
       });
 
       if (!response.ok) {
-        throw new Error("Failed to upload file");
+        throw new Error(`status ${response.status}`);
       }
 
       return {
@@ -175,7 +176,19 @@ export async function uploadFileParts(
     })
   );
 
-  return uploadedFiles;
+  const failed = results.flatMap((result, index) =>
+    result.status === "rejected" ? [fileUIParts[index].filename || "file"] : []
+  );
+
+  if (failed.length > 0) {
+    // Don't return a partial set — fail the whole batch so nothing is silently
+    // dropped. The caller aborts the send and keeps the input for retry.
+    throw new Error(
+      `Failed to upload ${failed.length} of ${fileUIParts.length} file(s): ${failed.join(", ")}`
+    );
+  }
+
+  return results.map((result) => (result as PromiseFulfilledResult<FileUIPart>).value);
 }
 
 async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
