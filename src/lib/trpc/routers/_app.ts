@@ -3,6 +3,7 @@ import "server-only";
 import { z } from "zod";
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
+import conf from "@/lib/config";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
 import {
   getConversation,
@@ -23,6 +24,7 @@ import {
   getProjectSkills,
   getUserSkills,
 } from "@/lib/dao/skills";
+import { effectiveMaxModelCost } from "@/lib/model-gating";
 import { getUploadUrls } from "@/lib/services/uploads";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/lib/trpc/init";
 import { researchRouter } from "@/lib/trpc/routers/research";
@@ -39,6 +41,10 @@ export const appRouter = createTRPCRouter({
     return {
       memoryEnabled: opts.ctx.user.memoryEnabled,
       skillsEnabled: opts.ctx.user.skillsEnabled,
+      modelMaxCost: effectiveMaxModelCost(
+        opts.ctx.user.subscription,
+        conf.modelGatingEnabled
+      ),
     };
   }),
   messages: protectedProcedure

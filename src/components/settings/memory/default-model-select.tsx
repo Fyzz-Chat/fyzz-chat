@@ -13,14 +13,17 @@ import {
 } from "@/components/ui/select";
 import { updateDefaultModel } from "@/lib/actions/users";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import { isModelGated } from "@/lib/model-gating";
 import type { PublicProvider } from "@/types/provider";
 
 export default function DefaultModelSelect({
   defaultModel,
   providers,
+  maxModelCost = null,
 }: Readonly<{
   defaultModel?: string;
   providers: PublicProvider[];
+  maxModelCost?: number | null;
 }>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
@@ -53,7 +56,11 @@ export default function DefaultModelSelect({
           <SelectGroup key={provider.id}>
             <SelectLabel>{provider.name}</SelectLabel>
             {provider.models.map((model) => (
-              <SelectItem key={model.id} value={model.id}>
+              <SelectItem
+                key={model.id}
+                value={model.id}
+                disabled={isModelGated(model.cost, maxModelCost)}
+              >
                 {model.name}
               </SelectItem>
             ))}

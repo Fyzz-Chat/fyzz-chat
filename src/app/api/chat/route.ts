@@ -20,7 +20,7 @@ import {
   fetchSystemPromptAddons,
 } from "@/lib/backend/model-runtime";
 import { getSystemPrompt } from "@/lib/backend/prompts/system-prompt";
-import { getModelRuntime } from "@/lib/backend/providers";
+import { getModelPublic, getModelRuntime } from "@/lib/backend/providers";
 import { createReasoningTimer } from "@/lib/backend/reasoning-timer";
 import {
   enforceHistoryWithinLimit,
@@ -33,6 +33,7 @@ import {
   logDuration,
   streamSentence,
 } from "@/lib/backend/utils";
+import conf from "@/lib/config";
 import {
   ensureMessageAppended,
   getOrCreateConversation,
@@ -45,6 +46,7 @@ import {
 } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
+import { effectiveMaxModelCost, isModelGated } from "@/lib/model-gating";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
 import { caller } from "@/lib/trpc/server";
 import { type CustomUIMessage, metadataSchema } from "@/types/chat";
@@ -416,6 +418,12 @@ export async function POST(req: NextRequest) {
 
   if (!model) {
     return new Response("Invalid model", { status: 400 });
+  }
+
+  const maxModelCost = effectiveMaxModelCost(user.subscription, conf.modelGatingEnabled);
+  const requestedModel = getModelPublic(modelId);
+  if (requestedModel && isModelGated(requestedModel.cost, maxModelCost)) {
+    return new Response("This model isn't available on your plan.", { status: 403 });
   }
 
   if (newMessage?.role === "user") {

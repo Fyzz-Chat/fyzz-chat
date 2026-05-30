@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, LockIcon } from "lucide-react";
 import { type ChangeEvent, useCallback, useContext, useMemo, useState } from "react";
 import {
   ModelSelector,
@@ -36,6 +36,7 @@ import { SkillSlashMenu } from "@/components/chat/skill-slash-menu";
 import { useSession } from "@/lib/auth-client";
 import { AuthContext } from "@/lib/contexts/auth-context";
 import { useChatInput, useChatInputStatus } from "@/lib/contexts/chat-input-context";
+import { isModelGated } from "@/lib/model-gating";
 import { useTRPC } from "@/lib/trpc/client";
 import { debounce, INPUT_STORAGE_KEY } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
@@ -82,8 +83,11 @@ export default function ChatInput() {
   );
 
   const trpc = useTRPC();
-  const { data: featureFlags } = useQuery(trpc.userFeatureFlags.queryOptions());
+  const { data: featureFlags } = useQuery(
+    trpc.userFeatureFlags.queryOptions(undefined, { meta: { persist: false } })
+  );
   const skillsEnabled = featureFlags?.skillsEnabled ?? false;
+  const modelMaxCost = featureFlags?.modelMaxCost ?? null;
 
   const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     persistInput(e.currentTarget.value);
@@ -112,11 +116,13 @@ export default function ChatInput() {
 
   const handleModelSelect = useCallback(
     (modelId: string) => {
+      const target = models.find((m) => m.id === modelId);
+      if (target && isModelGated(target.cost, modelMaxCost)) return;
       setModel(modelId);
       handlersRef.current.onModelChange?.("", modelId);
       setModelSelectorOpen(false);
     },
-    [setModel, handlersRef, setModelSelectorOpen]
+    [setModel, handlersRef, setModelSelectorOpen, models, modelMaxCost]
   );
 
   return (
@@ -185,30 +191,43 @@ export default function ChatInput() {
                       <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
                       {providers.map((provider) => (
                         <ModelSelectorGroup heading={provider.name} key={provider.id}>
-                          {provider.models.map((providerModel) => (
-                            <ModelSelectorItem
-                              key={providerModel.id}
-                              onSelect={() => handleModelSelect(providerModel.id)}
-                              value={providerModel.id}
-                            >
-                              <ModelSelectorLogo provider={provider.id} />
-                              <div className="flex min-w-0 flex-1 items-center gap-2">
-                                <span className="min-w-0 truncate text-left text-sm">
-                                  {providerModel.name}
-                                </span>
-                                <ModelSelectorCost
-                                  cost={providerModel.cost}
-                                  maxCost={maxCost}
+                          {provider.models.map((providerModel) => {
+                            const gated = isModelGated(providerModel.cost, modelMaxCost);
+                            return (
+                              <ModelSelectorItem
+                                key={providerModel.id}
+                                disabled={gated}
+                                onSelect={() => handleModelSelect(providerModel.id)}
+                                value={providerModel.id}
+                                title={
+                                  gated
+                                    ? "Upgrade your plan to use this model"
+                                    : undefined
+                                }
+                              >
+                                <ModelSelectorLogo provider={provider.id} />
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                  <span className="min-w-0 truncate text-left text-sm">
+                                    {providerModel.name}
+                                  </span>
+                                  <ModelSelectorCost
+                                    cost={providerModel.cost}
+                                    maxCost={maxCost}
+                                  />
+                                </div>
+                                <ModelSelectorFeatures
+                                  features={providerModel.features}
                                 />
-                              </div>
-                              <ModelSelectorFeatures features={providerModel.features} />
-                              {model?.id === providerModel.id ? (
-                                <CheckIcon className="ml-auto size-4" />
-                              ) : (
-                                <div className="ml-auto size-4" />
-                              )}
-                            </ModelSelectorItem>
-                          ))}
+                                {gated ? (
+                                  <LockIcon className="ml-auto size-4 text-muted-foreground" />
+                                ) : model?.id === providerModel.id ? (
+                                  <CheckIcon className="ml-auto size-4" />
+                                ) : (
+                                  <div className="ml-auto size-4" />
+                                )}
+                              </ModelSelectorItem>
+                            );
+                          })}
                         </ModelSelectorGroup>
                       ))}
                     </ModelSelectorList>

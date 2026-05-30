@@ -36,6 +36,7 @@ export const getUserSettingsProfile = cache(async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
+      subscription: true,
       memoryEnabled: true,
       skillsEnabled: true,
       mcpServers: true,

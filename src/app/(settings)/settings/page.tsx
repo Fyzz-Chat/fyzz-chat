@@ -34,10 +34,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
+import conf from "@/lib/config";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
 import { getAllUserMemoriesGrouped } from "@/lib/dao/memories";
 import { getAllUserSkillsForSettings } from "@/lib/dao/skills";
 import { getUserIdFromSession, getUserSettingsProfile } from "@/lib/dao/users";
+import { effectiveMaxModelCost } from "@/lib/model-gating";
 
 export default async function SettingsPage() {
   const [translations, userId] = await Promise.all([
@@ -256,10 +258,15 @@ export default async function SettingsPage() {
 async function DefaultModelSelectLoader({ userId }: { userId: string }) {
   const profile = await getUserSettingsProfile(userId);
   const providers = getProvidersPublic();
+  const maxModelCost = effectiveMaxModelCost(
+    profile?.subscription ?? "free",
+    conf.modelGatingEnabled
+  );
   return (
     <DefaultModelSelect
       defaultModel={profile?.defaultModel ?? undefined}
       providers={providers}
+      maxModelCost={maxModelCost}
     />
   );
 }

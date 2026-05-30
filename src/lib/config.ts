@@ -37,6 +37,8 @@ const schema = z.object({
   turnstileSecretKey: z.string().optional(),
 
   perMessageTokenLimit: z.coerce.number().int().positive().optional(),
+
+  modelGatingEnabled: booleanFromString,
 });
 
 const envVars = {
@@ -87,6 +89,8 @@ const envVars = {
   turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,
 
   perMessageTokenLimit: process.env.PER_MESSAGE_TOKEN_LIMIT,
+
+  modelGatingEnabled: process.env.MODEL_GATING_ENABLED,
 };
 
 const conf = schema.parse(envVars);
