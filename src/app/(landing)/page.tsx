@@ -1,34 +1,22 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { LandingAphorism } from "@/components/landing/landing-aphorism";
-import { LandingBeforeAfter } from "@/components/landing/landing-before-after";
-import { LandingClosing } from "@/components/landing/landing-closing";
-import { LandingFooter } from "@/components/landing/landing-footer";
-import { LandingHero } from "@/components/landing/landing-hero";
-import { LandingMasthead } from "@/components/landing/landing-masthead";
-import { LandingProof } from "@/components/landing/landing-proof";
-import { LandingThread } from "@/components/landing/landing-thread";
-import "@/components/landing/landing.css";
+import { LandingPage } from "@/components/landing/landing-page";
+
+// Read the gate per-request (runtime) so a single build behaves differently per
+// deployment: OSS / self-host leaves LANDING_PAGE_ENABLED unset → the app is the
+// entry point; the commercial deploy sets it → the marketing landing renders.
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  if (process.env.LANDING_PAGE_ENABLED !== "true") {
+    redirect("/chat");
+  }
+
   const session = await auth.api.getSession({ headers: await headers() });
   if (session) {
     redirect("/chat");
   }
 
-  return (
-    <div className="landing relative w-full flex-1 overflow-x-clip bg-landing-paper font-landing-sans text-[1.0625rem] text-landing-ink leading-[1.6] antialiased">
-      <LandingThread />
-      <LandingMasthead />
-      <main className="relative z-[2]">
-        <LandingHero />
-        <LandingAphorism />
-        <LandingProof />
-        <LandingBeforeAfter />
-        <LandingClosing />
-      </main>
-      <LandingFooter />
-    </div>
-  );
+  return <LandingPage />;
 }
