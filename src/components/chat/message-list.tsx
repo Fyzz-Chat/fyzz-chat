@@ -327,7 +327,15 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
 
       if (hasAttachments) {
         setAreFilesUploading(true);
-        message.files = await uploadFileParts(id, message.files);
+        try {
+          message.files = await uploadFileParts(id, message.files);
+        } catch (err) {
+          console.error("uploadFileParts failed", err);
+          toast.error("Could not upload your file(s). Please try again.");
+          return;
+        } finally {
+          setAreFilesUploading(false);
+        }
       }
 
       await addMessage.mutateAsync({
