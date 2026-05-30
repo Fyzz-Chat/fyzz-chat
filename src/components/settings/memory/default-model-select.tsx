@@ -66,7 +66,12 @@ export default function DefaultModelSelect({
   ]);
 
   function handleSelect(modelId: string, gated: boolean) {
-    if (gated) return;
+    if (gated) {
+      toast.info("This model isn't available on your plan.", {
+        description: "Upgrade to unlock premium models.",
+      });
+      return;
+    }
     setSelectedModel(modelId);
     setOpen(false);
   }
@@ -98,10 +103,9 @@ export default function DefaultModelSelect({
                 return (
                   <ModelSelectorItem
                     key={model.id}
-                    disabled={gated}
                     onSelect={() => handleSelect(model.id, gated)}
                     value={model.id}
-                    title={gated ? "Upgrade your plan to use this model" : undefined}
+                    className={gated ? "opacity-50" : undefined}
                   >
                     <ModelSelectorLogo provider={provider.id} />
                     <div className="flex min-w-0 flex-1 items-center gap-2">

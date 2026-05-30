@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { CheckIcon, LockIcon } from "lucide-react";
 import { type ChangeEvent, useCallback, useContext, useMemo, useState } from "react";
+import { toast } from "sonner";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -117,7 +118,12 @@ export default function ChatInput() {
   const handleModelSelect = useCallback(
     (modelId: string) => {
       const target = models.find((m) => m.id === modelId);
-      if (target && isModelGated(target.cost, modelMaxCost)) return;
+      if (target && isModelGated(target.cost, modelMaxCost)) {
+        toast.info("This model isn't available on your plan.", {
+          description: "Upgrade to unlock premium models.",
+        });
+        return;
+      }
       setModel(modelId);
       handlersRef.current.onModelChange?.("", modelId);
       setModelSelectorOpen(false);
@@ -196,14 +202,9 @@ export default function ChatInput() {
                             return (
                               <ModelSelectorItem
                                 key={providerModel.id}
-                                disabled={gated}
                                 onSelect={() => handleModelSelect(providerModel.id)}
                                 value={providerModel.id}
-                                title={
-                                  gated
-                                    ? "Upgrade your plan to use this model"
-                                    : undefined
-                                }
+                                className={gated ? "opacity-50" : undefined}
                               >
                                 <ModelSelectorLogo provider={provider.id} />
                                 <div className="flex min-w-0 flex-1 items-center gap-2">
