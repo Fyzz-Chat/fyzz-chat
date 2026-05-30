@@ -19,6 +19,7 @@ import MemoryListSection from "@/components/settings/memory/memory-list-section"
 import MemoryToggle from "@/components/settings/memory/memory-toggle";
 import PersonaInput from "@/components/settings/memory/persona-input";
 import PasswordForm from "@/components/settings/password-form";
+import { SettingsTabs } from "@/components/settings/settings-tabs";
 import SkillsForm from "@/components/settings/skills-form";
 import {
   Card,
@@ -30,7 +31,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTranslations } from "@/lib/backend/locale/dictionaries";
 import { getProvidersPublic } from "@/lib/backend/providers";
 import { getApiKeysByUser } from "@/lib/dao/api-keys";
@@ -61,189 +62,191 @@ export default async function SettingsPage() {
               {translations.settings.description}
             </p>
           </div>
-          <Tabs defaultValue="memory" className="w-full pb-5">
-            <div className="overflow-x-auto md:overflow-x-visible">
-              <TabsList className="grid h-auto w-full grid-cols-3 px-1 md:grid-cols-7 md:gap-0">
-                <TabsTrigger
-                  value="memory"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <Brain className="mr-2 h-4 w-4" />
-                  {translations.settings.memory.tabTitle}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="security"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <Shield className="mr-2 h-4 w-4" />
-                  {translations.settings.security.tabTitle}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="account"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  {translations.settings.account.tabTitle}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="display"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <Monitor className="mr-2 h-4 w-4" />
-                  {translations.settings.display.tabTitle}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="api-keys"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <Key className="mr-2 h-4 w-4" />
-                  API Keys
-                </TabsTrigger>
-                <TabsTrigger
-                  value="mcp"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <Puzzle className="mr-2 h-4 w-4" />
-                  MCP
-                </TabsTrigger>
-                <TabsTrigger
-                  value="skills"
-                  className="flex min-w-20 items-center justify-center px-3 py-2"
-                >
-                  <LightbulbIcon className="mr-2 h-4 w-4" />
-                  Skills
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="memory">
-              <Card>
-                <ScrollArea>
-                  <CardHeader>
-                    <CardTitle>{translations.settings.memory.title}</CardTitle>
-                    <CardDescription>
-                      {translations.settings.memory.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col items-start gap-4">
-                      <h4 className="font-medium text-sm">
-                        {translations.settings.memory.defaultModel.title}
-                      </h4>
-                      <p className="text-muted-foreground text-sm">
-                        {translations.settings.memory.defaultModel.description}
-                      </p>
-                      <Suspense fallback={<Skeleton className="h-10 w-full" />}>
-                        <DefaultModelSelectLoader userId={userId} />
-                      </Suspense>
+          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+            <SettingsTabs className="w-full pb-5">
+              <div className="overflow-x-auto md:overflow-x-visible">
+                <TabsList className="grid h-auto w-full grid-cols-3 px-1 md:grid-cols-7 md:gap-0">
+                  <TabsTrigger
+                    value="memory"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <Brain className="mr-2 h-4 w-4" />
+                    {translations.settings.memory.tabTitle}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="security"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <Shield className="mr-2 h-4 w-4" />
+                    {translations.settings.security.tabTitle}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="account"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    {translations.settings.account.tabTitle}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="display"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <Monitor className="mr-2 h-4 w-4" />
+                    {translations.settings.display.tabTitle}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="api-keys"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <Key className="mr-2 h-4 w-4" />
+                    API Keys
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="mcp"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <Puzzle className="mr-2 h-4 w-4" />
+                    MCP
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="skills"
+                    className="flex min-w-20 items-center justify-center px-3 py-2"
+                  >
+                    <LightbulbIcon className="mr-2 h-4 w-4" />
+                    Skills
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              <TabsContent value="memory">
+                <Card>
+                  <ScrollArea>
+                    <CardHeader>
+                      <CardTitle>{translations.settings.memory.title}</CardTitle>
+                      <CardDescription>
+                        {translations.settings.memory.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col items-start gap-4">
+                        <h4 className="font-medium text-sm">
+                          {translations.settings.memory.defaultModel.title}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          {translations.settings.memory.defaultModel.description}
+                        </p>
+                        <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                          <DefaultModelSelectLoader userId={userId} />
+                        </Suspense>
 
-                      <h4 className="font-medium text-sm">
-                        {translations.settings.memory.sectionTitle}
-                      </h4>
-                      <Suspense
-                        fallback={
-                          <div className="flex items-center gap-2">
-                            <Skeleton className="h-6 w-11 rounded-full" />
-                            <Skeleton className="h-4 w-32" />
-                          </div>
-                        }
-                      >
-                        <MemoryToggleLoader userId={userId} />
-                      </Suspense>
-                      <p className="text-muted-foreground text-sm">
-                        {translations.settings.memory.toggle.description}
-                      </p>
-
-                      <div className="grid w-full gap-4 sm:grid-cols-2">
-                        <div className="flex flex-col gap-1.5">
-                          <Label htmlFor="display-name">Your name</Label>
-                          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
-                            <PersonaInputLoader userId={userId} field="displayName" />
-                          </Suspense>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <Label htmlFor="agent-name">Agent name</Label>
-                          <Suspense fallback={<Skeleton className="h-10 w-full" />}>
-                            <PersonaInputLoader userId={userId} field="agentName" />
-                          </Suspense>
-                        </div>
-                      </div>
-
-                      <div className="w-full">
+                        <h4 className="font-medium text-sm">
+                          {translations.settings.memory.sectionTitle}
+                        </h4>
                         <Suspense
                           fallback={
-                            <div className="flex flex-col gap-2">
-                              <Skeleton className="h-12 w-full" />
-                              <Skeleton className="h-12 w-full" />
-                              <Skeleton className="h-12 w-full" />
-                              <Skeleton className="h-12 w-full" />
+                            <div className="flex items-center gap-2">
+                              <Skeleton className="h-6 w-11 rounded-full" />
+                              <Skeleton className="h-4 w-32" />
                             </div>
                           }
                         >
-                          <MemoryListLoader userId={userId} />
+                          <MemoryToggleLoader userId={userId} />
                         </Suspense>
+                        <p className="text-muted-foreground text-sm">
+                          {translations.settings.memory.toggle.description}
+                        </p>
+
+                        <div className="grid w-full gap-4 sm:grid-cols-2">
+                          <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="display-name">Your name</Label>
+                            <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                              <PersonaInputLoader userId={userId} field="displayName" />
+                            </Suspense>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="agent-name">Agent name</Label>
+                            <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                              <PersonaInputLoader userId={userId} field="agentName" />
+                            </Suspense>
+                          </div>
+                        </div>
+
+                        <div className="w-full">
+                          <Suspense
+                            fallback={
+                              <div className="flex flex-col gap-2">
+                                <Skeleton className="h-12 w-full" />
+                                <Skeleton className="h-12 w-full" />
+                                <Skeleton className="h-12 w-full" />
+                                <Skeleton className="h-12 w-full" />
+                              </div>
+                            }
+                          >
+                            <MemoryListLoader userId={userId} />
+                          </Suspense>
+                        </div>
                       </div>
-                    </div>
+                    </CardContent>
+                  </ScrollArea>
+                </Card>
+              </TabsContent>
+              <TabsContent value="security">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{translations.settings.security.title}</CardTitle>
+                    <CardDescription>
+                      {translations.settings.security.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Suspense fallback={<SecurityTabSkeleton />}>
+                      <SecurityTab userId={userId} />
+                    </Suspense>
                   </CardContent>
-                </ScrollArea>
-              </Card>
-            </TabsContent>
-            <TabsContent value="security">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{translations.settings.security.title}</CardTitle>
-                  <CardDescription>
-                    {translations.settings.security.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Suspense fallback={<SecurityTabSkeleton />}>
-                    <SecurityTab userId={userId} />
-                  </Suspense>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="account">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{translations.settings.account.title}</CardTitle>
-                  <CardDescription>
-                    {translations.settings.account.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <DeleteAccountForm />
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="display">
-              <DisplaySettingsTab />
-            </TabsContent>
-            <TabsContent value="api-keys">
-              <Suspense fallback={<ApiKeysTabSkeleton />}>
-                <ApiKeysTabLoader userId={userId} />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="mcp">
-              <Suspense fallback={<McpTabSkeleton />}>
-                <McpTabLoader userId={userId} />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="skills">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Skills</CardTitle>
-                  <CardDescription>
-                    Reusable instruction sets the AI activates based on your request.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Suspense fallback={<SkillsTabSkeleton />}>
-                    <SkillsTabLoader userId={userId} />
-                  </Suspense>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                </Card>
+              </TabsContent>
+              <TabsContent value="account">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{translations.settings.account.title}</CardTitle>
+                    <CardDescription>
+                      {translations.settings.account.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DeleteAccountForm />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="display">
+                <DisplaySettingsTab />
+              </TabsContent>
+              <TabsContent value="api-keys">
+                <Suspense fallback={<ApiKeysTabSkeleton />}>
+                  <ApiKeysTabLoader userId={userId} />
+                </Suspense>
+              </TabsContent>
+              <TabsContent value="mcp">
+                <Suspense fallback={<McpTabSkeleton />}>
+                  <McpTabLoader userId={userId} />
+                </Suspense>
+              </TabsContent>
+              <TabsContent value="skills">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Skills</CardTitle>
+                    <CardDescription>
+                      Reusable instruction sets the AI activates based on your request.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Suspense fallback={<SkillsTabSkeleton />}>
+                      <SkillsTabLoader userId={userId} />
+                    </Suspense>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </SettingsTabs>
+          </Suspense>
         </div>
       </div>
     </div>
