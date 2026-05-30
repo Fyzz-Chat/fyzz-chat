@@ -1,3 +1,19 @@
+# [0.46.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.45.0...v0.46.0) (2026-05-30)
+
+
+### Bug Fixes
+
+* **settings:** store tab state in query params ([db4db58](https://github.com/Fyzz-Chat/fyzz-chat/commit/db4db58b50a8add16ebf16f0ee3f4238cd6dbc87))
+
+
+### Features
+
+* add landing page ([01bedda](https://github.com/Fyzz-Chat/fyzz-chat/commit/01bedda0aaa541e7e36d94bcd0b05864f1ea4746))
+* add landing page behind a gate ([c21ba54](https://github.com/Fyzz-Chat/fyzz-chat/commit/c21ba540b3c88a96a7e15a76a0009cd5ad567979))
+* **model-gating:** add toast notifications for gated model selection ([79c4d92](https://github.com/Fyzz-Chat/fyzz-chat/commit/79c4d92f30c24634098ac5e103519e8c9c36c7fe))
+* **model-gating:** implement cost-based model gating and UI updates ([5e3966b](https://github.com/Fyzz-Chat/fyzz-chat/commit/5e3966b38250e1f12638c5b7f09fd21c79c60ba9))
+* turn skills and memory on by default for new users ([19109e5](https://github.com/Fyzz-Chat/fyzz-chat/commit/19109e5e390b7e12d839658ab24d43e5f8f7a1d5))
+
 # [0.45.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.44.0...v0.45.0) (2026-05-29)
 
 
