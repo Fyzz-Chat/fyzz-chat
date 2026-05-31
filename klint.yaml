@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/konvert7/klint/refs/heads/main/klint.schema.json
+
+include: ["src", "tests", "!**/node_modules/**"]
+plugins: [sonar]
+rules:
+  no-unguarded-json-parse: error
+  no-sync-in-async:
+    severity: error
+    include: ["src/hooks/**"]
+  no-floating-promise: error
+  no-misused-promises: error
+  no-date-equality: error
+  no-optional-chain-on-non-nullable: error
+  no-object-in-template: error
+  no-nested-template-literals: error
+  no-consecutive-array-push: error
+  no-string-match: error
+  sonar/prefer-string-raw: off
+
+arch:
+  layers:
+    # Server-side code that must talk to the DB/lib directly, never via the
+    # RSC tRPC layer: route handlers, server actions, DAOs, services, lib.
+    backend: ["src/app/api/**", "src/lib/**"]
+    # The tRPC server caller + RSC prefetch helpers. RSC-only by design.
+    trpc-rsc: ["src/lib/trpc/server.tsx"]
+  imports:
+    - from: backend
+      deny: trpc-rsc
+      message: "@/lib/trpc/server (the tRPC `caller` + prefetch helpers) is RSC-only. In route handlers, server actions, and lib code, call the DAO/lib directly instead of going through the tRPC caller."
+      severity: error
