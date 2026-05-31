@@ -127,8 +127,70 @@ export const useProviderAttachments = () => {
 
 const useOptionalProviderAttachments = () => useContext(ProviderAttachmentsContext);
 
+export type AttachmentError = {
+  code: "max_files" | "max_file_size" | "accept";
+  message: string;
+};
+
+// Single source of truth for attachment validation, shared by the provider's
+// add() and the body's addLocal() so drag-drop, file picker, and clipboard
+// paste all reject the same way. Fires onError once per rejected batch and
+// returns the files that should actually be staged.
+function filterValidFiles(
+  fileList: File[] | FileList,
+  opts: {
+    accept?: string;
+    maxFileSize?: number;
+    maxFiles?: number;
+    currentCount: number;
+    onError?: (err: AttachmentError) => void;
+  }
+): File[] {
+  const { accept, maxFileSize, maxFiles, currentCount, onError } = opts;
+  const incoming = Array.from(fileList);
+
+  const matchesAccept = (f: File) => {
+    if (!accept || accept.trim() === "") {
+      return true;
+    }
+    const patterns = accept
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return patterns.some((pattern) =>
+      pattern.endsWith("/*")
+        ? f.type.startsWith(pattern.slice(0, -1))
+        : f.type === pattern
+    );
+  };
+
+  const accepted = incoming.filter(matchesAccept);
+  if (incoming.length && accepted.length === 0) {
+    onError?.({ code: "accept", message: "No files match the accepted types." });
+    return [];
+  }
+
+  const sized = accepted.filter((f) => (maxFileSize ? f.size <= maxFileSize : true));
+  if (accepted.length > 0 && sized.length === 0) {
+    onError?.({ code: "max_file_size", message: "All files exceed the maximum size." });
+    return [];
+  }
+
+  const capacity =
+    typeof maxFiles === "number" ? Math.max(0, maxFiles - currentCount) : undefined;
+  const capped = typeof capacity === "number" ? sized.slice(0, capacity) : sized;
+  if (typeof capacity === "number" && sized.length > capacity) {
+    onError?.({ code: "max_files", message: "Too many files. Some were not added." });
+  }
+  return capped;
+}
+
 export type PromptInputProviderProps = PropsWithChildren<{
   initialInput?: string;
+  accept?: string;
+  maxFiles?: number;
+  maxFileSize?: number;
+  onError?: (err: AttachmentError) => void;
 }>;
 
 /**
@@ -137,6 +199,10 @@ export type PromptInputProviderProps = PropsWithChildren<{
  */
 export function PromptInputProvider({
   initialInput: initialTextInput = "",
+  accept,
+  maxFiles,
+  maxFileSize,
+  onError,
   children,
 }: PromptInputProviderProps) {
   // ----- textInput state
@@ -152,24 +218,30 @@ export function PromptInputProvider({
     void 0;
   });
 
-  const add = useCallback((files: File[] | FileList) => {
-    const incoming = Array.from(files);
-    if (incoming.length === 0) {
-      return;
-    }
+  const add = useCallback(
+    (files: File[] | FileList) => {
+      const valid = filterValidFiles(files, {
+        accept,
+        maxFileSize,
+        maxFiles,
+        currentCount: attachmentFiles.length,
+        onError,
+      });
+      if (valid.length === 0) {
+        return;
+      }
 
-    setAttachmentFiles((prev) =>
-      prev.concat(
-        incoming.map((file) => ({
-          id: nanoid(),
-          type: "file" as const,
-          url: URL.createObjectURL(file),
-          mediaType: file.type,
-          filename: file.name,
-        }))
-      )
-    );
-  }, []);
+      const next = valid.map((file) => ({
+        id: nanoid(),
+        type: "file" as const,
+        url: URL.createObjectURL(file),
+        mediaType: file.type,
+        filename: file.name,
+      }));
+      setAttachmentFiles((prev) => prev.concat(next));
+    },
+    [accept, maxFileSize, maxFiles, onError, attachmentFiles.length]
+  );
 
   const remove = useCallback((id: string) => {
     setAttachmentFiles((prev) => {
@@ -496,73 +568,29 @@ export const PromptInput = ({
     inputRef.current?.click();
   }, []);
 
-  const matchesAccept = useCallback(
-    (f: File) => {
-      if (!accept || accept.trim() === "") {
-        return true;
-      }
-
-      const patterns = accept
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      return patterns.some((pattern) => {
-        if (pattern.endsWith("/*")) {
-          const prefix = pattern.slice(0, -1); // e.g: image/* -> image/
-          return f.type.startsWith(prefix);
-        }
-        return f.type === pattern;
-      });
-    },
-    [accept]
-  );
-
   const addLocal = useCallback(
     (fileList: File[] | FileList) => {
-      const incoming = Array.from(fileList);
-      const accepted = incoming.filter((f) => matchesAccept(f));
-      if (incoming.length && accepted.length === 0) {
-        onError?.({
-          code: "accept",
-          message: "No files match the accepted types.",
-        });
-        return;
-      }
-      const withinSize = (f: File) => (maxFileSize ? f.size <= maxFileSize : true);
-      const sized = accepted.filter(withinSize);
-      if (accepted.length > 0 && sized.length === 0) {
-        onError?.({
-          code: "max_file_size",
-          message: "All files exceed the maximum size.",
-        });
+      const valid = filterValidFiles(fileList, {
+        accept,
+        maxFileSize,
+        maxFiles,
+        currentCount: items.length,
+        onError,
+      });
+      if (valid.length === 0) {
         return;
       }
 
-      setItems((prev) => {
-        const capacity =
-          typeof maxFiles === "number" ? Math.max(0, maxFiles - prev.length) : undefined;
-        const capped = typeof capacity === "number" ? sized.slice(0, capacity) : sized;
-        if (typeof capacity === "number" && sized.length > capacity) {
-          onError?.({
-            code: "max_files",
-            message: "Too many files. Some were not added.",
-          });
-        }
-        const next: (FileUIPart & { id: string })[] = [];
-        for (const file of capped) {
-          next.push({
-            id: nanoid(),
-            type: "file",
-            url: URL.createObjectURL(file),
-            mediaType: file.type,
-            filename: file.name,
-          });
-        }
-        return prev.concat(next);
-      });
+      const next = valid.map((file) => ({
+        id: nanoid(),
+        type: "file" as const,
+        url: URL.createObjectURL(file),
+        mediaType: file.type,
+        filename: file.name,
+      }));
+      setItems((prev) => prev.concat(next));
     },
-    [matchesAccept, maxFiles, maxFileSize, onError]
+    [accept, maxFileSize, maxFiles, onError, items.length]
   );
 
   const removeLocal = useCallback(

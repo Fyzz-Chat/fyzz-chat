@@ -19,6 +19,7 @@ import {
   ModelSelectorTrigger,
 } from "@/components/ai-elements/model-selector";
 import {
+  type AttachmentError,
   PromptInput,
   PromptInputAttachment,
   PromptInputAttachments,
@@ -131,8 +132,25 @@ export default function ChatInput() {
     [setModel, handlersRef, setModelSelectorOpen, models, modelMaxCost]
   );
 
+  const acceptTypes = model?.extensions?.join(",");
+  const maxFileSize = 1024 * 1024 * 20;
+
+  const handleAttachmentError = useCallback((err: AttachmentError) => {
+    const messages: Record<AttachmentError["code"], string> = {
+      max_file_size: "File too large. Maximum size is 20MB.",
+      accept: "Unsupported file type.",
+      max_files: "Too many files.",
+    };
+    toast.error(messages[err.code] ?? err.message);
+  }, []);
+
   return (
-    <PromptInputProvider initialInput={initialInput}>
+    <PromptInputProvider
+      initialInput={initialInput}
+      accept={acceptTypes}
+      maxFileSize={maxFileSize}
+      onError={handleAttachmentError}
+    >
       <ChatLayoutWrapper className="bg-background">
         <SkillSlashMenu skillsEnabled={skillsEnabled} supportsTools={supportsTools}>
           <PromptInput
@@ -140,8 +158,8 @@ export default function ChatInput() {
             multiple
             blocked={["streaming", "submitted"].includes(status) || hasPendingResearch}
             onSubmit={handleSubmit}
-            accept={model?.extensions?.join(",")}
-            maxFileSize={1024 * 1024 * 20}
+            accept={acceptTypes}
+            maxFileSize={maxFileSize}
           >
             <PromptInputAttachments>
               {(attachment) => (
