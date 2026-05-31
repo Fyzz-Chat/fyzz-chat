@@ -32,6 +32,7 @@ import { useOptimisticallyTrimMessagesUpToAnchor } from "@/lib/queries/messages"
 import { useTRPC } from "@/lib/trpc/client";
 import { cn, filterMessagesUpToAnchor, uploadFileParts } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+import { useUploadStore } from "@/stores/upload-store";
 import type { CustomUIMessage } from "@/types/chat";
 
 const MESSAGE_WINDOW_SIZE = MESSAGES_DEFAULT_LIMIT;
@@ -305,8 +306,9 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         return;
       }
 
+      const messageId = nextMessageId.current;
       const newMessage: CustomUIMessage = {
-        id: nextMessageId.current,
+        id: messageId,
         role: "user",
         parts: [
           ...(hasText
@@ -325,56 +327,70 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         },
       };
 
-      if (hasAttachments) {
-        setAreFilesUploading(true);
-        try {
-          message.files = await uploadFileParts(id, message.files);
-        } catch (err) {
-          console.error("uploadFileParts failed", err);
-          toast.error(
-            err instanceof Error && err.message
-              ? err.message
-              : "Could not upload your file(s). Please try again."
-          );
-          // Re-throw so the prompt input keeps the text + files for retry
-          // (it clears only when onSubmit resolves successfully).
-          throw err;
-        } finally {
-          setAreFilesUploading(false);
-        }
+      const body = {
+        id,
+        model: modelIdOverride ?? model.id,
+        temporaryChat: false,
+        browse: browseRef.current,
+        reasoningEffort: reasoningEffortRef.current,
+        ...(conversationProjectId && { projectId: conversationProjectId }),
+      };
+
+      // Show the message instantly with its local preview (addMessage is an
+      // optimistic cache-only write that renders via the persisted list).
+      await addMessage.mutateAsync({ message: newMessage });
+
+      // Advance the id immediately so the input can be cleared and the next
+      // message composed right away, even while this upload runs in the
+      // background; the send below pins the captured `messageId` explicitly.
+      nextMessageId.current = uuidv4();
+
+      const send = (files?: typeof message.files) => {
+        sendMessageRef.current(
+          {
+            ...message,
+            ...(files ? { files } : {}),
+            messageId,
+            metadata: { content: message.text, createdAt: new Date() },
+          },
+          { body }
+        );
+      };
+
+      if (!hasAttachments) {
+        send();
+        return;
       }
 
-      await addMessage.mutateAsync({
-        message: newMessage,
-      });
-
-      sendMessageRef.current(
-        {
-          ...message,
-          metadata: {
-            content: message.text,
-            createdAt: new Date(),
-          },
-        },
-        {
-          body: {
-            id,
-            model: modelIdOverride ?? model.id,
-            temporaryChat: false,
-            browse: browseRef.current,
-            reasoningEffort: reasoningEffortRef.current,
-            ...(conversationProjectId && { projectId: conversationProjectId }),
-          },
-        }
-      );
-
-      nextMessageId.current = uuidv4();
+      // Attachments: clear the input now and run the upload in the background.
+      // The message preview shows the upload spinner (and a retry affordance on
+      // failure) via the upload store; we send to the API once keys are ready.
+      const uploadStore = useUploadStore.getState();
+      const filesToUpload = message.files;
+      const runUploadAndSend = () => {
+        uploadStore.start(messageId, runUploadAndSend);
+        void (async () => {
+          try {
+            const uploaded = await uploadFileParts(id, filesToUpload);
+            uploadStore.clear(messageId);
+            send(uploaded);
+          } catch (err) {
+            console.error("uploadFileParts failed", err);
+            toast.error(
+              err instanceof Error && err.message
+                ? err.message
+                : "Could not upload your file(s). Please try again."
+            );
+            uploadStore.fail(messageId);
+          }
+        })();
+      };
+      runUploadAndSend();
     },
     [
       id,
       model.id,
       addMessage,
-      setAreFilesUploading,
       browseRef,
       reasoningEffortRef,
       deepResearchRef,

@@ -41,6 +41,7 @@ import ImageFilePart from "@/components/message/parts/image-file-part";
 import { useResearchPolling } from "@/lib/queries/research";
 import { cn } from "@/lib/utils";
 import { useModelStore } from "@/stores/model-store";
+import { useUploadStore } from "@/stores/upload-store";
 import type { CustomUIMessage } from "@/types/chat";
 import type { CodeInterpreterOutput, ImageGenerationOutput } from "@/types/tools";
 
@@ -68,6 +69,7 @@ function MessageItem({
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
 }>) {
   const model = useModelStore((state) => state.getModel(message.metadata?.model));
+  const upload = useUploadStore((state) => state.uploads[message.id]);
   const renderCount = useRef(0);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   renderCount.current += 1;
@@ -181,7 +183,13 @@ function MessageItem({
       {attachments.length > 0 && message.role === "user" && (
         <MessageAttachments>
           {attachments.map((attachment) => (
-            <MessageAttachment key={attachment.url} data={attachment} />
+            <MessageAttachment
+              key={attachment.url}
+              data={attachment}
+              isUploading={upload?.status === "uploading"}
+              isFailed={upload?.status === "failed"}
+              onRetry={upload?.retry}
+            />
           ))}
         </MessageAttachments>
       )}

@@ -3,7 +3,14 @@
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
 import type { FileUIPart, SourceUrlUIPart, UIMessage } from "ai";
-import { ChevronLeftIcon, ChevronRightIcon, PaperclipIcon, XIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Loader2Icon,
+  PaperclipIcon,
+  RotateCwIcon,
+  XIcon,
+} from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
 import { createContext, memo, useContext, useEffect, useMemo, useState } from "react";
 import { Streamdown } from "streamdown";
@@ -330,12 +337,18 @@ export type MessageAttachmentProps = HTMLAttributes<HTMLDivElement> & {
   data: FileUIPart;
   className?: string;
   onRemove?: () => void;
+  isUploading?: boolean;
+  isFailed?: boolean;
+  onRetry?: () => void;
 };
 
 export function MessageAttachment({
   data,
   className,
   onRemove,
+  isUploading,
+  isFailed,
+  onRetry,
   ...props
 }: MessageAttachmentProps) {
   const filename = data.filename || "";
@@ -401,6 +414,27 @@ export function MessageAttachment({
             </Button>
           )}
         </>
+      )}
+      {(isUploading || isFailed) && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+          {isUploading ? (
+            <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+          ) : (
+            <button
+              aria-label="Retry upload"
+              className="flex flex-col items-center gap-0.5 text-destructive"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRetry?.();
+              }}
+              title="Upload failed — tap to retry"
+              type="button"
+            >
+              <RotateCwIcon className="size-5" />
+              <span className="font-medium text-[10px]">Retry</span>
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

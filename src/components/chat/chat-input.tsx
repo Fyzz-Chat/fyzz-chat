@@ -136,10 +136,16 @@ export default function ChatInput() {
   const maxFileSize = 1024 * 1024 * 20;
 
   const handleAttachmentError = useCallback((err: AttachmentError) => {
+    const many = (err.count ?? 1) > 1;
+    const n = err.count ?? 1;
     const messages: Record<AttachmentError["code"], string> = {
-      max_file_size: "File too large. Maximum size is 20MB.",
-      accept: "Unsupported file type.",
-      max_files: "Too many files.",
+      max_file_size: many
+        ? `${n} files were too large and skipped. Maximum size is 20MB.`
+        : "File too large. Maximum size is 20MB.",
+      accept: many
+        ? `${n} files had an unsupported type and were skipped.`
+        : "Unsupported file type.",
+      max_files: "Too many files. Some were not added.",
     };
     toast.error(messages[err.code] ?? err.message);
   }, []);

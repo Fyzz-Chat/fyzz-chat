@@ -130,13 +130,17 @@ const useOptionalProviderAttachments = () => useContext(ProviderAttachmentsConte
 export type AttachmentError = {
   code: "max_files" | "max_file_size" | "accept";
   message: string;
+  // How many files in the batch were rejected for this reason. Lets the
+  // handler distinguish a single bad file from a partially-rejected batch.
+  count?: number;
 };
 
 // Single source of truth for attachment validation, shared by the provider's
 // add() and the body's addLocal() so drag-drop, file picker, and clipboard
-// paste all reject the same way. Fires onError once per rejected batch and
-// returns the files that should actually be staged.
-function filterValidFiles(
+// paste all reject the same way. Fires onError per category whenever *any*
+// file is rejected (not only when the whole batch fails), while still staging
+// the files that survived — so a valid file in a bad batch isn't lost silently.
+export function filterValidFiles(
   fileList: File[] | FileList,
   opts: {
     accept?: string;
@@ -165,14 +169,28 @@ function filterValidFiles(
   };
 
   const accepted = incoming.filter(matchesAccept);
-  if (incoming.length && accepted.length === 0) {
-    onError?.({ code: "accept", message: "No files match the accepted types." });
+  const rejectedForType = incoming.length - accepted.length;
+  if (rejectedForType > 0) {
+    onError?.({
+      code: "accept",
+      count: rejectedForType,
+      message: "Some files don't match the accepted types.",
+    });
+  }
+  if (accepted.length === 0) {
     return [];
   }
 
   const sized = accepted.filter((f) => (maxFileSize ? f.size <= maxFileSize : true));
-  if (accepted.length > 0 && sized.length === 0) {
-    onError?.({ code: "max_file_size", message: "All files exceed the maximum size." });
+  const rejectedForSize = accepted.length - sized.length;
+  if (rejectedForSize > 0) {
+    onError?.({
+      code: "max_file_size",
+      count: rejectedForSize,
+      message: "Some files exceed the maximum size.",
+    });
+  }
+  if (sized.length === 0) {
     return [];
   }
 
@@ -180,7 +198,11 @@ function filterValidFiles(
     typeof maxFiles === "number" ? Math.max(0, maxFiles - currentCount) : undefined;
   const capped = typeof capacity === "number" ? sized.slice(0, capacity) : sized;
   if (typeof capacity === "number" && sized.length > capacity) {
-    onError?.({ code: "max_files", message: "Too many files. Some were not added." });
+    onError?.({
+      code: "max_files",
+      count: sized.length - capacity,
+      message: "Too many files. Some were not added.",
+    });
   }
   return capped;
 }
