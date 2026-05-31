@@ -346,15 +346,17 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
       nextMessageId.current = uuidv4();
 
       const send = (files?: typeof message.files) => {
-        sendMessageRef.current(
-          {
-            ...message,
-            ...(files ? { files } : {}),
-            messageId,
-            metadata: { content: message.text, createdAt: new Date() },
-          },
-          { body }
-        );
+        // Send a full parts-based UIMessage (not the { text, files } shorthand):
+        // the shorthand makes useChat generate a fresh id, which would mismatch
+        // the optimistic cache write above and break dedup/sync. Passing the
+        // message verbatim preserves our pinned `messageId`.
+        const parts = files
+          ? [
+              ...(hasText ? [{ type: "text" as const, text: message.text || "" }] : []),
+              ...files,
+            ]
+          : newMessage.parts;
+        sendMessageRef.current({ ...newMessage, parts }, { body });
       };
 
       if (!hasAttachments) {
