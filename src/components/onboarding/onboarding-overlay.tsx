@@ -343,15 +343,17 @@ export default function OnboardingOverlay({
               </Button>
 
               <div className="flex items-center gap-2 md:gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={back}
-                  disabled={step === 0 || pending}
-                  className="h-9 text-xs md:h-10 md:text-sm"
-                >
-                  ← Back
-                </Button>
+                {step !== 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={back}
+                    disabled={pending}
+                    className="h-9 text-xs md:h-10 md:text-sm"
+                  >
+                    ← Back
+                  </Button>
+                )}
                 <Button
                   type="button"
                   onClick={advance}
