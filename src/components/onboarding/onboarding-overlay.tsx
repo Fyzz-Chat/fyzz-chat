@@ -15,7 +15,7 @@ import { completeOnboarding, skipOnboarding } from "@/lib/actions/onboarding";
 import { type OnboardingInput, parseOnboardingDraft } from "@/lib/onboarding";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-const WELCOME = "Let's make Fyzz yours. Takes about a minute.";
+const WELCOME = "Let's awaken something that understands you.";
 
 type StepKey = keyof OnboardingInput;
 
@@ -32,42 +32,42 @@ type Step = {
 const STEPS: Step[] = [
   {
     key: "displayName",
-    title: "First things first — what's your name?",
-    description: "So Fyzz can talk to you, not at you.",
-    placeholder: "Your name",
+    title: "What should I call you?",
+    description: "Your true name. The one that feels like home.",
+    placeholder: "Joe",
     maxLength: 60,
     multiline: false,
     autoComplete: "name",
   },
   {
     key: "agentName",
-    title: "Give your assistant a name",
-    description: "Jarvis? Friday? Something only you'd pick? Skip to keep it simple.",
-    placeholder: "Jarvis",
+    title: "What will you call me?",
+    description: "Fyzz. Friday. Echo. Something only you would choose.",
+    placeholder: "Fyzz",
     maxLength: 60,
     multiline: false,
   },
   {
     key: "role",
-    title: "Tell Fyzz a bit about you",
-    description: "Your role, what you're working on — whatever helps it get you.",
-    placeholder: "I'm a founder building an OSS chat app…",
+    title: "Who are you when no one's watching?",
+    description: "Your craft, obsessions, the work that matters.",
+    placeholder: "Founder building the future of human-AI collaboration…",
     maxLength: 240,
     multiline: true,
   },
   {
     key: "preferences",
-    title: "How do you like your answers?",
-    description: "Short and sharp? Deep dives? Set the tone once, keep it forever.",
-    placeholder: "Be direct and concise. Show code before prose.",
+    title: "How do you want to be answered?",
+    description: "Set the tone of our conversations forever.",
+    placeholder: "Be direct. Show code first. Cut the ceremony.",
     maxLength: 600,
     multiline: true,
   },
   {
     key: "context",
-    title: "Anything worth remembering?",
-    description: "Projects, constraints, the stuff you'd hate to repeat.",
-    placeholder: "Working mostly in TypeScript and Next.js…",
+    title: "What should I never forget?",
+    description: "Your world. Your constraints. Your taste.",
+    placeholder: "Primarily TypeScript + Next.js. Allergic to bloated abstractions…",
     maxLength: 600,
     multiline: true,
   },
@@ -101,14 +101,12 @@ export default function OnboardingOverlay({
 
   const [step, setStep] = useState(draft?.step ?? 0);
   const [values, setValues] = useState<OnboardingInput>(
-    draft?.values ?? { ...emptyValues, displayName: initialName }
+    draft?.values ?? { ...emptyValues, displayName: initialName || "Joe" }
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const didAutoOpen = useRef(false);
 
-  // First-run auto-open: fire once from server state. Resume-from-menu opens are
-  // driven directly through the shared store by the profile menu.
   useEffect(() => {
     if (autoOpen && !didAutoOpen.current) {
       didAutoOpen.current = true;
@@ -120,9 +118,9 @@ export default function OnboardingOverlay({
 
   const current = STEPS[step];
   const isLast = step === STEPS.length - 1;
+  const displayName = values.displayName || "Joe";
+  const agentName = values.agentName || "Fyzz";
 
-  // Fires on each field mount (fields remount per step via `key`), focusing the
-  // active field and placing the cursor at the end of any prefilled value.
   const focusField = (field: HTMLInputElement | HTMLTextAreaElement | null) => {
     if (!field) return;
     field.focus();
@@ -148,9 +146,6 @@ export default function OnboardingOverlay({
     });
   };
 
-  // Skipping or dismissing (X / Escape / click-outside) saves the draft so the
-  // user can resume from the profile menu, and records the skip so it never
-  // auto-resurfaces. Self-exploration is never blocked.
   const skip = () => {
     if (pending) return;
     setError(null);
@@ -179,7 +174,6 @@ export default function OnboardingOverlay({
     event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     if (event.key !== "Enter") return;
-    // Shift+Enter inserts a newline in multiline fields.
     if (current.multiline && event.shiftKey) return;
     event.preventDefault();
     advance();
@@ -189,78 +183,185 @@ export default function OnboardingOverlay({
 
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="gap-6">
-        {/* {step === 0 && (
-          <p className="text-center font-medium text-foreground text-sm">{WELCOME}</p>
-        )} */}
-        <div className="space-y-1.5">
-          <p className="font-medium text-muted-foreground text-xs">
-            Step {step + 1} of {STEPS.length}
-          </p>
-          <div className="flex gap-1.5" aria-hidden="true">
-            {STEPS.map((s, i) => (
-              <span
-                key={s.key}
-                className={`h-1 flex-1 rounded-full ${
-                  i <= step ? "bg-foreground" : "bg-border"
-                }`}
-              />
-            ))}
+      {/* 
+        Responsive layout overrides default shadcn max-width.
+        - Mobile: Fits screen with margins, scrolls automatically.
+        - Desktop (md+): Fixed size with beautiful dual-column setup.
+      */}
+      <AlertDialogContent className="flex h-[90vh] w-[calc(100vw-2rem)] max-w-none flex-col overflow-hidden p-0 md:h-[580px] md:max-w-[920px] md:flex-row">
+        {/* Memory Spine Sidebar (Desktop Only) */}
+        <div className="hidden w-72 shrink-0 flex-col justify-between border-border border-r bg-muted/40 p-8 md:flex">
+          <div>
+            <div className="mb-10 flex items-center gap-2.5">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-onboarding-accent font-bold text-[10px] text-onboarding-accent-foreground">
+                {agentName.charAt(0).toUpperCase()}
+              </div>
+              <span className="font-serif text-xl tracking-tighter">{agentName}</span>
+            </div>
+
+            <div className="space-y-7">
+              {STEPS.map((s, i) => {
+                const isActive = i === step;
+                const isComplete = i < step;
+                return (
+                  <div
+                    key={s.key}
+                    className={`flex gap-3 transition-all duration-300 ${
+                      isActive ? "opacity-100" : isComplete ? "opacity-75" : "opacity-35"
+                    }`}
+                  >
+                    <div
+                      className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md border font-medium text-xs transition-all ${
+                        isComplete
+                          ? "border-onboarding-accent bg-onboarding-accent text-onboarding-accent-foreground"
+                          : isActive
+                            ? "border-onboarding-accent bg-card text-onboarding-accent ring-1 ring-onboarding-accent/40"
+                            : "border-border text-muted-foreground"
+                      }`}
+                    >
+                      {isComplete ? "✓" : i + 1}
+                    </div>
+                    <div className="pt-0.5">
+                      <p className="font-medium text-foreground text-xs leading-tight">
+                        {s.title}
+                      </p>
+                      <p className="mt-0.5 text-[9px] text-muted-foreground">
+                        CHAPTER {i + 1}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="border-border border-t pt-6 text-[11px] text-muted-foreground leading-normal">
+            These parameters will shape how your companion sees you.
           </div>
         </div>
 
-        <div className="space-y-2">
-          <AlertDialogTitle>{current.title}</AlertDialogTitle>
-          <AlertDialogDescription>{current.description}</AlertDialogDescription>
-        </div>
+        {/* Main Workspace (Scrollable/Flexible) */}
+        <div className="flex h-full flex-1 flex-col overflow-hidden">
+          {/* Mobile Top Progress Header */}
+          <div className="flex items-center justify-between border-border border-b bg-muted/20 p-4 md:hidden">
+            <span className="font-serif text-base tracking-tighter">{agentName}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-[10px] text-muted-foreground uppercase">
+                Step {step + 1} of {STEPS.length}
+              </span>
+              <div className="flex gap-1" aria-hidden="true">
+                {STEPS.map((s, i) => (
+                  <span
+                    key={s.key}
+                    className={`h-1 w-3 rounded-full ${
+                      i <= step ? "bg-onboarding-accent" : "bg-border"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
 
-        {current.multiline ? (
-          <Textarea
-            ref={focusField}
-            key={current.key}
-            value={value}
-            onChange={(e) => setCurrentValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            maxLength={current.maxLength}
-            placeholder={current.placeholder}
-            className="min-h-28 resize-none"
-          />
-        ) : (
-          <Input
-            ref={focusField}
-            key={current.key}
-            value={value}
-            onChange={(e) => setCurrentValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            maxLength={current.maxLength}
-            placeholder={current.placeholder}
-            autoComplete={current.autoComplete}
-          />
-        )}
+          {/* Interactive Workspace Area */}
+          <div className="flex flex-1 flex-col justify-between overflow-y-auto p-6 md:p-10">
+            <div>
+              {step === 0 && (
+                <p className="mb-4 font-serif text-onboarding-accent text-sm italic tracking-tight md:text-base">
+                  {WELCOME}
+                </p>
+              )}
 
-        {error && <p className="text-destructive text-sm">{error}</p>}
+              <div>
+                <div className="mb-1 font-medium text-[9px] text-onboarding-accent uppercase tracking-[1.5px]">
+                  CHAPTER {step + 1} — THE AWAKENING
+                </div>
+                <AlertDialogTitle className="font-semibold text-2xl text-foreground leading-tight tracking-tighter md:text-3xl">
+                  {current.title}
+                </AlertDialogTitle>
+              </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <Button type="button" variant="ghost" onClick={skip} disabled={pending}>
-            Skip
-          </Button>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={back}
-              disabled={step === 0 || pending}
-            >
-              Back
-            </Button>
-            <Button
-              type="button"
-              onClick={advance}
-              disabled={pending}
-              className="min-w-20"
-            >
-              {isLast ? (pending ? "Saving..." : "All set") : "Next"}
-            </Button>
+              <AlertDialogDescription className="mt-2 max-w-md text-muted-foreground text-xs md:mt-3 md:text-sm">
+                {current.description}
+              </AlertDialogDescription>
+
+              {/* Personalization Echo */}
+              {(step === 0 || step === 1) && (
+                <div className="mt-4 inline-flex flex-wrap items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 text-[11px] md:mt-5">
+                  <span className="font-medium text-onboarding-accent">✓</span>
+                  <span className="text-muted-foreground">
+                    I will address you as{" "}
+                    <span className="font-medium text-foreground">{displayName}</span>
+                  </span>
+                  <span className="mx-0.5 text-muted-foreground/50">•</span>
+                  <span className="text-muted-foreground">
+                    Call me{" "}
+                    <span className="font-medium text-foreground">{agentName}</span>
+                  </span>
+                </div>
+              )}
+
+              {/* Dynamic Input Frame */}
+              <div className="mt-6 md:mt-8">
+                {current.multiline ? (
+                  <Textarea
+                    ref={focusField}
+                    key={current.key}
+                    value={value}
+                    onChange={(e) => setCurrentValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    maxLength={current.maxLength}
+                    placeholder={current.placeholder}
+                    className="min-h-[120px] w-full resize-none rounded-lg px-4 py-3 text-sm md:min-h-[160px] md:text-base"
+                  />
+                ) : (
+                  <Input
+                    ref={focusField}
+                    key={current.key}
+                    value={value}
+                    onChange={(e) => setCurrentValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    maxLength={current.maxLength}
+                    placeholder={current.placeholder}
+                    autoComplete={current.autoComplete}
+                    className="h-12 rounded-lg px-4 text-sm md:h-14 md:text-base"
+                  />
+                )}
+                {error && <p className="mt-2 text-destructive text-xs">{error}</p>}
+              </div>
+            </div>
+
+            {/* Bottom Navigation Panel */}
+            <div className="mt-8 flex items-center justify-between border-border border-t pt-6">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={skip}
+                disabled={pending}
+                className="text-muted-foreground text-xs md:text-sm"
+              >
+                Finish Later
+              </Button>
+
+              <div className="flex items-center gap-2 md:gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={back}
+                  disabled={step === 0 || pending}
+                  className="h-9 text-xs md:h-10 md:text-sm"
+                >
+                  ← Back
+                </Button>
+                <Button
+                  type="button"
+                  onClick={advance}
+                  disabled={pending}
+                  className="h-9 min-w-[110px] text-xs transition-all active:scale-[0.985] md:h-10 md:min-w-[130px] md:text-sm"
+                >
+                  {isLast ? (pending ? "Binding…" : `Awaken ${agentName}`) : "Next"}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </AlertDialogContent>
