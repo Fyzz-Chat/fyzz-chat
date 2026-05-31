@@ -1,6 +1,6 @@
 "use client";
 
-import { Command, ExternalLink, FileText, Settings } from "lucide-react";
+import { Command, ExternalLink, FileText, Settings, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 import GitHub from "@/components/icons/github";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Kbd } from "@/components/ui/kbd";
 import { useTranslations } from "@/lib/contexts/translations-context";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 import { useUIStore } from "@/stores/ui-store";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
@@ -20,14 +21,17 @@ export default function ProfileMenu({
   userName,
   userEmail,
   userImage,
+  showFinishSetup = false,
 }: Readonly<{
   userName: string;
   userEmail: string;
   userImage?: string;
+  showFinishSetup?: boolean;
 }>) {
   const translationsPromise = useTranslations();
   const translations = use(translationsPromise);
   const setHelpOpen = useUIStore((state) => state.setHelpOpen);
+  const openOnboarding = useOnboardingStore((state) => state.open);
 
   return (
     <DropdownMenuContent
@@ -54,6 +58,18 @@ export default function ProfileMenu({
         </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
+      {showFinishSetup && (
+        <DropdownMenuItem
+          onSelect={(e) => {
+            e.preventDefault();
+            openOnboarding();
+          }}
+          className="cursor-pointer px-2 py-1.5"
+        >
+          <Sparkles className="shrink-0" />
+          <span>{translations.sidebar.menu.finishSetup}</span>
+        </DropdownMenuItem>
+      )}
       <DropdownMenuItem
         onSelect={(e) => {
           e.preventDefault();

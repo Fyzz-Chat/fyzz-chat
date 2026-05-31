@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { MemoryType } from "@/lib/prisma/generated/client";
 
 export const onboardingSchema = z.object({
   displayName: z.string().trim().max(60).optional(),
@@ -11,17 +10,17 @@ export const onboardingSchema = z.object({
 
 export type OnboardingInput = z.infer<typeof onboardingSchema>;
 
-export type OnboardingMemorySeed = {
-  type: MemoryType;
-  content: string;
-  confidence?: number;
-  category: string;
-  source: string;
-  projectId: null;
-  conversationId: null;
-};
+export const onboardingDraftSchema = z.object({
+  values: onboardingSchema,
+  step: z.number().int().min(0).max(10),
+});
 
-const source = "onboarding";
+export type OnboardingDraft = z.infer<typeof onboardingDraftSchema>;
+
+export function parseOnboardingDraft(value: unknown): OnboardingDraft | null {
+  const result = onboardingDraftSchema.safeParse(value);
+  return result.success ? result.data : null;
+}
 
 function optional(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
@@ -36,45 +35,4 @@ export function normalizeOnboardingInput(input: OnboardingInput): OnboardingInpu
     preferences: optional(input.preferences),
     context: optional(input.context),
   };
-}
-
-export function buildOnboardingMemories(input: OnboardingInput): OnboardingMemorySeed[] {
-  const normalized = normalizeOnboardingInput(input);
-  const memories: OnboardingMemorySeed[] = [];
-
-  if (normalized.role) {
-    memories.push({
-      type: MemoryType.fact,
-      content: normalized.role,
-      category: "identity",
-      source,
-      projectId: null,
-      conversationId: null,
-    });
-  }
-
-  if (normalized.preferences) {
-    memories.push({
-      type: MemoryType.opinion,
-      content: normalized.preferences,
-      confidence: 0.8,
-      category: "preferences",
-      source,
-      projectId: null,
-      conversationId: null,
-    });
-  }
-
-  if (normalized.context) {
-    memories.push({
-      type: MemoryType.context,
-      content: normalized.context,
-      category: "background",
-      source,
-      projectId: null,
-      conversationId: null,
-    });
-  }
-
-  return memories;
 }

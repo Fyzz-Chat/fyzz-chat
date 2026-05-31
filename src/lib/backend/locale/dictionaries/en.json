@@ -9,6 +9,7 @@
     },
     "menu": {
       "myAccount": "My Account",
+      "finishSetup": "Finish setup",
       "help": "Help",
       "settings": "Settings",
       "privacyPolicy": "Privacy Policy",

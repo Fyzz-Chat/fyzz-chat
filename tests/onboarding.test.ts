@@ -1,5 +1,10 @@
 import { describe, expect, it } from "bun:test";
-import { buildOnboardingMemories, normalizeOnboardingInput } from "../src/lib/onboarding";
+import {
+  normalizeOnboardingInput,
+  onboardingSchema,
+  parseOnboardingDraft,
+} from "../src/lib/onboarding";
+import { buildOnboardingMemories } from "../src/lib/onboarding-memories";
 
 describe("onboarding memory seeds", () => {
   it("normalizes blank fields without losing meaningful values", () => {
@@ -43,5 +48,47 @@ describe("onboarding memory seeds", () => {
         context: "\n",
       })
     ).toEqual([]);
+  });
+});
+
+describe("onboarding schema validation", () => {
+  it("accepts input within the field length limits", () => {
+    const result = onboardingSchema.safeParse({
+      displayName: "Rico",
+      agentName: "Jarvis",
+      role: "a".repeat(240),
+      preferences: "b".repeat(600),
+      context: "c".repeat(600),
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects input that exceeds a field length limit", () => {
+    const result = onboardingSchema.safeParse({
+      displayName: "a".repeat(61),
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("onboarding draft", () => {
+  it("parses a valid draft so resume restores values and step", () => {
+    const draft = parseOnboardingDraft({
+      values: { displayName: "Rico", agentName: "Jarvis" },
+      step: 2,
+    });
+
+    expect(draft).not.toBeNull();
+    expect(draft?.step).toBe(2);
+    expect(draft?.values.displayName).toBe("Rico");
+  });
+
+  it("returns null for malformed draft instead of throwing", () => {
+    expect(parseOnboardingDraft(null)).toBeNull();
+    expect(parseOnboardingDraft({ values: {}, step: -1 })).toBeNull();
+    expect(parseOnboardingDraft({ step: 1 })).toBeNull();
+    expect(parseOnboardingDraft("garbage")).toBeNull();
   });
 });

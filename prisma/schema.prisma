@@ -37,6 +37,8 @@ model User {
   mcpServers            Json?          @map("mcp_servers")
   defaultModel          String?        @map("default_model")
   onboardingCompletedAt DateTime?      @map("onboarding_completed_at")
+  onboardingSkippedAt   DateTime?      @map("onboarding_skipped_at")
+  onboardingDraft       Json?          @map("onboarding_draft")
   conversations         Conversation[]
   projects              Project[]
   memories              Memory[]

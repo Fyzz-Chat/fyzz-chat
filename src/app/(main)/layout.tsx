@@ -9,6 +9,7 @@ import {
   HomeHandler,
   ModelMenuHandler,
 } from "@/components/key-handler";
+import OnboardingOverlay from "@/components/onboarding/onboarding-overlay";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { ChatSidebarWithProjects } from "@/components/sidebar/chat-sidebar-with-projects";
 import { HelpDialog } from "@/components/sidebar/help-dialog";
@@ -28,6 +29,12 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   const existingSidebarState = sidebarState ? sidebarState.value === "true" : true;
   const defaultOpen = isLoggedIn ? existingSidebarState : false;
   const hasGoogle = Boolean(conf.googleId) && Boolean(conf.googleSecret);
+  // Onboarding is "active" (resumable) until the user finishes it. It auto-opens
+  // only on a true first run — once skipped it stays available from the profile
+  // menu but never resurfaces on its own.
+  const onboardingActive =
+    conf.onboardingEnabled && isLoggedIn && !user?.onboardingCompletedAt;
+  const autoOpenOnboarding = onboardingActive && !user?.onboardingSkippedAt;
 
   return (
     <InitialMessageProvider>
@@ -37,12 +44,18 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         <HomeHandler />
         <ModelMenuHandler />
         <HelpDialog />
+        <OnboardingOverlay
+          enabled={onboardingActive}
+          autoOpen={autoOpenOnboarding}
+          initialDraft={user?.onboardingDraft ?? null}
+          initialName={user?.name ?? ""}
+        />
         <Suspense fallback={null}>
           <ProvidersInitializer defaultModel={user?.defaultModel} />
         </Suspense>
         <ChatLayoutProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSidebar user={user}>
+            <AppSidebar user={user} showFinishSetup={onboardingActive}>
               <Suspense fallback={<SidebarDataSkeleton />}>
                 <SidebarData isLoggedIn={isLoggedIn} />
               </Suspense>

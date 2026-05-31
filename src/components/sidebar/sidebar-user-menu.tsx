@@ -8,7 +8,13 @@ import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import type { SessionUser } from "@/lib/dao/users";
 
-export function SidebarUserMenu({ user }: { user: SessionUser | null }) {
+export function SidebarUserMenu({
+  user,
+  showFinishSetup = false,
+}: {
+  user: SessionUser | null;
+  showFinishSetup?: boolean;
+}) {
   if (!user) {
     return <SignInButton />;
   }
@@ -41,6 +47,7 @@ export function SidebarUserMenu({ user }: { user: SessionUser | null }) {
         userName={user.name}
         userEmail={user.email}
         userImage={user.image || undefined}
+        showFinishSetup={showFinishSetup}
       />
     </DropdownMenu>
   );

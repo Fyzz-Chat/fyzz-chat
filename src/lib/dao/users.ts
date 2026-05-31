@@ -68,6 +68,8 @@ export type SessionUser = {
   defaultModel: string | null;
   mcpServers: Prisma.JsonValue | null;
   onboardingCompletedAt: Date | null;
+  onboardingSkippedAt: Date | null;
+  onboardingDraft: Prisma.JsonValue | null;
 };
 
 export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | null> => {
@@ -94,6 +96,8 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       defaultModel: true,
       mcpServers: true,
       onboardingCompletedAt: true,
+      onboardingSkippedAt: true,
+      onboardingDraft: true,
     },
   });
 });

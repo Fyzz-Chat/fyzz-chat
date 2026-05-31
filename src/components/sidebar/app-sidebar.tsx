@@ -20,7 +20,12 @@ import type { SessionUser } from "@/lib/dao/users";
 export function AppSidebar({
   user,
   children,
-}: Readonly<{ user: SessionUser | null; children: ReactNode }>) {
+  showFinishSetup = false,
+}: Readonly<{
+  user: SessionUser | null;
+  children: ReactNode;
+  showFinishSetup?: boolean;
+}>) {
   const version = getVersion();
 
   return (
@@ -58,7 +63,7 @@ export function AppSidebar({
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarUserMenu user={user} />
+              <SidebarUserMenu user={user} showFinishSetup={showFinishSetup} />
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
