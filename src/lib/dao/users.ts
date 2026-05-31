@@ -41,6 +41,7 @@ export const getUserSettingsProfile = cache(async (userId: string) => {
       skillsEnabled: true,
       mcpServers: true,
       defaultModel: true,
+      onboardingCompletedAt: true,
       displayName: true,
       agentName: true,
       accounts: { select: { password: true } },
@@ -66,6 +67,7 @@ export type SessionUser = {
   skillsEnabled: boolean;
   defaultModel: string | null;
   mcpServers: Prisma.JsonValue | null;
+  onboardingCompletedAt: Date | null;
 };
 
 export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | null> => {
@@ -91,6 +93,7 @@ export const getUserFromSessionPublic = cache(async (): Promise<SessionUser | nu
       skillsEnabled: true,
       defaultModel: true,
       mcpServers: true,
+      onboardingCompletedAt: true,
     },
   });
 });

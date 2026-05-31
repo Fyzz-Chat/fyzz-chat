@@ -39,6 +39,7 @@ const schema = z.object({
   perMessageTokenLimit: z.coerce.number().int().positive().optional(),
 
   modelGatingEnabled: booleanFromString,
+  onboardingEnabled: booleanFromString,
 });
 
 const envVars = {
@@ -91,6 +92,7 @@ const envVars = {
   perMessageTokenLimit: process.env.PER_MESSAGE_TOKEN_LIMIT,
 
   modelGatingEnabled: process.env.MODEL_GATING_ENABLED,
+  onboardingEnabled: process.env.ONBOARDING_ENABLED,
 };
 
 const conf = schema.parse(envVars);
