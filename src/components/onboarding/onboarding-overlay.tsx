@@ -103,6 +103,9 @@ export default function OnboardingOverlay({
   const [values, setValues] = useState<OnboardingInput>(
     draft?.values ?? { ...emptyValues, displayName: initialName || "Joe" }
   );
+  // The covenant is the final ritual state shown after the last input step:
+  // a deliberate, satisfying confirmation rather than an instant close.
+  const [showCovenant, setShowCovenant] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const didAutoOpen = useRef(false);
@@ -159,7 +162,8 @@ export default function OnboardingOverlay({
   const advance = () => {
     if (pending) return;
     if (isLast) {
-      finish();
+      // Completing the last input opens the covenant rather than finishing.
+      setShowCovenant(true);
       return;
     }
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -174,6 +178,7 @@ export default function OnboardingOverlay({
     event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     if (event.key !== "Enter") return;
+    // Shift+Enter inserts a newline in multiline fields.
     if (current.multiline && event.shiftKey) return;
     event.preventDefault();
     advance();
@@ -181,9 +186,59 @@ export default function OnboardingOverlay({
 
   const value = values[current.key] ?? "";
 
+  // ───────── The Covenant: final activation ritual ─────────
+  if (showCovenant) {
+    return (
+      <AlertDialog open={isOpen}>
+        <AlertDialogContent className="flex h-[90vh] w-[calc(100vw-2rem)] max-w-none items-center justify-center overflow-hidden bg-background p-0 md:h-[580px] md:max-w-[920px]">
+          {/* Breathing dual-tone radial glow */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            <div className="absolute top-1/2 left-1/2 h-[520px] w-[520px] animate-onboarding-breathe rounded-full bg-[radial-gradient(circle,var(--onboarding-accent),transparent_70%)] opacity-30 blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 h-[380px] w-[380px] animate-onboarding-breathe rounded-full bg-[radial-gradient(circle,var(--onboarding-glow),transparent_70%)] opacity-25 blur-3xl [animation-delay:1.3s]" />
+          </div>
+
+          <div className="fade-in zoom-in-95 relative z-10 flex w-full max-w-lg animate-in flex-col items-center px-6 text-center duration-700">
+            <p className="mb-3 font-medium text-[10px] text-onboarding-accent uppercase tracking-[2px]">
+              The Covenant
+            </p>
+            <AlertDialogTitle className="font-semibold text-3xl text-foreground leading-none tracking-tighter md:text-4xl">
+              We are locked in.
+            </AlertDialogTitle>
+            <AlertDialogDescription className="mt-4 max-w-md text-muted-foreground text-sm leading-relaxed">
+              I have memorized your preferences, {displayName}. I know exactly how to
+              write your code, respect your time, and navigate your projects. Your
+              companion is fully calibrated.
+            </AlertDialogDescription>
+
+            {error && <p className="mt-4 text-destructive text-sm">{error}</p>}
+
+            <Button
+              type="button"
+              variant="default"
+              onClick={finish}
+              disabled={pending}
+              className="mt-8 h-12 min-w-[220px] font-medium text-sm transition-all active:scale-[0.985]"
+            >
+              {pending ? "Entering…" : "Enter the Workspace"}
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => setShowCovenant(false)}
+              disabled={pending}
+              className="mt-4 text-muted-foreground text-xs transition-colors hover:text-foreground"
+            >
+              ← Revisit my answers
+            </button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
+
   return (
     <AlertDialog open={isOpen}>
-      {/* 
+      {/*
         Responsive layout overrides default shadcn max-width.
         - Mobile: Fits screen with margins, scrolls automatically.
         - Desktop (md+): Fixed size with beautiful dual-column setup.
@@ -264,7 +319,11 @@ export default function OnboardingOverlay({
 
           {/* Interactive Workspace Area */}
           <div className="flex flex-1 flex-col justify-between overflow-y-auto p-6 md:p-10">
-            <div>
+            {/* `key={step}` re-mounts this block per step so it re-animates in. */}
+            <div
+              key={step}
+              className="fade-in slide-in-from-bottom-2 animate-in duration-500"
+            >
               {step === 0 && (
                 <p className="mb-4 font-serif text-onboarding-accent text-sm italic tracking-tight md:text-base">
                   {WELCOME}
@@ -360,7 +419,7 @@ export default function OnboardingOverlay({
                   disabled={pending}
                   className="h-9 min-w-[110px] text-xs transition-all active:scale-[0.985] md:h-10 md:min-w-[130px] md:text-sm"
                 >
-                  {isLast ? (pending ? "Binding…" : `Awaken ${agentName}`) : "Next"}
+                  {isLast ? `Awaken ${agentName}` : "Next"}
                 </Button>
               </div>
             </div>

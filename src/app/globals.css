@@ -21,6 +21,7 @@
   --theme-blue: #3b82f6;
   --onboarding-accent: hsl(14 80% 48%);
   --onboarding-accent-foreground: hsl(0 0% 100%);
+  --onboarding-glow: hsl(265 70% 58%);
   --background: hsl(0 0% 100%);
   --foreground: hsl(0 0% 10%);
   --card: hsl(0 0% 100%);
@@ -110,6 +111,7 @@
   --sidebar-ring: hsl(0 0% 52%);
   --onboarding-accent: hsl(14 86% 58%);
   --onboarding-accent-foreground: hsl(0 0% 100%);
+  --onboarding-glow: hsl(265 80% 68%);
   --radius: 1rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
@@ -162,6 +164,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-onboarding-accent: var(--onboarding-accent);
   --color-onboarding-accent-foreground: var(--onboarding-accent-foreground);
+  --color-onboarding-glow: var(--onboarding-glow);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -316,5 +319,54 @@ table tr:nth-child(2n) {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ───────── Onboarding "Awakening" ritual animations ─────────
+   Theme-aware: keyframes reference the --onboarding-accent / --onboarding-glow
+   tokens (defined per light/dark above) via color-mix, so the ritual glow
+   tracks the active theme rather than hardcoding a color. */
+@theme {
+  --animate-onboarding-breathe: onboarding-breathe 4s ease-in-out infinite;
+  --animate-onboarding-pulse: onboarding-pulse 2.6s ease-out infinite;
+  --animate-onboarding-ripple: onboarding-ripple 0.7s ease-out;
+  --animate-onboarding-spin-slow: onboarding-spin-slow 9s linear infinite;
+}
+
+@keyframes onboarding-breathe {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.42;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+@keyframes onboarding-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--onboarding-accent) 45%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--onboarding-accent) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--onboarding-accent) 0%, transparent);
+  }
+}
+@keyframes onboarding-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes onboarding-spin-slow {
+  to {
+    transform: rotate(360deg);
   }
 }
