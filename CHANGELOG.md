@@ -1,3 +1,21 @@
+# [0.47.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.46.0...v0.47.0) (2026-05-31)
+
+
+### Bug Fixes
+
+* **chat:** handle file upload errors with notifications ([a3e8c3f](https://github.com/Fyzz-Chat/fyzz-chat/commit/a3e8c3fff44788a5ee7506aed71548b6e05a21a9))
+* **chat:** improve error handling for file uploads and notify users with specific error messages ([0a7aaea](https://github.com/Fyzz-Chat/fyzz-chat/commit/0a7aaeab723cf8e3a368c3168ce5db8700ffc805))
+
+
+### Features
+
+* add klint rules ([f9af637](https://github.com/Fyzz-Chat/fyzz-chat/commit/f9af6370724b4c0015b9b0706e348fc45d3eea1a))
+* add klint skill ([5946f4a](https://github.com/Fyzz-Chat/fyzz-chat/commit/5946f4a8b83969b3b48d6c1fb5fcc9b11c5adf14))
+* **chat:** implement unified file attachment validation and error handling in PromptInputProvider ([6c03f2c](https://github.com/Fyzz-Chat/fyzz-chat/commit/6c03f2cb66ee6d1fb50bf003ce554a1bd56bde82))
+* **files:** add API route for generating signed URLs and implement file access validation ([7aafc68](https://github.com/Fyzz-Chat/fyzz-chat/commit/7aafc68174445c7369b1db2eacb3c21a528dbe89))
+* **upload:** implement upload store for managing file upload states ([7b2b29e](https://github.com/Fyzz-Chat/fyzz-chat/commit/7b2b29ef6cdbf422ef5a9a88476292b5fd341003))
+* **utils:** implement putWithRetry function for S3 uploads with retry logic on transient failures ([0713f4d](https://github.com/Fyzz-Chat/fyzz-chat/commit/0713f4d4d4bc424fb6741014520e313041feb1a4))
+
 # [0.46.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.45.0...v0.46.0) (2026-05-30)
 
 
