@@ -1,3 +1,12 @@
+# [0.49.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.48.0...v0.49.0) (2026-05-31)
+
+
+### Features
+
+* **onboarding:** add final step ([52043f2](https://github.com/Fyzz-Chat/fyzz-chat/commit/52043f2569d61d7c966a06ccb03079c8d9aa1f30))
+* **onboarding:** add interactive steps ([34f1f12](https://github.com/Fyzz-Chat/fyzz-chat/commit/34f1f1256ad859a56cf905c11300e8074e28dda9))
+* **onboarding:** add persuasive style ([09f3bd9](https://github.com/Fyzz-Chat/fyzz-chat/commit/09f3bd9b79f283c8a13e0a03c4618604d0f38692))
+
 # [0.48.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.47.1...v0.48.0) (2026-05-31)
 
 
