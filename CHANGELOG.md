@@ -1,3 +1,11 @@
+## [0.47.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.47.0...v0.47.1) (2026-05-31)
+
+
+### Bug Fixes
+
+* **login:** auto focus password field when email is pre-filled ([614a300](https://github.com/Fyzz-Chat/fyzz-chat/commit/614a300cfa6a421212b13a8ab9e1e0ad713584e6))
+* **signout:** clear sidebar on logout ([a9224e5](https://github.com/Fyzz-Chat/fyzz-chat/commit/a9224e58ce503caad590da16b6f938f834fd1a00))
+
 # [0.47.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.46.0...v0.47.0) (2026-05-31)
 
 
