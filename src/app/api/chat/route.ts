@@ -43,12 +43,12 @@ import {
   deleteMessageChainAfterPersisted,
   ensureMessageSaved,
   ensureTokenUsageSaved,
+  getMessages,
 } from "@/lib/dao/messages";
 import { getUserFromSession } from "@/lib/dao/users";
 import { logger } from "@/lib/logger";
 import { effectiveMaxModelCost, isModelGated } from "@/lib/model-gating";
 import { closeMcpClients, McpClientInitError } from "@/lib/services/mcp";
-import { caller } from "@/lib/trpc/server";
 import { type CustomUIMessage, metadataSchema } from "@/types/chat";
 import { type ReasoningEffort, reasoningEfforts } from "@/types/provider";
 
@@ -176,10 +176,12 @@ async function loadConversationMessages({
 
   if (newMessage && hasInputPart(newMessage)) {
     const [conversationMessages] = await Promise.all([
-      caller.messages({ id }),
+      getMessages(id),
       ensureMessageAppended(newMessage, id),
     ]);
-    existingMessages = conversationMessages.messages;
+    existingMessages = conversationMessages.messages.map((message) =>
+      mapMessageFilePartsForRead(userId, id, message)
+    );
 
     const isRegeneratedMessage = existingMessages.some((m) => m.id === newMessage.id);
     if (!isRegeneratedMessage) {
@@ -189,8 +191,10 @@ async function loadConversationMessages({
       ];
     }
   } else {
-    const conversationMessages = await caller.messages({ id });
-    existingMessages = conversationMessages.messages;
+    const conversationMessages = await getMessages(id);
+    existingMessages = conversationMessages.messages.map((message) =>
+      mapMessageFilePartsForRead(userId, id, message)
+    );
   }
 
   if (existingMessages.length === 0) {

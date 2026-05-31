@@ -1,6 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
+import { mapMessageFilePartsForClient } from "@/lib/backend/message-mapper";
 import { countModels, getProvidersPublic } from "@/lib/backend/providers";
 import { status } from "@/lib/backend/status";
 import conf from "@/lib/config";
@@ -57,8 +58,13 @@ export const appRouter = createTRPCRouter({
     )
     .query(async (opts) => {
       const { id, page, limit } = opts.input;
-      const messages = await getMessages(id, page, limit);
-      return messages;
+      const result = await getMessages(id, page, limit);
+      return {
+        ...result,
+        messages: result.messages.map((message) =>
+          mapMessageFilePartsForClient(opts.ctx.user.id, id, message)
+        ),
+      };
     }),
   conversation: protectedProcedure
     .input(z.object({ id: z.string() }))

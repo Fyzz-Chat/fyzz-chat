@@ -48,7 +48,7 @@ export async function getMessages(
       orderBy: MESSAGE_ORDER_ASC,
     });
     return {
-      messages: mapDbMessagesToUiMessages(userId, conversationId, messages),
+      messages: mapDbMessagesToUiMessages(messages),
       hasMore: false,
     };
   }
@@ -64,7 +64,7 @@ export async function getMessages(
     const hasMore = raw.length > limit;
     const messages = raw.slice(0, limit).reverse();
     return {
-      messages: mapDbMessagesToUiMessages(userId, conversationId, messages),
+      messages: mapDbMessagesToUiMessages(messages),
       hasMore,
     };
   }
@@ -81,7 +81,7 @@ export async function getMessages(
     take,
   });
   return {
-    messages: mapDbMessagesToUiMessages(userId, conversationId, messages),
+    messages: mapDbMessagesToUiMessages(messages),
     hasMore: skip > 0,
   };
 }

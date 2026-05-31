@@ -4,6 +4,7 @@ import type { CustomUIMessage, PartialMessage } from "../src/types/chat";
 mock.module("server-only", () => ({}));
 
 let mapFilePartsForRead: typeof import("../src/lib/backend/message-mapper").mapFilePartsForRead;
+let mapFilePartsForClient: typeof import("../src/lib/backend/message-mapper").mapFilePartsForClient;
 let mapMessageFilePartsForRead: typeof import("../src/lib/backend/message-mapper").mapMessageFilePartsForRead;
 let mapDbMessageToUiMessage: typeof import("../src/lib/backend/message-mapper").mapDbMessageToUiMessage;
 let mapDbMessagesToUiMessages: typeof import("../src/lib/backend/message-mapper").mapDbMessagesToUiMessages;
@@ -16,6 +17,7 @@ beforeAll(async () => {
 
   ({
     mapFilePartsForRead,
+    mapFilePartsForClient,
     mapMessageFilePartsForRead,
     mapDbMessageToUiMessage,
     mapDbMessagesToUiMessages,
@@ -66,6 +68,21 @@ describe("message mapper", () => {
     });
   });
 
+  it("maps persisted file keys to a stable /api/files path for the client", () => {
+    const parts = [
+      { type: "file", url: "files/image.png", mediaType: "image/png" },
+      { type: "file", url: "data:image/png;base64,abc", mediaType: "image/png" },
+    ] as CustomUIMessage["parts"];
+
+    const mapped = mapFilePartsForClient("user-1", "conv-1", parts);
+    expect(mapped?.[0]).toMatchObject({
+      type: "file",
+      url: "/api/files/user-1/conv-1/files/image.png",
+    });
+    // data: URLs are left inline
+    expect(mapped?.[1]).toMatchObject({ url: "data:image/png;base64,abc" });
+  });
+
   it("maps a full message without manual spread at callsites", () => {
     const message = {
       id: "msg-1",
@@ -92,13 +109,13 @@ describe("message mapper", () => {
       metadata: { invalid: true } as unknown as PartialMessage["metadata"],
     });
 
-    const mapped = mapDbMessageToUiMessage("user-1", "conv-1", message);
+    const mapped = mapDbMessageToUiMessage(message);
     expect(mapped.metadata?.content).toBe("fallback content");
     expect(mapped.metadata?.createdAt?.toISOString()).toBe(createdAt.toISOString());
   });
 
-  it("maps DB message collections to a consistent UI shape", () => {
-    const mapped = mapDbMessagesToUiMessages("user-1", "conv-1", [
+  it("parses DB message collections without touching file URLs (raw keys)", () => {
+    const mapped = mapDbMessagesToUiMessages([
       createDbMessage({ id: "msg-1", parts: [{ type: "text", text: "one" }] }),
       createDbMessage({
         id: "msg-2",
@@ -108,9 +125,10 @@ describe("message mapper", () => {
 
     expect(mapped).toHaveLength(2);
     expect(mapped.map((message) => message.id)).toEqual(["msg-1", "msg-2"]);
+    // DB->UI is parse-only now: the key is left raw, signing/mapping happens at the edges.
     expect(mapped[1]?.parts?.[0]).toMatchObject({
       type: "file",
-      url: "signed://user-1/conv-1/files/two.png",
+      url: "files/two.png",
     });
   });
 });

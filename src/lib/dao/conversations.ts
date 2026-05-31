@@ -262,7 +262,7 @@ export async function ensureMessageAppended(
         return createdMessage;
       });
 
-      return mapDbMessagesToUiMessages(userId, conversationId, [newMessage]);
+      return mapDbMessagesToUiMessages([newMessage]);
     } catch (error) {
       if (!isUniqueConstraintViolation(error)) {
         throw error;
@@ -276,7 +276,7 @@ export async function ensureMessageAppended(
         if (existingMessage.conversationId !== conversationId) {
           throw new Error(`Message ${id} already exists in a different conversation.`);
         }
-        return mapDbMessagesToUiMessages(userId, conversationId, [existingMessage]);
+        return mapDbMessagesToUiMessages([existingMessage]);
       }
 
       if (maxAttempts <= attempt) {

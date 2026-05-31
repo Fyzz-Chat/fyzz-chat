@@ -33,20 +33,28 @@ export async function deleteFile(key: string) {
   return response;
 }
 
+export function getSignedUrlForKey(
+  key: string,
+  expiresInSeconds = 5 * 60
+): string | null {
+  if (!conf.s3Configured) {
+    return null;
+  }
+
+  const url = `https://${conf.awsCloudfrontDistributionDomain}/${key}`;
+  const privateKey = conf.awsCloudfrontPrivateKey;
+  const keyPairId = conf.awsCloudfrontKeyPairId;
+  const dateLessThan = new Date(Date.now() + expiresInSeconds * 1000);
+
+  return getSignedUrl({ url, keyPairId, dateLessThan, privateKey });
+}
+
 export function getFileUrlSigned(prefix: string, fileUrl: string) {
   if (!conf.s3Configured || fileUrl.startsWith("data:")) {
     return fileUrl;
   }
 
-  const cloudfrontDistributionDomain = `https://${conf.awsCloudfrontDistributionDomain}`;
-  const url = `${cloudfrontDistributionDomain}/${prefix}/${fileUrl}`;
-  const privateKey = conf.awsCloudfrontPrivateKey;
-  const keyPairId = conf.awsCloudfrontKeyPairId;
-  const dateLessThan = new Date(Date.now() + 60 * 60 * 1000);
-
-  const urlSigned = getSignedUrl({ url, keyPairId, dateLessThan, privateKey });
-
-  return urlSigned;
+  return getSignedUrlForKey(`${prefix}/${fileUrl}`, 60 * 60) ?? fileUrl;
 }
 
 export async function generatePresignedUploadUrl(

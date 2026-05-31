@@ -38,11 +38,47 @@ export function mapMessageFilePartsForRead(
   };
 }
 
-export function mapDbMessageToUiMessage(
+// Client-facing variant: emits a stable, non-expiring app URL that the
+// /api/files route signs fresh on every request. Used for messages delivered
+// to the browser (which get persisted to IndexedDB), so no time-bound signed
+// URL is ever cached. The model path uses mapFilePartsForRead instead.
+export function mapFilePartsForClient(
   userId: string,
   conversationId: string,
-  message: PartialMessage
+  parts: CustomUIMessage["parts"] | undefined
+): CustomUIMessage["parts"] | undefined {
+  if (!parts) {
+    return parts;
+  }
+
+  return parts.map((part) => {
+    if (part.type !== "file" || part.url.startsWith("data:")) {
+      return part;
+    }
+
+    return {
+      ...part,
+      url: `/api/files/${userId}/${conversationId}/${part.url}`,
+    };
+  });
+}
+
+export function mapMessageFilePartsForClient(
+  userId: string,
+  conversationId: string,
+  message: CustomUIMessage
 ): CustomUIMessage {
+  return {
+    ...message,
+    parts: mapFilePartsForClient(userId, conversationId, message.parts) ?? [],
+  };
+}
+
+// Parses a raw DB row into a UI message WITHOUT touching file URLs — parts keep
+// their stored S3 key. URL mapping is applied at the edges: the client edge
+// (tRPC) uses mapMessageFilePartsForClient, the model edge (chat route) uses
+// mapMessageFilePartsForRead.
+export function mapDbMessageToUiMessage(message: PartialMessage): CustomUIMessage {
   const parts = safeParseJson<CustomUIMessage["parts"]>(message.parts, []);
 
   const metadataResult = metadataSchema.safeParse(message.metadata);
@@ -63,18 +99,12 @@ export function mapDbMessageToUiMessage(
   return {
     ...message,
     metadata,
-    parts: mapFilePartsForRead(userId, conversationId, parts) ?? [],
+    parts: parts ?? [],
   };
 }
 
-export function mapDbMessagesToUiMessages(
-  userId: string,
-  conversationId: string,
-  messages: PartialMessage[]
-): CustomUIMessage[] {
-  return messages.map((message) =>
-    mapDbMessageToUiMessage(userId, conversationId, message)
-  );
+export function mapDbMessagesToUiMessages(messages: PartialMessage[]): CustomUIMessage[] {
+  return messages.map((message) => mapDbMessageToUiMessage(message));
 }
 
 export function safeParseJson<T>(jsonValue: unknown, fallback: T): T {
