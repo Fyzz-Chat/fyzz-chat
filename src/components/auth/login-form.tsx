@@ -24,6 +24,7 @@ export default function LoginForm() {
     register,
     handleSubmit,
     setValue,
+    setFocus,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
@@ -38,8 +39,9 @@ export default function LoginForm() {
     const storedEmail = sessionStorage.getItem("auth_email");
     if (storedEmail) {
       setValue("email", storedEmail);
+      setFocus("password");
     }
-  }, [setValue]);
+  }, [setValue, setFocus]);
 
   useEffect(() => {
     if (!state.message) return;
