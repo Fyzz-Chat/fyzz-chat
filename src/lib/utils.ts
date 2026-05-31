@@ -135,6 +135,48 @@ async function getFileId(fileUIPart: FileUIPart): Promise<string> {
   return hashHex;
 }
 
+// PUTs to S3 with bounded retry on transient failures (network error or 5xx).
+// A 4xx is a permanent client error (e.g. an expired presigned URL) and is not
+// retried. Throws the last error once attempts are exhausted.
+export async function putWithRetry(
+  url: string,
+  body: BodyInit,
+  contentType: string,
+  maxAttempts = 3,
+  baseDelayMs = 200
+): Promise<void> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let permanent = false;
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        body,
+        headers: { "Content-Type": contentType },
+      });
+      if (response.ok) {
+        return;
+      }
+      lastError = new Error(`upload failed (status ${response.status})`);
+      permanent = response.status < 500; // 4xx won't self-heal — don't retry
+    } catch (error) {
+      lastError = error; // network error — retryable
+    }
+
+    if (permanent) {
+      break;
+    }
+    if (attempt < maxAttempts) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, baseDelayMs * 2 ** (attempt - 1))
+      );
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("upload failed");
+}
+
 export async function uploadFileParts(
   conversationId: string,
   fileUIParts: FileUIPart[]
@@ -157,17 +199,8 @@ export async function uploadFileParts(
         return fileUIPart;
       }
 
-      const response = await fetch(url, {
-        method: "PUT",
-        body: await fileUIPartToFile(fileUIPart),
-        headers: {
-          "Content-Type": fileUIPart.mediaType,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`status ${response.status}`);
-      }
+      const file = await fileUIPartToFile(fileUIPart);
+      await putWithRetry(url, file, fileUIPart.mediaType);
 
       return {
         ...fileUIPart,
