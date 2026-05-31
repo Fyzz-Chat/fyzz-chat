@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { del } from "idb-keyval";
 import { LoaderCircle, LogOut } from "lucide-react";
 import { useState } from "react";
@@ -10,10 +11,12 @@ import { INPUT_STORAGE_KEY } from "@/lib/utils";
 
 export function SignOut({ buttonText }: Readonly<{ buttonText: string }>) {
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleSignOut = async () => {
     setIsLoading(true);
     try {
+      queryClient.clear();
       await del(QUERY_CACHE_KEY);
       localStorage.removeItem(INPUT_STORAGE_KEY);
       await signOut();
