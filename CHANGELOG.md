@@ -1,3 +1,15 @@
+# [0.48.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.47.1...v0.48.0) (2026-05-31)
+
+
+### Bug Fixes
+
+* **chat:** make sending work again ([99881b0](https://github.com/Fyzz-Chat/fyzz-chat/commit/99881b043770894d4dc0e5f503a92046549996cf))
+
+
+### Features
+
+* **onboarding:** implement onboarding flow with user input and database integration ([3061645](https://github.com/Fyzz-Chat/fyzz-chat/commit/306164510b72b5f716f3fc9cce00d1c4f6bb688d))
+
 ## [0.47.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.47.0...v0.47.1) (2026-05-31)
 
 
