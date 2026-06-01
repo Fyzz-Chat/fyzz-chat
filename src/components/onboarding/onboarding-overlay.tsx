@@ -10,6 +10,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { completeOnboarding, skipOnboarding } from "@/lib/actions/onboarding";
 import { type OnboardingInput, parseOnboardingDraft } from "@/lib/onboarding";
@@ -23,10 +30,13 @@ type Step = {
   key: StepKey;
   title: string;
   description: string;
-  placeholder: string;
-  maxLength: number;
-  multiline: boolean;
+  placeholder?: string;
+  maxLength?: number;
+  multiline?: boolean;
   autoComplete?: string;
+  // When present, the step renders selectable chips instead of a text field.
+  // The selected labels are stored as a comma-joined string in the same field.
+  options?: string[];
 };
 
 const STEPS: Step[] = [
@@ -58,10 +68,15 @@ const STEPS: Step[] = [
   {
     key: "preferences",
     title: "How do you want to be answered?",
-    description: "Set the tone of our conversations forever.",
-    placeholder: "Be direct. Show code first. Cut the ceremony.",
-    maxLength: 600,
-    multiline: true,
+    description: "Set the tone of our conversations forever. Pick the one that fits.",
+    options: [
+      "Direct & concise",
+      "Detailed & thorough",
+      "Code-first",
+      "Warm & conversational",
+      "Formal & professional",
+      "Casual & playful",
+    ],
   },
   {
     key: "context",
@@ -361,7 +376,20 @@ export default function OnboardingOverlay({
 
               {/* Dynamic Input Frame */}
               <div className="mt-6 md:mt-8">
-                {current.multiline ? (
+                {current.options ? (
+                  <Select value={value || undefined} onValueChange={setCurrentValue}>
+                    <SelectTrigger className="h-12 w-full rounded-lg px-4 text-sm md:h-14 md:text-base">
+                      <SelectValue placeholder="Choose your tone…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {current.options.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : current.multiline ? (
                   <Textarea
                     ref={focusField}
                     key={current.key}
