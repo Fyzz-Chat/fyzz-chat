@@ -33,10 +33,10 @@ export default function DeleteAccountForm() {
     }
   }
 
-  const successCallback = async (state: FormState) => {
+  const successCallback = (state: FormState) => {
     if (state.success) {
       setOpen(false);
-      setTimeout(async () => {
+      setTimeout(() => {
         globalThis.location.reload();
       }, 1000);
     }
