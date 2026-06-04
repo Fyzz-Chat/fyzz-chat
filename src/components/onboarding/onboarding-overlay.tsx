@@ -444,7 +444,7 @@ export default function OnboardingOverlay({
                 <Button
                   type="button"
                   onClick={advance}
-                  disabled={pending}
+                  disabled={pending || (!!current.options && !value)}
                   className="h-9 min-w-[110px] text-xs transition-all active:scale-[0.985] md:h-10 md:min-w-[130px] md:text-sm"
                 >
                   {isLast ? `Awaken ${agentName}` : "Next"}
