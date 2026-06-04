@@ -181,7 +181,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
   }, [messages, persistedMessages, setMessages, status]);
 
   const handleStop = useCallback(() => {
-    stopRef.current();
+    void stopRef.current();
   }, []);
 
   const handleRegenerateMessage = useCallback(
@@ -356,7 +356,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
               ...files,
             ]
           : newMessage.parts;
-        sendMessageRef.current({ ...newMessage, parts }, { body });
+        void sendMessageRef.current({ ...newMessage, parts }, { body });
       };
 
       if (!hasAttachments) {
@@ -442,7 +442,7 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
         }
       }
     };
-    sendInitial();
+    void sendInitial();
   }, [
     initialMessage,
     messages.length,

@@ -39,7 +39,7 @@ export function useCreateSkill() {
       createSkill(input),
     onSuccess: (result) => {
       if (result.ok) {
-        queryClient.invalidateQueries(trpc.skills.queryFilter());
+        void queryClient.invalidateQueries(trpc.skills.queryFilter());
       }
     },
   });
@@ -73,7 +73,7 @@ export function useUpdateSkill() {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries(trpc.skills.queryFilter());
+      void queryClient.invalidateQueries(trpc.skills.queryFilter());
     },
   });
 }
@@ -124,7 +124,7 @@ export function useCreateProjectSkill(projectId: string) {
       createSkill({ ...input, projectId }),
     onSuccess: (result) => {
       if (result.ok) {
-        queryClient.invalidateQueries(trpc.projectSkills.queryFilter({ projectId }));
+        void queryClient.invalidateQueries(trpc.projectSkills.queryFilter({ projectId }));
       }
     },
   });
@@ -164,7 +164,7 @@ export function useUpdateProjectSkill(projectId: string) {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries(trpc.projectSkills.queryFilter({ projectId }));
+      void queryClient.invalidateQueries(trpc.projectSkills.queryFilter({ projectId }));
     },
   });
 }

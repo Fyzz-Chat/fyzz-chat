@@ -308,7 +308,7 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
                 onChange={(event) => setEditProjectName(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
-                    handleEditProject();
+                    void handleEditProject();
                   }
                 }}
               />
@@ -362,7 +362,7 @@ export function ProjectsListPage({ initialProjects }: Readonly<ProjectsListPageP
             <AlertDialogAction
               onClick={(event) => {
                 event.preventDefault();
-                handleDeleteProject();
+                void handleDeleteProject();
               }}
               disabled={deleteProject.isPending}
               className={cn(deleteProject.isPending && "min-w-28")}

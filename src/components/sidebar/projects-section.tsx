@@ -100,7 +100,7 @@ export function ProjectsSection({ initialProjects }: Readonly<ProjectsSectionPro
                       onChange={(e) => setNewProjectName(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                          handleCreateProject();
+                          void handleCreateProject();
                         }
                       }}
                     />

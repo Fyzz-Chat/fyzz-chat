@@ -131,7 +131,7 @@ export default function MessageShareAction({
                 size="icon"
                 onClick={() => {
                   setIsCopied(true);
-                  navigator.clipboard.writeText(shareUrl);
+                  void navigator.clipboard.writeText(shareUrl);
                   toast.success("Copied to clipboard!");
                   setTimeout(() => setIsCopied(false), 1500);
                 }}

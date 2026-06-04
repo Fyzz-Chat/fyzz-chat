@@ -50,7 +50,7 @@ export default function PersonaInput({
       onChange={(e) => setValue(e.target.value)}
       onBlur={() => {
         if (value.trim() !== savedValue.trim()) {
-          save();
+          void save();
         }
       }}
       placeholder={meta.placeholder}

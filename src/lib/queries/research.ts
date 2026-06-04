@@ -31,7 +31,9 @@ export function useResearchPolling({
 
   useEffect(() => {
     if (status === "complete" || status === "failed") {
-      queryClient.invalidateQueries(trpc.messages.queryFilter({ id: conversationId }));
+      void queryClient.invalidateQueries(
+        trpc.messages.queryFilter({ id: conversationId })
+      );
     }
   }, [status, conversationId, queryClient, trpc]);
 

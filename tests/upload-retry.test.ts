@@ -6,7 +6,7 @@ const originalFetch = globalThis.fetch;
 beforeAll(async () => {
   // utils.ts imports the tRPC client at module load; stub it so the import is
   // side-effect free. putWithRetry itself only uses global fetch.
-  mock.module("@/lib/trpc/client", () => ({ standaloneTrpc: {} }));
+  void mock.module("@/lib/trpc/client", () => ({ standaloneTrpc: {} }));
   ({ putWithRetry } = await import("../src/lib/utils"));
 });
 

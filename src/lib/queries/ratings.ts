@@ -55,7 +55,9 @@ export function useRateMessage(conversationId: string) {
       if (context?.previous) qc.setQueryData(queryKey, context.previous);
     },
     onSettled: () => {
-      qc.invalidateQueries(trpc.ratingsForConversation.queryFilter({ conversationId }));
+      void qc.invalidateQueries(
+        trpc.ratingsForConversation.queryFilter({ conversationId })
+      );
     },
   });
 }
@@ -79,7 +81,9 @@ export function useUnrateMessage(conversationId: string) {
       if (context?.previous) qc.setQueryData(queryKey, context.previous);
     },
     onSettled: () => {
-      qc.invalidateQueries(trpc.ratingsForConversation.queryFilter({ conversationId }));
+      void qc.invalidateQueries(
+        trpc.ratingsForConversation.queryFilter({ conversationId })
+      );
     },
   });
 }

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it, mock } from "bun:test";
 
-mock.module("server-only", () => ({}));
+void mock.module("server-only", () => ({}));
 
 let MESSAGE_ORDER_ASC: typeof import("../src/lib/dao/message-order").MESSAGE_ORDER_ASC;
 let MESSAGE_ORDER_DESC: typeof import("../src/lib/dao/message-order").MESSAGE_ORDER_DESC;

@@ -55,7 +55,7 @@ export function useDeleteUserMemory() {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries(trpc.userMemories.queryFilter());
+      void queryClient.invalidateQueries(trpc.userMemories.queryFilter());
     },
   });
 }
@@ -100,7 +100,7 @@ export function useDeleteProjectMemory(projectId: string) {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries(
+      void queryClient.invalidateQueries(
         trpc.projectMemoriesGrouped.queryFilter({ projectId })
       );
     },

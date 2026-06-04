@@ -1,6 +1,6 @@
 import { mock } from "bun:test";
 
-mock.module("server-only", () => ({}));
+void mock.module("server-only", () => ({}));
 
 const providerEnvKeys = [
   "OPENAI_API_KEY",

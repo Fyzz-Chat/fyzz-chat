@@ -52,7 +52,7 @@ export default function DefaultModelSelect({
 
   useEffect(() => {
     if (selectedModel && selectedModel !== defaultModel) {
-      updateDefaultModel(selectedModel).then(() => {
+      void updateDefaultModel(selectedModel).then(() => {
         toast.success(translations.settings.memory.defaultModel.sonner.title, {
           description: translations.settings.memory.defaultModel.sonner.description,
         });

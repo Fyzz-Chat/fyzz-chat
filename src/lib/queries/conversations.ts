@@ -234,8 +234,8 @@ export function usePrefetchConversation() {
 
   return useCallback(
     (id: string) => {
-      queryClient.prefetchQuery(trpc.conversation.queryOptions({ id }));
-      queryClient.prefetchQuery(
+      void queryClient.prefetchQuery(trpc.conversation.queryOptions({ id }));
+      void queryClient.prefetchQuery(
         trpc.messages.queryOptions({
           id,
           page: MESSAGES_DEFAULT_PAGE,
@@ -491,9 +491,11 @@ export function useBranchConversation() {
 
         // Invalidate project-related queries to refresh counts and filtered lists
         if (originalConversation.projectId) {
-          queryClient.invalidateQueries(trpc.projects.queryFilter());
+          void queryClient.invalidateQueries(trpc.projects.queryFilter());
         }
-        queryClient.invalidateQueries(trpc.infiniteConversations.infiniteQueryFilter());
+        void queryClient.invalidateQueries(
+          trpc.infiniteConversations.infiniteQueryFilter()
+        );
       }
     },
     onError: (error) => {

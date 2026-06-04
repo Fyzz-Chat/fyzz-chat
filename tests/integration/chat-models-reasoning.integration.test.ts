@@ -13,7 +13,7 @@ import {
   throwOnFailures,
 } from "./helpers";
 
-mock.module("server-only", () => ({}));
+void mock.module("server-only", () => ({}));
 
 const RUN_INTEGRATION = process.env.RUN_INTEGRATION === "true";
 

@@ -123,7 +123,7 @@ export default function ChatSidebar({
   const { ref } = useInView({
     onChange: (inView) => {
       if (inView && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
+        void fetchNextPage();
       }
     },
   });
@@ -255,7 +255,7 @@ function ConversationLink({ chat }: Readonly<{ chat: PartialConversation }>) {
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleDelete();
+    void handleDelete();
   };
 
   const handleMoveToProject = (projectId: string | null) => {

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, mock } from "bun:test";
 import type { CustomUIMessage, PartialMessage } from "../src/types/chat";
 
-mock.module("server-only", () => ({}));
+void mock.module("server-only", () => ({}));
 
 let mapFilePartsForRead: typeof import("../src/lib/backend/message-mapper").mapFilePartsForRead;
 let mapFilePartsForClient: typeof import("../src/lib/backend/message-mapper").mapFilePartsForClient;
@@ -10,7 +10,7 @@ let mapDbMessageToUiMessage: typeof import("../src/lib/backend/message-mapper").
 let mapDbMessagesToUiMessages: typeof import("../src/lib/backend/message-mapper").mapDbMessagesToUiMessages;
 
 beforeAll(async () => {
-  mock.module("@/lib/aws/s3", () => ({
+  void mock.module("@/lib/aws/s3", () => ({
     getFileUrlSigned: (prefix: string, fileUrl: string) =>
       `signed://${prefix}/${fileUrl}`,
   }));
