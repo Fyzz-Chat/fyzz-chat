@@ -535,6 +535,17 @@ export default function ChatMessageList({ id }: Readonly<{ id: string }>) {
     setStatus(status);
   }, [status, setStatus]);
 
+  // Clear any in-flight upload entries when navigating away so the user
+  // doesn't see a stuck spinner if they return to this conversation.
+  useEffect(() => {
+    return () => {
+      const { uploads, clear } = useUploadStore.getState();
+      for (const messageId of Object.keys(uploads)) {
+        clear(messageId);
+      }
+    };
+  }, []);
+
   const hasPendingResearch = useMemo(
     () =>
       persistedMessages.some(

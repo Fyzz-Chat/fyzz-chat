@@ -143,7 +143,8 @@ export async function putWithRetry(
   body: BodyInit,
   contentType: string,
   maxAttempts = 3,
-  baseDelayMs = 200
+  baseDelayMs = 200,
+  perAttemptTimeoutMs = 30_000
 ): Promise<void> {
   let lastError: unknown;
 
@@ -154,6 +155,7 @@ export async function putWithRetry(
         method: "PUT",
         body,
         headers: { "Content-Type": contentType },
+        signal: AbortSignal.timeout(perAttemptTimeoutMs),
       });
       if (response.ok) {
         return;
@@ -181,15 +183,14 @@ export async function uploadFileParts(
   conversationId: string,
   fileUIParts: FileUIPart[]
 ): Promise<FileUIPart[]> {
-  const uploadUrls = await standaloneTrpc.getUploadUrls.query({
-    conversationId,
-    count: fileUIParts.length,
-    fileIds: await Promise.all(
-      fileUIParts.map(async (fileUIPart) => {
-        return await getFileId(fileUIPart);
-      })
-    ),
-  });
+  const uploadUrls = await standaloneTrpc.getUploadUrls.query(
+    {
+      conversationId,
+      count: fileUIParts.length,
+      fileIds: await Promise.all(fileUIParts.map((fileUIPart) => getFileId(fileUIPart))),
+    },
+    { signal: AbortSignal.timeout(15_000) }
+  );
 
   const results = await Promise.allSettled(
     fileUIParts.map(async (fileUIPart, index) => {
@@ -200,7 +201,7 @@ export async function uploadFileParts(
       }
 
       const file = await fileUIPartToFile(fileUIPart);
-      await putWithRetry(url, file, fileUIPart.mediaType);
+      await putWithRetry(url, file, fileUIPart.mediaType, 3, 200, 30_000);
 
       return {
         ...fileUIPart,
