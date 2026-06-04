@@ -47,11 +47,14 @@ export function isUniqueConstraintViolation(error: unknown) {
 }
 
 export function getVersion() {
-  const packageJson = JSON.parse(
-    readFileSync(join(process.cwd(), "package.json"), "utf8")
-  );
-  const app_version = packageJson.version;
-  return app_version;
+  try {
+    const packageJson = JSON.parse(
+      readFileSync(join(process.cwd(), "package.json"), "utf8")
+    );
+    return packageJson.version as string;
+  } catch {
+    return "unknown";
+  }
 }
 
 export function streamSentence(

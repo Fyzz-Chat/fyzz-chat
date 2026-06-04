@@ -22,7 +22,17 @@ export async function getMcpClients(mcpServers?: JsonValue | null): Promise<MCPC
     return [];
   }
 
-  const servers = JSON.parse(mcpServers as string).mcpServers;
+  // biome-ignore lint/suspicious/noExplicitAny: external JSON config, shape is user-controlled
+  let parsed: { mcpServers?: Record<string, any> };
+  try {
+    parsed = JSON.parse(mcpServers as string);
+  } catch {
+    return [];
+  }
+  const servers = parsed.mcpServers;
+  if (!servers) {
+    return [];
+  }
   const entries: { serverKey: string; promise: Promise<MCPClient> }[] = [];
 
   for (const serverKey of Object.keys(servers)) {
