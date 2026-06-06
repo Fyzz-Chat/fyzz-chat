@@ -5,7 +5,6 @@ import {
   type LanguageModelUsage,
   safeValidateUIMessages,
   smoothStream,
-  stepCountIs,
   streamText,
   type Tool,
 } from "ai";
@@ -556,7 +555,7 @@ export async function POST(req: NextRequest) {
     model,
     messages: await convertToModelMessages(messagesForModel),
     system: extendedSystemPrompt,
-    stopWhen: [stepCountIs(5), hasToolCall("generateImage")],
+    stopWhen: [hasToolCall("generateImage")],
     experimental_transform: smoothStream({
       delayInMs: 10,
     }),
