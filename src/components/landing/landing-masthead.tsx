@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LandingMastheadCta } from "./landing-masthead-cta";
 import { LandingWrap } from "./landing-wrap";
 
 export function LandingMasthead() {
@@ -15,12 +16,7 @@ export function LandingMasthead() {
           >
             Sign in
           </Link>
-          <Link
-            href="/register"
-            className="rounded-full border border-foreground px-4 py-[7px] font-semibold text-[13px] text-foreground transition-colors hover:bg-foreground hover:text-background"
-          >
-            Awaken yours
-          </Link>
+          <LandingMastheadCta />
         </div>
       </LandingWrap>
     </header>
