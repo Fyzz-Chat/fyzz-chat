@@ -20,7 +20,7 @@ export function LandingMastheadCta() {
     <Link
       href="/register"
       onClick={persistName}
-      className="rounded-full border border-foreground px-4 py-[7px] font-semibold text-[13px] text-foreground transition-colors hover:bg-foreground hover:text-background"
+      className="rounded-full border border-border px-4 py-[7px] font-semibold text-[13px] text-foreground transition duration-150 ease-out hover:border-foreground/60 hover:bg-foreground/[0.06] hover:duration-200 active:scale-[0.985] active:duration-75 motion-reduce:active:scale-100"
     >
       <SmoothWidth>
         Awaken <AnimatedName text={settledName || "yours"} />
