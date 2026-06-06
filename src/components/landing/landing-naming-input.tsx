@@ -1,12 +1,95 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AGENT_NAME_STORAGE_KEY } from "@/lib/onboarding";
+
+const SETTLE_MS = 1000;
+const ENTER_STAGGER_MS = 35;
+const EXIT_STAGGER_MS = 25;
+const EXIT_DURATION_MS = 250;
+
+function AnimatedName({ text }: Readonly<{ text: string }>) {
+  const [shown, setShown] = useState(text);
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    if (text === shown) return;
+    if (!shown) {
+      setShown(text);
+      return;
+    }
+    setExiting(true);
+    const exitTotal = (shown.length - 1) * EXIT_STAGGER_MS + EXIT_DURATION_MS;
+    const timer = setTimeout(() => {
+      setExiting(false);
+      setShown(text);
+    }, exitTotal);
+    return () => clearTimeout(timer);
+  }, [text, shown]);
+
+  if (!shown) return null;
+
+  return (
+    <span key={shown}>
+      <span className="sr-only">{text || shown}</span>
+      <span aria-hidden="true">
+        {[...shown].map((char, i) => (
+          <span
+            // biome-ignore lint/suspicious/noArrayIndexKey: chars are positional; the outer key resets the list per text
+            key={i}
+            className={`inline-block motion-reduce:animate-none ${
+              exiting
+                ? "fade-out slide-out-to-bottom-1 animate-out fill-mode-forwards duration-200"
+                : "fade-in slide-in-from-bottom-1 animate-in fill-mode-backwards duration-300"
+            }`}
+            style={{
+              animationDelay: exiting
+                ? `${(shown.length - 1 - i) * EXIT_STAGGER_MS}ms`
+                : `${i * ENTER_STAGGER_MS}ms`,
+            }}
+          >
+            {char === " " ? "\u00A0" : char}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
+function SmoothWidth({ children }: Readonly<{ children: React.ReactNode }>) {
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [width, setWidth] = useState<number>();
+
+  useEffect(() => {
+    const el = measureRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => setWidth(el.scrollWidth));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <span
+      className="inline-flex overflow-hidden transition-[width] duration-300 ease-out motion-reduce:transition-none"
+      style={{ width: width === undefined ? "auto" : `${width}px` }}
+    >
+      <span ref={measureRef} className="whitespace-nowrap">
+        {children}
+      </span>
+    </span>
+  );
+}
 
 export function LandingNamingInput() {
   const [name, setName] = useState("");
+  const [settledName, setSettledName] = useState("");
   const trimmed = name.trim().slice(0, 60);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSettledName(trimmed), SETTLE_MS);
+    return () => clearTimeout(timer);
+  }, [trimmed]);
 
   const persistName = () => {
     if (trimmed) {
@@ -33,11 +116,9 @@ export function LandingNamingInput() {
           autoComplete="off"
           className="w-full bg-transparent font-landing-display text-[1.35rem] text-foreground italic outline-none [font-optical-sizing:auto] placeholder:text-muted-foreground/50"
         />
-        {trimmed && (
-          <span className="fade-in shrink-0 animate-in whitespace-nowrap text-[11px] text-onboarding-accent duration-300">
-            ✓ call me {trimmed}
-          </span>
-        )}
+        <span className="shrink-0 whitespace-nowrap text-[11px] text-onboarding-accent">
+          <AnimatedName text={settledName ? `✓ call me ${settledName}` : ""} />
+        </span>
       </div>
 
       <div className="mt-7 flex flex-wrap gap-3">
@@ -46,7 +127,9 @@ export function LandingNamingInput() {
           onClick={persistName}
           className="group inline-flex items-center gap-[9px] rounded-full bg-landing-accent px-6 py-[14px] font-semibold text-[15px] text-white shadow-[0_8px_24px_-10px_rgba(229,66,28,0.7)] transition hover:-translate-y-[2px] hover:bg-landing-accent-deep hover:shadow-[0_14px_30px_-12px_rgba(229,66,28,0.8)]"
         >
-          Awaken {trimmed || "yours"}
+          <SmoothWidth>
+            Awaken <AnimatedName text={settledName || "yours"} />
+          </SmoothWidth>
           <svg
             width="15"
             height="15"
