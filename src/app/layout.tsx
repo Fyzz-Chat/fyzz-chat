@@ -21,9 +21,6 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-// Landing "notebook" display + body fonts. Defined globally so the
-// --font-fraunces / --font-schibsted vars always resolve, but next/font only
-// downloads the actual font files on pages that render them (i.e. the landing).
 const fraunces = Fraunces({
   subsets: ["latin"],
   axes: ["opsz"],

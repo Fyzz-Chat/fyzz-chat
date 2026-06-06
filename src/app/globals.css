@@ -55,7 +55,7 @@
   --sidebar-border: hsl(0 0% 90%);
   --sidebar-ring: hsl(0 0% 64%);
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 1rem;
   --shadow-x: 0px;
