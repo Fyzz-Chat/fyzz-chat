@@ -34,7 +34,12 @@ export function LandingNamingInput() {
       >
         What will you call yours?
       </label>
-      <div className="mt-2 flex max-w-[20rem] items-baseline gap-2 border-border border-b pb-1.5 transition-colors focus-within:border-onboarding-accent">
+      <div className="group relative mt-2 flex max-w-[20rem] items-baseline gap-2 border-border border-b pb-1.5">
+        {/* Accent underline writes itself in from the left on focus. */}
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-px left-0 h-px w-full origin-left scale-x-0 bg-onboarding-accent transition-transform duration-600 ease-out group-focus-within:scale-x-100 motion-reduce:transition-none"
+        />
         <input
           id="hero-agent-name"
           type="text"

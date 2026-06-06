@@ -43,3 +43,4 @@ src/lib/prisma/generated
 /.github/copilot-instructions.md
 
 .playwright-mcp/
+CLAUDE.local.md
