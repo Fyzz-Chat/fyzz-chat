@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const AGENT_NAME_STORAGE_KEY = "fyzz:agent-name";
+
 export const onboardingSchema = z.object({
   displayName: z.string().trim().max(60).optional(),
   agentName: z.string().trim().max(60).optional(),

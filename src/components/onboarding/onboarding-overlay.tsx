@@ -19,7 +19,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { completeOnboarding, skipOnboarding } from "@/lib/actions/onboarding";
-import { type OnboardingInput, parseOnboardingDraft } from "@/lib/onboarding";
+import {
+  AGENT_NAME_STORAGE_KEY,
+  type OnboardingInput,
+  parseOnboardingDraft,
+} from "@/lib/onboarding";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 const WELCOME = "Let's awaken something that understands you.";
@@ -132,6 +136,13 @@ export default function OnboardingOverlay({
     }
   }, [autoOpen, open]);
 
+  useEffect(() => {
+    const heroName = localStorage.getItem(AGENT_NAME_STORAGE_KEY);
+    if (!heroName) return;
+    localStorage.removeItem(AGENT_NAME_STORAGE_KEY);
+    setValues((prev) => (prev.agentName ? prev : { ...prev, agentName: heroName }));
+  }, []);
+
   if (!enabled) return null;
 
   const current = STEPS[step];
@@ -208,8 +219,8 @@ export default function OnboardingOverlay({
         <AlertDialogContent className="flex h-[90vh] w-[calc(100vw-2rem)] max-w-none items-center justify-center overflow-hidden bg-background p-0 md:h-[580px] md:max-w-[920px]">
           {/* Breathing dual-tone radial glow */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div className="absolute top-1/2 left-1/2 h-[520px] w-[520px] animate-onboarding-breathe rounded-full bg-[radial-gradient(circle,var(--onboarding-accent),transparent_70%)] opacity-30 blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 h-[380px] w-[380px] animate-onboarding-breathe rounded-full bg-[radial-gradient(circle,var(--onboarding-glow),transparent_70%)] opacity-25 blur-3xl [animation-delay:1.3s]" />
+            <div className="absolute inset-0 m-auto h-[520px] w-[520px] animate-onboarding-breathe rounded-full bg-[radial-gradient(circle,var(--onboarding-accent),transparent_70%)] opacity-30 blur-3xl" />
+            <div className="absolute inset-0 m-auto h-[380px] w-[380px] animate-onboarding-breathe rounded-full bg-[radial-gradient(circle,var(--onboarding-glow),transparent_70%)] opacity-25 blur-3xl [animation-delay:-1.3s]" />
           </div>
 
           <div className="fade-in zoom-in-95 relative z-10 flex w-full max-w-lg animate-in flex-col items-center px-6 text-center duration-700">

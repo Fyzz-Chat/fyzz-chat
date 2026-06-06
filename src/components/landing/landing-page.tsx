@@ -12,9 +12,11 @@ export function LandingPage() {
   return (
     <div className="landing relative w-full flex-1 overflow-x-clip bg-landing-paper font-landing-sans text-[1.0625rem] text-landing-ink leading-[1.6] antialiased">
       <LandingThread />
-      <LandingMasthead />
-      <main className="relative z-2">
+      <div className="relative z-2 bg-background text-foreground">
+        <LandingMasthead />
         <LandingHero />
+      </div>
+      <main className="relative z-2">
         <LandingAphorism />
         <LandingProof />
         <LandingBeforeAfter />
