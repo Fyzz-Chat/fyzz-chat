@@ -382,18 +382,19 @@ async function persistStreamResult({
 
 export async function POST(req: NextRequest) {
   const start = performance.now();
-  const user = await getUserFromSession();
+
+  const [user, bodyResult] = await Promise.all([
+    getUserFromSession(),
+    req.json().then(
+      (b) => ({ ok: true as const, body: b as unknown }),
+      () => ({ ok: false as const })
+    ),
+  ]);
   logDuration(start, "User fetched");
 
-  let body: unknown;
+  if (!bodyResult.ok) return new Response("Invalid JSON body", { status: 400 });
 
-  try {
-    body = await req.json();
-  } catch (_error) {
-    return new Response("Invalid JSON body", { status: 400 });
-  }
-
-  const parsedRequest = await validateRequestBody(body);
+  const parsedRequest = await validateRequestBody(bodyResult.body);
 
   if (!parsedRequest.success) {
     logger.warn({

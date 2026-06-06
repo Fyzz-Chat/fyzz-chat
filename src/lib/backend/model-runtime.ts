@@ -25,22 +25,24 @@ export async function buildToolsForRuntime(
     Object.assign(tools, createAgentMemoryTools(user.id, projectId, conversationId));
   }
 
-  if (user.skillsEnabled) {
-    const skillCount = await countEnabledSkillsInScope(user.id, projectId);
-    if (skillCount > 0) {
-      tools.activate_skill = createActivateSkillTool(user.id);
-    }
-  }
-
   if (search) {
     tools.readUrl = readUrlTool;
   }
 
   Object.assign(tools, providerTools);
 
-  const mcpClients = await getMcpClients(user.mcpServers);
+  const [skillCount, mcpClients] = await Promise.all([
+    user.skillsEnabled
+      ? countEnabledSkillsInScope(user.id, projectId)
+      : Promise.resolve(0),
+    getMcpClients(user.mcpServers),
+  ]);
 
-  if (mcpClients) {
+  if (user.skillsEnabled && skillCount > 0) {
+    tools.activate_skill = createActivateSkillTool(user.id);
+  }
+
+  if (mcpClients.length > 0) {
     const mcpTools = await getMcpTools(mcpClients);
     Object.assign(tools, mcpTools);
   }
