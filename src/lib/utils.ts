@@ -226,7 +226,7 @@ export async function uploadFileParts(
 }
 
 async function fileUIPartToFile(fileUIPart: FileUIPart): Promise<File> {
-  const response = await fetch(fileUIPart.url);
+  const response = await fetch(fileUIPart.url, { signal: AbortSignal.timeout(15_000) });
   if (!response.ok) {
     throw new Error("Failed to fetch file for upload");
   }
