@@ -1,3 +1,4 @@
+import { CompanionName } from "./companion-name";
 import { LandingNamingInput } from "./landing-naming-input";
 import { LandingWrap } from "./landing-wrap";
 
@@ -24,8 +25,8 @@ export function LandingHero() {
 
         <p className="mt-[clamp(1.5rem,3.5vw,2.5rem)] max-w-[52ch] animate-landing-rise text-[clamp(1.08rem,1.8vw,1.3rem)] text-muted-foreground leading-[1.6] [animation-delay:220ms] motion-reduce:animate-none">
           Give it a name. Tell it who you are, how you want to be spoken to, what
-          you&apos;re building. It remembers all of it — and every session begins where
-          the last one ended.
+          you&apos;re building. <CompanionName fallback="It" /> remembers all of it — and
+          every session begins where the last one ended.
         </p>
 
         <div className="mt-[clamp(2rem,4.5vw,3.25rem)] animate-landing-rise [animation-delay:360ms] motion-reduce:animate-none">
