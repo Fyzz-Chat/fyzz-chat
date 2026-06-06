@@ -44,6 +44,8 @@ export async function getMcpClients(mcpServers?: JsonValue | null): Promise<MCPC
     const command = server.command as string | undefined;
     const args = server.args as string[] | undefined;
     const env = (server.env as Record<string, string> | undefined) || {};
+    const authorization = server.authorization as string | undefined;
+    const headers = authorization ? { Authorization: authorization } : undefined;
 
     if (command && args) {
       entries.push({ serverKey, promise: createStdioMcpClient(command, args, env) });
@@ -55,8 +57,8 @@ export async function getMcpClients(mcpServers?: JsonValue | null): Promise<MCPC
     }
 
     const promise = serverUrl.includes("/sse")
-      ? createSseMcpClient(serverUrl)
-      : createHttpMcpClient(serverUrl);
+      ? createSseMcpClient(serverUrl, headers)
+      : createHttpMcpClient(serverUrl, headers);
     entries.push({ serverKey, promise });
   }
 
