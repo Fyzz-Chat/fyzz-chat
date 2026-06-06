@@ -15,9 +15,9 @@ export function LandingPage() {
       <div className="relative z-2 bg-background text-foreground">
         <LandingMasthead />
         <LandingHero />
+        <LandingAphorism />
       </div>
       <main className="relative z-2">
-        <LandingAphorism />
         <LandingProof />
         <LandingBeforeAfter />
         <LandingClosing />
