@@ -1,4 +1,5 @@
 import { CompanionName } from "./companion-name";
+import { LandingHeroWhisper } from "./landing-hero-whisper";
 import { LandingNamingInput } from "./landing-naming-input";
 import { LandingWrap } from "./landing-wrap";
 
@@ -33,6 +34,12 @@ export function LandingHero() {
           <LandingNamingInput />
         </div>
       </LandingWrap>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-[clamp(2rem,6vh,3.25rem)] hidden md:block">
+        <LandingWrap className="flex justify-end">
+          <LandingHeroWhisper />
+        </LandingWrap>
+      </div>
     </section>
   );
 }
