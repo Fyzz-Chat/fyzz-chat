@@ -1,6 +1,7 @@
 import "server-only";
 
 import { safeParseJson } from "@/lib/backend/message-mapper";
+import { buildConversationListWhere, parseCursor } from "@/lib/dao/conversations";
 import { MESSAGE_ORDER_ASC } from "@/lib/dao/message-order";
 import prisma from "@/lib/prisma/prisma";
 import { metadataSchema } from "@/types/chat";
@@ -12,45 +13,17 @@ export async function apiListConversations(
   search?: string,
   projectId?: string | null
 ) {
-  let cursorDate: Date | undefined;
-  let cursorId: string | undefined;
-
-  if (cursor) {
-    const [timestamp, id] = cursor.split("_");
-    cursorDate = new Date(timestamp);
-    cursorId = id;
-  }
+  const { cursorDate, cursorId } = parseCursor(cursor);
 
   const items = await prisma.conversation.findMany({
     take: limit + 1,
-    where: {
+    where: buildConversationListWhere({
       userId,
-      ...(projectId === null
-        ? { projectId: null }
-        : projectId !== undefined
-          ? { projectId }
-          : {}),
-      ...(search
-        ? {
-            OR: [
-              { title: { contains: search, mode: "insensitive" } },
-              {
-                messages: {
-                  some: { content: { contains: search, mode: "insensitive" } },
-                },
-              },
-            ],
-          }
-        : {}),
-      ...(cursorDate && cursorId
-        ? {
-            OR: [
-              { lastMessageAt: { lt: cursorDate } },
-              { lastMessageAt: cursorDate, id: { lt: cursorId } },
-            ],
-          }
-        : {}),
-    },
+      projectId,
+      search,
+      cursorDate,
+      cursorId,
+    }),
     select: {
       id: true,
       title: true,

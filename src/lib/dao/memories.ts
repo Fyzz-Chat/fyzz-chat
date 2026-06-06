@@ -13,9 +13,11 @@ const browserMemorySelect = {
   createdAt: true,
 } as const;
 
-export async function getAllUserMemoriesGrouped(userId: string) {
+async function groupMemories(
+  where: { userId: string; projectId: null } | { projectId: string }
+) {
   const rows = await prisma.memory.findMany({
-    where: { userId, projectId: null },
+    where,
     orderBy: { createdAt: "desc" },
     select: browserMemorySelect,
   });
@@ -30,21 +32,12 @@ export async function getAllUserMemoriesGrouped(userId: string) {
   return grouped;
 }
 
+export async function getAllUserMemoriesGrouped(userId: string) {
+  return groupMemories({ userId, projectId: null });
+}
+
 export async function getAllProjectMemoriesGrouped(projectId: string) {
-  const rows = await prisma.memory.findMany({
-    where: { projectId },
-    orderBy: { createdAt: "desc" },
-    select: browserMemorySelect,
-  });
-  const grouped: Record<MemoryType, typeof rows> = {
-    [MemoryType.fact]: [],
-    [MemoryType.opinion]: [],
-    [MemoryType.learning]: [],
-    [MemoryType.context]: [],
-    [MemoryType.feedback]: [],
-  };
-  for (const row of rows) grouped[row.type].push(row);
-  return grouped;
+  return groupMemories({ projectId });
 }
 
 export async function deleteMemory(id: string, userId: string) {

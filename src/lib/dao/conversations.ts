@@ -110,6 +110,57 @@ export async function getOrCreateConversation(
   }
 }
 
+export function parseCursor(cursor?: string): { cursorDate?: Date; cursorId?: string } {
+  if (!cursor) return {};
+  const [timestamp, id] = cursor.split("_");
+  return { cursorDate: new Date(timestamp), cursorId: id };
+}
+
+type ConversationListWhereOpts = {
+  userId: string;
+  projectId?: string | null;
+  search?: string;
+  cursorDate?: Date;
+  cursorId?: string;
+};
+
+export function buildConversationListWhere({
+  userId,
+  projectId,
+  search,
+  cursorDate,
+  cursorId,
+}: ConversationListWhereOpts) {
+  return {
+    userId,
+    ...(projectId === null
+      ? { projectId: null }
+      : projectId !== undefined
+        ? { projectId }
+        : {}),
+    ...(search
+      ? {
+          OR: [
+            { title: { contains: search, mode: "insensitive" as const } },
+            {
+              messages: {
+                some: { content: { contains: search, mode: "insensitive" as const } },
+              },
+            },
+          ],
+        }
+      : {}),
+    ...(cursorDate && cursorId
+      ? {
+          OR: [
+            { lastMessageAt: { lt: cursorDate } },
+            { lastMessageAt: cursorDate, id: { lt: cursorId } },
+          ],
+        }
+      : {}),
+  };
+}
+
 export async function getConversationsByCursor(
   limit: number,
   cursor?: string,
@@ -118,52 +169,17 @@ export async function getConversationsByCursor(
 ): Promise<ConversationPage> {
   const userId = await getUserIdFromSession();
 
-  // Parse cursor if provided (format: "timestamp_id")
-  let cursorDate: Date | undefined;
-  let cursorId: string | undefined;
-
-  if (cursor) {
-    const [timestamp, id] = cursor.split("_");
-    cursorDate = new Date(timestamp);
-    cursorId = id;
-  }
+  const { cursorDate, cursorId } = parseCursor(cursor);
 
   const items = await prisma.conversation.findMany({
-    // +1 to check if there is a next page
     take: limit + 1,
-    where: {
+    where: buildConversationListWhere({
       userId,
-      // Filter by project if specified
-      ...(projectId === null
-        ? { projectId: null }
-        : projectId !== undefined
-          ? { projectId }
-          : {}),
-      ...(search
-        ? {
-            OR: [
-              { title: { contains: search, mode: "insensitive" } },
-              {
-                messages: {
-                  some: { content: { contains: search, mode: "insensitive" } },
-                },
-              },
-            ],
-          }
-        : {}),
-      // Cursor condition: get items older than cursor
-      ...(cursorDate && cursorId
-        ? {
-            OR: [
-              { lastMessageAt: { lt: cursorDate } },
-              {
-                lastMessageAt: cursorDate,
-                id: { lt: cursorId },
-              },
-            ],
-          }
-        : {}),
-    },
+      projectId,
+      search,
+      cursorDate,
+      cursorId,
+    }),
     select: {
       id: true,
       title: true,

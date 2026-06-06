@@ -36,12 +36,19 @@ const domainRestrictedResponse: FormState = {
   success: false,
 };
 
-export async function signInUser(
-  _prevState: FormState,
-  formData: LoginFormData
-): Promise<FormState> {
-  const parsed = loginSchema.safeParse(formData);
+type Parseable<T> = {
+  safeParse: (
+    data: unknown
+  ) =>
+    | { success: true; data: T }
+    | { success: false; error: { issues: { message?: string }[] } };
+};
 
+async function parseAndGuard<T extends { email: string }>(
+  schema: Parseable<T>,
+  formData: unknown
+): Promise<{ data: T } | FormState> {
+  const parsed = schema.safeParse(formData);
   if (!parsed.success) {
     const firstError = parsed.error.issues[0];
     return {
@@ -50,29 +57,26 @@ export async function signInUser(
       success: false,
     };
   }
+  const turnstile = (parsed.data as { "cf-turnstile-response"?: string })[
+    "cf-turnstile-response"
+  ];
+  if (!(await verifyTurnstile(turnstile))) return turnstileFailedResponse;
+  if (!isEmailDomainAllowed(parsed.data.email)) return domainRestrictedResponse;
+  return { data: parsed.data };
+}
 
-  const parsedData = parsed.data;
-
-  const turnstileResponse = parsedData["cf-turnstile-response"];
-  const turnstileVerified = await verifyTurnstile(turnstileResponse);
-
-  if (!turnstileVerified) {
-    return turnstileFailedResponse;
-  }
-
-  if (!isEmailDomainAllowed(parsedData.email)) {
-    return domainRestrictedResponse;
-  }
-
-  const body = {
-    email: parsedData.email,
-    password: parsedData.password,
-    callbackURL: publicConf.redirectPath,
-  };
+export async function signInUser(
+  _prevState: FormState,
+  formData: LoginFormData
+): Promise<FormState> {
+  const result = await parseAndGuard(loginSchema, formData);
+  if (!("data" in result)) return result;
+  const { email, password } = result.data;
 
   try {
-    await auth.api.signInEmail({ body });
-
+    await auth.api.signInEmail({
+      body: { email, password, callbackURL: publicConf.redirectPath },
+    });
     return {
       message: "Signed in successfully",
       description: "You have been successfully signed in.",
@@ -92,40 +96,14 @@ export async function registerUser(
   _prevState: FormState,
   formData: RegisterFormData
 ): Promise<FormState> {
-  const parsed = registerSchema.safeParse(formData);
-
-  if (!parsed.success) {
-    const firstError = parsed.error.issues[0];
-    return {
-      message: "Validation failed",
-      description: firstError?.message ?? "Invalid input. Please check your data.",
-      success: false,
-    };
-  }
-
-  const parsedData = parsed.data;
-
-  const turnstileResponse = parsedData["cf-turnstile-response"];
-  const turnstileVerified = await verifyTurnstile(turnstileResponse);
-
-  if (!turnstileVerified) {
-    return turnstileFailedResponse;
-  }
-
-  if (!isEmailDomainAllowed(parsedData.email)) {
-    return domainRestrictedResponse;
-  }
-
-  const body = {
-    name: parsedData.name,
-    email: parsedData.email,
-    password: parsedData.password,
-    callbackURL: publicConf.redirectPath,
-  };
+  const result = await parseAndGuard(registerSchema, formData);
+  if (!("data" in result)) return result;
+  const { name, email, password } = result.data;
 
   try {
-    await auth.api.signUpEmail({ body });
-
+    await auth.api.signUpEmail({
+      body: { name, email, password, callbackURL: publicConf.redirectPath },
+    });
     return {
       message: "Registered successfully",
       description: "You have been successfully registered.",
