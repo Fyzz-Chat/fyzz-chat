@@ -6,6 +6,7 @@ export const LintPlugin: Plugin = async ({ $ }) => {
       await $`bun run check-write`;
       await $`bun run type-check`;
       await $`bun run test`;
+      await $`bun run jscpd`;
       await $`bun run knip`;
     },
     "session.idle": async () => {

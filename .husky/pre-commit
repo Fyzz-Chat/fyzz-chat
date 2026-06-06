@@ -1,5 +1,5 @@
 bun run lint-staged
 bun run type-check
 bun run test
-bun run knip
 bun run jscpd
+bun run knip

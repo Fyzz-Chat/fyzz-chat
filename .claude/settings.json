@@ -18,6 +18,10 @@
           },
           {
             "type": "command",
+            "command": "bun .agents/hooks/jscpd.ts"
+          },
+          {
+            "type": "command",
             "command": "bun .agents/hooks/knip.ts"
           }
         ]

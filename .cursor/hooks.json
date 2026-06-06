@@ -12,6 +12,9 @@
         "command": "bun .agents/hooks/test.ts"
       },
       {
+        "command": "bun .agents/hooks/jscpd.ts"
+      },
+      {
         "command": "bun .agents/hooks/knip.ts"
       },
       {
