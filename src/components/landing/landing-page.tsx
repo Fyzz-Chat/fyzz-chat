@@ -18,11 +18,11 @@ export function LandingPage() {
         <LandingAphorism />
         <LandingMemory />
         <LandingControl />
+        <main>
+          <LandingClosing />
+        </main>
+        <LandingFooter />
       </div>
-      <main className="relative z-2">
-        <LandingClosing />
-      </main>
-      <LandingFooter />
     </div>
   );
 }

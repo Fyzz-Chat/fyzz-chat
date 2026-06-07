@@ -1,34 +1,30 @@
-import Link from "next/link";
+import { CompanionName } from "./companion-name";
+import { LandingClosingCta } from "./landing-closing-cta";
 import { LandingWrap } from "./landing-wrap";
+import { Reveal } from "./reveal";
 
 export function LandingClosing() {
   return (
-    <section className="border-landing-ink border-t py-[clamp(3.5rem,11vh,8.125rem)] text-center">
-      <LandingWrap className="animate-landing-rise motion-reduce:animate-none">
-        <h2 className="font-[560] font-landing-display text-[clamp(2.4rem,7vw,5.5rem)] leading-[0.95] tracking-[-0.03em]">
-          Stop starting over<span className="text-landing-accent">.</span>
-        </h2>
-        <p className="mx-auto mt-5 mb-[34px] max-w-[40ch] text-[1.1rem] text-landing-ink-dim">
-          Bring real client work and watch it remember. Free to try — no card.
-        </p>
-        <Link
-          href="/register"
-          className="group inline-flex items-center gap-[9px] rounded-full bg-landing-accent px-[30px] py-4 font-semibold text-[16px] text-white shadow-[0_8px_24px_-10px_rgba(229,66,28,0.7)] transition hover:-translate-y-[2px] hover:bg-landing-accent-deep hover:shadow-[0_14px_30px_-12px_rgba(229,66,28,0.8)]"
-        >
-          Try Fyzz free
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.6"
-            aria-hidden="true"
-            className="transition-transform group-hover:translate-x-1"
-          >
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </Link>
+    <section className="relative py-[clamp(4.5rem,12vh,8.5rem)] text-center">
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent"
+      />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-30">
+        <div className="absolute top-[58%] left-1/2 mt-[-150px] ml-[-300px] h-[300px] w-[600px] animate-onboarding-breathe rounded-full bg-[radial-gradient(ellipse,var(--onboarding-accent),transparent_70%)] blur-3xl [animation-delay:-2.4s] motion-reduce:animate-none" />
+      </div>
+
+      <LandingWrap className="relative">
+        <Reveal>
+          <h2 className="font-[560] font-landing-display text-[clamp(2.4rem,7vw,5.5rem)] text-foreground leading-[0.95] tracking-[-0.03em] [font-optical-sizing:auto]">
+            Stop starting over<span className="text-onboarding-accent">.</span>
+          </h2>
+          <p className="mx-auto mt-5 mb-[34px] max-w-[40ch] text-balance text-[1.1rem] text-muted-foreground">
+            Tell <CompanionName fallback="it" /> once, and never again. Free to begin — no
+            card.
+          </p>
+          <LandingClosingCta />
+        </Reveal>
       </LandingWrap>
     </section>
   );
