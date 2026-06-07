@@ -18,7 +18,7 @@ export function LandingClosingCta() {
     <Link
       href="/register"
       onClick={persistName}
-      className="group inline-flex items-center gap-[9px] rounded-full bg-landing-accent px-[30px] py-4 font-semibold text-[16px] text-white shadow-[0_8px_24px_-10px_rgba(229,66,28,0.7)] transition duration-150 ease-out hover:translate-y-[-2px] hover:bg-landing-accent-deep hover:shadow-[0_14px_34px_-12px_rgba(229,66,28,0.85),0_0_24px_-6px_rgba(229,66,28,0.4)] hover:duration-250 hover:ease-[cubic-bezier(0.34,1.56,0.64,1)] active:translate-y-0 active:scale-[0.985] active:shadow-[0_4px_12px_-6px_rgba(229,66,28,0.6)] active:duration-75 motion-reduce:active:scale-100 motion-reduce:hover:translate-y-0"
+      className="group inline-flex items-center gap-[9px] rounded-full bg-landing-accent px-[30px] py-4 font-semibold text-[16px] text-white shadow-[0_8px_24px_-10px_color-mix(in_srgb,var(--color-landing-accent)_70%,transparent)] transition duration-150 ease-out hover:translate-y-[-2px] hover:bg-landing-accent-deep hover:shadow-[0_14px_34px_-12px_color-mix(in_srgb,var(--color-landing-accent)_85%,transparent),0_0_24px_-6px_color-mix(in_srgb,var(--color-landing-accent)_40%,transparent)] hover:duration-250 hover:ease-[cubic-bezier(0.34,1.56,0.64,1)] active:translate-y-0 active:scale-[0.985] active:shadow-[0_4px_12px_-6px_color-mix(in_srgb,var(--color-landing-accent)_60%,transparent)] active:duration-75 motion-reduce:active:scale-100 motion-reduce:hover:translate-y-0"
     >
       <SmoothWidth>
         Awaken <AnimatedName text={settledName || "yours"} />

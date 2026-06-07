@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { CompanionName } from "./companion-name";
+import { useRevealStatus } from "./reveal";
 
 // The memory ledger — rows write themselves in one by one on scroll, so the
-// card fills with remembered things as you watch. Same SSR-safe reveal pattern
-// as reveal.tsx, plus per-row stagger.
+// card fills with remembered things as you watch. Shares the SSR-safe reveal
+// status from reveal.tsx, plus per-row stagger.
 const ENTRIES = [
   { tag: "person", text: "Sarah — toughest client, allergic to jargon" },
   { tag: "style", text: "Decisions up top, bullets after" },
@@ -15,33 +15,8 @@ const ENTRIES = [
 
 const ROW_STAGGER_MS = 160;
 
-type LedgerStatus = "idle" | "pending" | "revealed";
-
 export function LandingMemoryLedger() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState<LedgerStatus>("idle");
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setStatus("revealed");
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStatus("revealed");
-          observer.disconnect();
-        } else {
-          setStatus((prev) => (prev === "revealed" ? prev : "pending"));
-        }
-      },
-      { threshold: 0.35 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const { ref, status } = useRevealStatus<HTMLDivElement>(0.35);
 
   const riseAt = (delayMs: number) => ({
     className: cn(

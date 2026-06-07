@@ -3,14 +3,12 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-type RevealStatus = "idle" | "pending" | "revealed";
+export type RevealStatus = "idle" | "pending" | "revealed";
 
-export function Reveal({
-  className,
-  delayMs,
-  children,
-}: Readonly<{ className?: string; delayMs?: number; children: ReactNode }>) {
-  const ref = useRef<HTMLDivElement>(null);
+// SSR-safe scroll reveal: "idle" renders visible (no-JS friendly), hydration
+// offscreen flips to "pending" (hidden), intersection flips to "revealed".
+export function useRevealStatus<T extends HTMLElement>(threshold = 0.4) {
+  const ref = useRef<T>(null);
   const [status, setStatus] = useState<RevealStatus>("idle");
 
   useEffect(() => {
@@ -29,11 +27,21 @@ export function Reveal({
           setStatus((prev) => (prev === "revealed" ? prev : "pending"));
         }
       },
-      { threshold: 0.4 }
+      { threshold }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
+
+  return { ref, status };
+}
+
+export function Reveal({
+  className,
+  delayMs,
+  children,
+}: Readonly<{ className?: string; delayMs?: number; children: ReactNode }>) {
+  const { ref, status } = useRevealStatus<HTMLDivElement>();
 
   return (
     <div
