@@ -1,3 +1,29 @@
+# [0.50.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.49.0...v0.50.0) (2026-06-07)
+
+
+### Bug Fixes
+
+* add try catch around json ([e97d52b](https://github.com/Fyzz-Chat/fyzz-chat/commit/e97d52b13970b995a2d3468271ff3d0dcc167cbb))
+* **jscpd:** remove easy code duplications ([4fd62ce](https://github.com/Fyzz-Chat/fyzz-chat/commit/4fd62cec0526b772244803798b06dc92091f7ef1))
+* **klint:** ignore prisma generated folder ([5a3d7cb](https://github.com/Fyzz-Chat/fyzz-chat/commit/5a3d7cb047a74901e8f5a78ccd247b730731f93d))
+* **landing:** make subtitle slide instead of jump on name change ([f4998b7](https://github.com/Fyzz-Chat/fyzz-chat/commit/f4998b73545279a880d2dc6d8a4a6f67d2c503fe))
+* **onboarding:** make mandatory to choose a speak style ([d2f75ab](https://github.com/Fyzz-Chat/fyzz-chat/commit/d2f75ab5e95f8a94047c650041c2ddb8bef88032))
+* **upload:** add timeout to url fetching ([70b6896](https://github.com/Fyzz-Chat/fyzz-chat/commit/70b6896dc36575fb57bfd5b917e347480ee87b59))
+
+
+### Features
+
+* **chat:** clear in-flight uploads on conversation navigation and enhance upload timeout handling ([d85de82](https://github.com/Fyzz-Chat/fyzz-chat/commit/d85de826a427caec31aecb6721e3717ac633db58))
+* **landing:** add closing block ([840d7ad](https://github.com/Fyzz-Chat/fyzz-chat/commit/840d7ad8af4c0706b816b36d3b6a607ab91e1b27))
+* **landing:** add control block ([db18eed](https://github.com/Fyzz-Chat/fyzz-chat/commit/db18eed36dfccfe6071fd13852c27daf9156d6ba))
+* **landing:** add hero whisper block ([f6bdc2d](https://github.com/Fyzz-Chat/fyzz-chat/commit/f6bdc2d96577a0aa58734b4caf5d4460ed54bfcc))
+* **landing:** add memory block ([765c0ab](https://github.com/Fyzz-Chat/fyzz-chat/commit/765c0abc0d04c251bcdcedda96a5ffbb2428f202))
+* **landing:** enhance naming input with animated transitions and smooth width adjustment ([068b43a](https://github.com/Fyzz-Chat/fyzz-chat/commit/068b43a362bd23cdb6269143dfb2bbdacc9ef228))
+* **landing:** introduce companion name component ([428e3ed](https://github.com/Fyzz-Chat/fyzz-chat/commit/428e3ed96142cbc4f7555c1403b662add0c865c6))
+* **landing:** update hero ([1685967](https://github.com/Fyzz-Chat/fyzz-chat/commit/168596738b0be67228e40fa20ddcf7005d0626ed))
+* **mcp:** add auth header support ([7985f21](https://github.com/Fyzz-Chat/fyzz-chat/commit/7985f2177c24e0f8e5bfe7698e11918d9426879a))
+* **skills:** add playwright cli ([2d1c6f1](https://github.com/Fyzz-Chat/fyzz-chat/commit/2d1c6f10add1bcd634214e24c1b6c13e8757133b))
+
 # [0.49.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.48.0...v0.49.0) (2026-05-31)
 
 
