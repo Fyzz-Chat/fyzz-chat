@@ -1,10 +1,10 @@
 import { LandingAphorism } from "@/components/landing/landing-aphorism";
 import { LandingClosing } from "@/components/landing/landing-closing";
+import { LandingControl } from "@/components/landing/landing-control";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { LandingHero } from "@/components/landing/landing-hero";
 import { LandingMasthead } from "@/components/landing/landing-masthead";
 import { LandingMemory } from "@/components/landing/landing-memory";
-import { LandingProof } from "@/components/landing/landing-proof";
 import { LandingThread } from "@/components/landing/landing-thread";
 import "@/components/landing/landing.css";
 
@@ -17,9 +17,9 @@ export function LandingPage() {
         <LandingHero />
         <LandingAphorism />
         <LandingMemory />
+        <LandingControl />
       </div>
       <main className="relative z-2">
-        <LandingProof />
         <LandingClosing />
       </main>
       <LandingFooter />

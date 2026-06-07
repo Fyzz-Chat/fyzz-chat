@@ -7,8 +7,9 @@ type RevealStatus = "idle" | "pending" | "revealed";
 
 export function Reveal({
   className,
+  delayMs,
   children,
-}: Readonly<{ className?: string; children: ReactNode }>) {
+}: Readonly<{ className?: string; delayMs?: number; children: ReactNode }>) {
   const ref = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<RevealStatus>("idle");
 
@@ -42,6 +43,9 @@ export function Reveal({
         status === "revealed" && "animate-landing-rise motion-reduce:animate-none",
         className
       )}
+      style={
+        status === "revealed" && delayMs ? { animationDelay: `${delayMs}ms` } : undefined
+      }
     >
       {children}
     </div>
