@@ -261,23 +261,14 @@ table tr:nth-child(2n) {
   overflow-x: auto;
 }
 
-/* ───────── Landing "notebook" side-system — namespaced design tokens ─────────
+/* ───────── Landing side-system — namespaced design tokens ─────────
    Custom colors / fonts / animations only. All layout, typography and spacing
    live in Tailwind utilities on the landing components. Namespaced with
    `landing-` so it never collides with the app's dark/light design tokens. */
 @theme {
-  --color-landing-paper: #f2ecdf;
-  --color-landing-paper-2: #eae2d0;
-  --color-landing-ink: #17130c;
-  --color-landing-ink-dim: #574e3f;
-  --color-landing-ink-faint: #8e8472;
   --color-landing-accent: #e5421c;
   --color-landing-accent-deep: #b23210;
-  --color-landing-line: rgba(23, 19, 12, 0.16);
-  --color-landing-line-soft: rgba(23, 19, 12, 0.08);
 
-  --animate-landing-draw: landing-draw 3.4s cubic-bezier(0.6, 0.01, 0.2, 1) 0.4s forwards;
-  --animate-landing-swipe: landing-swipe 0.9s cubic-bezier(0.6, 0, 0.2, 1) 1.5s forwards;
   --animate-landing-pulse: landing-pulse 2.4s infinite;
   --animate-landing-rise: landing-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
 }
@@ -290,16 +281,6 @@ table tr:nth-child(2n) {
   --font-landing-sans: var(--font-schibsted), system-ui, sans-serif;
 }
 
-@keyframes landing-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@keyframes landing-swipe {
-  to {
-    transform: scaleX(1);
-  }
-}
 @keyframes landing-pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(229, 66, 28, 0.45);
