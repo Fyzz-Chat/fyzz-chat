@@ -1,3 +1,10 @@
+# [0.51.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.50.0...v0.51.0) (2026-06-10)
+
+
+### Features
+
+* add new models ([70de5a5](https://github.com/Fyzz-Chat/fyzz-chat/commit/70de5a514ec2342c88228dd1f3c81d4ea41103ad))
+
 # [0.50.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.49.0...v0.50.0) (2026-06-07)
 
 
