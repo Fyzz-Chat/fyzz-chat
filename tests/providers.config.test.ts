@@ -70,6 +70,7 @@ const expectedCatalogShape: {
       { id: "claude-opus-4-6", runtimePreset: "chat" },
       { id: "claude-opus-4-7", runtimePreset: "chat" },
       { id: "claude-opus-4-8", runtimePreset: "chat" },
+      { id: "claude-fable-5", runtimePreset: "chat" },
     ],
   },
   {
@@ -94,6 +95,7 @@ const expectedCatalogShape: {
     models: [
       { id: "grok-4.20-0309-reasoning", runtimePreset: "responses" },
       { id: "grok-4.3", runtimePreset: "responses" },
+      { id: "grok-build-0.1", runtimePreset: "responses" },
     ],
   },
   {

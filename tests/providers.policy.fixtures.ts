@@ -1,4 +1,8 @@
-export const XAI_RESPONSES_MODELS = ["grok-4.20-0309-reasoning", "grok-4.3"] as const;
+export const XAI_RESPONSES_MODELS = [
+  "grok-4.20-0309-reasoning",
+  "grok-4.3",
+  "grok-build-0.1",
+] as const;
 
 export const XAI_CHAT_MODELS = [] as const;
 
