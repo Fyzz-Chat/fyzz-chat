@@ -11,6 +11,7 @@ import { type XaiResponsesProviderOptions, xai } from "@ai-sdk/xai";
 import { type Tool, type ToolSet, wrapLanguageModel } from "ai";
 import { anthropicCacheMiddleware } from "@/lib/backend/anthropic-cache-middleware";
 import { messageFilterMiddleware } from "@/lib/backend/message-filter-middleware";
+import { sanitizeMessagesForModel } from "@/lib/backend/message-sanitizer";
 import type { CustomMetadata, CustomUIMessage } from "@/types/chat";
 import {
   audioType,
@@ -97,6 +98,17 @@ export function getModelPublic(modelId: string): PublicModel | undefined {
     .find((model) => model.id === modelId);
 }
 
+export function getProviderIdForModel(
+  modelId: string | undefined
+): Provider["id"] | undefined {
+  if (!modelId) {
+    return undefined;
+  }
+  return filterProviders().find((provider) =>
+    provider.models.some((model) => model.id === modelId)
+  )?.id;
+}
+
 function wrapModel(
   model: LanguageModelV3,
   modelId: string,
@@ -129,7 +141,7 @@ export function getModelRuntime(
 
   const {
     providerId,
-    model: { id, provider, tools, runtimePreset, capabilities },
+    model: { id, provider, tools, runtimePreset, capabilities, extensions },
   } = runtimeModel;
   const selectedReasoningEffort = resolveEffort(
     reasoningEffort,
@@ -144,7 +156,14 @@ export function getModelRuntime(
     supportsTools: tools,
     runtimePreset,
     selectInputMessages: (messages) =>
-      resolveMessagesForRuntimePreset(messages, runtimePreset),
+      sanitizeMessagesForModel(resolveMessagesForRuntimePreset(messages, runtimePreset), {
+        targetProviderId: providerId,
+        supportsMediaType: (mediaType) =>
+          (extensions ?? []).some((ext) =>
+            mediaType.startsWith(ext.includes("/") ? ext : `${ext}/`)
+          ),
+        providerIdForModel: getProviderIdForModel,
+      }),
     getProviderOptionsFromHistory: (messages) => {
       const previousResponseId = getPreviousResponseId(messages);
       return {

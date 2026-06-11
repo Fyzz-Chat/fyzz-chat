@@ -3,6 +3,7 @@ import {
   convertToModelMessages,
   hasToolCall,
   type LanguageModelUsage,
+  pruneMessages,
   safeValidateUIMessages,
   smoothStream,
   streamText,
@@ -551,10 +552,16 @@ export async function POST(req: NextRequest) {
   logDuration(start, "Streaming started");
 
   const messagesForModel = runtime.selectInputMessages(existingMessages);
+  const modelMessages = pruneMessages({
+    messages: await convertToModelMessages(messagesForModel, {
+      ignoreIncompleteToolCalls: true,
+    }),
+    emptyMessages: "remove",
+  });
 
   const result = streamText({
     model,
-    messages: await convertToModelMessages(messagesForModel),
+    messages: modelMessages,
     system: extendedSystemPrompt,
     stopWhen: [hasToolCall("generateImage")],
     experimental_transform: smoothStream({
