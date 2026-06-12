@@ -1,3 +1,10 @@
+## [0.52.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.0...v0.52.1) (2026-06-12)
+
+
+### Bug Fixes
+
+* drop empty text blocks ([f02cfca](https://github.com/Fyzz-Chat/fyzz-chat/commit/f02cfcacbebe181732b0f064ea8e86e51f60ffee))
+
 # [0.52.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.51.0...v0.52.0) (2026-06-12)
 
 
