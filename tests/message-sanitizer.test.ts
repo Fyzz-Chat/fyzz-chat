@@ -121,6 +121,27 @@ describe("provenance sanitizer (selectInputMessages)", () => {
     ]);
   });
 
+  it("drops empty/whitespace-only text parts (Anthropic rejects empty text blocks)", () => {
+    const assistant = assistantFrom("gpt-5.3-codex", [
+      { type: "reasoning", text: "thinking" },
+      {
+        type: "tool-webSearch",
+        toolCallId: "t1",
+        state: "output-available",
+        input: {},
+        output: {},
+      },
+      { type: "text", text: "" },
+      { type: "text", text: "   \n  " },
+    ] as CustomUIMessage["parts"]);
+
+    const result = selectFor("claude-sonnet-4-5", [assistant]);
+    const survivor = result.find((m) => m.role === "assistant");
+
+    expect(survivor?.parts.some(isTextUIPart)).toBe(false);
+    expect(survivor?.parts.length).toBe(0);
+  });
+
   it("is non-destructive — does not mutate the stored history", () => {
     const assistant = codexAssistant();
     const original = assistant.parts.length;

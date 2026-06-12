@@ -14,7 +14,10 @@ function keepPart(
   isForeignProvider: boolean,
   ctx: SanitizeContext
 ): boolean {
-  if (isTextUIPart(part) || part.type === "step-start") {
+  if (isTextUIPart(part)) {
+    return part.text.trim().length > 0;
+  }
+  if (part.type === "step-start") {
     return true;
   }
   if (isFileUIPart(part)) {
