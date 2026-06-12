@@ -1,3 +1,10 @@
+# [0.52.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.51.0...v0.52.0) (2026-06-12)
+
+
+### Features
+
+* implement message sanitization for model compatibility ([910ac89](https://github.com/Fyzz-Chat/fyzz-chat/commit/910ac895b603f1b0e261e2d115b2789b62628d8c))
+
 # [0.51.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.50.0...v0.51.0) (2026-06-10)
 
 
