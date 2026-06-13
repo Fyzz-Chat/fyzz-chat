@@ -1,3 +1,10 @@
+## [0.52.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.1...v0.52.2) (2026-06-13)
+
+
+### Bug Fixes
+
+* **model-store:** initialize default model once ([a97569d](https://github.com/Fyzz-Chat/fyzz-chat/commit/a97569d92743ed92050bb5dec9e5bf0269d1c13e))
+
 ## [0.52.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.0...v0.52.1) (2026-06-12)
 
 
