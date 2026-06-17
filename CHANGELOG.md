@@ -1,3 +1,10 @@
+## [0.52.3](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.2...v0.52.3) (2026-06-17)
+
+
+### Bug Fixes
+
+* disable claude fable 5 ([7e9c790](https://github.com/Fyzz-Chat/fyzz-chat/commit/7e9c790d1ac40738c422f8549833eb673acd4612))
+
 ## [0.52.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.1...v0.52.2) (2026-06-13)
 
 
