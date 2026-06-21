@@ -43,9 +43,6 @@ const expectedCatalogShape: {
     models: [
       { id: "gpt-4.1-mini", runtimePreset: "chat" },
       { id: "gpt-4.1", runtimePreset: "chat" },
-      { id: "gpt-5-nano", runtimePreset: "chat" },
-      { id: "gpt-5-mini", runtimePreset: "chat" },
-      { id: "gpt-5", runtimePreset: "chat" },
       { id: "gpt-5-codex", runtimePreset: "chat" },
       { id: "gpt-5.1", runtimePreset: "chat" },
       { id: "gpt-5.1-codex", runtimePreset: "chat" },

@@ -17,9 +17,6 @@ export const OPENAI_CODE_INTERPRETER_DENYLIST = [
 export const OPENAI_IMAGE_GENERATION_MODELS = [
   "gpt-4.1",
   "gpt-4.1-mini",
-  "gpt-5-nano",
-  "gpt-5-mini",
-  "gpt-5",
   "gpt-5.1",
   "gpt-5.2",
   "gpt-5.4-nano",
@@ -28,7 +25,7 @@ export const OPENAI_IMAGE_GENERATION_MODELS = [
   "gpt-5.5",
 ] as const;
 
-export const OPENAI_REASONING_MODELS = ["gpt-5", "gpt-5-codex"] as const;
+export const OPENAI_REASONING_MODELS = ["gpt-5-codex"] as const;
 
 export const GEMINI_REASONING_MODELS = [
   "gemini-3-flash-preview",

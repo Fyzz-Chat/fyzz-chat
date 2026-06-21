@@ -166,7 +166,7 @@ describe("providers runtime behavior", () => {
       createMessage("user-2", "user"),
     ];
 
-    const openaiReasoning = getModelRuntime("gpt-5", "high");
+    const openaiReasoning = getModelRuntime("gpt-5.4-nano", "high");
     expect(openaiReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
       reasoningEffort: "high",
       reasoningSummary: "detailed",
@@ -223,8 +223,8 @@ describe("providers runtime behavior", () => {
     ).toMatchObject({ effort: "xhigh" });
 
     expect(
-      getModelRuntime("gpt-5", "minimal").getProviderOptionsFromHistory(messages).openai
-    ).toMatchObject({ reasoningEffort: "minimal" });
+      getModelRuntime("gpt-5.5", "medium").getProviderOptionsFromHistory(messages).openai
+    ).toMatchObject({ reasoningEffort: "medium" });
   });
 
   it("omits xAI reasoningEffort when effort is none", () => {

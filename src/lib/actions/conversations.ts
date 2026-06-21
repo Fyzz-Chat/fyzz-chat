@@ -44,7 +44,7 @@ export async function updateConversationTitle(
   const prompt = extractFirstUserPrompt(messages);
   if (!prompt) return null;
 
-  const modelId = "gpt-5-nano";
+  const modelId = "gpt-5.4-nano";
   const { model } = getModelRuntime(modelId, undefined, userId);
   const { text } = await generateText({
     model,
