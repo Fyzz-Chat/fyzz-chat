@@ -1,7 +1,16 @@
-import { isFileUIPart, isTextUIPart } from "ai";
+import { isFileUIPart, isTextUIPart, isToolUIPart } from "ai";
 import type { CustomUIMessage } from "@/types/chat";
 
 type UIPart = CustomUIMessage["parts"][number];
+
+function carriesEncryptedSearchContent(part: UIPart): boolean {
+  if (!isToolUIPart(part) || !("output" in part) || !Array.isArray(part.output)) {
+    return false;
+  }
+  return part.output.some(
+    (item) => item != null && typeof item === "object" && "encryptedContent" in item
+  );
+}
 
 export type SanitizeContext = {
   targetProviderId: string | undefined;
@@ -14,6 +23,9 @@ function keepPart(
   isForeignProvider: boolean,
   ctx: SanitizeContext
 ): boolean {
+  if (carriesEncryptedSearchContent(part)) {
+    return false;
+  }
   if (isTextUIPart(part)) {
     return part.text.trim().length > 0;
   }

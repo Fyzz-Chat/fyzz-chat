@@ -152,6 +152,52 @@ describe("provenance sanitizer (selectInputMessages)", () => {
     expect(assistant.parts.length).toBe(original);
   });
 
+  it("drops same-provider web_search results carrying encrypted_content (Anthropic rejects stale encrypted_content)", () => {
+    const anthropicAssistant = assistantFrom("claude-sonnet-4-5", [
+      {
+        type: "tool-web_search",
+        toolCallId: "srvtoolu_1",
+        state: "output-available",
+        providerExecuted: true,
+        input: { query: "x" },
+        output: [
+          {
+            type: "web_search_result",
+            url: "https://example.com",
+            title: "Example",
+            encryptedContent: "EoAUCioIDxgCIiQ4MTg4...stale...",
+          },
+        ],
+      },
+      { type: "text", text: "answer" },
+    ] as CustomUIMessage["parts"]);
+
+    const result = selectFor("claude-sonnet-4-6", [anthropicAssistant]);
+    const assistant = result.find((m) => m.role === "assistant");
+
+    expect(assistant?.parts.some(isToolUIPart)).toBe(false);
+    expect(assistant?.parts.some(isTextUIPart)).toBe(true);
+  });
+
+  it("keeps same-provider tool parts without encrypted_content", () => {
+    const anthropicAssistant = assistantFrom("claude-sonnet-4-5", [
+      {
+        type: "tool-web_search",
+        toolCallId: "t1",
+        state: "output-available",
+        providerExecuted: true,
+        input: {},
+        output: [{ type: "web_search_result", url: "https://example.com" }],
+      },
+      { type: "text", text: "answer" },
+    ] as CustomUIMessage["parts"]);
+
+    const result = selectFor("claude-sonnet-4-6", [anthropicAssistant]);
+    const assistant = result.find((m) => m.role === "assistant");
+
+    expect(assistant?.parts.some(isToolUIPart)).toBe(true);
+  });
+
   it("maps model ids to their provider id", () => {
     expect(getProviderIdForModel("gpt-5.3-codex")).toBe("openai");
     expect(getProviderIdForModel("claude-sonnet-4-5")).toBe("anthropic");
