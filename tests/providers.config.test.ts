@@ -63,6 +63,7 @@ const expectedCatalogShape: {
       { id: "claude-haiku-4-5-20251001", runtimePreset: "chat" },
       { id: "claude-sonnet-4-5", runtimePreset: "chat" },
       { id: "claude-sonnet-4-6", runtimePreset: "chat" },
+      { id: "claude-sonnet-5", runtimePreset: "chat" },
       { id: "claude-opus-4-5", runtimePreset: "chat" },
       { id: "claude-opus-4-6", runtimePreset: "chat" },
       { id: "claude-opus-4-7", runtimePreset: "chat" },

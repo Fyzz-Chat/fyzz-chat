@@ -740,6 +740,17 @@ const providers: Provider[] = [
         cost: 4,
       },
       {
+        id: "claude-sonnet-5",
+        name: "Claude Sonnet 5",
+        features: [search],
+        effortLevels: ["low", "medium", "high", "max"],
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 4,
+      },
+      {
         id: "claude-opus-4-5",
         name: "Claude Opus 4.5",
         features: [search],
