@@ -1,3 +1,10 @@
+# [0.53.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.3...v0.53.0) (2026-06-30)
+
+
+### Features
+
+* **message-sanitizer:** add handling for encrypted content in tool parts ([5445c56](https://github.com/Fyzz-Chat/fyzz-chat/commit/5445c56c5a7ed0e96a264fc5b7ce6f30d8d60d77))
+
 ## [0.52.3](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.2...v0.52.3) (2026-06-17)
 
 
