@@ -1,3 +1,10 @@
+# [0.54.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.53.0...v0.54.0) (2026-06-30)
+
+
+### Features
+
+* **models:** add sonnet 5 ([045bea5](https://github.com/Fyzz-Chat/fyzz-chat/commit/045bea5f9a82744d687e3fb4c594d162815baea2))
+
 # [0.53.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.52.3...v0.53.0) (2026-06-30)
 
 
