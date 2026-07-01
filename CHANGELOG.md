@@ -1,3 +1,10 @@
+# [0.55.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.54.0...v0.55.0) (2026-07-01)
+
+
+### Features
+
+* **models:** enable fable ([1b13681](https://github.com/Fyzz-Chat/fyzz-chat/commit/1b136811b629cd38878b06459231443be68a1fb8))
+
 # [0.54.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.53.0...v0.54.0) (2026-06-30)
 
 
