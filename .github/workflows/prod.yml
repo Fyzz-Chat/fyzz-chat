@@ -183,17 +183,7 @@ jobs:
         run: |
           curl --request GET '${{ vars.COOLIFY_PROD_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
 
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Bun.js
-        uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install
-
       - name: Migrate database
         run: |
-          bun run db:deploy
-        env:
-          DIRECT_DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
+          curl --request GET '${{ vars.COOLIFY_PROD_DB_MIGRATE_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+  
