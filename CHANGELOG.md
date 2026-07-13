@@ -1,3 +1,10 @@
+# [0.56.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.55.0...v0.56.0) (2026-07-13)
+
+
+### Features
+
+* **models:** add gpt-5.6 family ([b114ac0](https://github.com/Fyzz-Chat/fyzz-chat/commit/b114ac0ed2cec073f549acea19c92688e2eb0e61))
+
 # [0.55.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.54.0...v0.55.0) (2026-07-01)
 
 
