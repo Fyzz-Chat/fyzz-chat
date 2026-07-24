@@ -1001,6 +1001,18 @@ const providers: Provider[] = [
         capabilities: { supportsXaiSearchTools: true },
       },
       {
+        id: "grok-4.5",
+        name: "Grok 4.5",
+        features: [search],
+        effortLevels: GROK_EFFORTS,
+        provider: xai.responses,
+        tools: true,
+        runtimePreset: "responses",
+        extensions: [...imageTypes],
+        cost: 2,
+        capabilities: { supportsXaiSearchTools: true },
+      },
+      {
         id: "grok-build-0.1",
         name: "Grok Build 0.1",
         features: [reasoning, search],

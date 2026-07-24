@@ -1,6 +1,7 @@
 export const XAI_RESPONSES_MODELS = [
   "grok-4.20-0309-reasoning",
   "grok-4.3",
+  "grok-4.5",
   "grok-build-0.1",
 ] as const;
 

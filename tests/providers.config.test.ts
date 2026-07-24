@@ -96,6 +96,7 @@ const expectedCatalogShape: {
     models: [
       { id: "grok-4.20-0309-reasoning", runtimePreset: "responses" },
       { id: "grok-4.3", runtimePreset: "responses" },
+      { id: "grok-4.5", runtimePreset: "responses" },
       { id: "grok-build-0.1", runtimePreset: "responses" },
     ],
   },
