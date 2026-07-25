@@ -923,6 +923,17 @@ const providers: Provider[] = [
         cost: 2,
       },
       {
+        id: "gemini-3.6-flash",
+        name: "Gemini 3.6 Flash",
+        features: [search],
+        effortLevels: GEMINI_EFFORTS,
+        provider: google,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
+        cost: 2,
+      },
+      {
         id: "gemini-2.5-flash-image",
         name: "Nano Banana",
         features: [images],
