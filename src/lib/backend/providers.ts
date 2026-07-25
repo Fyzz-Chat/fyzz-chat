@@ -831,6 +831,17 @@ const providers: Provider[] = [
         cost: 6,
       },
       {
+        id: "claude-opus-5",
+        name: "Claude Opus 5",
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 6,
+      },
+      {
         id: "claude-fable-5",
         name: "Claude Fable 5",
         features: [search],
