@@ -1,3 +1,12 @@
+# [0.57.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.56.0...v0.57.0) (2026-07-25)
+
+
+### Features
+
+* **models:** add gemini 3.6.flash ([42971bc](https://github.com/Fyzz-Chat/fyzz-chat/commit/42971bccac782c6b9abade8aca69ca79d89f450a))
+* **models:** add grok 4.5 ([3f428c1](https://github.com/Fyzz-Chat/fyzz-chat/commit/3f428c15cc62192c83505ec1dfd5d70bf12ea5db))
+* **models:** add opus 5 ([8e248e2](https://github.com/Fyzz-Chat/fyzz-chat/commit/8e248e2847763bd1dcb1b96fbff2d8233033315b))
+
 # [0.56.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.55.0...v0.56.0) (2026-07-13)
 
 
