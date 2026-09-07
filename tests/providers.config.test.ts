@@ -56,6 +56,7 @@ const expectedCatalogShape: {
       { id: "gpt-5.6-sol", runtimePreset: "chat" },
       { id: "gpt-5.6-terra", runtimePreset: "chat" },
       { id: "gpt-5.6-luna", runtimePreset: "chat" },
+      { id: "gpt-6-astra", runtimePreset: "chat" },
       { id: "o3-mini", runtimePreset: "chat" },
       { id: "o4-mini", runtimePreset: "chat" },
     ],

@@ -27,6 +27,7 @@ export const OPENAI_IMAGE_GENERATION_MODELS = [
   "gpt-5.6-sol",
   "gpt-5.6-terra",
   "gpt-5.6-luna",
+  "gpt-6-astra",
 ] as const;
 
 export const OPENAI_REASONING_MODELS = ["gpt-5-codex"] as const;

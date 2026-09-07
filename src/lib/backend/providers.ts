@@ -717,6 +717,18 @@ const providers: Provider[] = [
         capabilities: { supportsImageGeneration: true },
       },
       {
+        id: "gpt-6-astra",
+        name: "GPT-6 Astra",
+        features: [search, coding, images],
+        effortLevels: ["low", "medium", "high", "xhigh", "max"],
+        provider: openai,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: imageTypes,
+        cost: 11,
+        capabilities: { supportsImageGeneration: true },
+      },
+      {
         id: "o3-mini",
         name: "o3-mini",
         effortLevels: OPENAI_LEGACY_EFFORTS,
