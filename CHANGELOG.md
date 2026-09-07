@@ -1,3 +1,11 @@
+# [0.58.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.57.0...v0.58.0) (2026-09-07)
+
+
+### Features
+
+* add fable-5.1 ([df4613e](https://github.com/Fyzz-Chat/fyzz-chat/commit/df4613e3d3e0c2652a99b98fd6ea47f89efe2376))
+* add gpt-6-astra ([8d473e3](https://github.com/Fyzz-Chat/fyzz-chat/commit/8d473e35b6cd91685ecd8b12fa08a067b1525cfd))
+
 # [0.57.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.56.0...v0.57.0) (2026-07-25)
 
 
