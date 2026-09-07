@@ -864,6 +864,17 @@ const providers: Provider[] = [
         extensions: [...imageTypes, pdfType],
         cost: 11,
       },
+      {
+        id: "claude-fable-5-1",
+        name: "Claude Fable 5.1",
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 11,
+      },
     ],
   },
   {
