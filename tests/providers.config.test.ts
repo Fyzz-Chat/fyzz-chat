@@ -106,14 +106,15 @@ const expectedCatalogShape: {
   },
   {
     id: "deepseek",
-    models: [{ id: "accounts/fireworks/models/deepseek-v4-pro", runtimePreset: "chat" }],
+    models: [
+      { id: "accounts/fireworks/models/deepseek-v4p1-flash", runtimePreset: "chat" },
+    ],
   },
   {
     id: "other",
     models: [
-      { id: "accounts/fireworks/models/kimi-k2p5", runtimePreset: "chat" },
-      { id: "accounts/fireworks/models/kimi-k2p6", runtimePreset: "chat" },
-      { id: "accounts/fireworks/models/glm-5p1", runtimePreset: "chat" },
+      { id: "accounts/fireworks/models/kimi-k3", runtimePreset: "chat" },
+      { id: "accounts/fireworks/models/glm-5p3", runtimePreset: "chat" },
     ],
   },
   {

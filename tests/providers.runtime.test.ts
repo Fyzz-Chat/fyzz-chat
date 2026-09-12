@@ -351,7 +351,7 @@ describe("critical model policy: provider options", () => {
 
     expect(
       getModelRuntime(
-        "accounts/fireworks/models/deepseek-v4-pro",
+        "accounts/fireworks/models/deepseek-v4p1-flash",
         "medium"
       ).getProviderOptionsFromHistory(messages).fireworks
     ).toEqual({

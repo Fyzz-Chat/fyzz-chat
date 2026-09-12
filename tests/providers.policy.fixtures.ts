@@ -40,10 +40,9 @@ export const GEMINI_REASONING_MODELS = [
 ] as const;
 
 export const FIREWORKS_REASONING_MODELS = [
-  "accounts/fireworks/models/deepseek-v4-pro",
-  "accounts/fireworks/models/kimi-k2p5",
-  "accounts/fireworks/models/kimi-k2p6",
-  "accounts/fireworks/models/glm-5p1",
+  "accounts/fireworks/models/deepseek-v4p1-flash",
+  "accounts/fireworks/models/kimi-k3",
+  "accounts/fireworks/models/glm-5p3",
 ] as const;
 
 export const FIREWORKS_NON_REASONING_MODELS = [] as const;
