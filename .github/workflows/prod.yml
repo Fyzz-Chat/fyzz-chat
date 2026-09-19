@@ -187,4 +187,4 @@ jobs:
     steps:
       - name: Deploy to Coolify
         run: |
-          curl --request GET '${{ vars.COOLIFY_PROD_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+          curl --request POST '${{ vars.COOLIFY_PROD_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
