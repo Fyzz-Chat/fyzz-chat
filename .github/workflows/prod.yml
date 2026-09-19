@@ -131,6 +131,10 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.tags.outputs.tags }}
+          # Scoped per branch and per target: a cache shared across them would
+          # hand one build another's layers.
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:buildcache-latest
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:buildcache-latest,mode=max
 
   build-migrate:
     needs: release
@@ -174,6 +178,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.tags.outputs.tags }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:buildcache-migrate
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:buildcache-migrate,mode=max
 
   deploy:
     needs: [build-release, build-migrate]

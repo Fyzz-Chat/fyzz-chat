@@ -82,6 +82,10 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:test
+          # Scoped per branch and per target: a cache shared across them would
+          # hand one build another's layers.
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:buildcache-test
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/fyzz-chat/fyzz-chat:buildcache-test,mode=max
 
   deploy:
     needs: build
