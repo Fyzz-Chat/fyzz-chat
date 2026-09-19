@@ -184,7 +184,9 @@ jobs:
   deploy:
     needs: [build-release, build-migrate]
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Deploy to Coolify
+        if: vars.COOLIFY_WEBHOOK != ''
         run: |
-          curl --request POST '${{ vars.COOLIFY_PROD_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
+          curl --request POST '${{ vars.COOLIFY_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
