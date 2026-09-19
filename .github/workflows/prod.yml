@@ -182,8 +182,3 @@ jobs:
       - name: Deploy to Coolify
         run: |
           curl --request GET '${{ vars.COOLIFY_PROD_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
-
-      - name: Migrate database
-        run: |
-          curl --request GET '${{ vars.COOLIFY_PROD_DB_MIGRATE_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
-  
