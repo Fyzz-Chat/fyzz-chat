@@ -24,6 +24,21 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 RUN bun run postinstall
 
 
+FROM base AS migrate-deps
+
+RUN mkdir -p /temp/migrate
+COPY package.json /temp/migrate/source-package.json
+# dotenv and dotenv-expand are included explicitly because prisma.config.ts
+# imports them directly.
+RUN cd /temp/migrate \
+    && PRISMA_VER="$(bun -e "console.log(require('./source-package.json').devDependencies.prisma)")" \
+    && DOTENV_VER="$(bun -e "console.log(require('./source-package.json').devDependencies.dotenv)")" \
+    && DOTENV_EXPAND_VER="$(bun -e "console.log(require('./source-package.json').devDependencies['dotenv-expand'])")" \
+    && rm source-package.json \
+    && echo "{\"dependencies\":{\"prisma\":\"$PRISMA_VER\",\"dotenv\":\"$DOTENV_VER\",\"dotenv-expand\":\"$DOTENV_EXPAND_VER\"}}" > package.json \
+    && bun install
+
+
 FROM base AS prerelease
 
 ARG NEXT_PUBLIC_TURNSTILE_SITEKEY
@@ -59,6 +74,10 @@ ENV NODE_ENV=production \
 RUN useradd --system --uid 1001 nextjs
 
 # Copy files as root:root (default), then set permissions for nextjs to read/execute only
+# migrate-deps lands first so the standalone bundle's node_modules merges on top:
+# the prisma CLI depends on react 19.3.0 (ink) and the app on 19.2.6, and the app's
+# copy must be the one that survives the merge.
+COPY --from=migrate-deps --chmod=755 /temp/migrate/node_modules ./node_modules
 COPY --from=prerelease --chmod=755 /app/public ./public
 COPY --from=prerelease --chmod=755 /app/.next/standalone ./
 COPY --from=prerelease --chmod=755 /app/.next/static ./.next/static
@@ -72,15 +91,14 @@ EXPOSE 3000
 CMD ["bun", "./server.js"]
 
 
+
+
 FROM base AS migrate
 
-WORKDIR /app
-
-COPY package.json bun.lock ./
+COPY --from=migrate-deps /temp/migrate/package.json ./package.json
+COPY --from=migrate-deps /temp/migrate/node_modules ./node_modules
 COPY prisma/ ./prisma/
 COPY prisma.config.ts ./
-
-RUN bun install --frozen-lockfile
 
 CMD ["bunx", "prisma", "migrate", "deploy"]
 
