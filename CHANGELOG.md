@@ -1,3 +1,10 @@
+# [0.59.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.58.0...v0.59.0) (2026-09-19)
+
+
+### Features
+
+* update fireworks models ([2efda84](https://github.com/Fyzz-Chat/fyzz-chat/commit/2efda840ede27997c2d24c2633e25293a77939d7))
+
 # [0.58.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.57.0...v0.58.0) (2026-09-07)
 
 
