@@ -15,8 +15,6 @@
   "ignoreDependencies": [
     "@opencode-ai/plugin",
     "shadcn",
-    "@marsidev/react-turnstile",
-    "react-syntax-highlighter",
-    "@types/react-syntax-highlighter"
+    "@marsidev/react-turnstile"
   ]
 }
