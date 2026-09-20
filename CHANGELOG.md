@@ -1,3 +1,11 @@
+## [0.59.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.0...v0.59.1) (2026-09-20)
+
+
+### Performance Improvements
+
+* **chat:** estimate token counts from utf-8 byte length ([887de27](https://github.com/Fyzz-Chat/fyzz-chat/commit/887de2721d8d162edc4984aecada783e8a6ba3a7))
+* **email:** load the reset password template on demand ([5c3a18a](https://github.com/Fyzz-Chat/fyzz-chat/commit/5c3a18ac4758da3b3c02392e3ca8a8e5ece1f3d6))
+
 # [0.59.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.58.0...v0.59.0) (2026-09-19)
 
 
