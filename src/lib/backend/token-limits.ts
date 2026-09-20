@@ -1,7 +1,6 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
-import { encode } from "gpt-tokenizer";
 import { extractText, getDocumentProxy } from "unpdf";
 import { getObjectBytes, headObjectSize } from "@/lib/aws/s3";
 import conf from "@/lib/config";
@@ -51,15 +50,24 @@ function fileCacheKey(filePart: FilePart): string {
   return `s3:${s3Key ?? filePart.url}`;
 }
 
+// o200k is byte-level BPE, so token count tracks UTF-8 byte length rather than
+// character count. ~3 bytes per token holds within roughly 0.6x-1.8x across prose,
+// code, CJK, Arabic and emoji, which is the accuracy this guard needs.
+const BYTES_PER_TOKEN = 3;
+
+function estimateTokens(text: string): number {
+  return Math.ceil(Buffer.byteLength(text, "utf8") / BYTES_PER_TOKEN);
+}
+
 function countTextTokens(text: string): number {
-  return encode(text).length;
+  return estimateTokens(text);
 }
 
 function countMessageTextTokens(message: CustomUIMessage): number {
   let total = 0;
   for (const part of message.parts) {
     if (part.type === "text") {
-      total += encode(part.text).length;
+      total += estimateTokens(part.text);
     }
   }
   return total;
@@ -116,14 +124,14 @@ async function tokenizeBytesByMediaType(
 ): Promise<number> {
   if (isTextLikeMediaType(mediaType)) {
     const text = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
-    return encode(text).length;
+    return estimateTokens(text);
   }
 
   if (mediaType === "application/pdf") {
     const pdf = await getDocumentProxy(bytes);
     const result = await extractText(pdf, { mergePages: true });
     const merged = Array.isArray(result.text) ? result.text.join("\n") : result.text;
-    const extractedTokens = encode(merged).length;
+    const extractedTokens = estimateTokens(merged);
     const pageBased = (result.totalPages ?? 0) * PER_PDF_PAGE_VISION_TOKENS;
     return Math.max(extractedTokens, pageBased);
   }
