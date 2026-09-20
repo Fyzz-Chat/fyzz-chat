@@ -1,6 +1,4 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { render } from "@react-email/components";
-import ResetPassword from "@/../emails/reset-password";
 
 import conf from "@/lib/config";
 import { logger } from "@/lib/logger";
@@ -9,6 +7,15 @@ let client: SESClient | null = null;
 
 if (conf.sesConfigured) {
   client = new SESClient({ region: conf.awsRegion });
+}
+
+async function renderResetPasswordEmail(name: string, url: string): Promise<string> {
+  const [{ render }, { default: ResetPassword }] = await Promise.all([
+    import("@react-email/components"),
+    import("@/../emails/reset-password"),
+  ]);
+
+  return render(<ResetPassword name={name} url={url} />);
 }
 
 export class EmailError extends Error {
@@ -36,7 +43,7 @@ export async function sendResetPasswordEmail({
     throw new Error(errorMessage);
   }
 
-  const body = await render(<ResetPassword name={name} url={url} />);
+  const body = await renderResetPasswordEmail(name, url);
 
   const command: SendEmailCommand = new SendEmailCommand({
     Source: conf.fromEmailAddress,
