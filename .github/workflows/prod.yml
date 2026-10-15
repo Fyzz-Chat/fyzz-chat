@@ -65,7 +65,7 @@ jobs:
 
       - name: Checkout code
         if: steps.stage.outputs.tested != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Bun.js
         if: steps.stage.outputs.tested != 'true'
@@ -114,12 +114,12 @@ jobs:
       has_version_tag: ${{ steps.get_commit.outputs.has_version_tag }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
 
@@ -157,7 +157,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout code at release commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ needs.release.outputs.release_commit }}
           fetch-depth: 0
@@ -204,7 +204,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout code at release commit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ needs.release.outputs.release_commit }}
           fetch-depth: 0
