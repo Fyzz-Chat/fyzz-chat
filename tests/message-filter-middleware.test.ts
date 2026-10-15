@@ -111,7 +111,7 @@ describe("messageFilterMiddleware", () => {
       },
     ];
 
-    const filtered = await applyMiddleware("gpt-4.1-mini", prompt);
+    const filtered = await applyMiddleware("gpt-5.4-mini", prompt);
 
     expect(filtered.some((m) => m.role === "tool")).toBe(true);
   });

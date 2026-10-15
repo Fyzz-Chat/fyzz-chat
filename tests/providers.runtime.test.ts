@@ -104,7 +104,7 @@ describe("providers runtime behavior", () => {
   });
 
   it("uses chat runtime behavior for standard chat models", () => {
-    const runtime = getModelRuntime("gpt-4.1-mini");
+    const runtime = getModelRuntime("gpt-5.4-mini");
     expect(runtime.runtimePreset).toBe("chat");
 
     const messages = [
@@ -134,7 +134,7 @@ describe("providers runtime behavior", () => {
   });
 
   it("passes full history to chat runtime when window size is -1", () => {
-    const runtime = getModelRuntime("gpt-4.1-mini");
+    const runtime = getModelRuntime("gpt-5.4-mini");
     expect(runtime.runtimePreset).toBe("chat");
 
     const messages = Array.from({ length: 20 }, (_, index) =>
@@ -166,7 +166,7 @@ describe("providers runtime behavior", () => {
       createMessage("user-2", "user"),
     ];
 
-    const openaiReasoning = getModelRuntime("gpt-5.4-nano", "high");
+    const openaiReasoning = getModelRuntime("gpt-5.4-mini", "high");
     expect(openaiReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
       reasoningEffort: "high",
       reasoningSummary: "detailed",
@@ -195,17 +195,14 @@ describe("providers runtime behavior", () => {
       },
     });
 
-    const openaiNonReasoning = getModelRuntime("gpt-4.1-mini", "high");
-    expect(openaiNonReasoning.getProviderOptionsFromHistory(messages).openai).toEqual({
-      reasoningEffort: undefined,
-      reasoningSummary: undefined,
-      user: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
-      safetyIdentifier:
-        "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
+    const anthropicNonReasoning = getModelRuntime("claude-haiku-4-5-20251001", "high");
+    expect(
+      anthropicNonReasoning.getProviderOptionsFromHistory(messages).anthropic
+    ).toEqual({
+      effort: undefined,
       metadata: {
         userId: "804f5361f7381d1dbff1e2fd46afcbddc8cbfc778aec8537397ad7dbd2657856",
       },
-      store: false,
     });
   });
 
@@ -314,10 +311,10 @@ describe("critical model policy: provider options", () => {
       });
     }
 
-    const openaiNonReasoning =
-      getModelRuntime("gpt-4.1-mini").getProviderOptionsFromHistory(messages).openai;
-    expect(openaiNonReasoning?.reasoningEffort).toBeUndefined();
-    expect(openaiNonReasoning?.reasoningSummary).toBeUndefined();
+    const anthropicNonReasoning = getModelRuntime(
+      "claude-haiku-4-5-20251001"
+    ).getProviderOptionsFromHistory(messages).anthropic;
+    expect(anthropicNonReasoning?.effort).toBeUndefined();
 
     expect(
       getModelRuntime("claude-sonnet-4-6").getProviderOptionsFromHistory(messages)
@@ -377,7 +374,7 @@ describe("critical model policy: tool behavior", () => {
   });
 
   it("keeps key cross-provider tool policies", () => {
-    const openaiGeneral = getModelRuntime("gpt-4.1-mini").getProviderTools(true);
+    const openaiGeneral = getModelRuntime("gpt-5.4-mini").getProviderTools(true);
     expect(openaiGeneral.code_interpreter).toBeDefined();
     expect(openaiGeneral.image_generation).toBeDefined();
     expect(openaiGeneral.web_search).toBeDefined();

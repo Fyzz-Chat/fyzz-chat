@@ -34,7 +34,7 @@ function userMessage(parts: CustomUIMessage["parts"]): CustomUIMessage {
 }
 
 const codexAssistant = () =>
-  assistantFrom("gpt-5.3-codex", [
+  assistantFrom("gpt-5.2-codex", [
     { type: "reasoning", text: "let me think about this" },
     {
       type: "tool-webSearch",
@@ -55,7 +55,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   it("strips foreign-provider reasoning/tool/source parts when switching providers", () => {
     const history = [userMessage([{ type: "text", text: "hi" }]), codexAssistant()];
 
-    const result = selectFor("claude-sonnet-4-5", history);
+    const result = selectFor("claude-sonnet-5", history);
     const assistant = result.find((m) => m.role === "assistant");
 
     expect(assistant).toBeDefined();
@@ -66,7 +66,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   });
 
   it("keeps reasoning/tool parts when staying within the same provider", () => {
-    const anthropicAssistant = assistantFrom("claude-sonnet-4-5", [
+    const anthropicAssistant = assistantFrom("claude-sonnet-5", [
       { type: "reasoning", text: "internal" },
       {
         type: "tool-webSearch",
@@ -104,7 +104,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
       ] as CustomUIMessage["parts"]),
     ];
 
-    const result = selectFor("claude-sonnet-4-5", history);
+    const result = selectFor("claude-sonnet-5", history);
     const files = result[0].parts.filter(isFileUIPart);
 
     expect(files.some((f) => f.mediaType === "image/png")).toBe(true);
@@ -113,7 +113,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
 
   it("never keeps text stripped — text always survives", () => {
     const history = [codexAssistant()];
-    const result = selectFor("claude-sonnet-4-5", history);
+    const result = selectFor("claude-sonnet-5", history);
     const assistant = result.find((m) => m.role === "assistant");
 
     expect(assistant?.parts.filter(isTextUIPart).map((p) => p.text)).toEqual([
@@ -122,7 +122,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   });
 
   it("drops empty/whitespace-only text parts (Anthropic rejects empty text blocks)", () => {
-    const assistant = assistantFrom("gpt-5.3-codex", [
+    const assistant = assistantFrom("gpt-5.2-codex", [
       { type: "reasoning", text: "thinking" },
       {
         type: "tool-webSearch",
@@ -135,7 +135,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
       { type: "text", text: "   \n  " },
     ] as CustomUIMessage["parts"]);
 
-    const result = selectFor("claude-sonnet-4-5", [assistant]);
+    const result = selectFor("claude-sonnet-5", [assistant]);
     const survivor = result.find((m) => m.role === "assistant");
 
     expect(survivor?.parts.some(isTextUIPart)).toBe(false);
@@ -147,13 +147,13 @@ describe("provenance sanitizer (selectInputMessages)", () => {
     const original = assistant.parts.length;
     const history = [assistant];
 
-    selectFor("claude-sonnet-4-5", history);
+    selectFor("claude-sonnet-5", history);
 
     expect(assistant.parts.length).toBe(original);
   });
 
   it("drops same-provider web_search results carrying encrypted_content (Anthropic rejects stale encrypted_content)", () => {
-    const anthropicAssistant = assistantFrom("claude-sonnet-4-5", [
+    const anthropicAssistant = assistantFrom("claude-sonnet-5", [
       {
         type: "tool-web_search",
         toolCallId: "srvtoolu_1",
@@ -180,7 +180,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   });
 
   it("keeps same-provider tool parts without encrypted_content", () => {
-    const anthropicAssistant = assistantFrom("claude-sonnet-4-5", [
+    const anthropicAssistant = assistantFrom("claude-sonnet-5", [
       {
         type: "tool-web_search",
         toolCallId: "t1",
@@ -199,8 +199,8 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   });
 
   it("maps model ids to their provider id", () => {
-    expect(getProviderIdForModel("gpt-5.3-codex")).toBe("openai");
-    expect(getProviderIdForModel("claude-sonnet-4-5")).toBe("anthropic");
+    expect(getProviderIdForModel("gpt-5.2-codex")).toBe("openai");
+    expect(getProviderIdForModel("claude-sonnet-5")).toBe("anthropic");
     expect(getProviderIdForModel("does-not-exist")).toBeUndefined();
     expect(getProviderIdForModel(undefined)).toBeUndefined();
   });

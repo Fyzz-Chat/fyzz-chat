@@ -11,22 +11,20 @@ export const OPENAI_CODE_INTERPRETER_DENYLIST = [
   "gpt-5-codex",
   "gpt-5.1-codex",
   "gpt-5.2-codex",
-  "gpt-5.3-codex",
   "o3-mini",
 ] as const;
 
 export const OPENAI_IMAGE_GENERATION_MODELS = [
-  "gpt-4.1",
-  "gpt-4.1-mini",
-  "gpt-5.1",
   "gpt-5.2",
-  "gpt-5.4-nano",
   "gpt-5.4-mini",
   "gpt-5.4",
   "gpt-5.5",
   "gpt-5.6-sol",
   "gpt-5.6-terra",
   "gpt-5.6-luna",
+  "gpt-6-luna",
+  "gpt-6-sol",
+  "gpt-6.1-sol",
   "gpt-6-astra",
 ] as const;
 
