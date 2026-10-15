@@ -1,3 +1,4 @@
 node_modules
 .next
 src/lib/prisma/generated
+.git
