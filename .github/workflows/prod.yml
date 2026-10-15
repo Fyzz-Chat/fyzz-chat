@@ -12,34 +12,93 @@ jobs:
   test:
     if: vars.DISABLE_BUILD != 'true'
     runs-on: ubuntu-latest
+    # checks: read and actions: read let the lookup below read this commit's results;
+    # contents: read is what checkout needs once a permissions block exists.
+    permissions:
+      contents: read
+      actions: read
+      checks: read
     steps:
+      # A commit that already passed this job on a stage push is byte-identical here,
+      # so main skips the steps rather than repeating them. The job still succeeds,
+      # which keeps every job that needs it running. Any failed lookup runs the tests.
+      # Results are read off the commit itself: searching workflow runs by commit came
+      # back empty for a stage run 15 hours old, and silently ran the tests again.
+      - name: Look for a stage run that already tested this commit
+        id: stage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tested=false
+          echo "Looking for a stage run that tested $GITHUB_SHA (this run: $GITHUB_RUN_ID)"
+          if ! checks=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs?check_name=test&filter=all&per_page=100" \
+            --jq '.check_runs[] | "\(.conclusion) \(.details_url)"'); then
+            echo "Could not list this commit's test checks; running the tests"
+            checks=""
+          fi
+          echo "Test checks on this commit: $(printf '%s' "$checks" | grep -c . || true)"
+          while read -r conclusion url; do
+            [ -z "$url" ] && continue
+            run=${url#*/runs/}
+            run=${run%%/*}
+            if [ "$run" = "$GITHUB_RUN_ID" ]; then
+              echo "  run $run: this run, skipped"
+              continue
+            fi
+            if [ "$conclusion" != "success" ]; then
+              echo "  run $run: test $conclusion"
+              continue
+            fi
+            if ! origin=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" --jq '"\(.head_branch) \(.event) \(.path)"'); then
+              echo "  run $run: could not read the run"
+              continue
+            fi
+            echo "  run $run: test success on $origin"
+            if [ "$origin" = "stage push .github/workflows/stage.yml" ]; then
+              tested=true
+              echo "Stage run $run already tested $GITHUB_SHA"
+              break
+            fi
+          done <<< "$checks"
+          echo "tested=$tested"
+          echo "tested=$tested" >> "$GITHUB_OUTPUT"
+
       - name: Checkout code
+        if: steps.stage.outputs.tested != 'true'
         uses: actions/checkout@v6
 
       - name: Setup Bun.js
+        if: steps.stage.outputs.tested != 'true'
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.0
 
       - name: Install dependencies
+        if: steps.stage.outputs.tested != 'true'
         run: bun install
 
       - name: Run check
+        if: steps.stage.outputs.tested != 'true'
         run: bun run check
-      
+
       - name: Run type-check
+        if: steps.stage.outputs.tested != 'true'
         run: bun run type-check
-      
+
       - name: Run jscpd
+        if: steps.stage.outputs.tested != 'true'
         run: bun run jscpd
-      
+
       - name: Check unused code
+        if: steps.stage.outputs.tested != 'true'
         run: bun run knip
-        
+
       - name: Run klint
+        if: steps.stage.outputs.tested != 'true'
         run: bun run klint
 
       - name: Run test
+        if: steps.stage.outputs.tested != 'true'
         run: bun run test
 
   release:
