@@ -60,18 +60,20 @@ async function isAnthropicHealthy() {
 }
 
 async function isPerplexityHealthy() {
-  const response = await fetch("https://status.perplexity.com/summary.json");
+  const perplexity_api_components = new Set(["API"]);
+
+  const response = await fetch("https://status.perplexity.com/api/v2/summary.json");
 
   if (!response.ok) {
     return false;
   }
 
   const data = await response.json();
+  const components: { name: string; status: string }[] = data.components || [];
 
-  const status = data.page.status;
-  const statusOk = status === "UP";
+  const apiComponents = components.filter((c) => perplexity_api_components.has(c.name));
 
-  return statusOk;
+  return apiComponents.every((c) => c.status === "operational");
 }
 
 async function isFireworksHealthy() {
