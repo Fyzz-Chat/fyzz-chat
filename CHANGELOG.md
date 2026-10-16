@@ -1,3 +1,10 @@
+## [0.59.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.1...v0.59.2) (2026-10-16)
+
+
+### Bug Fixes
+
+* **health:** change perplexity uptime to new endpoint ([75f5f52](https://github.com/Fyzz-Chat/fyzz-chat/commit/75f5f52e64adbe8440b13edf569e25e362f5b3c0))
+
 ## [0.59.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.0...v0.59.1) (2026-09-20)
 
 
