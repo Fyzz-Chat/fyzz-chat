@@ -2,7 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { CheckIcon, LockIcon } from "lucide-react";
-import { type ChangeEvent, useCallback, useContext, useMemo, useState } from "react";
+import {
+  type ChangeEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import {
   ModelSelector,
@@ -53,6 +60,19 @@ const persistInput = debounce((input: string) => {
   localStorage.setItem(INPUT_STORAGE_KEY, input);
 }, 1000);
 
+const LINKED_INPUT_PARAM = "text";
+
+function getLinkedInput() {
+  if (typeof location === "undefined" || location.pathname !== "/chat") return "";
+  return new URLSearchParams(location.search).get(LINKED_INPUT_PARAM) ?? "";
+}
+
+function removeLinkedInputFromUrl() {
+  const url = new URL(location.href);
+  url.searchParams.delete(LINKED_INPUT_PARAM);
+  window.history.replaceState(null, "", url);
+}
+
 export default function ChatInput() {
   const { handlersRef } = useChatInput();
   const { status, areFilesUploading, deepResearch, hasPendingResearch } =
@@ -74,7 +94,12 @@ export default function ChatInput() {
     () => models.find((m) => m.id === model?.id),
     [models, model?.id]
   );
-  const [initialInput] = useState(getPersistedInput);
+  const [linkedInput] = useState(getLinkedInput);
+  const [initialInput] = useState(() => linkedInput || getPersistedInput());
+
+  useEffect(() => {
+    if (linkedInput) removeLinkedInputFromUrl();
+  }, [linkedInput]);
 
   const effortLevels = selectedModelData?.effortLevels;
   const supportsReasoning = (effortLevels?.length ?? 0) > 0;
