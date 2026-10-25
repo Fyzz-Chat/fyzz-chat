@@ -1,3 +1,10 @@
+## [0.59.3](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.2...v0.59.3) (2026-10-25)
+
+
+### Bug Fixes
+
+* **chat:** restore prefilling the input from the text query param ([a698f71](https://github.com/Fyzz-Chat/fyzz-chat/commit/a698f713e57e8ae3a674f4647a827c03536c84df))
+
 ## [0.59.2](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.1...v0.59.2) (2026-10-16)
 
 
