@@ -1,3 +1,10 @@
+## [0.60.1](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.60.0...v0.60.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* make anonymous login redirect correctly ([db768c3](https://github.com/Fyzz-Chat/fyzz-chat/commit/db768c3fcaba96b5663cc1b0b40fdefcaadbe44f))
+
 # [0.60.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.3...v0.60.0) (2026-11-16)
 
 
