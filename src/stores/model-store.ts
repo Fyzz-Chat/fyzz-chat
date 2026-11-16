@@ -20,7 +20,7 @@ function getModelById(models: PublicModel[], modelId: string): PublicModel {
 }
 
 function findGeminiId(models: PublicModel[]): string | undefined {
-  return models.find((m) => m.id.includes("gemini-2.5-flash-lite"))?.id;
+  return models.find((m) => m.id.includes("gemini-3.1-flash-lite"))?.id;
 }
 
 export const useModelStore = create<ModelStore>()((set, get) => ({

@@ -540,30 +540,8 @@ const providers: Provider[] = [
     name: "OpenAI",
     icon: "openai",
     models: [
-      {
-        id: "gpt-5-codex",
-        name: "GPT-5 Codex",
-        features: [coding],
-        effortLevels: OPENAI_LEGACY_EFFORTS,
-        provider: openai,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: imageTypes,
-        cost: 2,
-        capabilities: { supportsCodeInterpreter: false },
-      },
-      {
-        id: "gpt-5.1-codex",
-        name: "GPT-5.1 Codex",
-        features: [coding],
-        effortLevels: OPENAI_LEGACY_EFFORTS,
-        provider: openai,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: imageTypes,
-        cost: 2,
-        capabilities: { supportsCodeInterpreter: false },
-      },
+      // Models: https://developers.openai.com/api/docs/models
+      // Deprecations: https://developers.openai.com/api/docs/deprecations
       {
         id: "gpt-5.2",
         name: "GPT-5.2",
@@ -575,17 +553,6 @@ const providers: Provider[] = [
         extensions: [...imageTypes, pdfType],
         cost: 3,
         capabilities: { supportsImageGeneration: true },
-      },
-      {
-        id: "gpt-5.2-codex",
-        name: "GPT-5.2 Codex",
-        effortLevels: ["low", "medium", "high", "xhigh"],
-        provider: openai,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: imageTypes,
-        cost: 3,
-        capabilities: { supportsCodeInterpreter: false },
       },
       {
         id: "gpt-5.4-mini",
@@ -707,27 +674,7 @@ const providers: Provider[] = [
         cost: 11,
         capabilities: { supportsImageGeneration: true },
       },
-      {
-        id: "o3-mini",
-        name: "o3-mini",
-        effortLevels: OPENAI_LEGACY_EFFORTS,
-        provider: openai,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [],
-        cost: 1,
-        capabilities: { supportsCodeInterpreter: false },
-      },
-      {
-        id: "o4-mini",
-        name: "o4-mini",
-        effortLevels: OPENAI_LEGACY_EFFORTS,
-        provider: openai,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: imageTypes,
-        cost: 1,
-      },
+      // GPT-6.1 Terra
     ],
   },
   {
@@ -735,6 +682,8 @@ const providers: Provider[] = [
     name: "Anthropic",
     icon: "anthropic",
     models: [
+      // Models: https://platform.claude.com/docs/en/models/overview
+      // Legacy models
       {
         id: "claude-haiku-4-5-20251001",
         name: "Claude Haiku 4.5",
@@ -844,6 +793,7 @@ const providers: Provider[] = [
         extensions: [...imageTypes, pdfType],
         cost: 11,
       },
+      // Latest models: Haiku 5.5, Sonnet 5.5, Opus 5.5, Fable 5.2
     ],
   },
   {
@@ -851,36 +801,8 @@ const providers: Provider[] = [
     name: "Google",
     icon: "google",
     models: [
-      {
-        id: "gemini-2.5-flash",
-        name: "Gemini 2.5 Flash",
-        features: [search],
-        provider: google,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
-        cost: 1,
-      },
-      {
-        id: "gemini-2.5-flash-lite",
-        name: "Gemini 2.5 Flash Lite",
-        features: [],
-        provider: google,
-        tools: false,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
-        cost: 1,
-      },
-      {
-        id: "gemini-2.5-pro",
-        name: "Gemini 2.5 Pro",
-        features: [search],
-        provider: google,
-        tools: true,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
-        cost: 2,
-      },
+      // Models: https://aistudio.google.com/docs/models
+      // Deprecations: https://aistudio.google.com/docs/deprecations
       {
         id: "gemini-3-flash-preview",
         name: "Gemini 3 Flash",
@@ -947,26 +869,6 @@ const providers: Provider[] = [
         cost: 1,
       },
       {
-        id: "gemini-3.1-flash-image-preview",
-        name: "Nano Banana 2",
-        features: [images],
-        provider: google,
-        tools: false,
-        runtimePreset: "chat",
-        extensions: [...imageTypes, pdfType],
-        cost: 1,
-      },
-      {
-        id: "gemini-3-pro-image-preview",
-        name: "Nano Banana Pro",
-        features: [images],
-        provider: google,
-        tools: false,
-        runtimePreset: "chat",
-        extensions: [...imageTypes],
-        cost: 5,
-      },
-      {
         id: "gemma-4-26b-a4b-it",
         name: "Gemma 4 26B A4B",
         provider: google,
@@ -984,6 +886,16 @@ const providers: Provider[] = [
         extensions: [...imageTypes],
         cost: 1,
       },
+      // gemini-nano-banana-2.1
+      // gemini-3.1-flash-lite-image
+      // gemini-3-pro-image
+      // gemini-3.1-flash-lite
+      // gemini-3.6-flash
+      // gemini-3.8-flash
+      // gemini-3.1-pro-preview
+      // gemini-4-carbon
+      // gemini-4-argon
+      // gemini-4-hydrogen
     ],
   },
   {
@@ -991,6 +903,7 @@ const providers: Provider[] = [
     name: "xAI",
     icon: "xai",
     models: [
+      // Models: https://docs.x.ai/developers/models
       {
         id: "grok-4.20-0309-reasoning",
         name: "Grok 4.20",
@@ -1037,8 +950,10 @@ const providers: Provider[] = [
         cost: 1,
         capabilities: { supportsXaiSearchTools: true },
       },
+      // Grok 4.7
     ],
   },
+  // Fireworks models: https://app.fireworks.ai/models
   {
     id: "deepseek",
     name: "DeepSeek",
@@ -1081,6 +996,7 @@ const providers: Provider[] = [
         extensions: [],
         cost: 1,
       },
+      // accounts/fireworks/models/kimi-k3p1-pro
     ],
   },
   {

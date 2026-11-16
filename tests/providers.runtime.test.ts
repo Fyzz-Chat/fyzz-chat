@@ -379,9 +379,6 @@ describe("critical model policy: tool behavior", () => {
     expect(openaiGeneral.image_generation).toBeDefined();
     expect(openaiGeneral.web_search).toBeDefined();
 
-    const openaiReasoningNoImage = getModelRuntime("gpt-5-codex").getProviderTools(true);
-    expect(openaiReasoningNoImage.image_generation).toBeUndefined();
-
     for (const modelId of XAI_RESPONSES_MODELS) {
       const tools = getModelRuntime(modelId).getProviderTools(true);
       expect(tools.x_search).toBeDefined();

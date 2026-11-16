@@ -7,12 +7,7 @@ export const XAI_RESPONSES_MODELS = [
 
 export const XAI_CHAT_MODELS = [] as const;
 
-export const OPENAI_CODE_INTERPRETER_DENYLIST = [
-  "gpt-5-codex",
-  "gpt-5.1-codex",
-  "gpt-5.2-codex",
-  "o3-mini",
-] as const;
+export const OPENAI_CODE_INTERPRETER_DENYLIST = [] as const;
 
 export const OPENAI_IMAGE_GENERATION_MODELS = [
   "gpt-5.2",
@@ -28,7 +23,7 @@ export const OPENAI_IMAGE_GENERATION_MODELS = [
   "gpt-6-astra",
 ] as const;
 
-export const OPENAI_REASONING_MODELS = ["gpt-5-codex"] as const;
+export const OPENAI_REASONING_MODELS = ["gpt-5.4-mini"] as const;
 
 export const GEMINI_REASONING_MODELS = [
   "gemini-3-flash-preview",
@@ -46,7 +41,6 @@ export const FIREWORKS_REASONING_MODELS = [
 export const FIREWORKS_NON_REASONING_MODELS = [] as const;
 
 export const TOOLS_DISABLED_MODELS = [
-  "gemini-2.5-flash-lite",
   "gemini-2.5-flash-image",
   "sonar",
   "sonar-pro",

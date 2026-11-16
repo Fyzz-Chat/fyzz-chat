@@ -41,10 +41,7 @@ const expectedCatalogShape: {
   {
     id: "openai",
     models: [
-      { id: "gpt-5-codex", runtimePreset: "chat" },
-      { id: "gpt-5.1-codex", runtimePreset: "chat" },
       { id: "gpt-5.2", runtimePreset: "chat" },
-      { id: "gpt-5.2-codex", runtimePreset: "chat" },
       { id: "gpt-5.4-mini", runtimePreset: "chat" },
       { id: "gpt-5.4", runtimePreset: "chat" },
       { id: "gpt-5.5", runtimePreset: "chat" },
@@ -55,8 +52,6 @@ const expectedCatalogShape: {
       { id: "gpt-6-sol", runtimePreset: "chat" },
       { id: "gpt-6.1-sol", runtimePreset: "chat" },
       { id: "gpt-6-astra", runtimePreset: "chat" },
-      { id: "o3-mini", runtimePreset: "chat" },
-      { id: "o4-mini", runtimePreset: "chat" },
     ],
   },
   {
@@ -77,17 +72,12 @@ const expectedCatalogShape: {
   {
     id: "google",
     models: [
-      { id: "gemini-2.5-flash", runtimePreset: "chat" },
-      { id: "gemini-2.5-flash-lite", runtimePreset: "chat" },
-      { id: "gemini-2.5-pro", runtimePreset: "chat" },
       { id: "gemini-3-flash-preview", runtimePreset: "chat" },
       { id: "gemini-3.1-flash-lite", runtimePreset: "chat" },
       { id: "gemini-3.1-pro-preview", runtimePreset: "chat" },
       { id: "gemini-3.5-flash", runtimePreset: "chat" },
       { id: "gemini-3.6-flash", runtimePreset: "chat" },
       { id: "gemini-2.5-flash-image", runtimePreset: "chat" },
-      { id: "gemini-3.1-flash-image-preview", runtimePreset: "chat" },
-      { id: "gemini-3-pro-image-preview", runtimePreset: "chat" },
       { id: "gemma-4-26b-a4b-it", runtimePreset: "chat" },
       { id: "gemma-4-31b-it", runtimePreset: "chat" },
     ],

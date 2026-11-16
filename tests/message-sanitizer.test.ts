@@ -34,7 +34,7 @@ function userMessage(parts: CustomUIMessage["parts"]): CustomUIMessage {
 }
 
 const codexAssistant = () =>
-  assistantFrom("gpt-5.2-codex", [
+  assistantFrom("gpt-5.2", [
     { type: "reasoning", text: "let me think about this" },
     {
       type: "tool-webSearch",
@@ -122,7 +122,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   });
 
   it("drops empty/whitespace-only text parts (Anthropic rejects empty text blocks)", () => {
-    const assistant = assistantFrom("gpt-5.2-codex", [
+    const assistant = assistantFrom("gpt-5.2", [
       { type: "reasoning", text: "thinking" },
       {
         type: "tool-webSearch",
@@ -199,7 +199,7 @@ describe("provenance sanitizer (selectInputMessages)", () => {
   });
 
   it("maps model ids to their provider id", () => {
-    expect(getProviderIdForModel("gpt-5.2-codex")).toBe("openai");
+    expect(getProviderIdForModel("gpt-5.2")).toBe("openai");
     expect(getProviderIdForModel("claude-sonnet-5")).toBe("anthropic");
     expect(getProviderIdForModel("does-not-exist")).toBeUndefined();
     expect(getProviderIdForModel(undefined)).toBeUndefined();
