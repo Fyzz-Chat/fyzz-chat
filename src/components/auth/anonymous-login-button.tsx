@@ -2,7 +2,6 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import publicConf from "@/lib/public-config";
 
 export default function AnonymousLoginButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const queryClient = useQueryClient();
   const session = useSession();
 
@@ -23,7 +21,7 @@ export default function AnonymousLoginButton() {
       if (result.success) {
         queryClient.clear();
         await session.refetch();
-        router.push(publicConf.redirectPath);
+        globalThis.location.href = publicConf.redirectPath;
       } else {
         toast.error(result.message, {
           description: result.description,
