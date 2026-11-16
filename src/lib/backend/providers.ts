@@ -575,7 +575,7 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
-        cost: 3,
+        cost: 4,
         capabilities: { supportsImageGeneration: true },
       },
       {
@@ -587,7 +587,7 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
-        cost: 6,
+        cost: 7,
         capabilities: { supportsImageGeneration: true },
       },
       {
@@ -599,7 +599,7 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
-        cost: 6,
+        cost: 5,
         capabilities: { supportsImageGeneration: true },
       },
       {
@@ -623,7 +623,7 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
-        cost: 2,
+        cost: 1,
         capabilities: { supportsImageGeneration: true },
       },
       {
@@ -651,6 +651,18 @@ const providers: Provider[] = [
         capabilities: { supportsImageGeneration: true },
       },
       {
+        id: "gpt-6-astra",
+        name: "GPT-6 Astra",
+        features: [search, coding, images],
+        effortLevels: ["low", "medium", "high", "xhigh", "max"],
+        provider: openai,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: imageTypes,
+        cost: 11,
+        capabilities: { supportsImageGeneration: true },
+      },
+      {
         id: "gpt-6.1-sol",
         name: "GPT-6.1 Sol",
         features: [search, coding, images],
@@ -663,18 +675,17 @@ const providers: Provider[] = [
         capabilities: { supportsImageGeneration: true },
       },
       {
-        id: "gpt-6-astra",
-        name: "GPT-6 Astra",
+        id: "gpt-6.1-terra",
+        name: "GPT-6.1 Terra",
         features: [search, coding, images],
-        effortLevels: ["low", "medium", "high", "xhigh", "max"],
+        effortLevels: ["none", "low", "medium", "high", "xhigh", "max"],
         provider: openai,
         tools: true,
         runtimePreset: "chat",
-        extensions: imageTypes,
-        cost: 11,
+        extensions: [...imageTypes, pdfType],
+        cost: 2,
         capabilities: { supportsImageGeneration: true },
       },
-      // GPT-6.1 Terra
     ],
   },
   {
@@ -683,7 +694,6 @@ const providers: Provider[] = [
     icon: "anthropic",
     models: [
       // Models: https://platform.claude.com/docs/en/models/overview
-      // Legacy models
       {
         id: "claude-haiku-4-5-20251001",
         name: "Claude Haiku 4.5",
@@ -693,6 +703,17 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 2,
+      },
+      {
+        id: "claude-haiku-5-5",
+        name: "Claude Haiku 5.5",
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 1,
       },
       {
         id: "claude-sonnet-4-6",
@@ -714,7 +735,18 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
-        cost: 4,
+        cost: 3,
+      },
+      {
+        id: "claude-sonnet-5-5",
+        name: "Claude Sonnet 5.5",
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 3,
       },
       {
         id: "claude-opus-4-5",
@@ -772,6 +804,17 @@ const providers: Provider[] = [
         cost: 6,
       },
       {
+        id: "claude-opus-5-5",
+        name: "Claude Opus 5.5",
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 5,
+      },
+      {
         id: "claude-fable-5",
         name: "Claude Fable 5",
         features: [search],
@@ -793,7 +836,17 @@ const providers: Provider[] = [
         extensions: [...imageTypes, pdfType],
         cost: 11,
       },
-      // Latest models: Haiku 5.5, Sonnet 5.5, Opus 5.5, Fable 5.2
+      {
+        id: "claude-fable-5-2",
+        name: "Claude Fable 5.2",
+        features: [search],
+        effortLevels: ANTHROPIC_EFFORTS,
+        provider: anthropic,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 9,
+      },
     ],
   },
   {
@@ -834,7 +887,7 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
-        cost: 4,
+        cost: 3,
       },
       {
         id: "gemini-3.5-flash",
@@ -848,10 +901,65 @@ const providers: Provider[] = [
         cost: 2,
       },
       {
+        id: "gemini-3.5-flash-lite",
+        name: "Gemini 3.5 Flash Lite",
+        features: [search],
+        effortLevels: GEMINI_EFFORTS,
+        provider: google,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
+        cost: 1,
+      },
+      {
         id: "gemini-3.6-flash",
         name: "Gemini 3.6 Flash",
         features: [search],
         effortLevels: GEMINI_EFFORTS,
+        provider: google,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
+        cost: 2,
+      },
+      {
+        id: "gemini-3.8-flash",
+        name: "Gemini 3.8 Flash",
+        features: [search],
+        effortLevels: ["low", "medium", "high"],
+        provider: google,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
+        cost: 2,
+      },
+      {
+        id: "gemini-4-argon",
+        name: "Gemini 4 Argon",
+        features: [search],
+        effortLevels: ["low", "medium", "high"],
+        provider: google,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
+        cost: 5,
+      },
+      {
+        id: "gemini-4-carbon",
+        name: "Gemini 4 Carbon",
+        features: [search],
+        effortLevels: ["low", "medium", "high"],
+        provider: google,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, ...audioType, videoType, ...plaintextType],
+        cost: 5,
+      },
+      {
+        id: "gemini-4-hydrogen",
+        name: "Gemini 4 Hydrogen",
+        features: [search],
+        effortLevels: ["low", "medium", "high"],
         provider: google,
         tools: true,
         runtimePreset: "chat",
@@ -867,6 +975,36 @@ const providers: Provider[] = [
         runtimePreset: "chat",
         extensions: [...imageTypes, pdfType],
         cost: 1,
+      },
+      {
+        id: "gemini-3-pro-image",
+        name: "Nano Banana Pro",
+        features: [images],
+        provider: google,
+        tools: false,
+        runtimePreset: "chat",
+        extensions: [...imageTypes],
+        cost: 3,
+      },
+      {
+        id: "gemini-3.1-flash-lite-image",
+        name: "Nano Banana 2 Lite",
+        features: [images],
+        provider: google,
+        tools: false,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType],
+        cost: 1,
+      },
+      {
+        id: "gemini-nano-banana-2.1",
+        name: "Nano Banana 2.1",
+        features: [images],
+        provider: google,
+        tools: false,
+        runtimePreset: "chat",
+        extensions: [...imageTypes, pdfType, videoType],
+        cost: 2,
       },
       {
         id: "gemma-4-26b-a4b-it",
@@ -886,16 +1024,6 @@ const providers: Provider[] = [
         extensions: [...imageTypes],
         cost: 1,
       },
-      // gemini-nano-banana-2.1
-      // gemini-3.1-flash-lite-image
-      // gemini-3-pro-image
-      // gemini-3.1-flash-lite
-      // gemini-3.6-flash
-      // gemini-3.8-flash
-      // gemini-3.1-pro-preview
-      // gemini-4-carbon
-      // gemini-4-argon
-      // gemini-4-hydrogen
     ],
   },
   {
@@ -940,6 +1068,30 @@ const providers: Provider[] = [
         capabilities: { supportsXaiSearchTools: true },
       },
       {
+        id: "grok-4.6",
+        name: "Grok 4.6",
+        features: [search],
+        effortLevels: GROK_EFFORTS,
+        provider: xai.responses,
+        tools: true,
+        runtimePreset: "responses",
+        extensions: [...imageTypes],
+        cost: 2,
+        capabilities: { supportsXaiSearchTools: true },
+      },
+      {
+        id: "grok-4.7",
+        name: "Grok 4.7",
+        features: [search],
+        effortLevels: ["low", "medium", "high"],
+        provider: xai.responses,
+        tools: true,
+        runtimePreset: "responses",
+        extensions: [...imageTypes],
+        cost: 2,
+        capabilities: { supportsXaiSearchTools: true },
+      },
+      {
         id: "grok-build-0.1",
         name: "Grok Build 0.1",
         features: [reasoning, search],
@@ -950,7 +1102,6 @@ const providers: Provider[] = [
         cost: 1,
         capabilities: { supportsXaiSearchTools: true },
       },
-      // Grok 4.7
     ],
   },
   // Fireworks models: https://app.fireworks.ai/models
@@ -984,6 +1135,16 @@ const providers: Provider[] = [
         tools: true,
         runtimePreset: "chat",
         extensions: [...imageTypes],
+        cost: 4,
+      },
+      {
+        id: "accounts/fireworks/models/kimi-k3p1-pro",
+        name: "Kimi K3.1 Pro",
+        effortLevels: FIREWORKS_EFFORTS,
+        provider: fireworks,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes],
         cost: 3,
       },
       {
@@ -996,7 +1157,24 @@ const providers: Provider[] = [
         extensions: [],
         cost: 1,
       },
-      // accounts/fireworks/models/kimi-k3p1-pro
+      {
+        id: "accounts/fireworks/models/qwen3p8-max",
+        name: "Qwen 3.8 Max",
+        provider: fireworks,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [...imageTypes],
+        cost: 2,
+      },
+      {
+        id: "accounts/fireworks/models/minimax-m3",
+        name: "MiniMax M3",
+        provider: fireworks,
+        tools: true,
+        runtimePreset: "chat",
+        extensions: [],
+        cost: 1,
+      },
     ],
   },
   {
