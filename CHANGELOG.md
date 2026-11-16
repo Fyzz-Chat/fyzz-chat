@@ -1,3 +1,15 @@
+# [0.60.0](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.3...v0.60.0) (2026-11-16)
+
+
+### Bug Fixes
+
+* **providers:** remove deprecated models ([536d56c](https://github.com/Fyzz-Chat/fyzz-chat/commit/536d56c96ff11e867c5bb1b46d7dfe16ec5f365c))
+
+
+### Features
+
+* add new models ([6e612d9](https://github.com/Fyzz-Chat/fyzz-chat/commit/6e612d9e59e1b26aa0f4cf41ae02ffd751b758b5))
+
 ## [0.59.3](https://github.com/Fyzz-Chat/fyzz-chat/compare/v0.59.2...v0.59.3) (2026-10-25)
 
 
