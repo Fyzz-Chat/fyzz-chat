@@ -109,7 +109,7 @@
     "@biomejs/biome": "2.4.16",
     "@commitlint/cli": "21.0.2",
     "@commitlint/config-conventional": "21.0.2",
-    "@konvert7/klint": "0.24.0",
+    "@konvert7/klint": "1.8.0",
     "@next/bundle-analyzer": "16.2.6",
     "@opencode-ai/plugin": "1.15.12",
     "@react-email/ui": "6.5.0",
